@@ -8,6 +8,7 @@ export * from "./Modal";
 export * from "./Select";
 export * from "./Checkbox";
 export * from "./Tabs";
+export * from "./Accordion";
 export * from "./Badge";
 export * from "./Avatar";
 export * from "./Divider";
