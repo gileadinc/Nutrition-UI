@@ -47,15 +47,19 @@ src/
     (auth)/              Auth pages: login ("/login"), register ("/register")
     (app)/                Authenticated app shell: dashboard ("/dashboard")
     layout.tsx             Root layout — wraps every route in AppShell
-  components/           Reusable UI components (see below)
+  components/
+    ui/                  shadcn/ui primitives, managed by the shadcn CLI (see below)
+    <Name>/              Hand-written composite components (see below)
   lib/
     api/                 API client, error type, and typed endpoint functions (see below)
     hooks/               Reusable React hooks (useMediaQuery, useAsync)
-    utils/               Framework-agnostic helpers (e.g. cn)
+    utils/               Framework-agnostic helpers (e.g. cn, getInitials)
     types/               Shared TypeScript types
     constants/           Shared constants (routes, breakpoints)
 vitest.config.ts        Test runner config
 eslint.config.mjs        Lint config
+components.json          shadcn/ui CLI config (style, aliases, icon library)
+postcss.config.mjs       Tailwind CSS v4 PostCSS plugin
 vercel.json               Vercel build/deploy config
 ```
 
@@ -65,29 +69,33 @@ organize routes by section without affecting the URL, and each can carry its own
 
 ### Components
 
-Each component lives in its own folder with the component, its CSS module, an index barrel
-export, and (where applicable) a test file, e.g. `src/components/Button/`. Import from the
-top-level barrel (`@/components`) or a specific component folder.
+UI is built on [shadcn/ui](https://ui.shadcn.com/) (the `base-nova` style, on top of
+[Base UI](https://base-ui.com/) primitives + `class-variance-authority`) and
+[Tailwind CSS v4](https://tailwindcss.com/). Generated primitives live in `src/components/ui/`
+(e.g. `button.tsx`, `card.tsx`, `dialog.tsx`) and are managed by the shadcn CLI rather than
+hand-edited — add another one with:
 
-| Component                                              | Purpose                                                                                     |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| `AppShell`                                             | Global header/nav, main, footer used by the root layout                                     |
-| `Button`                                               | Primary/secondary/outline variants, `sm`/`md`/`lg` sizes                                    |
-| `TextInput`                                            | Labeled text input with error state                                                         |
-| `Select`                                               | Labeled native select with error state                                                      |
-| `Checkbox`                                             | Labeled checkbox                                                                            |
-| `Card`                                                 | Bordered content container                                                                  |
-| `Container`                                            | Max-width content wrapper with responsive padding                                           |
-| `Modal`                                                | Dialog with backdrop, escape-to-close, focus on open                                        |
-| `Tabs`                                                 | Tab list + panel with ARIA roles                                                            |
-| `Badge`                                                | Small status/label pill                                                                     |
-| `Avatar`                                               | Initials or image avatar, `sm`/`md`/`lg` sizes                                              |
-| `Divider`                                              | Horizontal or vertical rule                                                                 |
-| `EmptyState`                                           | Title/description/action placeholder for empty views                                        |
-| `LoadingIndicator`                                     | Spinner with status role                                                                    |
-| `FormErrorMessage`                                     | Inline form error text with alert role                                                      |
-| `ErrorState`                                           | Title/description/action placeholder for error views (used by `error.tsx`, `not-found.tsx`) |
-| `Toast` (`ToastProvider`, `ToastViewport`, `useToast`) | App-wide success/error/info notifications                                                   |
+```bash
+npx shadcn@latest add <component>
+```
+
+A small set of composite components without a direct shadcn equivalent are hand-written in
+`src/components/<Name>/`:
+
+| Component          | Purpose                                                                                     |
+| ------------------ | ------------------------------------------------------------------------------------------- |
+| `AppShell`         | Global header/nav, main, footer used by the root layout                                     |
+| `Container`        | Max-width content wrapper with responsive padding                                           |
+| `TextField`        | Composes `ui/input` + `ui/label` with label/error wiring                                    |
+| `UserAvatar`       | Composes `ui/avatar` with initials-fallback logic, `sm`/`md`/`lg` sizes                     |
+| `FormErrorMessage` | Inline form error text with alert role                                                      |
+| `ErrorState`       | Title/description/action placeholder for error views (used by `error.tsx`, `not-found.tsx`) |
+
+Everything else (buttons, cards, badges, checkboxes, tabs, accordions, dialogs, selects, empty
+states, avatars, separators) is used directly from `src/components/ui/`. Toasts use
+[sonner](https://sonner.emilkowal.ski/) — call `toast(...)` / `toast.success(...)` /
+`toast.error(...)` from `"sonner"`; a single `<Toaster />` (`src/components/ui/sonner.tsx`) is
+mounted once in the root layout. There is no custom toast context/provider.
 
 Components that need interactivity (state, effects, refs) are marked `"use client"`, since the
 App Router treats every component as a Server Component by default.
@@ -112,13 +120,13 @@ already-unwrapped `data` on success — no `try/catch` boilerplate needed if you
 isLoading, execute, reset }` to a component. `error` is already a display-ready string via
 `getErrorMessage`. See `src/app/(auth)/login/page.tsx` for a full example: it calls
 `authApi.login` through `useAsync`, renders `error` in a `FormErrorMessage`, and shows a success
-`Toast` via `useToast()`.
+toast via `toast.success(...)` (from `"sonner"`).
 
 **Error UI conventions:**
 
 - Inline field/form errors → `FormErrorMessage`
 - A whole section/page failed to load → `ErrorState`
-- A background action succeeded or failed (not tied to a specific field) → `useToast().showToast(message, { variant: "success" | "error" | "info" })`
+- A background action succeeded or failed (not tied to a specific field) → `toast(message)` / `toast.success(message)` / `toast.error(message)` (from `"sonner"`)
 - Uncaught render errors → handled automatically by `src/app/error.tsx` (per-segment) and `src/app/global-error.tsx` (root); unmatched routes render `src/app/not-found.tsx`
 
 ## Deployment (Vercel)

@@ -1,11 +1,16 @@
 import Link from "next/link";
 import { Container } from "@/components/Container";
-import { Card } from "@/components/Card";
-import { Button } from "@/components/Button";
-import { Badge } from "@/components/Badge";
-import { Divider } from "@/components/Divider";
-import { Avatar } from "@/components/Avatar";
-import { Accordion } from "@/components/Accordion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { UserAvatar } from "@/components/UserAvatar";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 import { ROUTES } from "@/lib/constants";
 import styles from "./page.module.css";
 
@@ -114,11 +119,11 @@ export default function Home() {
           and visual design will be replaced once the UX direction is finalized.
         </p>
         <div className={styles.actions}>
-          <Button variant="primary" size="lg">
+          <Button type="button" size="lg">
             Placeholder call to action
           </Button>
           <Link href={ROUTES.about}>
-            <Button variant="outline" size="lg">
+            <Button type="button" variant="outline" size="lg">
               Learn more
             </Button>
           </Link>
@@ -134,7 +139,7 @@ export default function Home() {
         ))}
       </section>
 
-      <Divider />
+      <Separator />
 
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
@@ -146,15 +151,17 @@ export default function Home() {
         </div>
         <div className={styles.featuresGrid}>
           {FEATURES.map((feature) => (
-            <Card key={feature.title}>
-              <h3 className={styles.cardTitle}>{feature.title}</h3>
-              <p className={styles.cardBody}>{feature.body}</p>
+            <Card key={feature.title} className="py-6">
+              <CardContent className="px-6">
+                <h3 className={styles.cardTitle}>{feature.title}</h3>
+                <p className={styles.cardBody}>{feature.body}</p>
+              </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-      <Divider />
+      <Separator />
 
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
@@ -175,7 +182,7 @@ export default function Home() {
         </div>
       </section>
 
-      <Divider />
+      <Separator />
 
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
@@ -187,21 +194,23 @@ export default function Home() {
         </div>
         <div className={styles.testimonialsGrid}>
           {TESTIMONIALS.map((testimonial) => (
-            <Card key={testimonial.name}>
-              <p className={styles.quote}>&ldquo;{testimonial.quote}&rdquo;</p>
-              <div className={styles.testimonialAuthor}>
-                <Avatar name={testimonial.name} size="sm" />
-                <div>
-                  <p className={styles.testimonialName}>{testimonial.name}</p>
-                  <p className={styles.testimonialRole}>{testimonial.role}</p>
+            <Card key={testimonial.name} className="py-6">
+              <CardContent className="px-6">
+                <p className={styles.quote}>&ldquo;{testimonial.quote}&rdquo;</p>
+                <div className={styles.testimonialAuthor}>
+                  <UserAvatar name={testimonial.name} size="sm" />
+                  <div>
+                    <p className={styles.testimonialName}>{testimonial.name}</p>
+                    <p className={styles.testimonialRole}>{testimonial.role}</p>
+                  </div>
                 </div>
-              </div>
+              </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-      <Divider />
+      <Separator />
 
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
@@ -211,7 +220,14 @@ export default function Home() {
             Placeholder supporting copy introducing the questions below.
           </p>
         </div>
-        <Accordion items={FAQS} className={styles.faq} />
+        <Accordion className={styles.faq}>
+          {FAQS.map((faq) => (
+            <AccordionItem key={faq.value} value={faq.value}>
+              <AccordionTrigger>{faq.question}</AccordionTrigger>
+              <AccordionContent>{faq.answer}</AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </section>
 
       <section className={styles.finalCta}>
@@ -220,11 +236,11 @@ export default function Home() {
           Placeholder supporting copy encouraging the visitor to take the next step.
         </p>
         <div className={styles.actions}>
-          <Button variant="primary" size="lg">
+          <Button type="button" size="lg">
             Placeholder call to action
           </Button>
           <Link href={ROUTES.register}>
-            <Button variant="outline" size="lg">
+            <Button type="button" variant="outline" size="lg">
               Create an account
             </Button>
           </Link>

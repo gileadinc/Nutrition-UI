@@ -1,8 +1,14 @@
-import { Badge } from "@/components/Badge";
-import { EmptyState } from "@/components/EmptyState";
-import { Button } from "@/components/Button";
-import { Tabs } from "@/components/Tabs";
-import { Divider } from "@/components/Divider";
+import { Badge } from "@/components/ui/badge";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+} from "@/components/ui/empty";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 import styles from "./page.module.css";
 
 export default function DashboardPage() {
@@ -17,33 +23,39 @@ export default function DashboardPage() {
         Real dashboard widgets will replace this content.
       </p>
 
-      <Divider />
+      <Separator />
 
-      <Tabs
-        items={[
-          {
-            value: "overview",
-            label: "Overview",
-            content: (
-              <EmptyState
-                title="No data yet"
-                description="Placeholder empty state for future dashboard content."
-                action={<Button variant="outline">Placeholder action</Button>}
-              />
-            ),
-          },
-          {
-            value: "activity",
-            label: "Activity",
-            content: (
-              <EmptyState
-                title="No activity yet"
-                description="Placeholder empty state for a future activity feed."
-              />
-            ),
-          },
-        ]}
-      />
+      <Tabs defaultValue="overview">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="activity">Activity</TabsTrigger>
+        </TabsList>
+        <TabsContent value="overview">
+          <Empty>
+            <EmptyHeader>
+              <EmptyTitle>No data yet</EmptyTitle>
+              <EmptyDescription>
+                Placeholder empty state for future dashboard content.
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button type="button" variant="outline">
+                Placeholder action
+              </Button>
+            </EmptyContent>
+          </Empty>
+        </TabsContent>
+        <TabsContent value="activity">
+          <Empty>
+            <EmptyHeader>
+              <EmptyTitle>No activity yet</EmptyTitle>
+              <EmptyDescription>
+                Placeholder empty state for a future activity feed.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

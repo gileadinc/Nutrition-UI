@@ -8,6 +8,8 @@ describe("Register page", () => {
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
-    expect(screen.getByLabelText("I agree to the placeholder terms")).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: "I agree to the placeholder terms" }),
+    ).toBeInTheDocument();
   });
 });

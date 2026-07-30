@@ -13,4 +13,8 @@ describe("cn", () => {
   it("returns an empty string when nothing is truthy", () => {
     expect(cn(false, null, undefined)).toBe("");
   });
+
+  it("merges conflicting tailwind classes, keeping the last one", () => {
+    expect(cn("px-2 py-1", "px-4")).toBe("py-1 px-4");
+  });
 });

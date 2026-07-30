@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { Container } from "@/components/Container";
 import { ErrorState } from "@/components/ErrorState";
-import { Button } from "@/components/Button";
+import { Button } from "@/components/ui/button";
 import { getErrorMessage } from "@/lib/api";
 
 export default function Error({
@@ -23,7 +23,7 @@ export default function Error({
         title="Something went wrong"
         description={getErrorMessage(error)}
         action={
-          <Button variant="outline" onClick={reset}>
+          <Button type="button" variant="outline" onClick={reset}>
             Try again
           </Button>
         }

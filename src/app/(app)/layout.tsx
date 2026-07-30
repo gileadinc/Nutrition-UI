@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import Link from "next/link";
-import { Avatar } from "@/components/Avatar";
+import { UserAvatar } from "@/components/UserAvatar";
 import { ROUTES } from "@/lib/constants";
 import styles from "./layout.module.css";
 
@@ -11,7 +11,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     <div className={styles.shell}>
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
-          <Avatar name="Placeholder User" size="sm" />
+          <UserAvatar name="Placeholder User" size="sm" />
           <span className={styles.userName}>Placeholder User</span>
         </div>
         <nav aria-label="Dashboard">

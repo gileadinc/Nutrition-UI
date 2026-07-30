@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import LoginPage from "./page";
-import { ToastProvider, ToastViewport } from "@/components/Toast";
+import { Toaster } from "@/components/ui/sonner";
 import { ApiError } from "@/lib/api";
 import { authApi } from "@/lib/api";
 
@@ -18,10 +18,10 @@ vi.mock("@/lib/api", async () => {
 
 function renderLoginPage() {
   return render(
-    <ToastProvider>
+    <>
       <LoginPage />
-      <ToastViewport />
-    </ToastProvider>,
+      <Toaster />
+    </>,
   );
 }
 
