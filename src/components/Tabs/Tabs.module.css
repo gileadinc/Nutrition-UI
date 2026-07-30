@@ -1,0 +1,35 @@
+.wrapper {
+  width: 100%;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  border-bottom: 1px solid #000;
+}
+
+.tab {
+  padding: 0.625rem 1rem;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.tab:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: -2px;
+}
+
+.tabActive {
+  border-bottom-color: #000;
+  font-weight: 600;
+}
+
+.panel {
+  padding-block: 1rem;
+}

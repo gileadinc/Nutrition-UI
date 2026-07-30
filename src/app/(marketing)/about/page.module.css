@@ -1,0 +1,20 @@
+.section {
+  padding-block: 3rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.heading {
+  font-size: 2rem;
+  margin-top: 0.5rem;
+}
+
+.body {
+  margin-top: 1rem;
+  max-width: 60ch;
+  line-height: 1.6;
+}
