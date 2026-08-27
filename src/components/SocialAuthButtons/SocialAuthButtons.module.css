@@ -7,7 +7,8 @@
 
 .appleButton,
 .googleButton {
-  min-height: 2.5rem;
+  min-height: 2.875rem;
+  font-size: 0.9375rem;
 }
 
 .divider::before,

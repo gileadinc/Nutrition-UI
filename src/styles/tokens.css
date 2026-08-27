@@ -133,6 +133,16 @@
   --action-dark-default: var(--black);
   --action-dark-hover: var(--ink-900);
 
+  /* Elevation — shadow color is the ink-900 primitive at low alpha */
+  --shadow-color: 34 39 51; /* rgb of --ink-900 */
+  --shadow-xs: 0 1px 2px rgb(var(--shadow-color) / 0.05);
+  --shadow-sm:
+    0 1px 3px rgb(var(--shadow-color) / 0.06), 0 4px 12px -4px rgb(var(--shadow-color) / 0.08);
+  --shadow-md:
+    0 1px 3px rgb(var(--shadow-color) / 0.06), 0 12px 32px -8px rgb(var(--shadow-color) / 0.14);
+  --shadow-lg:
+    0 2px 6px rgb(var(--shadow-color) / 0.08), 0 24px 48px -12px rgb(var(--shadow-color) / 0.18);
+
   /* Semantic (feedback) */
   --semantic-success: var(--status-success);
   --semantic-success-subtle: var(--status-success-subtle);

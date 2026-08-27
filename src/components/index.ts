@@ -4,5 +4,8 @@ export * from "./ErrorState";
 export * from "./AppShell";
 export * from "./Onboarding";
 export * from "./AuthHeader";
+export * from "./AuthStatus";
+export * from "./GuestGate";
 export * from "./PasswordField";
+export * from "./PasswordStrength";
 export * from "./SocialAuthButtons";

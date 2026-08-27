@@ -1,10 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { Apple } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SocialAuthDialog, type SocialProvider } from "./SocialAuthDialog";
 import styles from "./SocialAuthButtons.module.css";
 
-/** Multicolor Google "G", inlined so it stays self-contained. */
+/**
+ * Multicolor Google "G". The four fills are Google's brand colours (not part of
+ * the ForkThis! design system) — required for correct brand representation.
+ */
 function GoogleGlyph() {
   return (
     <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true">
@@ -34,8 +39,7 @@ export interface SocialAuthButtonsProps {
 }
 
 export function SocialAuthButtons({ dividerLabel = "Or continue with" }: SocialAuthButtonsProps) {
-  // TODO: wire OAuth providers once auth backend is ready.
-  const notImplemented = () => {};
+  const [provider, setProvider] = useState<SocialProvider | null>(null);
 
   return (
     <div>
@@ -47,7 +51,7 @@ export function SocialAuthButtons({ dividerLabel = "Or continue with" }: SocialA
           type="button"
           variant="outline"
           className={styles.appleButton}
-          onClick={notImplemented}
+          onClick={() => setProvider("apple")}
         >
           <Apple className="size-4" />
           Apple
@@ -56,12 +60,19 @@ export function SocialAuthButtons({ dividerLabel = "Or continue with" }: SocialA
           type="button"
           variant="outline"
           className={styles.googleButton}
-          onClick={notImplemented}
+          onClick={() => setProvider("google")}
         >
           <GoogleGlyph />
           Google
         </Button>
       </div>
+
+      <SocialAuthDialog
+        provider={provider}
+        onOpenChange={(open) => {
+          if (!open) setProvider(null);
+        }}
+      />
     </div>
   );
 }

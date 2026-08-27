@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/TextField";
@@ -16,15 +17,18 @@ import { ROUTES } from "@/lib/constants";
 import styles from "./page.module.css";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { execute, isLoading, error } = useAsync(authApi.login);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    // Demo mode: any values are accepted.
     const result = await execute({ email, password });
     if (result) {
       toast.success("Welcome back!");
+      router.push(ROUTES.dashboard);
     }
   }
 
@@ -54,7 +58,7 @@ export default function LoginPage() {
             onChange={(event) => setPassword(event.target.value)}
             required
           />
-          <Link href={ROUTES.onboarding.welcome} className={styles.forgot}>
+          <Link href={ROUTES.forgotPassword} className={styles.forgot}>
             Forgot password?
           </Link>
           {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}

@@ -2,6 +2,7 @@
 
 import { FormEvent, useId, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,73 +18,27 @@ import { authApi } from "@/lib/api";
 import { ROUTES } from "@/lib/constants";
 import styles from "./page.module.css";
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MIN_PASSWORD_LENGTH = 8;
-
-interface FieldErrors {
-  name?: string;
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-  terms?: string;
-}
-
-function validate(values: {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  agreed: boolean;
-}): FieldErrors {
-  const errors: FieldErrors = {};
-
-  if (!values.name.trim()) {
-    errors.name = "Enter your full name.";
-  }
-  if (!values.email.trim()) {
-    errors.email = "Enter your email address.";
-  } else if (!EMAIL_PATTERN.test(values.email)) {
-    errors.email = "Enter a valid email address.";
-  }
-  if (!values.password) {
-    errors.password = "Choose a password.";
-  } else if (values.password.length < MIN_PASSWORD_LENGTH) {
-    errors.password = `Use at least ${MIN_PASSWORD_LENGTH} characters.`;
-  }
-  if (!values.confirmPassword) {
-    errors.confirmPassword = "Repeat your password.";
-  } else if (values.confirmPassword !== values.password) {
-    errors.confirmPassword = "Passwords do not match.";
-  }
-  if (!values.agreed) {
-    errors.terms = "Please accept the terms to continue.";
-  }
-
-  return errors;
-}
-
 export default function RegisterPage() {
+  const router = useRouter();
   const termsId = useId();
-  const termsErrorId = `${termsId}-error`;
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreed, setAgreed] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const { execute, isLoading, error } = useAsync(authApi.register);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const errors = validate({ name, email, password, confirmPassword, agreed });
-    setFieldErrors(errors);
-    if (Object.keys(errors).length > 0) return;
-
+    // Demo mode: no blocking client-side validation — the flow always proceeds.
     const result = await execute({ name, email, password });
     if (result) {
-      toast.success("Account created. Let's set up your goals.");
+      toast.success("Account created. Check your email to verify it.");
+      router.push(
+        `${ROUTES.verifyEmail}?email=${encodeURIComponent(result.email)}`,
+      );
     }
   }
 
@@ -102,8 +57,6 @@ export default function RegisterPage() {
             autoComplete="name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            error={fieldErrors.name}
-            required
           />
           <TextField
             label="Email"
@@ -112,8 +65,6 @@ export default function RegisterPage() {
             autoComplete="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            error={fieldErrors.email}
-            required
           />
           <PasswordField
             label="New password"
@@ -122,8 +73,6 @@ export default function RegisterPage() {
             placeholder="Enter new password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            error={fieldErrors.password}
-            required
           />
           <PasswordField
             label="Confirm password"
@@ -132,8 +81,6 @@ export default function RegisterPage() {
             placeholder="Repeat new password"
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
-            error={fieldErrors.confirmPassword}
-            required
           />
 
           <div className={styles.terms}>
@@ -143,18 +90,12 @@ export default function RegisterPage() {
               className={styles.termsCheckbox}
               checked={agreed}
               onCheckedChange={(checked) => setAgreed(Boolean(checked))}
-              aria-invalid={Boolean(fieldErrors.terms)}
-              aria-describedby={fieldErrors.terms ? termsErrorId : undefined}
             />
             <Label htmlFor={termsId} className={styles.termsLabel}>
-              By creating an account you agree to our <Link href={ROUTES.about}>Terms</Link> and{" "}
+              By creating an account you agree to our{" "}
+              <Link href={ROUTES.about}>Terms</Link> and{" "}
               <Link href={ROUTES.about}>Privacy&nbsp;Policy</Link>.
             </Label>
-            {fieldErrors.terms ? (
-              <p id={termsErrorId} className={styles.termsError} role="alert">
-                {fieldErrors.terms}
-              </p>
-            ) : null}
           </div>
 
           {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}

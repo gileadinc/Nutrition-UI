@@ -1,0 +1,49 @@
+.card {
+  padding-block: 2.5rem;
+  border: none;
+  box-shadow: var(--shadow-md);
+}
+
+.cardContent {
+  padding-inline: 2.25rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.form :global(input) {
+  height: 2.75rem;
+  padding-left: 0.875rem;
+}
+
+.form :global(label) {
+  margin-bottom: 0.125rem;
+  font-size: 0.875rem;
+}
+
+.submit {
+  width: 100%;
+  min-height: 2.75rem;
+  margin-top: 0.25rem;
+  font-size: 0.9375rem;
+}
+
+.footer {
+  margin-top: 1.75rem;
+  font-size: 0.875rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.footer a {
+  font-weight: 600;
+  color: var(--text-link);
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
