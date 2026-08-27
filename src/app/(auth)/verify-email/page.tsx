@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { MailCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ROUTES } from "@/lib/constants";
 import styles from "./page.module.css";
@@ -50,24 +49,21 @@ function VerifyEmailContent() {
           The link expires in 30 minutes.
         </p>
 
-        <div className={styles.actions}>
-          <Button
+        <p className={styles.resendPrompt}>
+          Didn&apos;t get it?{" "}
+          <button
             type="button"
             className={styles.resend}
             onClick={handleResend}
             disabled={resending || cooldown > 0}
           >
             {resending
-              ? "Sending..."
+              ? "Sending…"
               : cooldown > 0
                 ? `Resend in ${cooldown}s`
                 : "Resend email"}
-          </Button>
-
-          <p className={styles.spam}>
-            Can&apos;t find it? Check your spam or promotions folder.
-          </p>
-        </div>
+          </button>
+        </p>
 
         <div className={styles.footer}>
           <Link href={ROUTES.register} className={styles.footerLink}>
