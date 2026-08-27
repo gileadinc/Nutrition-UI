@@ -29,8 +29,8 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="py-8">
-      <CardContent className="px-8">
+    <Card className={styles.card}>
+      <CardContent className={styles.cardContent}>
         <AuthHeader
           showBrand
           heading="Welcome back"

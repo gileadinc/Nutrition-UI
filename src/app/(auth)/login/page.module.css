@@ -1,13 +1,32 @@
+.card {
+  padding-block: 2.5rem;
+}
+
+.cardContent {
+  padding-inline: 2.25rem;
+}
+
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* Auth forms use taller inputs and more label breathing room than the
+   compact default field. */
+.form :global(input) {
+  height: 2.75rem;
+}
+
+.form :global(label) {
+  margin-bottom: 0.125rem;
+  font-size: 0.875rem;
 }
 
 .forgot {
   align-self: flex-end;
-  margin-top: -0.5rem;
+  margin-top: -0.75rem;
   font-size: 0.8125rem;
   font-weight: 500;
   color: var(--text-link);
@@ -21,12 +40,12 @@
 .submit {
   width: 100%;
   min-height: 2.75rem;
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
   font-size: 0.9375rem;
 }
 
 .footer {
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
   font-size: 0.875rem;
   text-align: center;
   color: var(--text-secondary);

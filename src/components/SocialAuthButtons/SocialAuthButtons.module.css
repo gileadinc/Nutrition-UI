@@ -2,7 +2,12 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-block: 1.25rem;
+  margin-block: 1.5rem;
+}
+
+.appleButton,
+.googleButton {
+  min-height: 2.5rem;
 }
 
 .divider::before,

@@ -88,8 +88,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <Card className="py-8">
-      <CardContent className="px-8">
+    <Card className={styles.card}>
+      <CardContent className={styles.cardContent}>
         <AuthHeader
           heading="Create your account"
           subtext="Just enough to save your progress. Your goals and body context come next."
@@ -140,22 +140,22 @@ export default function RegisterPage() {
             <Checkbox
               id={termsId}
               name="agree"
+              className={styles.termsCheckbox}
               checked={agreed}
               onCheckedChange={(checked) => setAgreed(Boolean(checked))}
               aria-invalid={Boolean(fieldErrors.terms)}
               aria-describedby={fieldErrors.terms ? termsErrorId : undefined}
             />
             <Label htmlFor={termsId} className={styles.termsLabel}>
-              By creating an account you agree to our{" "}
-              <Link href={ROUTES.about}>Terms</Link> and{" "}
-              <Link href={ROUTES.about}>Privacy Policy</Link>.
+              By creating an account you agree to our <Link href={ROUTES.about}>Terms</Link> and{" "}
+              <Link href={ROUTES.about}>Privacy&nbsp;Policy</Link>.
             </Label>
+            {fieldErrors.terms ? (
+              <p id={termsErrorId} className={styles.termsError} role="alert">
+                {fieldErrors.terms}
+              </p>
+            ) : null}
           </div>
-          {fieldErrors.terms ? (
-            <p id={termsErrorId} className={styles.termsError} role="alert">
-              {fieldErrors.terms}
-            </p>
-          ) : null}
 
           {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
 
