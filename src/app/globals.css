@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "../styles/tokens.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -39,8 +40,27 @@ img {
 }
 
 @theme inline {
+  --font-sans:
+    var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
   --font-heading: var(--font-sans);
-  --font-sans: var(--font-sans);
+
+  /* Design-system palette exposed as Tailwind utilities
+     (bg-brand, text-accent, border-success, ...) */
+  --color-brand: var(--background-brand);
+  --color-brand-foreground: var(--text-on-primary);
+  --color-accent-brand: var(--text-brand);
+  --color-success: var(--semantic-success);
+  --color-success-subtle: var(--semantic-success-subtle);
+  --color-warning: var(--semantic-warning);
+  --color-warning-subtle: var(--semantic-warning-subtle);
+  --color-error: var(--semantic-error);
+  --color-error-subtle: var(--semantic-error-subtle);
+  --color-info: var(--semantic-info);
+  --color-info-subtle: var(--semantic-info-subtle);
+  --color-surface-warm: var(--background-warm);
+  --color-surface-base: var(--background-base);
+  --color-surface-elevated: var(--background-elevated);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -81,74 +101,49 @@ img {
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* shadcn / base-ui component bridge.
+   These map the third-party component contract onto the ForkThis! semantic
+   tokens (src/styles/tokens.css). Do not put raw values here — reskin at the
+   Primitives layer instead. */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --background: var(--background-base);
+  --foreground: var(--text-primary);
+  --card: var(--card-bg);
+  --card-foreground: var(--text-primary);
+  --popover: var(--background-elevated);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--action-primary-default);
+  --primary-foreground: var(--text-on-primary);
+  --secondary: var(--background-subtle);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--background-subtle);
+  --muted-foreground: var(--text-tertiary);
+  --accent: var(--background-highlight);
+  --accent-foreground: var(--text-brand);
+  --destructive: var(--semantic-error);
+  --border: var(--border-default);
+  --input: var(--input-border);
+  --ring: var(--border-focus);
+  --chart-1: var(--green-500);
+  --chart-2: var(--warm-orange-500);
+  --chart-3: var(--green-700);
+  --chart-4: var(--warm-orange-300);
+  --chart-5: var(--ink-500);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: var(--background-elevated);
+  --sidebar-foreground: var(--text-secondary);
+  --sidebar-primary: var(--action-primary-default);
+  --sidebar-primary-foreground: var(--text-on-primary);
+  --sidebar-accent: var(--background-highlight);
+  --sidebar-accent-foreground: var(--text-brand);
+  --sidebar-border: var(--border-subtle);
+  --sidebar-ring: var(--border-focus);
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
+/* Dark mode: intentionally not implemented yet.
+   When added, override ONLY the Primitives block for `.dark` in
+   src/styles/tokens.css — the Semantic and Component tiers, and this
+   component bridge, will follow automatically. */
 
 @layer base {
   * {
@@ -159,5 +154,22 @@ img {
   }
   html {
     @apply font-sans;
+  }
+
+  /* Interactive elements get a pointer cursor unless disabled. */
+  button:not(:disabled),
+  a[href],
+  label[for],
+  summary,
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"]:not([aria-disabled="true"]),
+  [role="link"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [role="button"][aria-disabled="true"],
+  [aria-disabled="true"] {
+    cursor: not-allowed;
   }
 }

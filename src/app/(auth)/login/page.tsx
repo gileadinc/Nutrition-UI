@@ -3,8 +3,11 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { TextField } from "@/components/TextField";
 import { Button } from "@/components/ui/button";
+import { TextField } from "@/components/TextField";
+import { PasswordField } from "@/components/PasswordField";
+import { AuthHeader } from "@/components/AuthHeader";
+import { SocialAuthButtons } from "@/components/SocialAuthButtons";
 import { FormErrorMessage } from "@/components/FormErrorMessage";
 import { toast } from "sonner";
 import { useAsync } from "@/lib/hooks";
@@ -21,14 +24,18 @@ export default function LoginPage() {
     event.preventDefault();
     const result = await execute({ email, password });
     if (result) {
-      toast.success("Logged in successfully.");
+      toast.success("Welcome back!");
     }
   }
 
   return (
     <Card className="py-8">
       <CardContent className="px-8">
-        <h1 className={styles.heading}>Log in (placeholder)</h1>
+        <AuthHeader
+          showBrand
+          heading="Welcome back"
+          subtext="Sign in to keep your ForkThis! journey, goals, and context in sync."
+        />
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <TextField
             label="Email"
@@ -39,22 +46,27 @@ export default function LoginPage() {
             onChange={(event) => setEmail(event.target.value)}
             required
           />
-          <TextField
+          <PasswordField
             label="Password"
-            type="password"
             name="password"
             autoComplete="current-password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             required
           />
+          <Link href={ROUTES.onboarding.welcome} className={styles.forgot}>
+            Forgot password?
+          </Link>
           {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
           <Button type="submit" className={styles.submit} disabled={isLoading}>
-            {isLoading ? "Logging in..." : "Log in"}
+            {isLoading ? "Signing in..." : "Sign in"}
           </Button>
         </form>
+
+        <SocialAuthButtons dividerLabel="Or continue with" />
+
         <p className={styles.footer}>
-          Don&apos;t have an account? <Link href={ROUTES.register}>Register</Link>
+          New to ForkThis? <Link href={ROUTES.register}>Sign up</Link>
         </p>
       </CardContent>
     </Card>

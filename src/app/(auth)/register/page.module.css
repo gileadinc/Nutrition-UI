@@ -1,25 +1,54 @@
-.heading {
-  font-size: 1.375rem;
-  margin-bottom: 1.25rem;
-}
-
 .form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.termsLabel {
+  display: block;
+  gap: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.termsLabel a {
+  color: var(--text-link);
+  text-decoration: underline;
+}
+
+.termsError {
+  font-size: 0.8125rem;
+  color: var(--semantic-error);
 }
 
 .submit {
   width: 100%;
-  margin-top: 0.5rem;
+  min-height: 2.75rem;
+  margin-top: 0.25rem;
+  font-size: 0.9375rem;
 }
 
 .footer {
-  margin-top: 1.25rem;
+  margin-top: 1.5rem;
   font-size: 0.875rem;
   text-align: center;
+  color: var(--text-secondary);
 }
 
 .footer a {
+  font-weight: 600;
+  color: var(--text-link);
+}
+
+.footer a:hover {
   text-decoration: underline;
 }

@@ -1,0 +1,188 @@
+/* =============================================================================
+   ForkThis! — Design System Tokens
+   3-Tier Variable Architecture: Primitives -> Semantic -> Component
+
+   - Primitives:  raw color values. NEVER reference these outside this file.
+   - Semantic:    reference Primitives. Describe INTENT (text, background, action...).
+   - Component:   reference Semantic. Scoped to one component family.
+
+   Dark mode / white-label reskinning = swap the Primitives block only.
+   Values are OKLCH, sampled from the ForkThis! auth + onboarding designs.
+   ============================================================================= */
+
+:root {
+  /* ---------------------------------------------------------------------------
+     TIER 1 — PRIMITIVES (53)
+     Raw palette. Do not consume directly in components or CSS Modules.
+     --------------------------------------------------------------------------- */
+
+  /* Green scale — brand teal-emerald (primary actions, success) */
+  --green-50: oklch(0.976 0.014 184);
+  --green-100: oklch(0.949 0.032 184);
+  --green-200: oklch(0.902 0.056 185);
+  --green-300: oklch(0.836 0.079 186);
+  --green-400: oklch(0.758 0.093 187);
+  --green-500: oklch(0.681 0.099 187); /* #12A9A0 — primary button fill */
+  --green-600: oklch(0.596 0.089 188);
+  --green-700: oklch(0.508 0.075 189);
+  --green-800: oklch(0.422 0.059 190);
+  --green-900: oklch(0.338 0.043 191);
+
+  /* Warm Orange scale — accent (headings, links, highlights) */
+  --warm-orange-50: oklch(0.972 0.017 52);
+  --warm-orange-100: oklch(0.938 0.038 50);
+  --warm-orange-200: oklch(0.888 0.07 47);
+  --warm-orange-300: oklch(0.825 0.107 44);
+  --warm-orange-400: oklch(0.745 0.148 42);
+  --warm-orange-500: oklch(0.662 0.166 40); /* #E8663A — accent / heading orange */
+  --warm-orange-600: oklch(0.59 0.158 38);
+  --warm-orange-700: oklch(0.505 0.135 36);
+  --warm-orange-800: oklch(0.42 0.109 35);
+  --warm-orange-900: oklch(0.345 0.084 34);
+
+  /* Ink scale — near-black navy-tinted neutral (text, dark surfaces) */
+  --ink-50: oklch(0.968 0.004 240);
+  --ink-100: oklch(0.93 0.007 240);
+  --ink-200: oklch(0.876 0.01 240);
+  --ink-300: oklch(0.796 0.013 240);
+  --ink-400: oklch(0.672 0.017 240);
+  --ink-500: oklch(0.567 0.021 240); /* #8A97A3 — tertiary / placeholder text */
+  --ink-600: oklch(0.47 0.024 240);
+  --ink-700: oklch(0.394 0.026 240); /* #3A4A5A — body text */
+  --ink-800: oklch(0.303 0.026 240); /* #1D2733 — strong text / labels */
+  --ink-900: oklch(0.223 0.022 240); /* #12161C — max-contrast text */
+
+  /* Neutral — pure greys for borders / dividers where no ink tint is wanted */
+  --neutral-ink: oklch(0.205 0 0);
+  --neutral-50: oklch(0.985 0 0);
+  --neutral-100: oklch(0.967 0 0);
+  --neutral-200: oklch(0.922 0 0);
+  --neutral-300: oklch(0.878 0 0);
+  --neutral-400: oklch(0.708 0 0);
+  --neutral-500: oklch(0.556 0 0);
+  --neutral-600: oklch(0.439 0 0);
+  --neutral-700: oklch(0.371 0 0);
+  --neutral-800: oklch(0.269 0 0);
+  --neutral-900: oklch(0.205 0 0);
+  --white: oklch(1 0 0);
+  --black: oklch(0.145 0 0); /* dark button fill (Apple/Google) */
+
+  /* Warm surfaces */
+  --surface-warm: oklch(0.973 0.014 62); /* #FFF8F2 */
+  --surface-base: oklch(0.987 0 0); /* #FBFBFB */
+  --surface-elevated: oklch(1 0 0); /* #FFFFFF */
+  --surface-warm-subtle: oklch(0.943 0.03 52); /* #FCE9DC — peach highlight pill */
+
+  /* Status hues (feedback only — never decorative) */
+  --status-success: oklch(0.681 0.099 187);
+  --status-success-subtle: oklch(0.949 0.024 185); /* #DCEEEA check badge */
+  --status-warning: oklch(0.76 0.15 74);
+  --status-warning-subtle: oklch(0.955 0.045 82);
+  --status-error: oklch(0.601 0.196 24);
+  --status-error-subtle: oklch(0.947 0.028 20);
+  --status-info: oklch(0.62 0.12 240);
+  --status-info-subtle: oklch(0.949 0.026 240);
+
+  /* ---------------------------------------------------------------------------
+     TIER 2 — SEMANTIC TOKENS (47)
+     Reference Primitives. Consume these in components / CSS Modules.
+     --------------------------------------------------------------------------- */
+
+  /* Text */
+  --text-primary: var(--ink-800);
+  --text-secondary: var(--ink-700);
+  --text-tertiary: var(--ink-500);
+  --text-disabled: var(--ink-400);
+  --text-on-dark: var(--white);
+  --text-on-primary: var(--white);
+  --text-on-secondary: var(--green-700);
+  --text-link: var(--warm-orange-500);
+  --text-link-hover: var(--warm-orange-600);
+  --text-inverse: var(--white);
+  --text-brand: var(--warm-orange-500);
+
+  /* Background */
+  --background-base: var(--surface-base);
+  --background-warm: var(--surface-warm);
+  --background-elevated: var(--surface-elevated);
+  --background-subtle: var(--ink-50);
+  --background-brand: var(--green-500);
+  --background-brand-hover: var(--green-600);
+  --background-accent: var(--warm-orange-500);
+  --background-accent-subtle: var(--warm-orange-100);
+  --background-secondary: var(--surface-elevated);
+  --background-disabled: var(--ink-100);
+  --background-highlight: var(--surface-warm-subtle);
+
+  /* Border */
+  --border-default: var(--ink-200);
+  --border-subtle: var(--ink-100);
+  --border-active: var(--green-500);
+  --border-secondary-active: var(--green-300);
+  --border-strong: var(--ink-300);
+  --border-focus: var(--green-500);
+  --border-error: var(--status-error);
+
+  /* Action */
+  --action-primary-default: var(--green-500);
+  --action-primary-hover: var(--green-600);
+  --action-primary-pressed: var(--green-700);
+  --action-primary-disabled: var(--green-200);
+  --action-secondary-default: var(--surface-elevated);
+  --action-secondary-hover: var(--green-50);
+  --action-dark-default: var(--black);
+  --action-dark-hover: var(--ink-900);
+
+  /* Semantic (feedback) */
+  --semantic-success: var(--status-success);
+  --semantic-success-subtle: var(--status-success-subtle);
+  --semantic-warning: var(--status-warning);
+  --semantic-warning-subtle: var(--status-warning-subtle);
+  --semantic-error: var(--status-error);
+  --semantic-error-subtle: var(--status-error-subtle);
+  --semantic-info: var(--status-info);
+  --semantic-info-subtle: var(--status-info-subtle);
+  --semantic-neutral: var(--ink-400);
+
+  /* ---------------------------------------------------------------------------
+     TIER 3 — COMPONENT TOKENS (20)
+     Reference Semantic tokens. Scoped per component family.
+     --------------------------------------------------------------------------- */
+
+  /* Button */
+  --button-primary-bg: var(--action-primary-default);
+  --button-primary-text: var(--text-on-primary);
+  --button-primary-border: transparent;
+  --button-secondary-bg: var(--action-secondary-default);
+  --button-secondary-text: var(--text-on-secondary);
+  --button-dark-bg: var(--action-dark-default);
+  --button-dark-text: var(--text-on-dark);
+
+  /* Input */
+  --input-bg: var(--background-elevated);
+  --input-border: var(--border-default);
+  --input-text: var(--text-primary);
+  --input-placeholder: var(--text-tertiary);
+  --input-focus-border: var(--border-focus);
+  --input-error-border: var(--border-error);
+
+  /* Card */
+  --card-bg: var(--background-elevated);
+  --card-border: var(--border-subtle);
+
+  /* Navigation */
+  --nav-active: var(--text-brand);
+  --nav-inactive: var(--text-secondary);
+
+  /* AI */
+  --ai-accent: var(--warm-orange-500);
+  --ai-background: var(--surface-warm-subtle);
+
+  /* Tab */
+  --tab-active: var(--text-brand);
+  --tab-inactive: var(--text-tertiary);
+
+  /* Progress / step indicator */
+  --progress-fill: var(--background-accent);
+  --progress-track: var(--background-accent-subtle);
+}
