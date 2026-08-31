@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { PasswordField } from "@/components/PasswordField";
 import { PasswordStrength } from "@/components/PasswordStrength";
 import { AuthHeader } from "@/components/AuthHeader";
+import { TextField } from "@/components/TextField";
 import { FormErrorMessage } from "@/components/FormErrorMessage";
 import { useAsync } from "@/lib/hooks";
 import { authApi } from "@/lib/api";
@@ -30,18 +31,25 @@ const RULES: Rule[] = [
 function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token") ?? "demo-token";
 
+  const [email, setEmail] = useState(searchParams.get("email") ?? "");
+  const [confirmationCode, setConfirmationCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [localError, setLocalError] = useState<string | null>(null);
   const { execute, isLoading, error } = useAsync(authApi.resetPassword);
 
   const mismatch = confirmPassword.length > 0 && confirmPassword !== password;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const result = await execute({ token, password });
-    if (result) {
+    setLocalError(null);
+    if (password !== confirmPassword) {
+      setLocalError("Passwords do not match.");
+      return;
+    }
+    const result = await execute({ email, confirmationCode, newPassword: password });
+    if (result !== undefined) {
       router.push(ROUTES.resetPasswordDone);
     }
   }
@@ -51,9 +59,27 @@ function ResetPasswordContent() {
       <CardContent className={styles.cardContent}>
         <AuthHeader
           heading="Create new password"
-          subtext="Your new password must be different from any of your previously used passwords."
+          subtext="Enter the code we emailed you along with a new password."
         />
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
+          <TextField
+            label="Email"
+            type="email"
+            name="email"
+            autoComplete="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+          <TextField
+            label="Verification code"
+            type="text"
+            name="confirmationCode"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            placeholder="123456"
+            value={confirmationCode}
+            onChange={(event) => setConfirmationCode(event.target.value)}
+          />
           <div className={styles.field}>
             <PasswordField
               label="New password"
@@ -93,7 +119,9 @@ function ResetPasswordContent() {
             })}
           </ul>
 
-          {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
+          {localError ?? error ? (
+            <FormErrorMessage>{(localError ?? error) as string}</FormErrorMessage>
+          ) : null}
 
           <Button type="submit" className={styles.submit} disabled={isLoading}>
             {isLoading ? "Saving..." : "Reset Password"}

@@ -1,61 +1,102 @@
-import { Badge } from "@/components/ui/badge";
-import {
-  Empty,
-  EmptyHeader,
-  EmptyTitle,
-  EmptyDescription,
-  EmptyContent,
-} from "@/components/ui/empty";
+"use client";
+
+import Link from "next/link";
+import { DataState } from "@/components/DataState";
+import { MacroSummary } from "@/components/MacroSummary";
+import { ItemCard } from "@/components/ItemCard";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
+import { useApiResource } from "@/lib/hooks";
+import { discoveryApi } from "@/lib/api";
+import { ROUTES } from "@/lib/constants";
 import styles from "./page.module.css";
 
 export default function DashboardPage() {
+  const home = useApiResource(() => discoveryApi.getHome(), []);
+
   return (
     <div>
-      <div className={styles.header}>
-        <h1 className={styles.heading}>Dashboard (placeholder)</h1>
-        <Badge>Placeholder</Badge>
-      </div>
-      <p className={styles.subheading}>
-        This route demonstrates an authenticated app shell separate from the public marketing pages.
-        Real dashboard widgets will replace this content.
-      </p>
+      <DataState resource={home}>
+        {(feed) => (
+          <>
+            <header className={styles.header}>
+              <h1 className={styles.heading}>{feed.greeting || "Today"}</h1>
+              {feed.goal ? (
+                <p className={styles.subheading}>Goal: {feed.goal.replace(/_/g, " ")}</p>
+              ) : (
+                <p className={styles.subheading}>
+                  <Link href={ROUTES.settings}>Set a goal</Link> to personalize your targets.
+                </p>
+              )}
+            </header>
 
-      <Separator />
+            <section className={styles.section}>
+              <div className={styles.sectionHead}>
+                <h2 className={styles.sectionTitle}>Today&apos;s progress</h2>
+                <Link href={ROUTES.track} className={styles.sectionLink}>
+                  Log a meal
+                </Link>
+              </div>
+              {feed.todayProgress ? (
+                <MacroSummary summary={feed.todayProgress} />
+              ) : (
+                <p className={styles.muted}>No tracking data yet.</p>
+              )}
+            </section>
 
-      <Tabs defaultValue="overview">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="activity">Activity</TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview">
-          <Empty>
-            <EmptyHeader>
-              <EmptyTitle>No data yet</EmptyTitle>
-              <EmptyDescription>
-                Placeholder empty state for future dashboard content.
-              </EmptyDescription>
-            </EmptyHeader>
-            <EmptyContent>
-              <Button type="button" variant="outline">
-                Placeholder action
-              </Button>
-            </EmptyContent>
-          </Empty>
-        </TabsContent>
-        <TabsContent value="activity">
-          <Empty>
-            <EmptyHeader>
-              <EmptyTitle>No activity yet</EmptyTitle>
-              <EmptyDescription>
-                Placeholder empty state for a future activity feed.
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        </TabsContent>
-      </Tabs>
+            {feed.recommendations?.recipes?.length ? (
+              <section className={styles.section}>
+                <div className={styles.sectionHead}>
+                  <h2 className={styles.sectionTitle}>Recommended recipes</h2>
+                  <Link href={ROUTES.recipes} className={styles.sectionLink}>
+                    Browse all
+                  </Link>
+                </div>
+                <div className={styles.grid}>
+                  {feed.recommendations.recipes.slice(0, 4).map((recipe) => (
+                    <ItemCard
+                      key={recipe.id}
+                      href={ROUTES.recipe(recipe.id)}
+                      title={recipe.title}
+                      subtitle={recipe.description}
+                      meta={`${recipe.calories} kcal · ${recipe.protein}g protein`}
+                      tags={recipe.goalTags}
+                    />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {feed.recommendations?.restaurants?.length ? (
+              <section className={styles.section}>
+                <div className={styles.sectionHead}>
+                  <h2 className={styles.sectionTitle}>Places to eat</h2>
+                  <Link href={ROUTES.eatOut} className={styles.sectionLink}>
+                    Browse all
+                  </Link>
+                </div>
+                <div className={styles.grid}>
+                  {feed.recommendations.restaurants.slice(0, 4).map((r) => (
+                    <ItemCard
+                      key={r.id}
+                      href={ROUTES.restaurant(r.id)}
+                      title={r.name}
+                      subtitle={r.summary}
+                      meta={`${r.city}, ${r.state}`}
+                      tags={r.bestForGoals}
+                    />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            <div className={styles.footerCta}>
+              <Link href={ROUTES.guestHome}>
+                <Button variant="outline">Open the discovery feed</Button>
+              </Link>
+            </div>
+          </>
+        )}
+      </DataState>
     </div>
   );
 }

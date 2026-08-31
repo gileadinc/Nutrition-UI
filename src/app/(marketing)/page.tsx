@@ -119,12 +119,14 @@ export default function Home() {
           and visual design will be replaced once the UX direction is finalized.
         </p>
         <div className={styles.actions}>
-          <Button type="button" size="lg">
-            Placeholder call to action
-          </Button>
-          <Link href={ROUTES.about}>
+          <Link href={ROUTES.register}>
+            <Button type="button" size="lg">
+              Create your account
+            </Button>
+          </Link>
+          <Link href={ROUTES.guestHome}>
             <Button type="button" variant="outline" size="lg">
-              Learn more
+              Browse as a guest
             </Button>
           </Link>
         </div>
@@ -236,12 +238,14 @@ export default function Home() {
           Placeholder supporting copy encouraging the visitor to take the next step.
         </p>
         <div className={styles.actions}>
-          <Button type="button" size="lg">
-            Placeholder call to action
-          </Button>
           <Link href={ROUTES.register}>
-            <Button type="button" variant="outline" size="lg">
+            <Button type="button" size="lg">
               Create an account
+            </Button>
+          </Link>
+          <Link href={ROUTES.login}>
+            <Button type="button" variant="outline" size="lg">
+              Sign in
             </Button>
           </Link>
         </div>

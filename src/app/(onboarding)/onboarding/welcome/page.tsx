@@ -19,7 +19,7 @@ export default function OnboardingWelcomePage() {
           <Link href={ROUTES.onboarding.goals}>
             <Button size="lg">Get Started</Button>
           </Link>
-          <Link href={ROUTES.dashboard}>
+          <Link href={ROUTES.guestHome}>
             <Button size="lg" variant="outline">
               Continue as Guest
             </Button>

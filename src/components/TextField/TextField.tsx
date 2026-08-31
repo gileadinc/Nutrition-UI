@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+  /** Visible label. Omit for a standalone input (pass aria-label instead). */
+  label?: string;
   error?: string;
 }
 
@@ -16,7 +17,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
 
     return (
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor={inputId}>{label}</Label>
+        {label ? <Label htmlFor={inputId}>{label}</Label> : null}
         <Input
           ref={ref}
           id={inputId}

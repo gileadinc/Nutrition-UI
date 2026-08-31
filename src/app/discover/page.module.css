@@ -1,0 +1,106 @@
+.page {
+  padding: 2rem 0 4rem;
+}
+
+.guestBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--background-highlight);
+  font-size: 0.875rem;
+  margin-bottom: 2rem;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.heading {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.prompt {
+  margin-top: 0.375rem;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.quickActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  margin-bottom: 2.5rem;
+}
+
+.quickAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.lock {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+  background: var(--background-subtle);
+  padding: 0.0625rem 0.375rem;
+  border-radius: 4px;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sectionTitle {
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.sectionLink {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-link);
+}
+
+.sectionLink:hover {
+  text-decoration: underline;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  padding: 0.375rem 0.75rem;
+  border-radius: 999px;
+  background: var(--background-subtle);
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}

@@ -1,0 +1,40 @@
+.wrapper {
+  min-height: 100dvh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 3rem 1.25rem 4rem;
+  background: var(--background-base);
+}
+
+.inner {
+  width: 100%;
+  max-width: 30rem;
+}
+
+.eyebrow {
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-brand, var(--text-link));
+}
+
+.heading {
+  margin-top: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.description {
+  margin-top: 0.625rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.content {
+  margin-top: 1.75rem;
+}

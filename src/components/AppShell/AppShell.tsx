@@ -11,6 +11,7 @@ import styles from "./AppShell.module.css";
 const NAV_LINKS: NavLink[] = [
   { href: ROUTES.home, label: "Home" },
   { href: ROUTES.about, label: "About" },
+  { href: ROUTES.guestHome, label: "Discover" },
   { href: ROUTES.dashboard, label: "Dashboard" },
   { href: ROUTES.login, label: "Log in" },
 ];

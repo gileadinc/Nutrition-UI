@@ -16,14 +16,16 @@ import styles from "./page.module.css";
 export default function ForgotPasswordPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const { execute, isLoading, error } = useAsync(authApi.requestPasswordReset);
+  const { execute, isLoading, error } = useAsync(authApi.forgotPassword);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const result = await execute({ email });
-    if (result) {
+    // The endpoint resolves with `null` when the email is unknown (no account
+    // enumeration), so treat any non-throwing result as success.
+    if (result !== undefined) {
       router.push(
-        `${ROUTES.forgotPasswordSent}?email=${encodeURIComponent(result.email)}`,
+        `${ROUTES.resetPassword}?email=${encodeURIComponent(email)}`,
       );
     }
   }

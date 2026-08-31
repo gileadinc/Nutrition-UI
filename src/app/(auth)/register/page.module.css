@@ -27,6 +27,12 @@
   font-size: 0.875rem;
 }
 
+.nameRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
 .terms {
   display: grid;
   grid-template-columns: auto 1fr;

@@ -1,8 +1,8 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/TextField";
@@ -13,23 +13,42 @@ import { FormErrorMessage } from "@/components/FormErrorMessage";
 import { toast } from "sonner";
 import { useAsync } from "@/lib/hooks";
 import { authApi } from "@/lib/api";
+import { setSession } from "@/lib/auth";
 import { ROUTES } from "@/lib/constants";
 import styles from "./page.module.css";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { execute, isLoading, error } = useAsync(authApi.login);
+  const { execute, isLoading, error } = useAsync(authApi.signIn);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    // Demo mode: any values are accepted.
     const result = await execute({ email, password });
-    if (result) {
-      toast.success("Welcome back!");
-      router.push(ROUTES.dashboard);
+    if (!result) return;
+
+    if (result.challengeName) {
+      toast.error(`Additional step required: ${result.challengeName}`);
+      return;
     }
+    if (!result.accessToken) {
+      toast.error("Sign-in did not return a session. Check your credentials.");
+      return;
+    }
+
+    setSession({
+      accessToken: result.accessToken,
+      idToken: result.idToken,
+      refreshToken: result.refreshToken,
+      email: result.email ?? email,
+      userId: result.userId,
+      expiresIn: result.expiresIn,
+    });
+    toast.success("Welcome back!");
+    router.push(next && next.startsWith("/") ? next : ROUTES.dashboard);
   }
 
   return (
@@ -72,7 +91,18 @@ export default function LoginPage() {
         <p className={styles.footer}>
           New to ForkThis? <Link href={ROUTES.register}>Sign up</Link>
         </p>
+        <p className={styles.footer}>
+          <Link href={ROUTES.guestHome}>Browse as a guest</Link>
+        </p>
       </CardContent>
     </Card>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }

@@ -13,34 +13,88 @@ import { AuthHeader } from "@/components/AuthHeader";
 import { SocialAuthButtons } from "@/components/SocialAuthButtons";
 import { FormErrorMessage } from "@/components/FormErrorMessage";
 import { toast } from "sonner";
-import { useAsync } from "@/lib/hooks";
-import { authApi } from "@/lib/api";
+import { authApi, getErrorMessage } from "@/lib/api";
+import { setSession } from "@/lib/auth";
 import { ROUTES } from "@/lib/constants";
 import styles from "./page.module.css";
+
+/** Cognito needs a moment to propagate a new user before sign-in succeeds. */
+async function signInWithRetry(email: string, password: string, attempts = 4) {
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await authApi.signIn({ email, password });
+    } catch (err) {
+      if (i === attempts - 1) throw err;
+      await new Promise((r) => setTimeout(r, 2500));
+    }
+  }
+  throw new Error("Sign-in failed after retries.");
+}
 
 export default function RegisterPage() {
   const router = useRouter();
   const termsId = useId();
 
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreed, setAgreed] = useState(false);
 
-  const { execute, isLoading, error } = useAsync(authApi.register);
+  const [localError, setLocalError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    // Demo mode: no blocking client-side validation — the flow always proceeds.
-    const result = await execute({ name, email, password });
-    if (result) {
-      toast.success("Account created. Check your email to verify it.");
-      router.push(
-        `${ROUTES.verifyEmail}?email=${encodeURIComponent(result.email)}`,
-      );
+    setLocalError(null);
+
+    if (!firstName.trim() || !lastName.trim()) {
+      setLocalError("Enter your first and last name.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setLocalError("Passwords do not match.");
+      return;
+    }
+    if (!agreed) {
+      setLocalError("Please accept the Terms and Privacy Policy to continue.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await authApi.signUp({
+        email,
+        password,
+        givenName: firstName.trim(),
+        familyName: lastName.trim(),
+      });
+      // The dev backend auto-confirms accounts, so sign in straight away.
+      const session = await signInWithRetry(email, password);
+      if (session.accessToken) {
+        setSession({
+          accessToken: session.accessToken,
+          idToken: session.idToken,
+          refreshToken: session.refreshToken,
+          email: session.email ?? email,
+          userId: session.userId,
+          expiresIn: session.expiresIn,
+        });
+        toast.success("Account created. Let's set up your goals.");
+        router.push(ROUTES.ageGate);
+      } else {
+        toast.success("Account created. Please sign in.");
+        router.push(ROUTES.login);
+      }
+    } catch (err) {
+      setLocalError(getErrorMessage(err));
+    } finally {
+      setSubmitting(false);
     }
   }
+
+  const isLoading = submitting;
 
   return (
     <Card className={styles.card}>
@@ -50,14 +104,24 @@ export default function RegisterPage() {
           subtext="Just enough to save your progress. Your goals and body context come next."
         />
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
-          <TextField
-            label="Full name"
-            type="text"
-            name="name"
-            autoComplete="name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-          />
+          <div className={styles.nameRow}>
+            <TextField
+              label="First name"
+              type="text"
+              name="given-name"
+              autoComplete="given-name"
+              value={firstName}
+              onChange={(event) => setFirstName(event.target.value)}
+            />
+            <TextField
+              label="Last name"
+              type="text"
+              name="family-name"
+              autoComplete="family-name"
+              value={lastName}
+              onChange={(event) => setLastName(event.target.value)}
+            />
+          </div>
           <TextField
             label="Email"
             type="email"
@@ -98,7 +162,7 @@ export default function RegisterPage() {
             </Label>
           </div>
 
-          {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
+          {localError ? <FormErrorMessage>{localError}</FormErrorMessage> : null}
 
           <Button type="submit" className={styles.submit} disabled={isLoading}>
             {isLoading ? "Creating account..." : "Register"}

@@ -1,0 +1,39 @@
+.card {
+  padding-block: 2.5rem;
+  border: none;
+  box-shadow: var(--shadow-md);
+}
+
+.cardContent {
+  padding-inline: 2.25rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.form :global(input) {
+  height: 2.75rem;
+  padding-left: 0.875rem;
+}
+
+.confirm {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+}
+
+.confirmLabel {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.submit {
+  width: 100%;
+  min-height: 2.75rem;
+  font-size: 0.9375rem;
+}

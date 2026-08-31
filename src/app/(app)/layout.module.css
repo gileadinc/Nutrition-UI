@@ -7,46 +7,70 @@
 .sidebar {
   border-bottom: 1px solid var(--border-default);
   padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .sidebarHeader {
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  margin-bottom: 1rem;
 }
 
 .userName {
-  font-size: 0.9375rem;
+  font-size: 0.8125rem;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .navList {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.375rem;
   list-style: none;
 }
 
 .navLink {
-  display: block;
-  padding: 0.5rem 0.625rem;
-  border-radius: 4px;
-  font-size: 0.9375rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
   color: var(--nav-inactive);
 }
 
 .navLink:hover {
-  background: var(--background-brand);
-  color: var(--text-on-primary);
+  background: var(--background-subtle);
+  color: var(--text-primary);
+}
+
+.navLinkActive {
+  background: var(--background-highlight);
+  color: var(--text-primary);
+}
+
+.navIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.signOut {
+  align-self: flex-start;
+  color: var(--text-secondary);
 }
 
 .content {
   flex: 1;
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 1rem 4rem;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 900px) {
   .shell {
     flex-direction: row;
   }
@@ -56,9 +80,21 @@
     flex-shrink: 0;
     border-bottom: none;
     border-right: 1px solid var(--border-default);
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+  }
+
+  .navList {
+    flex-direction: column;
+  }
+
+  .navLink {
+    width: 100%;
   }
 
   .content {
-    padding: 2rem;
+    padding: 2.5rem 2.5rem 4rem;
+    max-width: 960px;
   }
 }
