@@ -1,4 +1,5 @@
 import { apiClient } from "../client";
+import { authHeader } from "@/lib/auth";
 import type { GuestHome, HomeFeed } from "../models";
 import { toQuery } from "./query";
 
@@ -16,8 +17,9 @@ export function getGuestHome(params?: DiscoveryParams): Promise<GuestHome> {
   return apiClient.get<GuestHome>(`/api/discovery/guest-home${toQuery(params)}`);
 }
 
+/** Authenticated: personalized home feed + today's progress. Requires a bearer token. */
 export function getHome(): Promise<HomeFeed> {
-  return apiClient.get<HomeFeed>("/api/discovery/home");
+  return apiClient.get<HomeFeed>("/api/discovery/home", { headers: authHeader() });
 }
 
 export function getAppEntry(params?: DiscoveryParams): Promise<unknown> {

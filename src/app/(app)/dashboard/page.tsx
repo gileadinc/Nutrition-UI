@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { DataState } from "@/components/DataState";
 import { MacroSummary } from "@/components/MacroSummary";
+import { HomeGuidance } from "@/components/HomeGuidance";
 import { ItemCard } from "@/components/ItemCard";
 import { Button } from "@/components/ui/button";
 import { useApiResource } from "@/lib/hooks";
@@ -21,13 +22,18 @@ export default function DashboardPage() {
             <header className={styles.header}>
               <h1 className={styles.heading}>{feed.greeting || "Today"}</h1>
               {feed.goal ? (
-                <p className={styles.subheading}>Goal: {feed.goal.replace(/_/g, " ")}</p>
+                <p className={styles.subheading}>
+                  Goal: <strong>{feed.goal.replace(/_/g, " ")}</strong>
+                </p>
               ) : (
                 <p className={styles.subheading}>
-                  <Link href={ROUTES.settings}>Set a goal</Link> to personalize your targets.
+                  <Link href={ROUTES.onboarding.goals}>Set a goal</Link> to personalize your
+                  targets.
                 </p>
               )}
             </header>
+
+            {feed.guidance ? <HomeGuidance guidance={feed.guidance} /> : null}
 
             <section className={styles.section}>
               <div className={styles.sectionHead}>
@@ -58,7 +64,7 @@ export default function DashboardPage() {
                       href={ROUTES.recipe(recipe.id)}
                       title={recipe.title}
                       subtitle={recipe.description}
-                      meta={`${recipe.calories} kcal · ${recipe.protein}g protein`}
+                      meta={`${recipe.calories} kcal · ${recipe.protein}g protein · ${recipe.carbs}g carbs · ${recipe.fat}g fat · ${recipe.prepTimeMinutes} min · ${recipe.servings} serving${recipe.servings === 1 ? "" : "s"}`}
                       tags={recipe.goalTags}
                     />
                   ))}

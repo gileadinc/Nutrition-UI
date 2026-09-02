@@ -26,13 +26,23 @@ export default function OnboardingHealthPage() {
 
   const [activityLevel, setActivityLevel] = useState("");
   const [surgicalContext, setSurgicalContext] = useState("");
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  const effectiveActivity = activityLevel || session?.activityLevel || "";
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setLocalError(null);
+
+    if (!effectiveActivity) {
+      setLocalError("Select your activity level to finish.");
+      return;
+    }
+
     const result = await save({
       currentStep: 3,
       completedSteps: [0, 1, 2],
-      activityLevel: activityLevel || (session?.activityLevel ?? undefined),
+      activityLevel: effectiveActivity,
       surgicalContext: surgicalContext || (session?.surgicalContext ?? undefined),
       isCompleted: true,
     });
@@ -48,7 +58,7 @@ export default function OnboardingHealthPage() {
       total={3}
       eyebrow="Health context"
       heading="Anything we should know?"
-      description="Optional, but it helps us tailor guidance — especially around recovery."
+      description="Your activity level sets your calorie target. Medical context is optional but helps us tailor guidance."
     >
       {isLoading ? (
         <div className={styles.loading}>
@@ -58,13 +68,18 @@ export default function OnboardingHealthPage() {
         <form onSubmit={handleSubmit} className={styles.fields} noValidate>
           <div>
             <label className={styles.fieldLabel} htmlFor="activity">
-              Activity level
+              Activity level <span aria-hidden="true">*</span>
             </label>
             <select
               id="activity"
               className={styles.select}
-              value={activityLevel}
-              onChange={(e) => setActivityLevel(e.target.value)}
+              required
+              aria-invalid={Boolean(localError)}
+              value={effectiveActivity}
+              onChange={(e) => {
+                setActivityLevel(e.target.value);
+                setLocalError(null);
+              }}
             >
               <option value="">Choose one</option>
               {ACTIVITY.map((a) => (
@@ -83,9 +98,16 @@ export default function OnboardingHealthPage() {
             onChange={(e) => setSurgicalContext(e.target.value)}
           />
 
-          {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
+          {localError ?? error ? (
+            <FormErrorMessage>{(localError ?? error) as string}</FormErrorMessage>
+          ) : null}
 
-          <Button size="lg" type="submit" className={styles.submit} disabled={isSaving}>
+          <Button
+            size="lg"
+            type="submit"
+            className={styles.submit}
+            disabled={isSaving || !effectiveActivity}
+          >
             {isSaving ? "Finishing…" : "Finish setup"}
           </Button>
         </form>

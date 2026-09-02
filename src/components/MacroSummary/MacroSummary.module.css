@@ -1,3 +1,11 @@
+.meta {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -51,4 +59,19 @@
   border-radius: 999px;
   background: var(--progress-fill, var(--background-brand));
   transition: width 0.3s ease;
+}
+
+.macroRemaining {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.water {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-subtle, var(--border-default));
 }

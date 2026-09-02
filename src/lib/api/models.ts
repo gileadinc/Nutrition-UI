@@ -207,6 +207,12 @@ export interface GuestHome {
   suggestedSearches: string[];
 }
 
+export interface HomeGuidance {
+  showOnboardingGuidance: boolean;
+  showQuickTour: boolean;
+  showTrackingGuidance: boolean;
+}
+
 export interface HomeFeed {
   greeting: string;
   goal: string | null;
@@ -216,5 +222,6 @@ export interface HomeFeed {
     restaurants?: Restaurant[];
     [key: string]: unknown;
   };
+  guidance?: HomeGuidance;
   [key: string]: unknown;
 }

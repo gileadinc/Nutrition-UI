@@ -4,6 +4,7 @@ export * from "./ErrorState";
 export * from "./DataState";
 export * from "./RequireAuth";
 export * from "./MacroSummary";
+export * from "./HomeGuidance";
 export * from "./ItemCard";
 export * from "./SaveButton";
 export * from "./AppShell";
