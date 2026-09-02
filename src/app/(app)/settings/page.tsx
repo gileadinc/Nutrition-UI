@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { FormErrorMessage } from "@/components/FormErrorMessage";
+import { DeleteAccountDialog } from "./DeleteAccountDialog";
 import { useApiResource } from "@/lib/hooks";
 import {
   profileApi,
@@ -67,9 +68,7 @@ function SettingsForms({
       <Separator />
       <PreferencesSection preferences={profile.preferences} onSaved={onSaved} />
       <Separator />
-      <NotificationsSection />
-      <Separator />
-      <DangerZone onDeleted={onDeleted} />
+      <DangerZone email={profile.email} onDeleted={onDeleted} />
     </>
   );
 }
@@ -362,74 +361,8 @@ function PreferencesSection({
   );
 }
 
-function NotificationsSection() {
-  const notifications = useApiResource(() => profileApi.listNotifications(), []);
-  const [busy, setBusy] = useState(false);
-
-  const list = (data: unknown): { id: string; title: string; body?: string; read?: boolean }[] => {
-    if (Array.isArray(data)) return data;
-    if (data && typeof data === "object" && "items" in data) {
-      return (data as { items: never[] }).items;
-    }
-    return [];
-  };
-
-  async function markAll() {
-    setBusy(true);
-    try {
-      await profileApi.markAllNotificationsRead();
-      toast.success("All marked read");
-      notifications.refetch();
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <section className={styles.section}>
-      <div className={styles.sectionHead}>
-        <h2 className={styles.sectionTitle}>Notifications</h2>
-        <Button type="button" variant="ghost" size="sm" onClick={markAll} disabled={busy}>
-          Mark all read
-        </Button>
-      </div>
-      <DataState
-        resource={notifications}
-        isEmpty={(d) => list(d).length === 0}
-        emptyTitle="No notifications"
-      >
-        {(data) => (
-          <ul className={styles.notifList}>
-            {list(data).map((n) => (
-              <li key={n.id} className={styles.notif} data-read={n.read ? "true" : "false"}>
-                <p className={styles.notifTitle}>{n.title}</p>
-                {n.body ? <p className={styles.notifBody}>{n.body}</p> : null}
-              </li>
-            ))}
-          </ul>
-        )}
-      </DataState>
-    </section>
-  );
-}
-
-function DangerZone({ onDeleted }: { onDeleted: () => void }) {
-  const [confirming, setConfirming] = useState(false);
-  const [busy, setBusy] = useState(false);
-
-  async function handleDelete() {
-    setBusy(true);
-    try {
-      await profileApi.deleteAccount();
-      toast.success("Account deleted");
-      onDeleted();
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-      setBusy(false);
-    }
-  }
+function DangerZone({ email, onDeleted }: { email: string; onDeleted: () => void }) {
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
     <section className={styles.section}>
@@ -437,20 +370,19 @@ function DangerZone({ onDeleted }: { onDeleted: () => void }) {
       <p className={styles.dangerText}>
         Permanently delete your account and all personal data. This cannot be undone.
       </p>
-      {confirming ? (
-        <div className={styles.dangerActions}>
-          <Button type="button" variant="destructive" onClick={handleDelete} disabled={busy}>
-            {busy ? "Deleting…" : "Yes, delete everything"}
-          </Button>
-          <Button type="button" variant="ghost" onClick={() => setConfirming(false)}>
-            Cancel
-          </Button>
-        </div>
-      ) : (
-        <Button type="button" variant="destructive" onClick={() => setConfirming(true)}>
-          Delete account
-        </Button>
-      )}
+      <Button type="button" variant="destructive" onClick={() => setDialogOpen(true)}>
+        Delete account
+      </Button>
+
+      <DeleteAccountDialog
+        open={dialogOpen}
+        email={email}
+        onClose={() => setDialogOpen(false)}
+        onDeleted={() => {
+          toast.success("Account deleted");
+          onDeleted();
+        }}
+      />
     </section>
   );
 }
