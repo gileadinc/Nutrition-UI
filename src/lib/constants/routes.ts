@@ -26,6 +26,3 @@ export const ROUTES = {
     health: "/onboarding/health",
   },
 } as const;
-
-/** Route prefixes that render without the site chrome (header/footer). */
-export const BARE_ROUTE_PREFIXES = ["/onboarding"] as const;

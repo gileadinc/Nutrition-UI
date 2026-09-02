@@ -1,12 +1,33 @@
 .wrapper {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: calc(100dvh - 200px);
-  padding-block: 2.5rem;
+  min-height: calc(100dvh - 8rem);
+  padding: 3rem 1.25rem 4rem;
+  background:
+    radial-gradient(
+      60rem 30rem at 50% -10%,
+      var(--background-highlight),
+      transparent 60%
+    ),
+    var(--background-base);
 }
 
 .panel {
   width: 100%;
-  max-width: 34rem;
+  max-width: 26rem;
+}
+
+.brand {
+  display: block;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.brandAccent {
+  color: var(--text-brand, var(--text-link));
 }

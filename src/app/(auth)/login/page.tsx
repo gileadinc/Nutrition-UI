@@ -13,7 +13,7 @@ import { FormErrorMessage } from "@/components/FormErrorMessage";
 import { toast } from "sonner";
 import { useAsync } from "@/lib/hooks";
 import { authApi } from "@/lib/api";
-import { setSession } from "@/lib/auth";
+import { migrateGuestProgress, setSession } from "@/lib/auth";
 import { ROUTES } from "@/lib/constants";
 import styles from "./page.module.css";
 
@@ -47,6 +47,8 @@ function LoginForm() {
       userId: result.userId,
       expiresIn: result.expiresIn,
     });
+    // Fold any guest onboarding / tracking done on this device into the account.
+    await migrateGuestProgress();
     toast.success("Welcome back!");
     router.push(next && next.startsWith("/") ? next : ROUTES.dashboard);
   }

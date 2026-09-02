@@ -14,9 +14,29 @@
 }
 
 .body {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   padding: 1rem 1.125rem;
   flex: 1;
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+}
+
+.arrow {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.card:hover .arrow {
+  color: var(--text-primary);
+  transform: translateX(2px);
 }
 
 .title {

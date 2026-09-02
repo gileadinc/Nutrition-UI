@@ -50,3 +50,13 @@
   color: var(--text-tertiary);
   text-transform: capitalize;
 }
+
+.removeButton {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+}
+
+.removeButton:hover {
+  color: var(--status-error, #dc2626);
+  background: var(--status-error-subtle, color-mix(in srgb, #dc2626 10%, transparent));
+}

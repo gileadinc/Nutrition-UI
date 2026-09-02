@@ -14,7 +14,7 @@ import { SocialAuthButtons } from "@/components/SocialAuthButtons";
 import { FormErrorMessage } from "@/components/FormErrorMessage";
 import { toast } from "sonner";
 import { authApi, getErrorMessage } from "@/lib/api";
-import { setSession } from "@/lib/auth";
+import { migrateGuestProgress, setSession } from "@/lib/auth";
 import { ROUTES } from "@/lib/constants";
 import styles from "./page.module.css";
 
@@ -81,8 +81,17 @@ export default function RegisterPage() {
           userId: session.userId,
           expiresIn: session.expiresIn,
         });
-        toast.success("Account created. Let's set up your goals.");
-        router.push(ROUTES.ageGate);
+
+        // If this user already completed onboarding as a guest on this device,
+        // migrate it into the account and skip straight to the app.
+        const migration = await migrateGuestProgress();
+        if (migration?.migratedOnboarding) {
+          toast.success("Account created. Your setup carried over.");
+          router.push(ROUTES.dashboard);
+        } else {
+          toast.success("Account created. Let's set up your goals.");
+          router.push(ROUTES.ageGate);
+        }
       } else {
         toast.success("Account created. Please sign in.");
         router.push(ROUTES.login);

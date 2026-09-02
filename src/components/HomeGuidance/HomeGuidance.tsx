@@ -6,11 +6,22 @@ import type { HomeGuidance as HomeGuidanceData } from "@/lib/api";
 import { ROUTES } from "@/lib/constants";
 import styles from "./HomeGuidance.module.css";
 
+export interface HomeGuidanceProps {
+  guidance: HomeGuidanceData;
+  /**
+   * Whether onboarding is actually complete. The backend's
+   * `showOnboardingGuidance` flag isn't recomputed after guest data is
+   * migrated, so the dashboard passes `Boolean(feed.goal)` here to suppress the
+   * "finish setup" nudge for users who are already done.
+   */
+  onboardingComplete?: boolean;
+}
+
 /** Guidance nudges from `discovery/home.guidance`. */
-export function HomeGuidance({ guidance }: { guidance: HomeGuidanceData }) {
+export function HomeGuidance({ guidance, onboardingComplete = false }: HomeGuidanceProps) {
   const items: { key: string; icon: typeof Compass; text: string; href: string; cta: string }[] = [];
 
-  if (guidance.showOnboardingGuidance) {
+  if (guidance.showOnboardingGuidance && !onboardingComplete) {
     items.push({
       key: "onboarding",
       icon: Compass,

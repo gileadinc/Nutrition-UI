@@ -1,4 +1,5 @@
 import { apiClient } from "../client";
+import { authHeader } from "@/lib/auth/session";
 
 /**
  * Auth endpoints for the Nutrition backend (tag: `auth`).
@@ -138,8 +139,19 @@ export interface GuestMigrateRequest {
   sessionId: string;
 }
 
-export function migrateGuest(payload: GuestMigrateRequest): Promise<unknown> {
-  return apiClient.post<unknown>("/api/auth/guest/migrate", payload);
+export interface GuestMigrateResponse {
+  sessionId: string;
+  userId: string;
+  migratedOnboarding: boolean;
+  migratedTrackingEntries: number;
+  migratedAgeGate: boolean;
+}
+
+/** Requires a bearer token — merges the guest session's data into the account. */
+export function migrateGuest(payload: GuestMigrateRequest): Promise<GuestMigrateResponse> {
+  return apiClient.post<GuestMigrateResponse>("/api/auth/guest/migrate", payload, {
+    headers: authHeader(),
+  });
 }
 
 /* -------------------------------------------------------------------------- */

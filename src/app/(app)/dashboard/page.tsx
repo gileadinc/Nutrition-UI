@@ -33,7 +33,12 @@ export default function DashboardPage() {
               )}
             </header>
 
-            {feed.guidance ? <HomeGuidance guidance={feed.guidance} /> : null}
+            {feed.guidance ? (
+              <HomeGuidance
+                guidance={feed.guidance}
+                onboardingComplete={Boolean(feed.goal)}
+              />
+            ) : null}
 
             <section className={styles.section}>
               <div className={styles.sectionHead}>

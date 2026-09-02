@@ -1,0 +1,214 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.topRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 2rem;
+  align-items: center;
+}
+
+/* ---- Calorie ring ---- */
+
+.ring {
+  position: relative;
+  width: 8.5rem;
+  height: 8.5rem;
+  flex-shrink: 0;
+}
+
+.ringSvg {
+  width: 100%;
+  height: 100%;
+}
+
+.ringTrack {
+  stroke: var(--progress-track, var(--background-subtle));
+}
+
+.ringFill {
+  stroke: var(--progress-fill, var(--background-brand));
+  transition: stroke-dashoffset 0.4s ease;
+}
+
+.ringLabel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+}
+
+.ringValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.ringSub {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+}
+
+/* ---- Macro bars ---- */
+
+.macroBars {
+  flex: 1;
+  min-width: 15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.macroBar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125rem;
+}
+
+.macroBarHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.macroBarLabel {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.macroBarValue {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.track {
+  height: 7px;
+  border-radius: 999px;
+  background: var(--progress-track, var(--background-subtle));
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.macroBarRemaining {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+}
+
+/* ---- Stat row ---- */
+
+.statRow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 560px) {
+  .statRow {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: 0.875rem;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--background-base);
+}
+
+.statIcon {
+  display: inline-flex;
+  color: var(--text-tertiary);
+}
+
+.statIcon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.statValue {
+  font-size: 1.125rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.statLabel {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+}
+
+/* ---- Bar chart ---- */
+
+.chart {
+  border-top: 1px solid var(--border-subtle, var(--border-default));
+  padding-top: 1.25rem;
+}
+
+.chartTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.chartEmpty {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+}
+
+.bars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.barGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.barTrack {
+  width: 100%;
+  height: 6rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.bar {
+  width: 100%;
+  max-width: 2.5rem;
+  min-height: 2px;
+  border-radius: 6px 6px 0 0;
+  background: var(--progress-fill, var(--background-brand));
+  transition: height 0.4s ease;
+}
+
+.barValue {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.barLabel {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+}

@@ -14,3 +14,4 @@ export {
   clearGuestSessionId,
   ensureGuestSession,
 } from "./guest";
+export { migrateGuestProgress } from "./migrate";

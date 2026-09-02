@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { AuthStatus, authStatusActionClasses } from "@/components/AuthStatus";
 import { authApi, getErrorMessage } from "@/lib/api";
-import { setSession } from "@/lib/auth";
+import { migrateGuestProgress, setSession } from "@/lib/auth";
 import { ROUTES } from "@/lib/constants";
 
 function CallbackContent() {
@@ -33,7 +33,7 @@ function CallbackContent() {
           redirectUri: `${window.location.origin}${ROUTES.oauthCallback}`,
         });
       })
-      .then((result) => {
+      .then(async (result) => {
         if (!result.accessToken) {
           setError("The provider did not return a session.");
           return;
@@ -46,6 +46,11 @@ function CallbackContent() {
           userId: result.userId,
           expiresIn: result.expiresIn,
         });
+        // Fold any guest progress from this device into the account. We can't
+        // tell a brand-new social sign-up from a returning user here, so send
+        // them to the dashboard either way — the dashboard's HomeGuidance
+        // surfaces "finish setup" when onboarding is still incomplete.
+        await migrateGuestProgress();
         router.replace(ROUTES.dashboard);
       })
       .catch((err) => setError(getErrorMessage(err)));

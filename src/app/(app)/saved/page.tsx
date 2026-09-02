@@ -1,6 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
 import { DataState } from "@/components/DataState";
 import { Button } from "@/components/ui/button";
 import { useApiResource } from "@/lib/hooks";
@@ -58,10 +59,13 @@ export default function SavedPage() {
                   <Button
                     type="button"
                     variant="ghost"
-                    size="sm"
+                    size="icon-sm"
+                    className={styles.removeButton}
+                    aria-label={`Remove ${item.title}`}
+                    title="Remove"
                     onClick={() => remove(item.savedItemId)}
                   >
-                    Remove
+                    <Trash2 className="size-4" />
                   </Button>
                 </li>
               );
