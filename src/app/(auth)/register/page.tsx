@@ -166,8 +166,8 @@ export default function RegisterPage() {
             />
             <Label htmlFor={termsId} className={styles.termsLabel}>
               By creating an account you agree to our{" "}
-              <Link href={ROUTES.about}>Terms</Link> and{" "}
-              <Link href={ROUTES.about}>Privacy&nbsp;Policy</Link>.
+              <Link href={ROUTES.home}>Terms</Link> and{" "}
+              <Link href={ROUTES.home}>Privacy&nbsp;Policy</Link>.
             </Label>
           </div>
 

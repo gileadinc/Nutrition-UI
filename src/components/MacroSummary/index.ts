@@ -1,1 +1,0 @@
-export { MacroSummary } from "./MacroSummary";

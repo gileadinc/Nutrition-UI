@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
-import { DataState } from "@/components/DataState";
+import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
-import { useApiResource } from "@/lib/hooks";
-import { savedItemsApi, getErrorMessage } from "@/lib/api";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useSavedItems, patchSavedItemsCache, refreshSavedItems } from "@/lib/hooks";
+import { savedItemsApi, getErrorMessage, type SavedItem } from "@/lib/api";
 import { ROUTES } from "@/lib/constants";
 import styles from "./page.module.css";
 
@@ -16,15 +18,21 @@ const LINK_FOR: Record<string, (id: string) => string> = {
 };
 
 export default function SavedPage() {
-  const saved = useApiResource(() => savedItemsApi.listSavedItems({ limit: 50 }), []);
+  const { items, isLoading } = useSavedItems();
+  const [pendingRemoval, setPendingRemoval] = useState<SavedItem | null>(null);
 
-  async function remove(savedItemId: string) {
+  async function confirmRemove() {
+    if (!pendingRemoval) return;
+    const { savedItemId } = pendingRemoval;
     try {
       await savedItemsApi.removeSavedItem(savedItemId);
-      toast.success("Removed");
-      saved.refetch();
+      patchSavedItemsCache((list) => list.filter((i) => i.savedItemId !== savedItemId));
+      toast.success("Removed from saved");
+      void refreshSavedItems();
     } catch (err) {
       toast.error(getErrorMessage(err));
+    } finally {
+      setPendingRemoval(null);
     }
   }
 
@@ -35,44 +43,62 @@ export default function SavedPage() {
         <p className={styles.subheading}>Recipes, orders, and Fast Hacks you&apos;ve kept.</p>
       </header>
 
-      <DataState
-        resource={saved}
-        isEmpty={(d) => d.items.length === 0}
-        emptyTitle="Nothing saved yet"
-        emptyDescription="Tap Save on any recipe or restaurant order to see it here."
-      >
-        {(data) => (
-          <ul className={styles.list}>
-            {data.items.map((item) => {
-              const href = LINK_FOR[item.itemType]?.(item.itemId);
-              return (
-                <li key={item.savedItemId} className={styles.item}>
-                  <div>
-                    <p className={styles.itemTitle}>
-                      {href ? <a href={href}>{item.title}</a> : item.title}
-                    </p>
-                    <p className={styles.itemMeta}>
-                      {item.itemType.replace(/_/g, " ")}
-                      {item.subtitle ? ` · ${item.subtitle}` : ""}
-                    </p>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    className={styles.removeButton}
-                    aria-label={`Remove ${item.title}`}
-                    title="Remove"
-                    onClick={() => remove(item.savedItemId)}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </DataState>
+      {isLoading ? (
+        <div className={styles.center}>
+          <Spinner />
+        </div>
+      ) : items.length === 0 ? (
+        <div className={styles.center}>
+          <p className={styles.emptyTitle}>Nothing saved yet</p>
+          <p className={styles.emptyText}>
+            Tap Save on any recipe or restaurant order to see it here.
+          </p>
+        </div>
+      ) : (
+        <ul className={styles.list}>
+          {items.map((item) => {
+            const href = LINK_FOR[item.itemType]?.(item.itemId);
+            return (
+              <li key={item.savedItemId} className={styles.item}>
+                <div className={styles.itemInfo}>
+                  <p className={styles.itemTitle}>
+                    {href ? <a href={href}>{item.title}</a> : item.title}
+                  </p>
+                  <p className={styles.itemMeta}>
+                    {item.itemType.replace(/_/g, " ")}
+                    {item.subtitle ? ` · ${item.subtitle}` : ""}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className={styles.removeButton}
+                  aria-label={`Remove ${item.title}`}
+                  title="Remove"
+                  onClick={() => setPendingRemoval(item)}
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      <ConfirmDialog
+        open={pendingRemoval !== null}
+        title="Remove from saved?"
+        description={
+          pendingRemoval
+            ? `"${pendingRemoval.title}" will be removed from your saved items.`
+            : undefined
+        }
+        confirmLabel="Remove"
+        destructive
+        onCancel={() => setPendingRemoval(null)}
+        onConfirm={confirmRemove}
+      />
     </div>
   );
 }

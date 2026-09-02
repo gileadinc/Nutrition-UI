@@ -26,12 +26,12 @@
 }
 
 .ringTrack {
-  stroke: var(--progress-track, var(--background-subtle));
+  stroke: var(--background-subtle);
 }
 
 .ringFill {
-  stroke: var(--progress-fill, var(--background-brand));
-  transition: stroke-dashoffset 0.4s ease;
+  stroke: var(--chart-1, var(--background-brand));
+  transition: stroke-dashoffset 0.5s ease;
 }
 
 .ringLabel {
@@ -45,7 +45,7 @@
 }
 
 .ringValue {
-  font-size: 1.5rem;
+  font-size: 1.625rem;
   font-weight: 800;
   line-height: 1;
 }
@@ -79,27 +79,37 @@
 }
 
 .macroBarLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--text-secondary);
 }
 
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
 .macroBarValue {
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .track {
-  height: 7px;
+  height: 8px;
   border-radius: 999px;
-  background: var(--progress-track, var(--background-subtle));
+  background: var(--background-subtle);
   overflow: hidden;
 }
 
 .fill {
   height: 100%;
   border-radius: 999px;
-  transition: width 0.3s ease;
+  transition: width 0.4s ease;
 }
 
 .macroBarRemaining {
@@ -125,16 +135,16 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.25rem;
-  padding: 0.875rem;
+  gap: 0.3125rem;
+  padding: 0.875rem 0.9375rem;
   border: 1px solid var(--border-default);
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--background-base);
 }
 
 .statIcon {
   display: inline-flex;
-  color: var(--text-tertiary);
+  color: var(--text-brand, var(--text-link));
 }
 
 .statIcon svg {
@@ -143,13 +153,15 @@
 }
 
 .statValue {
-  font-size: 1.125rem;
+  font-size: 1.1875rem;
   font-weight: 800;
   line-height: 1.1;
 }
 
 .statLabel {
   font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   color: var(--text-tertiary);
 }
 
@@ -199,8 +211,8 @@
   max-width: 2.5rem;
   min-height: 2px;
   border-radius: 6px 6px 0 0;
-  background: var(--progress-fill, var(--background-brand));
-  transition: height 0.4s ease;
+  background: var(--chart-1, var(--background-brand));
+  transition: height 0.5s ease;
 }
 
 .barValue {

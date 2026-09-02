@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { X } from "lucide-react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { Button } from "@/components/ui/button";
@@ -60,17 +60,22 @@ export interface EntryDialogProps {
 
 export function EntryDialog({ open, entry, onClose, onSubmit }: EntryDialogProps) {
   const editing = Boolean(entry);
-  const [form, setForm] = useState<FormShape>(EMPTY);
+
+  // Re-seed the form each time the dialog opens for a (possibly different)
+  // entry. Tracking the "session" (open + entry id) and adjusting state during
+  // render is React's sanctioned pattern for deriving state from props.
+  const sessionKey = open ? (entry?.entryId ?? "new") : "closed";
+  const [seededFor, setSeededFor] = useState(sessionKey);
+  const [form, setForm] = useState<FormShape>(() => (entry ? fromEntry(entry) : EMPTY));
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (open) {
-      setForm(entry ? fromEntry(entry) : EMPTY);
-      setError(null);
-      setSubmitting(false);
-    }
-  }, [open, entry]);
+  if (open && seededFor !== sessionKey) {
+    setSeededFor(sessionKey);
+    setForm(entry ? fromEntry(entry) : EMPTY);
+    setError(null);
+    setSubmitting(false);
+  }
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();

@@ -1,18 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { NotebookPen } from "lucide-react";
 import { DataState } from "@/components/DataState";
-import { MacroSummary } from "@/components/MacroSummary";
+import { TodayDashboard } from "@/components/TodayDashboard";
 import { HomeGuidance } from "@/components/HomeGuidance";
 import { ItemCard } from "@/components/ItemCard";
 import { Button } from "@/components/ui/button";
 import { useApiResource } from "@/lib/hooks";
-import { discoveryApi } from "@/lib/api";
+import { discoveryApi, trackingApi } from "@/lib/api";
 import { ROUTES } from "@/lib/constants";
 import styles from "./page.module.css";
 
 export default function DashboardPage() {
   const home = useApiResource(() => discoveryApi.getHome(), []);
+  const entries = useApiResource(() => trackingApi.listEntries({ limit: 50 }), []);
 
   return (
     <div>
@@ -40,15 +42,19 @@ export default function DashboardPage() {
               />
             ) : null}
 
-            <section className={styles.section}>
+            <section className={styles.progressCard}>
               <div className={styles.sectionHead}>
                 <h2 className={styles.sectionTitle}>Today&apos;s progress</h2>
                 <Link href={ROUTES.track} className={styles.sectionLink}>
+                  <NotebookPen className="size-3.5" />
                   Log a meal
                 </Link>
               </div>
               {feed.todayProgress ? (
-                <MacroSummary summary={feed.todayProgress} />
+                <TodayDashboard
+                  summary={feed.todayProgress}
+                  entries={entries.data?.items}
+                />
               ) : (
                 <p className={styles.muted}>No tracking data yet.</p>
               )}

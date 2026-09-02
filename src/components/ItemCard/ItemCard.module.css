@@ -72,10 +72,11 @@
 
 .tag {
   font-size: 0.6875rem;
-  padding: 0.125rem 0.5rem;
+  font-weight: 600;
+  padding: 0.1875rem 0.5rem;
   border-radius: 999px;
-  background: var(--background-subtle);
-  color: var(--text-secondary);
+  background: var(--background-accent);
+  color: var(--text-on-primary);
 }
 
 .action {

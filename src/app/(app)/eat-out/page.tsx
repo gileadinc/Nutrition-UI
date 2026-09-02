@@ -1,19 +1,19 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
+import { Search } from "lucide-react";
 import { DataState } from "@/components/DataState";
 import { ItemCard } from "@/components/ItemCard";
-import { TextField } from "@/components/TextField";
-import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useApiResource } from "@/lib/hooks";
+import { useApiResource, useDebouncedValue } from "@/lib/hooks";
 import { eatOutApi } from "@/lib/api";
 import { ROUTES } from "@/lib/constants";
 import listStyles from "../list.module.css";
 
 export default function EatOutPage() {
   const [search, setSearch] = useState("");
-  const [applied, setApplied] = useState("");
+  const applied = useDebouncedValue(search.trim(), 350);
 
   const restaurants = useApiResource(
     () => eatOutApi.listRestaurants({ search: applied || undefined, limit: 24 }),
@@ -24,10 +24,9 @@ export default function EatOutPage() {
     [applied],
   );
 
-  function handleSearch(event: FormEvent) {
-    event.preventDefault();
-    setApplied(search.trim());
-  }
+  const searching =
+    (restaurants.isLoading && restaurants.data !== null) ||
+    (fastHacks.isLoading && fastHacks.data !== null);
 
   return (
     <div>
@@ -38,18 +37,18 @@ export default function EatOutPage() {
         </p>
       </header>
 
-      <form className={listStyles.searchRow} onSubmit={handleSearch}>
-        <TextField
-          aria-label="Search eat-out options"
+      <div className={listStyles.searchField}>
+        <Search className={listStyles.searchIcon} aria-hidden="true" />
+        <input
+          className={listStyles.searchInput}
           type="search"
+          aria-label="Search eat-out options"
           placeholder="Search restaurants or hacks…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Button type="submit" variant="outline">
-          Search
-        </Button>
-      </form>
+        {searching ? <Spinner className={listStyles.searchSpinner} /> : null}
+      </div>
 
       <Tabs defaultValue="restaurants">
         <TabsList>

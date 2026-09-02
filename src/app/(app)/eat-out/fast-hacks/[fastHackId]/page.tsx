@@ -40,25 +40,23 @@ export default function FastHackDetailPage({
               </div>
               <SaveButton itemType="fast_hack" itemId={data.id} title={data.title} />
             </header>
-          </>
-        )}
-      </DataState>
 
-      <DataState resource={similar} isEmpty={(d) => d.length === 0} emptyTitle="">
-        {(items) => (
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Similar Fast Hacks</h2>
-            <div className={styles.grid}>
-              {items.map((item) => (
-                <ItemCard
-                  key={item.id}
-                  href={ROUTES.fastHack(item.id)}
-                  title={item.title}
-                  subtitle={item.summary ?? item.description}
-                />
-              ))}
-            </div>
-          </section>
+            {similar.data && similar.data.length > 0 ? (
+              <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Similar Fast Hacks</h2>
+                <div className={styles.grid}>
+                  {similar.data.map((item) => (
+                    <ItemCard
+                      key={item.id}
+                      href={ROUTES.fastHack(item.id)}
+                      title={item.title}
+                      subtitle={item.summary ?? item.description}
+                    />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+          </>
         )}
       </DataState>
     </div>

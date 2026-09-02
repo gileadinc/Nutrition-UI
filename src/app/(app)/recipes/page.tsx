@@ -1,28 +1,25 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
+import { Search } from "lucide-react";
 import { DataState } from "@/components/DataState";
 import { ItemCard } from "@/components/ItemCard";
-import { TextField } from "@/components/TextField";
-import { Button } from "@/components/ui/button";
-import { useApiResource } from "@/lib/hooks";
+import { Spinner } from "@/components/ui/spinner";
+import { useApiResource, useDebouncedValue } from "@/lib/hooks";
 import { recipesApi } from "@/lib/api";
 import { ROUTES } from "@/lib/constants";
 import listStyles from "../list.module.css";
 
 export default function RecipesPage() {
   const [search, setSearch] = useState("");
-  const [applied, setApplied] = useState("");
+  const debouncedSearch = useDebouncedValue(search.trim(), 350);
 
   const recipes = useApiResource(
-    () => recipesApi.listRecipes({ search: applied || undefined, limit: 24 }),
-    [applied],
+    () => recipesApi.listRecipes({ search: debouncedSearch || undefined, limit: 24 }),
+    [debouncedSearch],
   );
 
-  function handleSearch(event: FormEvent) {
-    event.preventDefault();
-    setApplied(search.trim());
-  }
+  const searching = recipes.isLoading && recipes.data !== null;
 
   return (
     <div>
@@ -31,24 +28,28 @@ export default function RecipesPage() {
         <p className={listStyles.subheading}>Cook-at-home meals matched to your goals.</p>
       </header>
 
-      <form className={listStyles.searchRow} onSubmit={handleSearch}>
-        <TextField
-          aria-label="Search recipes"
+      <div className={listStyles.searchField}>
+        <Search className={listStyles.searchIcon} aria-hidden="true" />
+        <input
+          className={listStyles.searchInput}
           type="search"
+          aria-label="Search recipes"
           placeholder="Search recipes…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Button type="submit" variant="outline">
-          Search
-        </Button>
-      </form>
+        {searching ? <Spinner className={listStyles.searchSpinner} /> : null}
+      </div>
 
       <DataState
         resource={recipes}
         isEmpty={(data) => data.items.length === 0}
         emptyTitle="No recipes found"
-        emptyDescription="Try a different search term."
+        emptyDescription={
+          debouncedSearch
+            ? `Nothing matches “${debouncedSearch}”.`
+            : "There are no recipes in the catalog yet."
+        }
       >
         {(data) => (
           <>

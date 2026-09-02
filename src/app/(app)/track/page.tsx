@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { useApiResource } from "@/lib/hooks";
 import { trackingApi, getErrorMessage, type NutritionEntry } from "@/lib/api";
 import type { EntryInput } from "@/lib/api/endpoints/tracking";
+import { TodayDashboard } from "@/components/TodayDashboard";
 import { EntryDialog } from "./EntryDialog";
-import { TodayDashboard } from "./TodayDashboard";
 import styles from "./page.module.css";
 
 export default function TrackPage() {
