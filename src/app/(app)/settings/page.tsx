@@ -122,7 +122,7 @@ function ProfileSection({ profile, onSaved }: { profile: Profile; onSaved: () =>
       <h2 className={styles.sectionTitle}>Profile</h2>
       <p className={styles.sectionEmail}>{profile.email}</p>
       <form onSubmit={handleSubmit} className={styles.form} noValidate>
-        <div className={styles.row}>
+        <div className={styles.grid}>
           <TextField
             label="First name"
             value={form.givenName ?? ""}
@@ -133,20 +133,18 @@ function ProfileSection({ profile, onSaved }: { profile: Profile; onSaved: () =>
             value={form.familyName ?? ""}
             onChange={(e) => setForm({ ...form, familyName: e.target.value })}
           />
-        </div>
-        <TextField
-          label="Display name"
-          value={form.displayName ?? ""}
-          onChange={(e) => setForm({ ...form, displayName: e.target.value })}
-        />
-        <div className={styles.row}>
+          <TextField
+            label="Display name"
+            value={form.displayName ?? ""}
+            onChange={(e) => setForm({ ...form, displayName: e.target.value })}
+          />
           <TextField
             label="Date of birth"
             type="date"
             value={form.dateOfBirth ?? ""}
             onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
           />
-          <div>
+          <div className={styles.field}>
             <label className={styles.label} htmlFor="sex">
               Sex
             </label>
@@ -161,8 +159,6 @@ function ProfileSection({ profile, onSaved }: { profile: Profile; onSaved: () =>
               <option value="male">Male</option>
             </select>
           </div>
-        </div>
-        <div className={styles.row}>
           <TextField
             label="Height (cm)"
             type="number"
@@ -175,9 +171,7 @@ function ProfileSection({ profile, onSaved }: { profile: Profile; onSaved: () =>
             value={form.weightKg?.toString() ?? ""}
             onChange={(e) => setForm({ ...form, weightKg: e.target.value as unknown as number })}
           />
-        </div>
-        <div className={styles.row}>
-          <div>
+          <div className={styles.field}>
             <label className={styles.label} htmlFor="goal">
               Goal
             </label>
@@ -195,7 +189,7 @@ function ProfileSection({ profile, onSaved }: { profile: Profile; onSaved: () =>
               ))}
             </select>
           </div>
-          <div>
+          <div className={styles.field}>
             <label className={styles.label} htmlFor="activity">
               Activity level
             </label>
@@ -213,12 +207,14 @@ function ProfileSection({ profile, onSaved }: { profile: Profile; onSaved: () =>
               ))}
             </select>
           </div>
+          <div className={styles.spanFull}>
+            <TextField
+              label="Surgical / medical context"
+              value={form.surgicalContext ?? ""}
+              onChange={(e) => setForm({ ...form, surgicalContext: e.target.value })}
+            />
+          </div>
         </div>
-        <TextField
-          label="Surgical / medical context"
-          value={form.surgicalContext ?? ""}
-          onChange={(e) => setForm({ ...form, surgicalContext: e.target.value })}
-        />
 
         {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
 
@@ -273,50 +269,52 @@ function PreferencesSection({
     <section className={styles.section}>
       <h2 className={styles.sectionTitle}>Preferences</h2>
       <form onSubmit={handleSubmit} className={styles.form} noValidate>
-        <fieldset className={styles.fieldset}>
-          <legend>Notifications</legend>
-          {(
-            [
-              ["enabled", "All notifications"],
-              ["mealReminders", "Meal reminders"],
-              ["goalUpdates", "Goal updates"],
-              ["productUpdates", "Product updates"],
-            ] as const
-          ).map(([key, label]) => (
-            <label key={key} className={styles.check}>
-              <Checkbox
-                checked={Boolean(notifications[key as keyof typeof notifications])}
-                onCheckedChange={(c) =>
-                  setNotifications({ ...notifications, [key]: Boolean(c) })
-                }
-              />
-              <span>{label}</span>
-            </label>
-          ))}
-        </fieldset>
+        <div className={styles.prefColumns}>
+          <fieldset className={styles.fieldset}>
+            <legend>Notifications</legend>
+            {(
+              [
+                ["enabled", "All notifications"],
+                ["mealReminders", "Meal reminders"],
+                ["goalUpdates", "Goal updates"],
+                ["productUpdates", "Product updates"],
+              ] as const
+            ).map(([key, label]) => (
+              <label key={key} className={styles.check}>
+                <Checkbox
+                  checked={Boolean(notifications[key as keyof typeof notifications])}
+                  onCheckedChange={(c) =>
+                    setNotifications({ ...notifications, [key]: Boolean(c) })
+                  }
+                />
+                <span>{label}</span>
+              </label>
+            ))}
+          </fieldset>
 
-        <fieldset className={styles.fieldset}>
-          <legend>Privacy</legend>
-          {(
-            [
-              ["analytics", "Usage analytics"],
-              ["personalizedRecommendations", "Personalized recommendations"],
-              ["locationServices", "Location services"],
-            ] as const
-          ).map(([key, label]) => (
-            <label key={key} className={styles.check}>
-              <Checkbox
-                checked={Boolean(privacy[key as keyof typeof privacy])}
-                onCheckedChange={(c) => setPrivacy({ ...privacy, [key]: Boolean(c) })}
-              />
-              <span>{label}</span>
-            </label>
-          ))}
-        </fieldset>
+          <fieldset className={styles.fieldset}>
+            <legend>Privacy</legend>
+            {(
+              [
+                ["analytics", "Usage analytics"],
+                ["personalizedRecommendations", "Personalized recommendations"],
+                ["locationServices", "Location services"],
+              ] as const
+            ).map(([key, label]) => (
+              <label key={key} className={styles.check}>
+                <Checkbox
+                  checked={Boolean(privacy[key as keyof typeof privacy])}
+                  onCheckedChange={(c) => setPrivacy({ ...privacy, [key]: Boolean(c) })}
+                />
+                <span>{label}</span>
+              </label>
+            ))}
+          </fieldset>
+        </div>
 
         <fieldset className={styles.fieldset}>
           <legend>Daily targets</legend>
-          <div className={styles.row}>
+          <div className={styles.targetsGrid}>
             <TextField
               label="Calories"
               type="number"
@@ -333,8 +331,6 @@ function PreferencesSection({
                 setTargets({ ...targets, protein: e.target.value as unknown as number })
               }
             />
-          </div>
-          <div className={styles.row}>
             <TextField
               label="Carbs (g)"
               type="number"

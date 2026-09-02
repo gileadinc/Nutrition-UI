@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { UserAvatar } from "@/components/UserAvatar";
 import { Menu, MenuTrigger, MenuContent, MenuItem, MenuSeparator, MenuLabel } from "@/components/ui/menu";
+import { NotificationBell } from "./NotificationBell";
 import { clearSession, clearGuestSessionId, useSession } from "@/lib/auth";
 import { authApi } from "@/lib/api";
 import { ROUTES } from "@/lib/constants";
@@ -76,10 +77,13 @@ export function AppNav() {
             ))}
           </nav>
 
-          <Menu>
-            <MenuTrigger className={styles.avatarButton} aria-label="Account menu">
-              <UserAvatar name={name} size="sm" />
-            </MenuTrigger>
+          <div className={styles.actions}>
+            <NotificationBell />
+
+            <Menu>
+              <MenuTrigger className={styles.avatarButton} aria-label="Account menu">
+                <UserAvatar name={name} size="sm" />
+              </MenuTrigger>
             <MenuContent>
               <MenuLabel>{session.email ?? "Signed in"}</MenuLabel>
               <MenuItem
@@ -95,8 +99,9 @@ export function AppNav() {
                 <LogOut />
                 Sign out
               </MenuItem>
-            </MenuContent>
-          </Menu>
+              </MenuContent>
+            </Menu>
+          </div>
         </div>
       </header>
 

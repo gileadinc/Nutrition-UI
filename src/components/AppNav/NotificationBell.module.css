@@ -1,0 +1,181 @@
+.trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.trigger:hover {
+  background: var(--background-subtle);
+  color: var(--text-primary);
+}
+
+.trigger[data-popup-open] {
+  background: var(--background-subtle);
+  color: var(--text-primary);
+}
+
+.badge {
+  position: absolute;
+  top: 0.125rem;
+  right: 0.0625rem;
+  min-width: 1rem;
+  height: 1rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background: var(--background-accent, #e8663a);
+  color: var(--text-on-primary, #fff);
+  font-size: 0.625rem;
+  font-weight: 800;
+  line-height: 1rem;
+  text-align: center;
+  border: 2px solid var(--background-base);
+}
+
+.positioner {
+  z-index: 50;
+}
+
+.popup {
+  width: 21rem;
+  max-width: calc(100vw - 1.5rem);
+  border-radius: 14px;
+  background: var(--background-elevated);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-default);
+  overflow: hidden;
+}
+
+.popup[data-open] {
+  animation: pop-in 0.12s ease;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--border-subtle, var(--border-default));
+}
+
+.title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.markAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: none;
+  background: none;
+  color: var(--text-link);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.markAll:hover {
+  text-decoration: underline;
+}
+
+.body {
+  max-height: 22rem;
+  overflow-y: auto;
+}
+
+.state {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.stateText {
+  padding: 2rem 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+}
+
+.list {
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle, var(--border-default));
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.item:hover {
+  background: var(--background-subtle);
+}
+
+.item[data-unread="true"] {
+  background: var(--background-highlight);
+}
+
+.dot {
+  margin-top: 0.375rem;
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--background-accent, #e8663a);
+}
+
+.item[data-unread="false"] .itemBody {
+  padding-left: calc(7px + 0.625rem);
+}
+
+.itemBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+  min-width: 0;
+}
+
+.itemTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.itemText {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.itemTime {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+}
