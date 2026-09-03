@@ -15,3 +15,5 @@ export {
   ensureGuestSession,
 } from "./guest";
 export { migrateGuestProgress } from "./migrate";
+export { getCognitoGroups, isAdmin } from "./claims";
+export { useIsAdmin } from "./useIsAdmin";

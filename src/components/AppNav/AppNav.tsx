@@ -10,11 +10,12 @@ import {
   Bookmark,
   Settings,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
 import { UserAvatar } from "@/components/UserAvatar";
 import { Menu, MenuTrigger, MenuContent, MenuItem, MenuSeparator, MenuLabel } from "@/components/ui/menu";
 import { NotificationBell } from "./NotificationBell";
-import { clearSession, clearGuestSessionId, useSession } from "@/lib/auth";
+import { clearSession, clearGuestSessionId, useSession, useIsAdmin } from "@/lib/auth";
 import { authApi } from "@/lib/api";
 import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -40,6 +41,7 @@ export function AppNav() {
   const router = useRouter();
   const session = useSession();
   const isActive = useIsActive();
+  const admin = useIsAdmin();
 
   const name = session.email?.split("@")[0] ?? "You";
 
@@ -75,6 +77,19 @@ export function AppNav() {
                 {label}
               </Link>
             ))}
+            {admin ? (
+              <Link
+                href={ROUTES.admin.home}
+                className={cn(
+                  styles.navLink,
+                  styles.navLinkAdmin,
+                  isActive(ROUTES.admin.home) && styles.navLinkActive,
+                )}
+              >
+                <ShieldCheck className={styles.navLinkIcon} />
+                Admin
+              </Link>
+            ) : null}
           </nav>
 
           <div className={styles.actions}>
@@ -84,21 +99,31 @@ export function AppNav() {
               <MenuTrigger className={styles.avatarButton} aria-label="Account menu">
                 <UserAvatar name={name} size="sm" />
               </MenuTrigger>
-            <MenuContent>
-              <MenuLabel>{session.email ?? "Signed in"}</MenuLabel>
-              <MenuItem
-                render={
-                  <Link href={ROUTES.settings}>
-                    <Settings />
-                    Settings
-                  </Link>
-                }
-              />
-              <MenuSeparator />
-              <MenuItem onClick={handleSignOut}>
-                <LogOut />
-                Sign out
-              </MenuItem>
+              <MenuContent>
+                <MenuLabel>{session.email ?? "Signed in"}</MenuLabel>
+                {admin ? (
+                  <MenuItem
+                    render={
+                      <Link href={ROUTES.admin.home}>
+                        <ShieldCheck />
+                        Admin console
+                      </Link>
+                    }
+                  />
+                ) : null}
+                <MenuItem
+                  render={
+                    <Link href={ROUTES.settings}>
+                      <Settings />
+                      Settings
+                    </Link>
+                  }
+                />
+                <MenuSeparator />
+                <MenuItem onClick={handleSignOut}>
+                  <LogOut />
+                  Sign out
+                </MenuItem>
               </MenuContent>
             </Menu>
           </div>

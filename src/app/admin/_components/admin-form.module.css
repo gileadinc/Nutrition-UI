@@ -1,0 +1,193 @@
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-link);
+  margin-bottom: 1.25rem;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+.editorHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+}
+
+.editorHeading {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+  max-width: 40rem;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.125rem;
+}
+
+@media (min-width: 560px) {
+  .grid2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.875rem 1rem;
+}
+
+@media (min-width: 560px) {
+  .grid4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  margin-bottom: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.req {
+  color: var(--status-error, #dc2626);
+}
+
+.hint {
+  margin-top: 0.3125rem;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.input,
+.select {
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  font-size: 0.9375rem;
+  width: 100%;
+}
+
+.textarea {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: vertical;
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.panel,
+.dangerPanel {
+  max-width: 40rem;
+  margin-top: 2rem;
+  padding: 1.25rem 1.375rem;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--background-elevated);
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.dangerPanel {
+  border-color: color-mix(in srgb, var(--status-error, #dc2626) 30%, var(--border-default));
+}
+
+.panel .actions,
+.dangerPanel button {
+  align-self: flex-start;
+}
+
+.panelTitle {
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.panelHint {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.panelHint code {
+  font-size: 0.75rem;
+  background: var(--background-subtle);
+  padding: 0.0625rem 0.25rem;
+  border-radius: 4px;
+}
+
+.publishRow {
+  max-width: 16rem;
+}
+
+/* ---- Status badge ---- */
+
+.badge {
+  display: inline-block;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  letter-spacing: 0.02em;
+}
+
+.badgeUnknown {
+  color: var(--text-tertiary);
+  font-size: 0.8125rem;
+}
+
+.badgePublished {
+  background: var(--status-success-subtle, #dcfce7);
+  color: var(--status-success, #16a34a);
+}
+
+.badgeReview {
+  background: var(--status-warning-subtle, #fef3c7);
+  color: var(--status-warning, #d97706);
+}
+
+.badgeDraft {
+  background: var(--background-subtle);
+  color: var(--text-secondary);
+}
+
+.badgeRejected {
+  background: var(--status-error-subtle, #fee2e2);
+  color: var(--status-error, #dc2626);
+}

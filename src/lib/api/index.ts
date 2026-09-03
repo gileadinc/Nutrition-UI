@@ -24,3 +24,19 @@ export * as savedItemsApi from "./endpoints/savedItems";
 export * as profileApi from "./endpoints/profile";
 export * as onboardingApi from "./endpoints/onboarding";
 export * as ageGateApi from "./endpoints/ageGate";
+export * as adminApi from "./endpoints/admin";
+export type {
+  AdminOverview,
+  AdminDashboard,
+  AdminRecipe,
+  AdminRestaurant,
+  AdminMenuItem,
+  AdminFastHack,
+  RecipeInput,
+  RestaurantInput,
+  MenuItemInput,
+  FastHackInput,
+  PublishInput,
+  PublishStatus,
+  AdminResourceKind,
+} from "./endpoints/admin";

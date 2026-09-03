@@ -64,6 +64,17 @@
   font-weight: 600;
 }
 
+.navLinkAdmin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.navLinkIcon {
+  width: 0.9375rem;
+  height: 0.9375rem;
+}
+
 .actions {
   margin-left: auto;
   display: flex;
