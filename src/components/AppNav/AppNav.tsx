@@ -77,19 +77,6 @@ export function AppNav() {
                 {label}
               </Link>
             ))}
-            {admin ? (
-              <Link
-                href={ROUTES.admin.home}
-                className={cn(
-                  styles.navLink,
-                  styles.navLinkAdmin,
-                  isActive(ROUTES.admin.home) && styles.navLinkActive,
-                )}
-              >
-                <ShieldCheck className={styles.navLinkIcon} />
-                Admin
-              </Link>
-            ) : null}
           </nav>
 
           <div className={styles.actions}>
