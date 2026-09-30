@@ -12,3 +12,12 @@ export {
   patchSavedItemsCache,
 } from "./useSavedItems";
 export type { UseSavedItems } from "./useSavedItems";
+export {
+  useIsDesktop,
+  useIsLg,
+  useReducedMotion,
+  useNow,
+  useCountUp,
+  useMountTransition,
+  useScrollToTopOnMount,
+} from "./useMedia";
