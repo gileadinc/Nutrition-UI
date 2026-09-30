@@ -21,3 +21,5 @@ export {
   useMountTransition,
   useScrollToTopOnMount,
 } from "./useMedia";
+export { useFilterParams } from "./useFilterParams";
+export type { FilterParams } from "./useFilterParams";
