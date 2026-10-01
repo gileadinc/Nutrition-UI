@@ -1,8 +1,7 @@
 "use client";
 
-import { ScreenTodo } from "@/components/ScreenTodo";
+import { LogWeightScreen } from "@/screens/track/WeightScreen";
 
-// OUT OF SCOPE: no backend endpoint (LogWeightScreen). Shows a "not available" panel.
 export default function Page() {
-  return <ScreenTodo route="/track/weight" outOfScope />;
+  return <LogWeightScreen />;
 }

@@ -6,6 +6,7 @@ import { MiniRing } from "@/components/Charts";
 import { AppImage } from "@/components/AppImage";
 import { AppTextField } from "@/components/TextField";
 import { PageContainer } from "@/components/Layout";
+import { Skeleton } from "@/components/Feedback";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
 import { SearchField } from "@/components/Shell/SearchField";
 import { RingsByDay } from "@/components/Track/MetricCharts";
@@ -240,7 +241,7 @@ export function LogMealPickerScreen() {
       <section className="mt-6" aria-label="From the catalogue">
         <LogSectionTitle>From the catalogue</LogSectionTitle>
         {loading && catalogue.length === 0 ? (
-          <p className="panel p-4 text-[13px] type-meta text-text-secondary">Loading…</p>
+          <CatalogueSkeleton />
         ) : catalogue.length === 0 ? (
           <p className="panel p-4 text-[13px] type-meta text-text-secondary">
             Nothing matches “{query.trim()}”.{" "}
@@ -292,6 +293,28 @@ export function LogMealPickerScreen() {
       </section>
       {portion.sheet}
     </TrackLogLayout>
+  );
+}
+
+/** Placeholder rows shaped like the catalogue cards while hacks and recipes load. */
+function CatalogueSkeleton() {
+  return (
+    <div role="status" aria-live="polite" aria-label="Loading catalogue">
+      <span className="sr-only">Loading catalogue…</span>
+      <ul aria-hidden="true" className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {Array.from({ length: 6 }, (_, i) => (
+          <li key={i} className="panel flex items-center gap-3 p-2.5">
+            <Skeleton className="size-16 shrink-0 rounded-xl" />
+            <span className="min-w-0 flex-1 space-y-2">
+              <Skeleton className="h-3.5 w-3/4" />
+              <Skeleton className="h-3 w-1/3" />
+              <Skeleton className="h-3 w-1/2" />
+            </span>
+            <Skeleton className="mr-1 size-8 shrink-0 rounded-full" />
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

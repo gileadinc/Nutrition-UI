@@ -54,8 +54,8 @@ export function FoodCard({
   layout = "rail",
 }: FoodCardProps) {
   const brand = brandName ?? (badge && hasBrandMark(badge) ? badge : undefined);
-  const brandKnown = brand && hasBrandMark(brand) ? brand : undefined;
-  const pill = brandKnown ? undefined : badge;
+  // A named restaurant always gets a mark (logo, or its initial); the text pill is for non-restaurant badges.
+  const pill = brand ? undefined : badge;
   return (
     <ProductCard
       className={cn(
@@ -97,9 +97,9 @@ export function FoodCard({
             </ProductCardSubtitle>
           )}
           <div className="mt-auto flex items-center pt-2">
-            {brandKnown && (
+            {brand && (
               <span className="mr-[7px]">
-                <BrandMark restaurant={brandKnown} />
+                <BrandMark restaurant={brand} initialFallback />
               </span>
             )}
             <ProductCardMetric className="flex-1 text-[11.5px] leading-[1.1] tracking-[-0.5175px]">

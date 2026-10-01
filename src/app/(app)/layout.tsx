@@ -11,7 +11,14 @@ import { ListPageSkeleton } from "@/components/Feedback";
  * session nor a guest session are sent to /welcome (`/guest` creates its own
  * guest session, so it is exempt).
  */
-export default function AppLayout({ children }: { children: ReactNode }) {
+export default function AppLayout({
+  children,
+  modal,
+}: {
+  children: ReactNode;
+  /** Parallel `@modal` slot: recipe / hack details opened over the current page. */
+  modal: ReactNode;
+}) {
   const session = useAppSession();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -23,5 +30,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   }, [blocked, navigate]);
 
   if (!session.ready || blocked) return <ListPageSkeleton />;
-  return <AppShell>{children}</AppShell>;
+  return (
+    <AppShell>
+      {children}
+      {modal}
+    </AppShell>
+  );
 }

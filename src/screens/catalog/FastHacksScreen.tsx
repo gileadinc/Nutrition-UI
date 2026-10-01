@@ -17,6 +17,7 @@ import {
   ListingToolbar,
   PageContainer,
   RangeSlider,
+  Rail,
   SectionTitle,
   StatePanel,
   matchesGroups,
@@ -36,8 +37,12 @@ const SORTS = [
 
 const GROUPS: Record<string, string[]> = {
   diet: [HACK_FILTER.lowCal, HACK_FILTER.vegan, HACK_FILTER.keto, HACK_FILTER.bowls],
+  availability: [HACK_FILTER.nearby, HACK_FILTER.openNow, HACK_FILTER.freeDelivery, HACK_FILTER.deals],
+  rating: [HACK_FILTER.topRated],
 };
-const DEF = { maxCalories: 800, minProtein: 0 };
+// The API has no rating, wait time, open-now, delivery or deals data, so those controls are shown but
+// can't narrow results (chips stay disabled at 0). Distance only filters hacks that report one.
+const DEF = { maxCalories: 800, minProtein: 0, maxDistance: 5, minRating: 0, maxEta: 45 };
 const FEATURED = 3;
 const SPARSE = 2;
 
@@ -48,11 +53,15 @@ interface F {
   restaurants: string[];
   maxCalories: number;
   minProtein: number;
+  maxDistance: number;
+  minRating: number;
+  maxEta: number;
 }
 
 const passes = (h: HackVM, f: F) =>
   !(
     (f.fitsToday && h.calories > f.remainingCalories) ||
+    (h.distanceMi != null && h.distanceMi > f.maxDistance) ||
     h.calories > f.maxCalories ||
     h.protein < f.minProtein ||
     !matchesGroups(GROUPS, f.tags, h.tags) ||
@@ -72,7 +81,7 @@ export function FastHacksScreen() {
 
   if (isLoading && !data)
     return (
-      <PageContainer className="max-w-7xl">
+      <PageContainer className="max-w-[1680px]">
         <ListPageSkeleton />
       </PageContainer>
     );
@@ -98,6 +107,9 @@ export function FastHacksScreen() {
     restaurants: f.getAll("at"),
     maxCalories: f.getNumber("kcal", DEF.maxCalories),
     minProtein: f.getNumber("protein", DEF.minProtein),
+    maxDistance: f.getNumber("mi", DEF.maxDistance),
+    minRating: f.getNumber("rating", DEF.minRating),
+    maxEta: f.getNumber("eta", DEF.maxEta),
   };
   const countWith = (o: Partial<F>) => all.filter((h) => passes(h, { ...cur, ...o })).length;
   const dietOptions = GROUPS.diet.map((v) => ({
@@ -105,7 +117,15 @@ export function FastHacksScreen() {
     label: v,
     count: countWith({ tags: replaceInGroup(GROUPS, cur.tags, v) }),
   }));
+  const optionsFor = (group: string) =>
+    GROUPS[group].map((v) => ({
+      value: v,
+      label: v,
+      count: countWith({ tags: replaceInGroup(GROUPS, cur.tags, v) }),
+    }));
   const dietSelected = cur.tags.filter((t) => GROUPS.diet.includes(t));
+  const availabilitySelected = cur.tags.filter((t) => GROUPS.availability.includes(t));
+  const ratingSelected = cur.tags.filter((t) => GROUPS.rating.includes(t));
   const restaurantOptions = [...new Set(all.map((h) => h.restaurant).filter(Boolean))]
     .sort()
     .map((r) => ({ value: r, label: r, count: countWith({ restaurants: [r] }) }));
@@ -130,9 +150,19 @@ export function FastHacksScreen() {
     ...(cur.minProtein > 0
       ? [{ label: `${cur.minProtein}g+ protein`, remove: () => f.set("protein", null) }]
       : []),
+    ...(cur.maxDistance < DEF.maxDistance
+      ? [{ label: `Within ${cur.maxDistance} mi`, remove: () => f.set("mi", null) }]
+      : []),
+    ...(cur.minRating > 0
+      ? [{ label: `${cur.minRating.toFixed(1)}★+`, remove: () => f.set("rating", null) }]
+      : []),
+    ...(cur.maxEta < DEF.maxEta
+      ? [{ label: `Ready in ${cur.maxEta} min`, remove: () => f.set("eta", null) }]
+      : []),
     ...cur.restaurants.map((r) => ({ label: r, remove: () => f.toggle("at", r) })),
   ];
-  const resetFilters = () => f.clear(["fits", "tag", "kcal", "protein", "at", "adv"]);
+  const resetFilters = () =>
+    f.clear(["fits", "tag", "kcal", "protein", "mi", "rating", "eta", "at", "adv"]);
   const clearAll = () => f.clear();
   const pristine = applied.length === 0 && sort === "recommended";
   const featured = pristine ? results.slice(0, FEATURED) : [];
@@ -166,6 +196,33 @@ export function FastHacksScreen() {
         />
       </FilterSection>
       <FilterSection
+        title="Distance & availability"
+        summary={summary([
+          cur.maxDistance < DEF.maxDistance && `Up to ${cur.maxDistance} mi`,
+          availabilitySelected.join(", "),
+        ])}
+        active={cur.maxDistance < DEF.maxDistance || availabilitySelected.length > 0}
+        defaultOpen
+      >
+        <RangeSlider
+          id={`${p}distance`}
+          label="Distance"
+          min={0.5}
+          max={DEF.maxDistance}
+          step={0.5}
+          value={cur.maxDistance}
+          format={(v) => (v >= DEF.maxDistance ? "Up to 5+ mi" : `Up to ${v} mi`)}
+          onChange={(v) => f.setNumber("mi", v, DEF.maxDistance)}
+        />
+        <ChipGroup
+          legend="Availability"
+          showLegend
+          options={optionsFor("availability")}
+          selected={cur.tags}
+          onToggle={(v) => f.toggle("tag", v)}
+        />
+      </FilterSection>
+      <FilterSection
         title="Nutrition"
         summary={summary([
           cur.minProtein > 0 && `${cur.minProtein}g+ protein`,
@@ -192,6 +249,42 @@ export function FastHacksScreen() {
           value={cur.maxCalories}
           format={(v) => (v >= DEF.maxCalories ? "Any" : `Under ${v} kcal`)}
           onChange={(v) => f.setNumber("kcal", v, DEF.maxCalories)}
+        />
+      </FilterSection>
+      <FilterSection
+        title="Rating & wait"
+        summary={summary([
+          cur.minRating > 0 && `${cur.minRating.toFixed(1)}★ and up`,
+          ratingSelected.join(", "),
+          cur.maxEta < DEF.maxEta && `Ready in ${cur.maxEta} min`,
+        ])}
+        active={cur.minRating > 0 || ratingSelected.length > 0 || cur.maxEta < DEF.maxEta}
+      >
+        <RangeSlider
+          id={`${p}min-rating`}
+          label="Rating"
+          min={0}
+          max={4.8}
+          step={0.2}
+          value={cur.minRating}
+          format={(v) => (v === 0 ? "Any" : `${v.toFixed(1)}★ and up`)}
+          onChange={(v) => f.setNumber("rating", v, DEF.minRating)}
+        />
+        <ChipGroup
+          legend="Top rated"
+          options={optionsFor("rating")}
+          selected={cur.tags}
+          onToggle={(v) => f.toggle("tag", v)}
+        />
+        <RangeSlider
+          id={`${p}max-eta`}
+          label="Ready within"
+          min={5}
+          max={DEF.maxEta}
+          step={5}
+          value={cur.maxEta}
+          format={(v) => (v >= DEF.maxEta ? "Any wait" : `${v} min`)}
+          onChange={(v) => f.setNumber("eta", v, DEF.maxEta)}
         />
       </FilterSection>
       <FilterSection
@@ -242,7 +335,7 @@ export function FastHacksScreen() {
     : "Remove a filter or pick another meal to see more options.";
 
   return (
-    <PageContainer className="max-w-7xl">
+    <PageContainer className="max-w-[1680px]">
       <ListingToolbar
         title="Fast Hacks"
         subtitle="Real restaurant orders adjusted for your goal."
@@ -322,14 +415,16 @@ export function FastHacksScreen() {
               className="mt-10 border-t border-border-divider pt-6"
             >
               <SectionTitle>Restaurants near you</SectionTitle>
-              <div className="rail-scroll -mx-5 mt-3 flex gap-3 overflow-x-auto px-5 pb-1 md:mx-0 md:px-0">
-                {restaurants.map((h) => (
-                  <RestaurantCard
-                    key={h.restaurant}
-                    hack={h}
-                    count={results.filter((x) => x.restaurant === h.restaurant).length}
-                  />
-                ))}
+              <div className="mt-3">
+                <Rail>
+                  {restaurants.map((h) => (
+                    <RestaurantCard
+                      key={h.restaurant}
+                      hack={h}
+                      count={results.filter((x) => x.restaurant === h.restaurant).length}
+                    />
+                  ))}
+                </Rail>
               </div>
             </section>
           )}

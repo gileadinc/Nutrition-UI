@@ -33,7 +33,7 @@ export function DetailDrawer({
     };
   }, [close]);
   return (
-    <div className="fixed inset-0 z-40 flex items-end justify-center md:items-center md:p-8">
+    <div className="fixed inset-0 z-[55] flex items-end justify-center md:items-center md:p-8">
       <button
         type="button"
         aria-hidden

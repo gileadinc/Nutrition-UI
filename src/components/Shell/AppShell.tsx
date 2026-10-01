@@ -5,10 +5,12 @@ import { cn } from "@/lib/utils";
 import { Icon, type IconName } from "@/components/Icon";
 import { Link, NavLink, useLocation, useNavigate } from "@/lib/nav";
 import { useIsDesktop } from "@/lib/hooks";
-import { firstNameOf, useAppSession, useNotifications, useProfile } from "@/lib/store";
+import { firstNameOf, useAppSession, useProfile } from "@/lib/store";
 import { Logo } from "./Logo";
 import { GuestGateProvider } from "./GuestGate";
+import { NotificationBell } from "@/components/Notifications";
 import { PILL } from "@/components/styles";
+import { MeloLayer } from "@/components/Melo";
 
 export const MAIN_TABS: { label: string; icon: IconName; path: string }[] = [
   { label: "Home", icon: "tabHome", path: "/home" },
@@ -19,9 +21,10 @@ export const MAIN_TABS: { label: string; icon: IconName; path: string }[] = [
 ];
 
 const QUICK_LOG: { label: string; icon: IconName; to: string }[] = [
+  { label: "Medication", icon: "medication", to: "/track/medication" },
+  { label: "Activity", icon: "activity", to: "/track/activity" },
   { label: "Meal", icon: "forkSpoon", to: "/track/log-meal" },
   { label: "Water", icon: "droplet", to: "/track/water" },
-  { label: "Activity", icon: "activity", to: "/track/activity" },
   { label: "Weight", icon: "weightScale", to: "/track/weight" },
 ];
 
@@ -48,7 +51,6 @@ function TopBar() {
   const desktop = useIsDesktop();
   const session = useAppSession();
   const { profile } = useProfile();
-  const { unreadCount } = useNotifications();
   const name = firstNameOf(profile);
   return (
     <header className="sticky top-0 z-30 border-b border-border-divider bg-brand-cream/95 backdrop-blur">
@@ -69,24 +71,7 @@ function TopBar() {
           </span>
         </button>
         <div className="ml-auto flex shrink-0 items-center gap-2">
-          {session.isSignedIn && (
-            <Link
-              to="/you/notifications"
-              aria-label={unreadCount ? `Notifications, ${unreadCount} unread` : "Notifications"}
-              title="Notifications"
-              className="tap-44 relative flex size-10 items-center justify-center rounded-full border border-border-default bg-white"
-            >
-              <Icon name="bell" size={18} color="var(--color-brand-navy)" />
-              {unreadCount > 0 && (
-                <span
-                  aria-hidden="true"
-                  className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full border-2 border-white bg-primary text-[9px] type-meta text-white"
-                >
-                  {unreadCount}
-                </span>
-              )}
-            </Link>
-          )}
+          <NotificationBell />
           <Link
             to="/you"
             className="tap-44 relative flex items-center gap-2 rounded-full border border-border-default bg-white py-1.5 pl-1.5 pr-3"
@@ -148,11 +133,14 @@ function SideRail({ pathname }: { pathname: string }) {
       <div className={inTrack ? "hidden" : "mt-auto hidden lg:block"}>
         <p className="eyebrow px-3 pb-2">Quick log</p>
         <div className="grid grid-cols-2 gap-2">
-          {QUICK_LOG.map((q) => (
+          {QUICK_LOG.map((q, i) => (
             <Link
               key={q.label}
               to={q.to}
-              className="flex min-h-20 flex-col justify-between rounded-xl bg-brand-warm-gray p-3 text-xs type-button-secondary text-text-primary transition-colors hover:bg-primary-soft"
+              className={cn(
+                "flex min-h-20 flex-col justify-between rounded-xl bg-brand-warm-gray p-3 text-xs type-button-secondary text-text-primary transition-colors hover:bg-primary-soft",
+                i === QUICK_LOG.length - 1 && QUICK_LOG.length % 2 === 1 && "col-span-2",
+              )}
             >
               <Icon name={q.icon} size={18} color="var(--color-primary)" />
               {q.label}
@@ -247,6 +235,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
         {!desktop && <TabBar />}
+        <MeloLayer />
       </div>
     </GuestGateProvider>
   );

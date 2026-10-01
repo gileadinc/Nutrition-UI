@@ -225,3 +225,113 @@ export interface HomeFeed {
   guidance?: HomeGuidance;
   [key: string]: unknown;
 }
+
+/* ------------------------------------------------------------------ Shopping lists */
+
+export interface ShoppingListItem {
+  itemId: string;
+  name: string;
+  quantity: number | null;
+  unit: string | null;
+  category: string | null;
+  recipeId: string | null;
+  notes: string | null;
+  checked: boolean;
+  position: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ShoppingList {
+  listId: string;
+  name: string;
+  items: ShoppingListItem[];
+  itemCount: number;
+  checkedCount: number;
+  /** Increments on every change. */
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ShoppingListItemInput {
+  itemId?: string;
+  name: string;
+  quantity?: number | null;
+  unit?: string | null;
+  category?: string | null;
+  recipeId?: string | null;
+  notes?: string | null;
+  checked?: boolean;
+}
+
+export type ShoppingListItemPatch = Partial<Omit<ShoppingListItemInput, "itemId">> & {
+  position?: number;
+};
+
+/* ------------------------------------------------------------------ Medication */
+
+export type MedicationFrequency = "daily" | "weekly" | "as_needed";
+
+export interface MedicationSchedule {
+  scheduleId: string;
+  name: string;
+  dosage: string | null;
+  form: string | null;
+  instructions: string | null;
+  frequency: MedicationFrequency;
+  /** Local 24h "HH:mm" in `timezone`. */
+  timesOfDay: string[];
+  /** 0 = Sunday ... 6 = Saturday. */
+  daysOfWeek: number[];
+  startDate: string;
+  endDate: string | null;
+  timezone: string;
+  remindersEnabled: boolean;
+  reminderLeadMinutes: number;
+  isActive: boolean;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MedicationScheduleInput {
+  name: string;
+  dosage?: string | null;
+  form?: string | null;
+  instructions?: string | null;
+  frequency: MedicationFrequency;
+  timesOfDay?: string[];
+  daysOfWeek?: number[];
+  startDate?: string;
+  endDate?: string | null;
+  timezone?: string;
+  remindersEnabled?: boolean;
+  reminderLeadMinutes?: number;
+  isActive?: boolean;
+  notes?: string | null;
+}
+
+export type MedicationDoseStatus = "taken" | "pending" | "missed";
+
+export interface MedicationDose {
+  scheduleId: string;
+  name: string;
+  dosage: string | null;
+  instructions: string | null;
+  /** YYYY-MM-DD */
+  date: string;
+  /** "HH:mm" */
+  time: string;
+  remindAt: string;
+  timezone: string;
+  status: MedicationDoseStatus;
+  /** Tracking entry created when the dose was logged (delete it to undo). */
+  takenEntryId: string | null;
+  takenAt: string | null;
+}
+
+export interface MedicationReminders {
+  doses: MedicationDose[];
+  asNeeded: unknown[];
+}

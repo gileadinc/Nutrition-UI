@@ -21,6 +21,8 @@ export * as eatOutApi from "./endpoints/eatOut";
 export * as discoveryApi from "./endpoints/discovery";
 export * as trackingApi from "./endpoints/tracking";
 export * as savedItemsApi from "./endpoints/savedItems";
+export * as shoppingListsApi from "./endpoints/shoppingLists";
+export * as medicationApi from "./endpoints/medication";
 export * as profileApi from "./endpoints/profile";
 export * as onboardingApi from "./endpoints/onboarding";
 export * as ageGateApi from "./endpoints/ageGate";

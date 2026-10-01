@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { NotificationList, toNotificationVM } from "@/components/Notifications";
 import { cn } from "@/lib/utils";
-import { Icon } from "@/components/Icon";
 import { ProfileLayout } from "@/components/Track/ProfileParts";
 import { getErrorMessage, profileApi, type NotificationPrefs } from "@/lib/api";
 import { invalidate, toast, useAppSession, useNotifications, useProfile } from "@/lib/store";
@@ -13,15 +13,6 @@ const PREFS: { key: keyof NotificationPrefs; label: string }[] = [
   { key: "goalUpdates", label: "Goal updates" },
   { key: "productUpdates", label: "Product updates" },
 ];
-
-const ago = (iso: string) => {
-  const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
-  if (!Number.isFinite(m)) return "";
-  if (m < 1) return "Just now";
-  if (m < 60) return `${m} min ago`;
-  if (m < 1440) return `${Math.floor(m / 60)} h ago`;
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-};
 
 function Switch({ on, label, onToggle, disabled }: { on: boolean; label: string; onToggle: () => void; disabled?: boolean }) {
   return (
@@ -85,6 +76,7 @@ export function NotificationsScreen() {
   const session = useAppSession();
   const n = useNotifications();
   void invalidate;
+  const items = useMemo(() => n.items.map(toNotificationVM), [n.items]);
   return (
     <ProfileLayout
       title="Notifications"
@@ -114,36 +106,13 @@ export function NotificationsScreen() {
           <p className="px-5 py-8 text-center text-[13px] type-meta text-text-secondary">Loading…</p>
         ) : n.error ? (
           <p className="px-5 py-8 text-center text-[13px] type-meta text-text-secondary">{n.error}</p>
-        ) : n.items.length === 0 ? (
-          <p className="px-5 py-8 text-center text-[13px] type-meta text-text-secondary">Nothing new right now.</p>
         ) : (
-          <ul className="divide-y divide-border-divider">
-            {n.items.map((i) => (
-              <li key={i.id} className="flex items-start gap-3 px-5 py-3.5">
-                <span
-                  aria-hidden="true"
-                  className={cn("mt-2 size-2 shrink-0 rounded-full", i.read ? "bg-border-default" : "bg-primary")}
-                />
-                <button
-                  type="button"
-                  onClick={() => !i.read && void n.markRead(i.id)}
-                  className="min-w-0 flex-1 text-left"
-                >
-                  <span className="block text-sm type-item-title text-text-primary">{i.title}</span>
-                  {i.body && <span className="mt-0.5 block text-[13px] type-meta leading-5 text-text-secondary">{i.body}</span>}
-                  <span className="mt-0.5 block text-xs type-meta text-text-neutral-500">{ago(i.createdAt)}</span>
-                </button>
-                <button
-                  type="button"
-                  aria-label={`Dismiss ${i.title}`}
-                  onClick={() => void n.dismiss(i.id)}
-                  className="flex size-9 shrink-0 items-center justify-center rounded-full text-text-secondary hover:bg-brand-warm-gray"
-                >
-                  <Icon name="close" size={14} color="currentColor" />
-                </button>
-              </li>
-            ))}
-          </ul>
+          <NotificationList
+            items={items}
+            onOpen={(id) => void n.markRead(id)}
+            onMarkRead={(id) => void n.markRead(id)}
+            onDismiss={(id) => void n.dismiss(id)}
+          />
         )}
       </section>
     </ProfileLayout>

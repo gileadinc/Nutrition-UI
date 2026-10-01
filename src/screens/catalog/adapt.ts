@@ -24,7 +24,7 @@ export interface RecipeVM {
   minutes: number;
   time: string;
   category: string;
-  /** Capitalised category, shown as the card pill. */
+  /** "Easy" or "Medium", derived from prep time, ingredient count and steps (the API has no difficulty). */
   badge: string;
   description: string;
   calories: number;
@@ -61,7 +61,8 @@ export function toRecipeVM(r: Recipe): RecipeVM {
     minutes,
     time: minutes > 0 ? `${minutes} min` : "",
     category,
-    badge: humanize(category),
+    badge:
+      minutes <= 20 && ingredients.length <= 8 && (r.steps ?? []).length <= 5 ? "Easy" : "Medium",
     description: str(r.description),
     calories,
     protein,
@@ -106,9 +107,11 @@ function hackTags(h: {
   calories: number;
   carbs: number;
   goalTags: string[];
+  distanceMi?: number | null;
 }) {
   const text = `${h.title} ${h.description}`.toLowerCase();
   const tags: string[] = [];
+  if (h.distanceMi != null && h.distanceMi <= 2) tags.push(HACK_FILTER.nearby);
   if (h.calories > 0 && h.calories <= 500) tags.push(HACK_FILTER.lowCal);
   if (h.goalTags.some((t) => /vegan|plant/i.test(t)) || /\bvegan\b/.test(text)) tags.push(HACK_FILTER.vegan);
   if (h.goalTags.some((t) => /keto|low.?carb/i.test(t)) || (h.carbs > 0 && h.carbs <= 20))
@@ -139,7 +142,14 @@ export function toHackVM(h: FastHack, menu?: MenuItem | null): HackVM {
     goalTags,
     badge: goalTags[0] ? humanize(goalTags[0]) : "",
     distanceMi: typeof h.distanceMiles === "number" ? h.distanceMiles : null,
-    tags: hackTags({ title, description, calories, carbs, goalTags }),
+    tags: hackTags({
+      title,
+      description,
+      calories,
+      carbs,
+      goalTags,
+      distanceMi: typeof h.distanceMiles === "number" ? h.distanceMiles : null,
+    }),
     orderScript: menu?.whatToOrder ?? [],
     swaps: menu?.swaps ?? [],
     why: str(menu?.whyThisWorks),

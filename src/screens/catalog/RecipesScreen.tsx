@@ -40,6 +40,8 @@ const GROUPS: Record<string, string[]> = {
   diet: [RECIPE_FILTER.highProtein, RECIPE_FILTER.underCalories, RECIPE_FILTER.veggie],
   effort: [RECIPE_FILTER.quickEasy, RECIPE_FILTER.mealPrep],
 };
+// Derived in `toRecipeVM` (the API has no difficulty field).
+const DIFFICULTIES = ["Easy", "Medium"];
 const DEF = { maxMinutes: 60, maxCalories: 800, minProtein: 0, maxIngredients: 12 };
 const FEATURED = 3;
 const SPARSE = 2;
@@ -49,6 +51,7 @@ interface F {
   remainingCalories: number;
   category: string | null;
   tags: string[];
+  difficulties: string[];
   maxMinutes: number;
   maxCalories: number;
   minProtein: number;
@@ -59,6 +62,7 @@ const passes = (r: RecipeVM, f: F) =>
   !(
     (f.fitsToday && r.calories > f.remainingCalories) ||
     (f.category !== null && r.category !== f.category) ||
+    (f.difficulties.length > 0 && !f.difficulties.includes(r.badge)) ||
     (r.minutes > 0 && r.minutes > f.maxMinutes) ||
     r.calories > f.maxCalories ||
     r.protein < f.minProtein ||
@@ -83,7 +87,7 @@ export function RecipesScreen() {
 
   if (isLoading && !data)
     return (
-      <PageContainer className="max-w-7xl">
+      <PageContainer className="max-w-[1680px]">
         <ListPageSkeleton />
       </PageContainer>
     );
@@ -107,6 +111,7 @@ export function RecipesScreen() {
     remainingCalories: budget.calories.remaining,
     category: f.get("meal"),
     tags: f.getAll("tag"),
+    difficulties: f.getAll("level"),
     maxMinutes: f.getNumber("mins", DEF.maxMinutes),
     maxCalories: f.getNumber("kcal", DEF.maxCalories),
     minProtein: f.getNumber("protein", DEF.minProtein),
@@ -139,6 +144,7 @@ export function RecipesScreen() {
   const applied = [
     ...(cur.fitsToday ? [{ label: "Fits what's left", remove: () => f.set("fits", null) }] : []),
     ...cur.tags.map((t) => ({ label: t, remove: () => f.toggle("tag", t) })),
+    ...cur.difficulties.map((d) => ({ label: d, remove: () => f.toggle("level", d) })),
     ...(cur.maxMinutes < DEF.maxMinutes
       ? [{ label: `Under ${cur.maxMinutes} min`, remove: () => f.set("mins", null) }]
       : []),
@@ -157,7 +163,7 @@ export function RecipesScreen() {
         ]
       : []),
   ];
-  const filterKeys = ["fits", "tag", "mins", "kcal", "protein", "items", "adv"];
+  const filterKeys = ["fits", "tag", "level", "mins", "kcal", "protein", "items", "adv"];
   const resetFilters = () => f.clear(filterKeys);
   const clearAll = () => f.clear();
   const pristine = applied.length === 0 && cur.category === null && sort === "recommended";
@@ -192,9 +198,12 @@ export function RecipesScreen() {
         title="Time & effort"
         summary={summary([
           cur.maxMinutes < DEF.maxMinutes && `Under ${cur.maxMinutes} min`,
+          cur.difficulties.join(", "),
           inGroup("effort").join(", "),
         ])}
-        active={cur.maxMinutes < DEF.maxMinutes || inGroup("effort").length > 0}
+        active={
+          cur.maxMinutes < DEF.maxMinutes || cur.difficulties.length > 0 || inGroup("effort").length > 0
+        }
         defaultOpen
       >
         <RangeSlider
@@ -206,6 +215,17 @@ export function RecipesScreen() {
           value={cur.maxMinutes}
           format={(v) => (v >= DEF.maxMinutes ? "Any" : `Under ${v} min`)}
           onChange={(v) => f.setNumber("mins", v, DEF.maxMinutes)}
+        />
+        <ChipGroup
+          legend="Difficulty"
+          showLegend
+          options={DIFFICULTIES.map((d) => ({
+            value: d,
+            label: d,
+            count: countWith({ difficulties: [d] }),
+          }))}
+          selected={cur.difficulties}
+          onToggle={(v) => f.toggle("level", v)}
         />
         <ChipGroup
           legend="Style"
@@ -297,7 +317,7 @@ export function RecipesScreen() {
     : "Remove a filter or pick another meal to see the full catalogue.";
 
   return (
-    <PageContainer className="max-w-7xl">
+    <PageContainer className="max-w-[1680px]">
       <ListingToolbar
         title="Recipes"
         subtitle="Delicious, healthy meals to hit your goals."

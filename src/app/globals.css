@@ -397,3 +397,52 @@
   background-color: var(--color-surface-card);
   border-radius: 1rem;
 }
+
+@utility photo-fade-wash {
+  background-image: linear-gradient(
+    to top,
+    var(--color-surface-white) 0%,
+    color-mix(in srgb, var(--color-surface-white) 90%, transparent) var(--photo-fade-solid, 50%),
+    color-mix(in srgb, var(--color-surface-white) 55%, transparent)
+      calc(var(--photo-fade-solid, 50%) + (100% - var(--photo-fade-solid, 50%)) * 0.35),
+    color-mix(in srgb, var(--color-surface-white) 18%, transparent)
+      calc(var(--photo-fade-solid, 50%) + (100% - var(--photo-fade-solid, 50%)) * 0.7),
+    transparent 100%
+  );
+}
+
+@utility photo-fade-blur {
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  -webkit-mask-image: linear-gradient(to top, black calc(var(--photo-fade-solid, 50%) * 0.6), transparent 100%);
+  mask-image: linear-gradient(to top, black calc(var(--photo-fade-solid, 50%) * 0.6), transparent 100%);
+}
+
+@utility photo-fade-copy {
+  --photo-fade-solid: calc(100% - 8rem);
+}
+
+@utility on-photo {
+  text-shadow:
+    0 0 1px #141b34bf,
+    0 1px 3px #141b34b3,
+    0 3px 14px #141b3499,
+    0 10px 34px #141b3473;
+}
+
+@utility on-photo-ink {
+  text-shadow:
+    0 0 1px #ffffffe6,
+    0 1px 3px #ffffffd9,
+    0 3px 14px #ffffffcc,
+    0 10px 34px #ffffffa6;
+}
+
+@utility onb-eyebrow {
+  color: var(--color-eyebrow);
+  font-size: var(--text-onb-meta);
+  line-height: var(--text-onb-meta--line-height);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}

@@ -20,7 +20,7 @@ import { OnboardingSplit, QuizStepLayout, StatTile } from "@/components/Onboardi
 import { Logo } from "@/components/Shell/Logo";
 import { SocialButton } from "@/components/Button";
 import { AppleLogo, GoogleLogo } from "@/components/TextField";
-import { ONB_SPACING, ONB_TYPE, SELECTED_CHIP } from "@/components/styles";
+import { ICON_WELL, ONB_SPACING, ONB_TYPE, SELECTED_CHIP } from "@/components/styles";
 import { useReducedMotion } from "@/lib/hooks";
 import { GOAL_CALORIE_DELTA, MACRO_SPLIT, type GoalKey } from "@/lib/nutrition";
 import { cn } from "@/lib/utils";
@@ -441,7 +441,7 @@ export function OptionList<T extends string>({
                   "flex size-12 shrink-0 items-center justify-center rounded-xl",
                   selected
                     ? "bg-surface-card text-icon-well-ink"
-                    : "bg-navy-soft text-brand-navy",
+                    : ICON_WELL,
                 )}
               >
                 <Icon name={o.icon} size={24} color="currentColor" />
@@ -680,7 +680,7 @@ export function GoalPicker({
                   <li key={l.key} data-line={l.key} className="flex items-start gap-3">
                     <span
                       aria-hidden
-                      className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-navy-soft text-brand-navy"
+                      className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-icon-well text-icon-well-ink"
                     >
                       <Icon name={l.icon} size={16} color="currentColor" />
                     </span>

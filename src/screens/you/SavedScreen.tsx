@@ -17,7 +17,7 @@ const TABS = [
 ] as const;
 type Tab = (typeof TABS)[number]["value"];
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
-const LINK = "type-button text-primary underline-offset-2 hover:underline";
+const LINK = "type-button text-primary underline underline-offset-2";
 
 export function SavedScreen() {
   const session = useAppSession();
@@ -113,16 +113,9 @@ export function SavedScreen() {
 
   return (
     <ProfileLayout title="Saved" subtitle={subtitle}>
-      {!session.isSignedIn ? (
-        <EmptyState
-          icon="bookmark"
-          title="Saving needs an account"
-          body="Create an account to keep hacks and recipes for your next order or shop."
-          action={{ label: "Create an account", to: "/signup" }}
-        />
-      ) : saved.isLoading && empty ? (
+      {session.isSignedIn && saved.isLoading && empty ? (
         <p className="panel p-4 text-[13px] type-meta text-text-secondary">Loading…</p>
-      ) : empty ? (
+      ) : empty || !session.isSignedIn ? (
         <>
           <EmptyState
             icon="bookmark"

@@ -10,7 +10,7 @@ import { CheckMark } from "@/components/Layout";
 import { SELECTED_CHIP } from "@/components/styles";
 import { getErrorMessage } from "@/lib/api";
 import { useIsDesktop, useReducedMotion } from "@/lib/hooks";
-import { useNavigate } from "@/lib/nav";
+import { Link, useNavigate } from "@/lib/nav";
 import {
   MEAL_TYPES,
   budgetFromSummary,
@@ -596,8 +596,8 @@ function SuccessBody({
       <Rise reduce={reduce} delay={0.4} className="mt-6 flex w-full flex-col gap-3">
         <PrimaryButton label="Done" onPress={onClose} />
         {onViewTrack && (
-          <a
-            href="/track"
+          <Link
+            to="/track"
             onClick={(e) => {
               if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
               e.preventDefault();
@@ -606,7 +606,7 @@ function SuccessBody({
             className="panel flex h-14 w-full items-center justify-center text-sm type-button-secondary tracking-[-0.63px] text-primary"
           >
             View in Track
-          </a>
+          </Link>
         )}
         {outcome.undo && (
           <p className="text-[13px] type-meta text-text-secondary">

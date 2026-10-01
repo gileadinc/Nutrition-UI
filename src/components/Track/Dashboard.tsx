@@ -2,7 +2,7 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Icon } from "@/components/Icon";
+import { Icon, type IconName } from "@/components/Icon";
 import { CheckMark } from "@/components/Layout";
 import { Link, useSearchParams } from "@/lib/nav";
 import { useNow } from "@/lib/hooks";
@@ -544,7 +544,7 @@ export function WeekChart({
 export interface SecondaryMetric {
   key: string;
   label: string;
-  icon: "droplet";
+  icon: IconName;
   value: string;
   unit: string;
   goal: string;
@@ -553,6 +553,7 @@ export interface SecondaryMetric {
   progress: { value: number; goal: number };
   onQuick?: () => void;
   quickLabel?: string;
+  quickText?: string;
 }
 
 export function AlsoToday({ metrics }: { metrics: SecondaryMetric[] }) {
@@ -616,7 +617,7 @@ export function AlsoToday({ metrics }: { metrics: SecondaryMetric[] }) {
                   onClick={m.onQuick}
                   className="tap-44 relative inline-flex h-8 items-center justify-center whitespace-nowrap rounded-full bg-brand-teal-soft px-3 text-[13px] type-button text-brand-navy transition-colors hover:bg-teal-100"
                 >
-                  +8 oz
+                  {m.quickText ?? "+8 oz"}
                 </button>
               </span>
             )}

@@ -1,8 +1,7 @@
 "use client";
 
-import { ScreenTodo } from "@/components/ScreenTodo";
+import { MedicationScreen } from "@/screens/track/MedicationScreens";
 
-// OUT OF SCOPE: no backend endpoint (MedicationScreen). Shows a "not available" panel.
 export default function Page() {
-  return <ScreenTodo route="/track/medication" outOfScope />;
+  return <MedicationScreen />;
 }

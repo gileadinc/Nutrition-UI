@@ -15,7 +15,9 @@ import {
   lbToKg,
   tdee,
 } from "@/lib/nutrition";
-import { toast, useProfile, type UserProfile } from "@/lib/store";
+import { EmptyState } from "@/components/Feedback";
+import { Link } from "@/lib/nav";
+import { toast, useAppSession, useProfile, type UserProfile } from "@/lib/store";
 import { getErrorMessage } from "@/lib/api";
 
 interface Form {
@@ -268,7 +270,28 @@ function Editor({ profile, update }: { profile: UserProfile; update: (p: Paramet
 }
 
 export function PersonalDetailsScreen() {
+  const session = useAppSession();
   const { profile, update, isLoading } = useProfile();
+  if (!session.isSignedIn)
+    return (
+      <ProfileLayout title="Personal details" subtitle="Your name, contact and the body details your targets use.">
+        <EmptyState
+          icon="person"
+          title="You're browsing as a guest"
+          body="Create an account or log in to manage your personal details."
+          action={{ label: "Create an account", to: "/signup?next=/you/personal-details" }}
+        />
+        <p className="mt-3 text-center type-meta text-[13px] text-text-secondary">
+          Already have an account?{" "}
+          <Link
+            to="/login?next=/you/personal-details"
+            className="type-button text-primary underline underline-offset-2"
+          >
+            Log in
+          </Link>
+        </p>
+      </ProfileLayout>
+    );
   if (!profile)
     return (
       <ProfileLayout title="Personal details" subtitle="Your name, contact and the body details your targets use.">

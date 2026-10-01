@@ -29,6 +29,8 @@ Import from `@/lib/store`. All hooks are client-only (`"use client"`).
 | `useMomentum`, `useTrackingRecommendations`                                            | `GET /api/tracking/me/momentum`, `/recommendations`                                                     |                                                                               |
 | `useSaved()` (`isSaved`, `toggle`)                                                     | `/api/saved-items/me`                                                                                   | Signed in only; wraps `useSavedItems`. Types: `recipe`, `fast_hack`, `order`. |
 | `useNotifications()`                                                                   | `/api/profile/me/notifications*`                                                                        |                                                                               |
+| `useShoppingList()` (`items`, `add`, `toggle`, `clearChecked`, `clearAll`)                | `/api/shopping-lists/me*` (list, create, items add/update, clear-checked, `recipes/{id}`, delete)        | Signed in only. One default list "Shopping list" (first list, created on first write); optimistic; old `forkthis.shoppingList` localStorage items are migrated once then removed. `add(..., {recipeId, whole})` uses `POST .../recipes/{id}`. |
+| `useMedications({history?})`, `doseStatus` (`meds`, `history`, `add`, `update`, `remove`, `take`, `untake`, `reminders`, `setReminder`) | `/api/medication-schedules/me*` (CRUD, `GET .../reminders?date=`, `POST .../{id}/doses`), `DELETE /api/tracking/me/entries/{id}` for Undo | Signed in only. Daily schedule with one time (`timesOfDay[0]`, API wants `HH:mm`, UI shows `9:00 PM`). Today/history = reminders per date (history: last 14 days, opt-in). Reminder toggles = `remindersEnabled`. No snooze endpoint (dropped). |
 | `toast.*`, `<ToastViewport/>`                                                          | none                                                                                                    | UI.                                                                           |
 | `useCached/invalidate/keyOf`                                                           | none                                                                                                    | Generic cache used by all of the above.                                       |
 
@@ -37,12 +39,17 @@ reset / forgot (`authApi`), OAuth (`authApi.googleAuthUrl/appleAuthUrl/exchangeO
 preferences/export/delete account/experience-state, `eatOutApi.getRecommendations`, `discoveryApi.getAccountPrompt/
 getFeatureGate/getAppEntry`, `trackingApi.getSnapshot/getFirstTime`.
 
+## Device-local features (no endpoint; browser localStorage, not synced; shopping list and medication moved to the API)
+
+| Store | Key | Notes |
+|---|---|---|
+| `useActivity()` (`src/lib/store/activity.ts`) | `forkthis.activity` | `/track/activity*`. Entries `{id,name,minutes,calories,loggedAt}`, today totals, 30 min goal, recents; writes need an account. Shown in the Track dashboard "Also today". |
+| `useWeight()` (`src/lib/store/weight.ts`) | `forkthis.weight` | `/track/weight`. One `{date,pounds}` reading per day (lb only); writes need an account. Shown in the Track dashboard "Also today". Insights does not chart activity/weight. |
+| Melo popup (`src/lib/melo`, `src/components/Melo`) | none (in-memory chat) | **Not an AI/LLM and there is no assistant endpoint.** A local rule-based engine (dish, fits, progress, protein, water, search, swap, fallback) answers from the real day budget (`useDayBudget`), tracked days (`useTrackDays`) and the real catalogue (`useFastHacks`/`useRecipes`). Open on all `(app)` routes via `MeloLayer` in `AppShell`. Chat history lives in memory only. Guests can chat; nothing is logged from chat. |
+
 ## Deployed screens with NO endpoint (left out — routes show a "Not available" panel)
 
-- AI assistant (`/assistant/**`, `/ai`, Melo FAB)
-- Medication tracking (`/track/medication/**`, medication history, dose reminders, "Medication" dashboard card)
-- Activity logging (`/track/activity*`, activity history) and weight logging (`/track/weight`) — tracking entries only carry meal/macros/water
-- Shopping list (`/shopping-list`, "add ingredients to list")
+- AI assistant full pages (`/assistant/**`, `/ai`). The Melo popup (FAB + chat panel) exists (see the table above)
 - Recipe collections (`/you/saved/collections/:id`, collection create/rename)
 - BMI / TDEE / calorie calculators (`/you/bmi|tdee|calories`) — pure maths exists in `@/lib/nutrition` if wanted later
 - Recipe ratings, sleep tracking, "welcome back" lapse banner, in-app reminders/notification seed data

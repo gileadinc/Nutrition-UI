@@ -633,35 +633,7 @@ export function ListingToolbar({
             </span>
           )}
         </button>
-        <div
-          title={`Sort: ${sortLabel}`}
-          className={cn(
-            ICON_BTN,
-            "has-[select:focus-visible]:outline-2 has-[select:focus-visible]:outline-offset-2 has-[select:focus-visible]:outline-focus",
-            sortActive ? ICON_BTN_ON : ICON_BTN_IDLE,
-          )}
-        >
-          <Icon name="sort" size={18} color="var(--color-primary)" />
-          {sortActive && (
-            <span
-              aria-hidden
-              data-testid="sort-active-dot"
-              className="absolute top-1.5 right-1.5 size-2 rounded-full bg-selected"
-            />
-          )}
-          <select
-            aria-label={`Sort: ${sortLabel}`}
-            value={sort}
-            onChange={(e) => onSort(e.target.value)}
-            className="absolute -inset-px h-[calc(100%+2px)] w-[calc(100%+2px)] cursor-pointer appearance-none rounded-full opacity-0"
-          >
-            {sortOptions.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <SortMenu sort={sort} sortOptions={sortOptions} onSort={onSort} sortLabel={sortLabel} sortActive={sortActive} />
       </div>
       {subtitle && (
         <p className="col-span-full row-start-2 hidden truncate text-[13px] type-meta text-text-secondary md:block">
@@ -669,6 +641,99 @@ export function ListingToolbar({
         </p>
       )}
     </header>
+  );
+}
+
+/** Sort button + popover list (replaces the browser's native select list). */
+function SortMenu({
+  sort,
+  sortOptions,
+  onSort,
+  sortLabel,
+  sortActive,
+}: {
+  sort: string;
+  sortOptions: { value: string; label: string }[];
+  onSort: (value: string) => void;
+  sortLabel: string;
+  sortActive: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const menuId = useId();
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (!root.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+  return (
+    <div ref={root} className="relative">
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={open ? menuId : undefined}
+        aria-label={`Sort: ${sortLabel}`}
+        title={`Sort: ${sortLabel}`}
+        onClick={() => setOpen((o) => !o)}
+        className={cn(
+          ICON_BTN,
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
+          sortActive || open ? ICON_BTN_ON : ICON_BTN_IDLE,
+        )}
+      >
+        <Icon name="sort" size={18} color="var(--color-primary)" />
+        {sortActive && (
+          <span
+            aria-hidden
+            data-testid="sort-active-dot"
+            className="absolute top-1.5 right-1.5 size-2 rounded-full bg-selected"
+          />
+        )}
+      </button>
+      {open && (
+        <ul
+          id={menuId}
+          role="listbox"
+          aria-label="Sort by"
+          className="panel absolute right-0 top-[calc(100%+8px)] z-40 w-52 overflow-hidden p-1.5 shadow-raised"
+        >
+          {sortOptions.map((o) => {
+            const on = o.value === sort;
+            return (
+              <li key={o.value} role="presentation">
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={on}
+                  onClick={() => {
+                    onSort(o.value);
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    "flex min-h-10 w-full items-center justify-between gap-3 rounded-xl px-3 text-left text-[14px] hover:bg-brand-warm-gray",
+                    on ? "type-button text-primary" : "type-meta text-text-primary",
+                  )}
+                >
+                  {o.label}
+                  {on && <CheckMark size={14} />}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
   );
 }
 

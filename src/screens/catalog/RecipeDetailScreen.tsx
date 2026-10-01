@@ -28,12 +28,23 @@ import {
 import { getErrorMessage } from "@/lib/api";
 import { useNavigate, useParams } from "@/lib/nav";
 import { fitFor } from "@/lib/nutrition";
-import { useDayBudget, useProfile, useRecipe, useRecipes, useSaved } from "@/lib/store";
+import {
+  toast,
+  useDayBudget,
+  useProfile,
+  useRecipe,
+  useRecipes,
+  useRequireAccount,
+  useSaved,
+  useShoppingList,
+} from "@/lib/store";
 import { toRecipeVM } from "./adapt";
 
 export function RecipeDetailScreen() {
   const { id = "" } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const requireAccount = useRequireAccount();
+  const shopping = useShoppingList();
   const one = useRecipe(id);
   const list = useRecipes({ limit: 100 });
   const saved = useSaved();
@@ -138,7 +149,23 @@ export function RecipeDetailScreen() {
             label="Nutrition per serving"
           />
           <AllergenWarning recipe={r} userAllergies={profile?.allergies ?? []} />
-          <IngredientsPanel items={r.ingredients} />
+          <IngredientsPanel
+            items={r.ingredients}
+            action={
+              <SecondaryButton
+                label="Add to shopping list"
+                className="h-11 text-onb-body"
+                onPress={() => {
+                  if (!requireAccount("The shopping list")) return;
+                  const added = shopping.add(r.ingredients, r.title, { recipeId: r.id, whole: true });
+                  toast.success(added === 1 ? "1 ingredient added" : `${added} ingredients added`, {
+                    body: `From ${r.title}.`,
+                    action: { label: "Open list", run: () => navigate("/shopping-list") },
+                  });
+                }}
+              />
+            }
+          />
           <MethodPanel steps={r.steps} />
           {surgery && (
             <SurgeryNote>

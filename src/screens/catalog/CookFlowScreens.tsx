@@ -13,8 +13,8 @@ import {
 } from "@/components";
 import { CONTROL_ON, PRIMARY_DISABLED } from "@/components/styles";
 import { getErrorMessage } from "@/lib/api";
-import { useNavigate, useParams } from "@/lib/nav";
-import { toast, useRecipe } from "@/lib/store";
+import { Link, useNavigate, useParams } from "@/lib/nav";
+import { toast, useRecipe, useRequireAccount, useShoppingList } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { toRecipeVM, type RecipeVM } from "./adapt";
 
@@ -76,6 +76,8 @@ export function IngredientsChecklistScreen() {
   const { recipe: r, node } = useCookRecipe();
   const [have, setHave] = useState<number[]>([]);
   const [copied, setCopied] = useState(false);
+  const requireAccount = useRequireAccount();
+  const shopping = useShoppingList();
   if (!r) return <>{node}</>;
   const toggle = (i: number) =>
     setHave((cur) => (cur.includes(i) ? cur.filter((x) => x !== i) : [...cur, i]));
@@ -94,6 +96,13 @@ export function IngredientsChecklistScreen() {
           <h1 className="min-w-0 flex-1 pl-1 text-2xl type-display tracking-[-1.08px] text-brand-navy">
             Ingredients
           </h1>
+          <Link
+            to="/shopping-list"
+            aria-label="Shopping list"
+            className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border-default bg-white"
+          >
+            <Icon name="shoppingCart" size={18} color="var(--color-brand-navy)" />
+          </Link>
           <button
             type="button"
             onClick={async () => {
@@ -155,6 +164,24 @@ export function IngredientsChecklistScreen() {
         <p className="mt-3 text-onb-meta type-meta text-text-secondary">
           {have.length} of {r.ingredients.length} ready
         </p>
+        <div className="mt-4 max-w-sm">
+          <SecondaryButton
+            label="Add missing to shopping list"
+            className="text-onb-body"
+            onPress={() => {
+              if (!requireAccount("The shopping list")) return;
+              const added = shopping.add(
+                r.ingredients.filter((_, i) => !have.includes(i)),
+                r.title,
+                { recipeId: r.id },
+              );
+              toast.success(added === 1 ? "1 ingredient added" : `${added} ingredients added`, {
+                body: `From ${r.title}.`,
+                action: { label: "Open list", run: () => navigate("/shopping-list") },
+              });
+            }}
+          />
+        </div>
         <div className="fixed inset-x-0 bottom-[60px] border-t border-border-divider bg-white px-5 py-3 md:static md:mt-6 md:border-0 md:bg-transparent md:px-0 md:py-0">
           <div className="mx-auto w-full md:ml-0 md:max-w-sm">
             <PrimaryButton label="Start cooking" onPress={() => navigate(`/recipes/${r.id}/cook`)} />

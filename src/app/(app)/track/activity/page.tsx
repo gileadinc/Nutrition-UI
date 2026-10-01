@@ -1,8 +1,7 @@
 "use client";
 
-import { ScreenTodo } from "@/components/ScreenTodo";
+import { LogActivityPickerScreen } from "@/screens/track/ActivityScreens";
 
-// OUT OF SCOPE: no backend endpoint (LogActivityPickerScreen). Shows a "not available" panel.
 export default function Page() {
-  return <ScreenTodo route="/track/activity" outOfScope />;
+  return <LogActivityPickerScreen />;
 }

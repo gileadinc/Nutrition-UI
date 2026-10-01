@@ -112,6 +112,12 @@ function relatedFor(pathname: string): { eyebrow: string; title: string; links: 
         { label: "Profile overview", detail: "Your plan at a glance", to: "/you", icon: "person" },
         { label: "Saved items", detail: "Hacks and recipes", to: "/you/saved", icon: "bookmark" },
         {
+          label: "Shopping list",
+          detail: "Ingredients to pick up",
+          to: "/shopping-list",
+          icon: "shoppingCart",
+        },
+        {
           label: "Notifications",
           detail: "Reminders and updates",
           to: "/you/notifications",
@@ -137,6 +143,12 @@ function relatedFor(pathname: string): { eyebrow: string; title: string; links: 
           to: "/search?scope=recipes",
           icon: "search",
         },
+        {
+          label: "Shopping list",
+          detail: "Review what you need",
+          to: "/shopping-list",
+          icon: "shoppingCart",
+        },
       ],
     };
   }
@@ -159,14 +171,12 @@ export function RelatedPagesPanel({ pathname }: { pathname: string }) {
     <div className="border-l border-border-divider pl-6">
       <p className="eyebrow">{c.eyebrow}</p>
       <h2 className="mt-1 text-lg type-section-title text-brand-navy">{c.title}</h2>
-      {profile?.goal && (
-        <div className="mt-4 flex items-center gap-2 rounded-xl bg-brand-teal-soft px-3 py-2.5">
-          <Icon name="target" size={17} color="var(--color-brand-navy)" />
-          <span className="min-w-0 flex-1 truncate text-xs type-meta text-brand-navy">
-            {GOAL_LABEL[profile.goal]} goal
-          </span>
-        </div>
-      )}
+      <div className="mt-4 flex items-center gap-2 rounded-xl bg-brand-teal-soft px-3 py-2.5">
+        <Icon name="target" size={17} color="var(--color-brand-navy)" />
+        <span className="min-w-0 flex-1 truncate text-xs type-meta text-brand-navy">
+          {GOAL_LABEL[profile?.goal ?? "maintain"]} goal
+        </span>
+      </div>
       <nav aria-label="Related pages" className="mt-4 flex flex-col">
         {c.links.map((l) => (
           <Link
@@ -234,7 +244,7 @@ export function PageContainer({
       <div
         className={cn(
           "page-settle mx-auto w-full px-5 py-6 md:px-8 md:py-8 lg:px-10 lg:py-10 2xl:px-12",
-          variant === "focused" ? "max-w-6xl" : "max-w-[1440px]",
+          variant === "focused" ? "max-w-6xl" : "max-w-[1680px]",
           className,
         )}
       >

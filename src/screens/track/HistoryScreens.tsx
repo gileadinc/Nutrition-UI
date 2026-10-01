@@ -34,6 +34,7 @@ import {
   type TrackMetric,
 } from "@/lib/track";
 import { MEAL_TYPES } from "@/lib/nutrition";
+import { doseStatus, useMedications, type Medication } from "@/lib/store";
 import { META_TEXT, PAGE_TITLE, SECTION_TITLE, SELECTED_CHIP } from "@/components/styles";
 
 const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
@@ -162,7 +163,15 @@ interface Insight {
 }
 
 function InsightsPanel({ insights, title }: { insights: Insight[]; title: string }) {
-  if (insights.length === 0) return null;
+  if (insights.length === 0)
+    return (
+      <section aria-label={title} className="panel px-4 pb-4 pt-4">
+        <h2 className="eyebrow">{title}</h2>
+        <p className="mt-2 text-[13px] type-meta leading-5 text-text-secondary">
+          Nothing to read into yet. Log a meal or some water and what stands out will show up here.
+        </p>
+      </section>
+    );
   const watch = insights.filter((i) => i.tone === "watch").length;
   return (
     <section aria-label={title} className="panel px-4 pb-2 pt-4">
@@ -202,7 +211,30 @@ function InsightsPanel({ insights, title }: { insights: Insight[]; title: string
   );
 }
 
-function buildInsights(days: TrackDay[]): Insight[] {
+function buildInsights(days: TrackDay[], medHistory: { date: string; meds: Medication[] }[]): Insight[] {
+  const out = buildNutritionInsights(days);
+  const dates = new Set(days.map((d) => d.date));
+  const todayIso = isoDate(new Date());
+  let unlogged = 0;
+  for (const h of medHistory) {
+    if (!dates.has(h.date)) continue;
+    for (const m of h.meds) {
+      if (m.taken) continue;
+      if (h.date !== todayIso || doseStatus(m) === "Missed") unlogged += 1;
+    }
+  }
+  if (unlogged > 0)
+    out.push({
+      id: "medication",
+      title: `${unlogged} ${unlogged === 1 ? "dose" : "doses"} went unlogged`,
+      detail: "Adherence is the one signal here where a gap in the log is a gap in the record.",
+      tone: "watch",
+      action: { label: "Review medication", to: "/track/medication" },
+    });
+  return out;
+}
+
+function buildNutritionInsights(days: TrackDay[]): Insight[] {
   const logged = days.filter(dayLogged);
   if (logged.length === 0) return [];
   const out: Insight[] = [];
@@ -976,6 +1008,7 @@ export function TrackInsightsScreen() {
     base.setDate(base.getDate() + offset * count);
     return base;
   })();
+  const { history: medHistory } = useMedications({ history: true });
   const { days, isLoading } = useTrackDays(count, end);
   const { days: previous } = useTrackDays(count, shiftDate(end, -count));
   const canNext = isoDate(end) < today;
@@ -987,7 +1020,7 @@ export function TrackInsightsScreen() {
   const last = days[days.length - 1];
 
   return (
-    <PageContainer className="max-w-7xl">
+    <PageContainer className="max-w-[1680px]">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
         <header className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between lg:justify-start lg:gap-6">
           <div className="min-w-0">
@@ -1071,7 +1104,7 @@ export function TrackInsightsScreen() {
         <TwoColumn
           sidebarLabel="What this period says"
           mobileSidebar="before"
-          sidebar={<InsightsPanel insights={buildInsights(days)} title={heading} />}
+          sidebar={<InsightsPanel insights={buildInsights(days, medHistory)} title={heading} />}
         >
           <h2 className="text-[18px] type-section-title leading-6 tracking-[-0.81px] text-brand-navy">
             Recent Activity

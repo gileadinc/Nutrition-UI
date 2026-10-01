@@ -1,4 +1,5 @@
 import { AppImage } from "@/components/AppImage";
+import { Icon } from "@/components/Icon";
 
 /** Restaurant logo images shipped in /public/img/restaurants. */
 const RESTAURANT_LOGOS: Record<string, string> = {
@@ -20,7 +21,14 @@ const TILE =
   "flex size-[22px] shrink-0 items-center justify-center overflow-hidden rounded-[7px] border border-border-default bg-white";
 
 /** 22px restaurant logo tile. Renders nothing for unknown restaurants. */
-export function BrandMark({ restaurant }: { restaurant: string }) {
+export function BrandMark({
+  restaurant,
+  initialFallback = false,
+}: {
+  restaurant: string;
+  /** Show the site's restaurant icon when there is no logo on file. */
+  initialFallback?: boolean;
+}) {
   const logo = RESTAURANT_LOGOS[restaurant];
   const letter = RESTAURANT_LETTERS[restaurant];
   if (logo) {
@@ -42,6 +50,13 @@ export function BrandMark({ restaurant }: { restaurant: string }) {
         className={`${TILE} text-[11px] type-meta leading-none text-text-secondary`}
       >
         {letter}
+      </span>
+    );
+  }
+  if (initialFallback) {
+    return (
+      <span title={restaurant} data-testid={`restaurant-brand-mark-${restaurant}`} className={TILE}>
+        <Icon name="restaurant" size={14} color="var(--color-text-secondary)" />
       </span>
     );
   }

@@ -36,12 +36,21 @@ import {
 import { cn } from "@/lib/utils";
 import { toHackVM, toRecipeVM, type HackVM, type RecipeVM } from "./adapt";
 
-const EAT_OUT_CHIPS = ["All", "Under 500 calories", "High protein", "Vegetarian", "Low carb"];
+const EAT_OUT_CHIPS = [
+  "All",
+  "Under 500 calories",
+  "High protein",
+  "Nearby",
+  "Ready in 15 min",
+  "Vegetarian",
+  "Low carb",
+];
 const COOK_CHIPS = [
   "All",
   "High protein",
   "Lower calorie",
   "Quick meals",
+  "Easy prep",
   "Meal prep",
   "Vegetarian",
   "Low carb",
@@ -57,6 +66,10 @@ const hackMatches = (h: HackVM, chip: string) => {
       return h.tags.includes("Vegan");
     case "Low carb":
       return h.carbs <= 35;
+    case "Nearby":
+      return h.distanceMi != null && h.distanceMi <= 2;
+    case "Ready in 15 min":
+      return h.tags.includes("Quick") || h.tags.includes("Quick & Easy");
     default:
       return true;
   }
@@ -69,6 +82,8 @@ const recipeMatches = (r: RecipeVM, chip: string) => {
       return r.tags.includes("Under 500 kcal");
     case "Quick meals":
       return r.tags.includes("Quick & Easy");
+    case "Easy prep":
+      return r.minutes <= 20;
     case "Meal prep":
       return r.tags.includes("Meal Prep");
     case "Vegetarian":
@@ -83,6 +98,9 @@ const recipeMatches = (r: RecipeVM, chip: string) => {
 const SHORTCUTS: { title: string; short: string; icon: IconName; to: string }[] = [
   { title: "Log Meal", short: "Meal", icon: "forkSpoon", to: "/track/log-meal" },
   { title: "Add Drink", short: "Water", icon: "droplet", to: "/track/water" },
+  { title: "Log Activity", short: "Activity", icon: "activity", to: "/track/activity" },
+  { title: "Log Medication", short: "Medication", icon: "medication", to: "/track/medication" },
+  { title: "Log Weight", short: "Weight", icon: "weightScale", to: "/track/weight" },
 ];
 
 const TOUR = [
@@ -409,7 +427,8 @@ export function HomeScreen() {
   };
 
   const name = firstNameOf(profile) ?? "there";
-  const goal = profile?.goal ? GOAL_LABEL[profile.goal] : "your goal";
+  // Same default the deployed app shows when no goal has been set yet.
+  const goal = GOAL_LABEL[profile?.goal ?? "maintain"];
   const eatOut = hacks.filter((h) => eatChips.every((c) => hackMatches(h, c)));
   const cook = recipes.filter((r) => cookChips.every((c) => recipeMatches(r, c)));
   const toggle = (set: typeof setEatChips) => (c: string) =>
@@ -418,7 +437,7 @@ export function HomeScreen() {
   const loadingRecipes = recipes.length === 0 && (recipesRes.isLoading || home.signedIn.isLoading || home.guest.isLoading);
 
   return (
-    <PageContainer className="max-w-7xl">
+    <PageContainer className="max-w-[1680px]">
       {showTour && <FirstRunTour onClose={closeTour} />}
       <ListingHeader
         eyebrow={`HI, ${name.toUpperCase()}`}

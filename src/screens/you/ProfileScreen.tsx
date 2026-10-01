@@ -104,7 +104,7 @@ function GuestCard() {
           <h1 className="type-display text-brand-navy text-[24px] leading-[1.15] tracking-[-1.08px] md:text-[28px]">
             You&apos;re browsing as a guest
           </h1>
-          <p className={cn(META, "mt-1.5")}>Saves and tracking need an account.</p>
+          <p className={cn(META, "mt-1.5")}>Saves and tracking need an account. Nothing you do now is stored.</p>
         </div>
       </header>
       <div data-slot="guest-cta" className="mt-6 rounded-2xl bg-navy-soft px-5 py-5">
@@ -394,7 +394,7 @@ export function ProfileScreen() {
   );
 
   return (
-    <PageContainer className="max-w-7xl">
+    <PageContainer className="max-w-[1680px]">
       <div className="mx-auto grid max-w-3xl gap-10 xl:max-w-6xl xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] xl:items-start xl:gap-16 2xl:gap-20">
         <div className="min-w-0">{left}</div>
         <div
@@ -435,6 +435,7 @@ export function ProfileScreen() {
               sub={sub(saved.count === 0 ? "None yet" : `${saved.count} saved`)}
               to="/you/saved"
             />
+            <SettingsRow icon="shoppingCart" label="Shopping list" to="/shopping-list" />
             <SettingsRow
               icon="bell"
               label="Notifications"

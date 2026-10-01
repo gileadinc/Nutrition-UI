@@ -18,8 +18,10 @@ import {
   firstNameOf,
   toast,
   useProfile,
+  useActivity,
   useRequireAccount,
   useTrackingActions,
+  useWeight,
 } from "@/lib/store";
 import {
   dayCalories,
@@ -41,6 +43,9 @@ export function TrackDashboardScreen() {
   const { profile } = useProfile();
   const { log, remove, addWater } = useTrackingActions();
   const { days } = useTrackDays(7);
+  const activity = useActivity();
+  const weight = useWeight();
+  const latestWeight = weight.todayReading ?? weight.previous;
   const todayKey = isoDate(now);
   const today = days[days.length - 1];
 
@@ -72,7 +77,7 @@ export function TrackDashboardScreen() {
   const waterGoal = Math.round(today.waterGoalOz);
 
   return (
-    <PageContainer className="max-w-7xl">
+    <PageContainer className="max-w-[1680px]">
       <div className="flex flex-col gap-6">
         <TrackHeader
           greeting={greetingFor(now.getHours())}
@@ -114,6 +119,28 @@ export function TrackDashboardScreen() {
                       progress: { value: waterOz, goal: waterGoal },
                       onQuick: () => void addOz(8),
                       quickLabel: "Add 8 oz of water",
+                    },
+                    {
+                      key: "activity",
+                      label: "Active minutes",
+                      icon: "activity",
+                      value: String(activity.todayMinutes),
+                      unit: "min",
+                      goal: `of ${activity.goalMinutes}`,
+                      spoken: `Active minutes: ${activity.todayMinutes} of ${activity.goalMinutes}`,
+                      to: "/track/activity",
+                      progress: { value: activity.todayMinutes, goal: activity.goalMinutes },
+                    },
+                    {
+                      key: "weight",
+                      label: "Weight",
+                      icon: "weightScale",
+                      value: latestWeight ? latestWeight.pounds.toFixed(1) : "--",
+                      unit: "lb",
+                      goal: weight.todayReading ? "today" : latestWeight ? "last reading" : "not recorded",
+                      spoken: latestWeight ? `Weight: ${latestWeight.pounds.toFixed(1)} lb` : "Weight: not recorded",
+                      to: "/track/weight",
+                      progress: { value: 0, goal: 0 },
                     },
                   ]}
                 />
