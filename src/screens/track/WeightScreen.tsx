@@ -5,7 +5,9 @@ import { Icon } from "@/components/Icon";
 import { PrimaryButton } from "@/components/Button";
 import { TodayPanel, TrackLogLayout } from "@/components/Track/LogParts";
 import { useBack, useNavigate } from "@/lib/nav";
-import { toast, useRequireAccount, useWeight } from "@/lib/store";
+import { getErrorMessage } from "@/lib/api";
+import { kgToLb, lbToKg } from "@/lib/nutrition";
+import { toast, useProfile, useRequireAccount, useWeight } from "@/lib/store";
 
 const noopSub = () => () => {};
 const useHydrated = () =>
@@ -34,31 +36,52 @@ function WeightForm() {
   const navigate = useNavigate();
   const requireAccount = useRequireAccount();
   const { readings, todayReading, previous, setToday } = useWeight();
-  const start = todayReading ?? previous;
-  const [value, setValue] = useState(start ? start.pounds.toFixed(1) : "");
+  const { profile, update } = useProfile();
+  // The backend keeps only the current weight (profile.weightKg); readings history is kept on this device.
+  const profilePounds = profile?.weightKg ? Math.round(kgToLb(profile.weightKg) * 10) / 10 : null;
+  const start = todayReading?.pounds ?? previous?.pounds ?? profilePounds;
+  const [value, setValue] = useState(start ? start.toFixed(1) : "");
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string>();
   const n = Number(value);
-  const valid = value.trim() !== "" && Number.isFinite(n) && n > 0 && n <= 900;
+  // The backend rejects anything under 20 kg.
+  const valid = value.trim() !== "" && Number.isFinite(n) && lbToKg(n) >= 20 && n <= 900;
 
   const nudge = (d: number) => {
     setValue(Math.max(0, Math.round(((valid ? n : 0) + d) * 10) / 10).toFixed(1));
     setError(undefined);
   };
 
-  const save = () => {
+  const save = async () => {
     if (!valid) {
-      setError("Enter a weight in lb.");
+      setError("Enter a weight between 45 and 900 lb.");
       return;
     }
     if (!requireAccount("Tracking")) return;
     const pounds = Math.round(n * 10) / 10;
     const before = todayReading?.pounds ?? null;
+    setSaving(true);
+    try {
+      await update({ weightKg: Math.round(lbToKg(pounds) * 10) / 10 });
+    } catch (err) {
+      toast.error("Couldn't save your weight", { body: getErrorMessage(err) });
+      setSaving(false);
+      return;
+    }
+    setSaving(false);
     setToday(pounds);
     toast.success(`Weighed in at ${pounds.toFixed(1)} lb`, {
       body: previous
         ? `${change(pounds - previous.pounds)} since ${shortDay(previous.date)}.`
         : "First weigh-in on record. The trend starts here.",
-      action: { label: "Undo", run: () => setToday(before) },
+      action: {
+        label: "Undo",
+        run: () => {
+          setToday(before);
+          if (before !== null)
+            void update({ weightKg: Math.round(lbToKg(before) * 10) / 10 }).catch(() => undefined);
+        },
+      },
       link: { label: "View in Track", href: "/track", run: () => navigate("/track") },
     });
     back();
@@ -144,7 +167,7 @@ function WeightForm() {
             : "Your first reading starts the trend."}
         </p>
         <div className="mt-5 w-full">
-          <PrimaryButton type="submit" label="Save weigh-in" />
+          <PrimaryButton type="submit" label={saving ? "Saving…" : "Save weigh-in"} disabled={saving} />
         </div>
       </form>
     </TrackLogLayout>

@@ -1,8 +1,9 @@
 "use client";
 
 /**
- * Weigh-ins. The backend has no weight endpoint, so readings live in this browser's
- * localStorage (per device, not synced to the account). One reading per day.
+ * Weigh-in history. The backend stores only the CURRENT weight (`PATCH /api/profile/me` weightKg,
+ * saved by the Weigh-in screen), so the dated readings list lives in this browser's localStorage
+ * (per device, not synced). One reading per day.
  */
 
 import { useCallback, useMemo, useSyncExternalStore } from "react";

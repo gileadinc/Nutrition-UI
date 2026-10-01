@@ -81,6 +81,15 @@ export const ACTIVITY_KEYS = Object.keys(ACTIVITY_LABEL) as ActivityKey[];
 export const isActivityKey = (v: unknown): v is ActivityKey =>
   typeof v === "string" && v in ACTIVITY_LABEL;
 
+/** The backend stores activity level as snake_case ("moderately_active"). */
+export const activityToWire = (k: ActivityKey): string => k.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`);
+/** Accepts the backend's snake_case value or our camelCase key; null when unrecognised. */
+export const activityFromWire = (v: unknown): ActivityKey | null => {
+  if (typeof v !== "string") return null;
+  const camel = v.replace(/_([a-z])/g, (_, c: string) => c.toUpperCase());
+  return isActivityKey(camel) ? camel : null;
+};
+
 export const SURGICAL_CONTEXTS = [
   "No surgery",
   "Preparing for surgery",

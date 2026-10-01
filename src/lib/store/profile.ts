@@ -16,7 +16,8 @@ import {
 } from "@/lib/api";
 import type { ProfileUpdate } from "@/lib/api/endpoints/profile";
 import {
-  isActivityKey,
+  activityFromWire,
+  activityToWire,
   isGoalKey,
   normalizeSurgicalContext,
   type ActivityKey,
@@ -72,7 +73,7 @@ function fromAccount(p: Profile): UserProfile {
     heightCm: p.heightCm,
     weightKg: p.weightKg,
     sex: p.sex,
-    activityLevel: isActivityKey(p.activityLevel) ? p.activityLevel : null,
+    activityLevel: activityFromWire(p.activityLevel),
     surgicalContext: normalizeSurgicalContext(p.surgicalContext),
     dietaryPreferences: p.dietaryPreferences ?? [],
     allergies: p.allergies ?? [],
@@ -98,7 +99,7 @@ function fromGuest(s: OnboardingSession): UserProfile {
     heightCm: s.heightCm,
     weightKg: s.weightKg,
     sex: s.sex,
-    activityLevel: isActivityKey(s.activityLevel) ? s.activityLevel : null,
+    activityLevel: activityFromWire(s.activityLevel),
     surgicalContext: normalizeSurgicalContext(s.surgicalContext),
     dietaryPreferences: [],
     allergies: [],
@@ -151,8 +152,17 @@ export function useProfile(): UseProfile {
   const isSignedIn = session.isSignedIn;
   const update = useCallback(
     async (patch: ProfileUpdate) => {
+      // Activity level goes over the wire as snake_case.
+      const wire: ProfileUpdate = {
+        ...patch,
+        activityLevel: patch.activityLevel
+          ? (activityFromWire(patch.activityLevel)
+              ? activityToWire(activityFromWire(patch.activityLevel)!)
+              : patch.activityLevel)
+          : patch.activityLevel,
+      };
       if (isSignedIn) {
-        const next = await profileApi.updateProfile(patch);
+        const next = await profileApi.updateProfile(wire);
         mutateAccount(next);
         invalidate("tracking");
       } else if (guestData) {
@@ -165,7 +175,7 @@ export function useProfile(): UseProfile {
           unitsPreference: patch.unitsPreference,
           sex: patch.sex,
           surgicalContext: patch.surgicalContext,
-          activityLevel: patch.activityLevel,
+          activityLevel: wire.activityLevel,
         });
         mutateGuest(next);
       }
