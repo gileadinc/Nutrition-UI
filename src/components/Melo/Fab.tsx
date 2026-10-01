@@ -19,6 +19,10 @@ export function MeloLayer() {
   const visible = available(pathname);
   const openedOn = useRef<string | null>(null);
 
+  useEffect(() => {
+    meloActions.hydrate();
+  }, []);
+
   // The panel belongs to the page it was opened on: navigating away closes it.
   useEffect(() => {
     if (open && openedOn.current !== null && openedOn.current !== pathname) meloActions.close();

@@ -1,8 +1,7 @@
 "use client";
 
-import { ScreenTodo } from "@/components/ScreenTodo";
+import { AssistantSearchScreen } from "@/screens/assistant/AssistantScreens";
 
-// OUT OF SCOPE: no backend endpoint (AssistantSearchScreen). Shows a "not available" panel.
 export default function Page() {
-  return <ScreenTodo route="/assistant/search" outOfScope />;
+  return <AssistantSearchScreen />;
 }

@@ -45,11 +45,11 @@ getFeatureGate/getAppEntry`, `trackingApi.getSnapshot/getFirstTime`.
 |---|---|---|
 | `useActivity()` (`src/lib/store/activity.ts`) | `forkthis.activity` | `/track/activity*`. Entries `{id,name,minutes,calories,loggedAt}`, today totals, 30 min goal, recents; writes need an account. Shown in the Track dashboard "Also today". |
 | `useWeight()` (`src/lib/store/weight.ts`) | `forkthis.weight` | `/track/weight`. One `{date,pounds}` reading per day (lb only); writes need an account. Shown in the Track dashboard "Also today". Insights does not chart activity/weight. |
-| Melo popup (`src/lib/melo`, `src/components/Melo`) | none (in-memory chat) | **Not an AI/LLM and there is no assistant endpoint.** A local rule-based engine (dish, fits, progress, protein, water, search, swap, fallback) answers from the real day budget (`useDayBudget`), tracked days (`useTrackDays`) and the real catalogue (`useFastHacks`/`useRecipes`). Open on all `(app)` routes via `MeloLayer` in `AppShell`. Chat history lives in memory only. Guests can chat; nothing is logged from chat. |
+| Melo popup (`src/lib/melo`, `src/components/Melo`) | none (in-memory chat) | **Not an AI/LLM and there is no assistant endpoint.** A local rule-based engine (dish, fits, progress, protein, water, search, swap, fallback) answers from the real day budget (`useDayBudget`), tracked days (`useTrackDays`) and the real catalogue (`useFastHacks`/`useRecipes`). Open on all `(app)` routes via `MeloLayer` in `AppShell`. Chats are device-local (localStorage `forkthis.melo.chats`, newest first, max 30; voice-replies preference `forkthis_melo_voice_replies`), not synced. Voice input / read-aloud use the browser Web Speech APIs (`SpeechRecognition`, `speechSynthesis`) and are hidden where unsupported; typed questions are never read aloud. Full pages: `/assistant`, `/ai`, `/assistant/history|search|context/[type]|state/[state]`. Guests can chat; nothing is logged from chat. |
 
 ## Deployed screens with NO endpoint (left out — routes show a "Not available" panel)
 
-- AI assistant full pages (`/assistant/**`, `/ai`). The Melo popup (FAB + chat panel) exists (see the table above)
+- A real AI/LLM assistant (Melo is a local rule-based engine, see the table above)
 - Recipe collections (`/you/saved/collections/:id`, collection create/rename)
 - BMI / TDEE / calorie calculators (`/you/bmi|tdee|calories`) — pure maths exists in `@/lib/nutrition` if wanted later
 - Recipe ratings, sleep tracking, "welcome back" lapse banner, in-app reminders/notification seed data

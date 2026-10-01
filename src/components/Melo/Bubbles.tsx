@@ -5,8 +5,19 @@ import { cn } from "@/lib/utils";
 import { Icon, type IconName } from "@/components/Icon";
 import { AppImage } from "@/components/AppImage";
 import { Link } from "@/lib/nav";
-import { followUps, type MeloLink } from "@/lib/melo";
-import type { MeloTurn } from "@/lib/melo";
+import {
+  followUps,
+  meloActions,
+  spokenText,
+  speak,
+  stopSpeaking,
+  useCanSpeak,
+  useMelo,
+  useSpeakingId,
+  type MeloLink,
+  type MeloTurn,
+} from "@/lib/melo";
+import { toast } from "@/lib/store";
 
 /** The orange chef-hat tile used for Melo everywhere. */
 export function MeloMark({ size = 40, className }: { size?: number; className?: string }) {
@@ -117,16 +128,79 @@ function LinkChips({ links, onNavigate }: { links: MeloLink[]; onNavigate: () =>
   );
 }
 
+const ACTION = "flex size-11 items-center justify-center rounded-full hover:bg-icon-well";
+
+function AnswerActions({ turn }: { turn: MeloTurn }) {
+  const feedback = useMelo((s) => s.feedback[turn.id]);
+  const canSpeak = useCanSpeak();
+  const speakingId = useSpeakingId();
+  const sid = `melo-answer:${turn.id}`;
+  const speaking = speakingId === sid;
+  const copy = async () => {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("No clipboard");
+      await navigator.clipboard.writeText(turn.text);
+      toast.success("Copied");
+    } catch {
+      toast.error("Couldn't copy that answer");
+    }
+  };
+  return (
+    <div className="-ml-1.5 flex items-center text-text-secondary">
+      <button type="button" aria-label="Copy answer" onClick={() => void copy()} className={ACTION}>
+        <Icon name="copy" size={15} color="currentColor" />
+      </button>
+      {canSpeak && (
+        <button
+          type="button"
+          aria-label={speaking ? "Stop reading aloud" : "Read answer aloud"}
+          onClick={() =>
+            speaking
+              ? stopSpeaking()
+              : speak(
+                  sid,
+                  spokenText(turn.text, (turn.links ?? []).flatMap((l) => (l.card ? [l.card] : []))),
+                )
+          }
+          className={cn(ACTION, speaking && "bg-icon-well text-icon-well-ink")}
+        >
+          <Icon name={speaking ? "stop" : "speaker"} size={15} color="currentColor" />
+        </button>
+      )}
+      <button
+        type="button"
+        aria-label="Helpful"
+        aria-pressed={feedback === "up"}
+        onClick={() => meloActions.setFeedback(turn.id, "up")}
+        className={ACTION}
+      >
+        <Icon name="thumbsUp" size={15} color={feedback === "up" ? "var(--color-eyebrow)" : "currentColor"} />
+      </button>
+      <button
+        type="button"
+        aria-label="Not helpful"
+        aria-pressed={feedback === "down"}
+        onClick={() => meloActions.setFeedback(turn.id, "down")}
+        className={ACTION}
+      >
+        <Icon name="thumbsDown" size={15} color={feedback === "down" ? "var(--color-eyebrow)" : "currentColor"} />
+      </button>
+    </div>
+  );
+}
+
 export function MeloAnswer({
   turn,
   isLatest,
   onFollowUp,
   onNavigate,
+  showActions = true,
 }: {
   turn: MeloTurn;
   isLatest: boolean;
   onFollowUp: (text: string) => void;
   onNavigate: () => void;
+  showActions?: boolean;
 }) {
   const links = turn.links ?? [];
   const cards = links.filter((l) => l.card);
@@ -161,6 +235,7 @@ export function MeloAnswer({
         </ul>
       )}
       {chips.length > 0 && <LinkChips links={chips} onNavigate={onNavigate} />}
+      {showActions && <AnswerActions turn={turn} />}
       {isLatest && (
         <div>
           <p aria-hidden="true" className="text-xs type-meta text-text-secondary">
