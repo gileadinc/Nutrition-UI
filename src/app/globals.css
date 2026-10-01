@@ -311,3 +311,89 @@
     cursor: pointer;
   }
 }
+
+@utility type-body { font-weight: 300; }
+@utility type-button { font-weight: 600; }
+@utility type-button-secondary { font-weight: 500; }
+@utility type-display { font-weight: 700; }
+@utility type-eyebrow { font-weight: 600; }
+@utility type-item-title { font-weight: 500; }
+@utility type-meta { font-weight: 400; }
+@utility type-numeral { font-weight: 800; }
+@utility type-row-figure { font-weight: 600; }
+@utility type-section-title { font-weight: 600; }
+@utility type-supporting { font-weight: 300; }
+@utility type-unit { font-weight: 300; }
+
+@utility eyebrow {
+  color: var(--color-eyebrow);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+@utility rail-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility range-track {
+  appearance: none;
+  background: transparent;
+  &::-webkit-slider-runnable-track {
+    background: linear-gradient(to right, var(--color-progress) var(--fill, 0%), var(--color-border-default) var(--fill, 0%));
+    border-radius: 9999px;
+    height: 4px;
+  }
+  &::-moz-range-track {
+    background: linear-gradient(to right, var(--color-progress) var(--fill, 0%), var(--color-border-default) var(--fill, 0%));
+    border-radius: 9999px;
+    height: 4px;
+  }
+  &::-webkit-slider-thumb {
+    appearance: none;
+    background: var(--color-progress);
+    box-sizing: border-box;
+    border: 3px solid #fff;
+    border-radius: 9999px;
+    width: 20px;
+    height: 20px;
+    margin-top: -8px;
+  }
+  &::-moz-range-thumb {
+    background: var(--color-progress);
+    box-sizing: border-box;
+    border: 3px solid #fff;
+    border-radius: 9999px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@utility tap-44 {
+  &::after {
+    content: "";
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+  }
+}
+
+@utility tap-24 {
+  align-items: center;
+  min-height: 1.5rem;
+  display: inline-flex;
+}
+
+@utility panel {
+  border: 1px solid var(--color-border-default);
+  background-color: var(--color-surface-card);
+  border-radius: 1rem;
+}
