@@ -26,7 +26,13 @@ export interface AppImageProps {
  * Responsive webp image with a neutral placeholder if it fails to load (or has
  * no src).
  */
-export function AppImage({ src, alt, sizes = "100vw", className, priority = false }: AppImageProps) {
+export function AppImage({
+  src,
+  alt,
+  sizes = "100vw",
+  className,
+  priority = false,
+}: AppImageProps) {
   const [failed, setFailed] = useState<string | null>(null);
   if (!src || failed === src) {
     return (

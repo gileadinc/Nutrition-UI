@@ -8,7 +8,8 @@
  */
 
 import { useMemo, useSyncExternalStore } from "react";
-import { authApi, type SignInResponse } from "@/lib/api";
+import { authApi } from "@/lib/api";
+import type { SignInResponse } from "@/lib/api/endpoints/auth";
 import {
   clearGuestSessionId,
   clearSession,
@@ -90,7 +91,10 @@ export function useAppSession(): AppSession {
 }
 
 /** Non-hook read (event handlers, effects). */
-export function getAppSession(): Pick<AppSession, "status" | "isSignedIn" | "isGuest" | "guestSessionId"> {
+export function getAppSession(): Pick<
+  AppSession,
+  "status" | "isSignedIn" | "isGuest" | "guestSessionId"
+> {
   const token = Boolean(getSession().accessToken);
   const guestSessionId = getGuestSessionId();
   const isGuest = !token && Boolean(guestSessionId);

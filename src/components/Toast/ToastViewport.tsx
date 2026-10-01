@@ -58,12 +58,18 @@ function ToastCard({ toast }: { toast: ToastItem }) {
       )}
       style={{ boxShadow: "var(--shadow-raised)" }}
     >
-      <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl", tone.well)}>
+      <span
+        className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl", tone.well)}
+      >
         <Icon name={tone.icon} size={18} color={tone.ink} />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-sm type-item-title tracking-[-0.63px] text-text-primary">{toast.title}</p>
-        {toast.body && <p className="mt-0.5 type-meta text-[13px] leading-5 text-text-secondary">{toast.body}</p>}
+        <p className="text-sm type-item-title tracking-[-0.63px] text-text-primary">
+          {toast.title}
+        </p>
+        {toast.body && (
+          <p className="mt-0.5 type-meta text-[13px] leading-5 text-text-secondary">{toast.body}</p>
+        )}
         {(toast.action || toast.link) && (
           <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
             {toast.action && (

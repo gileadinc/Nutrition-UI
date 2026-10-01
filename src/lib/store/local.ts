@@ -18,7 +18,9 @@ function read(): string[] {
     const raw = window.localStorage.getItem(RECENT_KEY);
     if (raw === cached.raw) return cached.value;
     const parsed = raw ? (JSON.parse(raw) as unknown) : [];
-    const value = Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === "string") : EMPTY;
+    const value = Array.isArray(parsed)
+      ? parsed.filter((x): x is string => typeof x === "string")
+      : EMPTY;
     cached = { raw, value: value.length ? value : EMPTY };
     return cached.value;
   } catch {

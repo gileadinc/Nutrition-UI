@@ -30,7 +30,15 @@ import { invalidate } from "./resource";
 /* ------------------------------------------------------------------ steps */
 
 /** Answer steps in order. */
-export const QUESTION_STEPS = ["dob", "goal", "encourage", "height", "weight", "activity", "surgery"] as const;
+export const QUESTION_STEPS = [
+  "dob",
+  "goal",
+  "encourage",
+  "height",
+  "weight",
+  "activity",
+  "surgery",
+] as const;
 /** Post-answer steps. */
 export const RESULT_STEPS = ["building", "reveal", "save"] as const;
 export type QuestionStep = (typeof QUESTION_STEPS)[number];
@@ -73,7 +81,13 @@ export function loadDraft(): QuestionnaireDraft | null {
     const raw = window.localStorage.getItem(DRAFT_KEY);
     if (!raw) return null;
     const d = JSON.parse(raw) as Record<string, unknown>;
-    if (typeof d !== "object" || !d || typeof d.dob !== "string" || !finite(d.heightIn) || !finite(d.weightLb)) {
+    if (
+      typeof d !== "object" ||
+      !d ||
+      typeof d.dob !== "string" ||
+      !finite(d.heightIn) ||
+      !finite(d.weightLb)
+    ) {
       return null;
     }
     return {
@@ -172,15 +186,20 @@ export async function getOrCreateOnboardingSession(): Promise<OnboardingSession>
  * Persist the finished questionnaire: backend onboarding session (always) and
  * the profile (when signed in). Clears the local draft on success.
  */
-export async function submitQuestionnaire(draft: QuestionnaireDraft): Promise<QuestionnaireResult> {
+export async function submitQuestionnaire(
+  draft: QuestionnaireDraft,
+  opts: { omit?: ("height" | "weight")[] } = {},
+): Promise<QuestionnaireResult> {
+  const omitHeight = opts.omit?.includes("height") ?? false;
+  const omitWeight = opts.omit?.includes("weight") ?? false;
   const result = resultFromDraft(draft);
   const session = await getOrCreateOnboardingSession();
   const update = {
     goal: draft.goal ?? undefined,
     dateOfBirth: result.dateOfBirth ?? undefined,
     age: result.age ?? undefined,
-    heightCm: result.heightCm,
-    weightKg: result.weightKg,
+    heightCm: omitHeight ? undefined : result.heightCm,
+    weightKg: omitWeight ? undefined : result.weightKg,
     unitsPreference: draft.heightImperial && draft.weightImperial ? "imperial" : "metric",
     activityLevel: draft.activityLevel ?? undefined,
     surgicalContext: draft.surgicalContext ?? undefined,

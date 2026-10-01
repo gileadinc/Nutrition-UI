@@ -53,8 +53,20 @@ export function budgetFromSummary(summary: DailySummary | null | undefined): Bud
   const waterConsumed = (totals?.waterMl ?? 0) / ML_PER_OZ;
   const waterGoal = targets?.waterMl ? targets.waterMl / ML_PER_OZ : DEFAULT_TARGETS.waterOz;
   return {
-    calories: line("calories", "Calories", "kcal", totals?.calories ?? 0, targets?.calories || DEFAULT_TARGETS.calories),
-    protein: line("protein", "Protein", "g", totals?.protein ?? 0, targets?.protein || DEFAULT_TARGETS.protein),
+    calories: line(
+      "calories",
+      "Calories",
+      "kcal",
+      totals?.calories ?? 0,
+      targets?.calories || DEFAULT_TARGETS.calories,
+    ),
+    protein: line(
+      "protein",
+      "Protein",
+      "g",
+      totals?.protein ?? 0,
+      targets?.protein || DEFAULT_TARGETS.protein,
+    ),
     water: line("water", "Water", "oz", waterConsumed, waterGoal),
     personalised: !!targets?.calories,
   };

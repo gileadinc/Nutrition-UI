@@ -6,11 +6,7 @@ export { useApiResource } from "./useApiResource";
 export type { ApiResource } from "./useApiResource";
 export { useOnboardingSession } from "./useOnboardingSession";
 export type { UseOnboardingSession } from "./useOnboardingSession";
-export {
-  useSavedItems,
-  refreshSavedItems,
-  patchSavedItemsCache,
-} from "./useSavedItems";
+export { useSavedItems, refreshSavedItems, patchSavedItemsCache } from "./useSavedItems";
 export type { UseSavedItems } from "./useSavedItems";
 export {
   useIsDesktop,

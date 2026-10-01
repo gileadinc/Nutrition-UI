@@ -72,12 +72,15 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     // Backend error envelope: { success: false, message, statusCode, details? }.
     // Older mock responses used a nested { error: { code, message, details } }.
     const legacy = payload.error;
-    throw new ApiError(legacy?.message ?? payload.message ?? `Request failed with status ${response.status}.`, {
-      kind: "api",
-      status: payload.statusCode ?? response.status,
-      code: legacy?.code,
-      details: legacy?.details ?? payload.details,
-    });
+    throw new ApiError(
+      legacy?.message ?? payload.message ?? `Request failed with status ${response.status}.`,
+      {
+        kind: "api",
+        status: payload.statusCode ?? response.status,
+        code: legacy?.code,
+        details: legacy?.details ?? payload.details,
+      },
+    );
   }
 
   if (!response.ok) {

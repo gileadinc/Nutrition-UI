@@ -135,7 +135,9 @@ export function useCached<T>(key: string | null, fetcher: () => Promise<T>): Cac
     (next: T | ((prev: T | undefined) => T)) => {
       if (!key) return;
       const prev = getEntry(key).data as T | undefined;
-      patch(key, { data: typeof next === "function" ? (next as (p: T | undefined) => T)(prev) : next });
+      patch(key, {
+        data: typeof next === "function" ? (next as (p: T | undefined) => T)(prev) : next,
+      });
     },
     [key],
   );
@@ -157,5 +159,7 @@ export function keyOf(name: string, params?: object | null): string {
   const entries = Object.entries(params as Record<string, unknown>)
     .filter(([, v]) => v !== undefined && v !== null && v !== "")
     .sort(([a], [b]) => a.localeCompare(b));
-  return entries.length ? `${name}?${entries.map(([k, v]) => `${k}=${String(v)}`).join("&")}` : name;
+  return entries.length
+    ? `${name}?${entries.map(([k, v]) => `${k}=${String(v)}`).join("&")}`
+    : name;
 }

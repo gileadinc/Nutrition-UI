@@ -32,12 +32,20 @@ export function GuestFeatureGate({
   const navigate = useNavigate();
   const desktop = useIsDesktop();
   return (
-    <div className={cn("fixed inset-0 z-50 flex bg-black/55", desktop ? "items-center justify-center p-6" : "items-end")}>
+    <div
+      className={cn(
+        "fixed inset-0 z-50 flex bg-black/55",
+        desktop ? "items-center justify-center p-6" : "items-end",
+      )}
+    >
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Account required"
-        className={cn("w-full bg-white px-6 pb-6 pt-3", desktop ? "max-w-md rounded-3xl p-8" : "rounded-t-[32px]")}
+        className={cn(
+          "w-full bg-white px-6 pb-6 pt-3",
+          desktop ? "max-w-md rounded-3xl p-8" : "rounded-t-[32px]",
+        )}
         style={{ boxShadow: "var(--shadow-raised)" }}
       >
         {!desktop && <div className="mx-auto h-1 w-10 rounded-2xl bg-border-default" />}
@@ -52,8 +60,8 @@ export function GuestFeatureGate({
             {feature ? `${feature} needs an account` : "This feature needs an account"}
           </h1>
           <p className="mt-4 text-[15px] text-text-secondary">
-            Tracking meals, saving favourites and personalised recommendations need somewhere to save to. Creating
-            an account is free and takes about a minute — no credit card required.
+            Tracking meals, saving favourites and personalised recommendations need somewhere to
+            save to. Creating an account is free and takes about a minute — no credit card required.
           </p>
           <ul className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2.5">
             {PERKS.map((p) => (
@@ -66,7 +74,9 @@ export function GuestFeatureGate({
           <div className="mt-6 flex w-full flex-col gap-3">
             <PrimaryButton
               label="Create free account"
-              onPress={() => navigate(next ? `/signup?next=${encodeURIComponent(next)}` : "/signup")}
+              onPress={() =>
+                navigate(next ? `/signup?next=${encodeURIComponent(next)}` : "/signup")
+              }
             />
             <SecondaryButton
               label="Continue browsing"
@@ -102,7 +112,11 @@ export function GuestGateProvider({ children }: { children: ReactNode }) {
         {children}
       </div>
       {feature !== null && (
-        <GuestFeatureGate feature={feature} next={`${pathname}${search}`} onDismiss={() => setFeature(null)} />
+        <GuestFeatureGate
+          feature={feature}
+          next={`${pathname}${search}`}
+          onDismiss={() => setFeature(null)}
+        />
       )}
     </GuestGateContext.Provider>
   );

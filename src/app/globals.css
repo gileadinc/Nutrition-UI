@@ -282,7 +282,21 @@
     letter-spacing: -0.011em;
     font-weight: 300;
   }
-  h1, h2, h3, h4, h5, h6, button, label, legend, th, dt, strong, b, select, summary {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  button,
+  label,
+  legend,
+  th,
+  dt,
+  strong,
+  b,
+  select,
+  summary {
     font-weight: 400;
   }
   :focus-visible {

@@ -21,7 +21,13 @@ export function GoogleLogo({ size = 20 }: { size?: number }) {
   );
 }
 
-export function AppleLogo({ size = 20, color = "currentColor" }: { size?: number; color?: string }) {
+export function AppleLogo({
+  size = 20,
+  color = "currentColor",
+}: {
+  size?: number;
+  color?: string;
+}) {
   return (
     <svg
       height={size}

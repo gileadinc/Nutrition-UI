@@ -8,10 +8,13 @@ import { useAppSession } from "./session";
 /** Notification centre (`/api/profile/me/notifications`), signed in only. */
 export function useNotifications() {
   const s = useAppSession();
-  const res = useCached<AppNotification[]>(s.isSignedIn ? "profile:notifications" : null, async () => {
-    const r = await profileApi.listNotifications();
-    return Array.isArray(r) ? r : r.items;
-  });
+  const res = useCached<AppNotification[]>(
+    s.isSignedIn ? "profile:notifications" : null,
+    async () => {
+      const r = await profileApi.listNotifications();
+      return Array.isArray(r) ? r : r.items;
+    },
+  );
   const items = useMemo(() => res.data ?? [], [res.data]);
   const unreadCount = items.filter((n) => !n.read).length;
 
@@ -35,5 +38,13 @@ export function useNotifications() {
     [res],
   );
 
-  return { items, unreadCount, isLoading: res.isLoading, error: res.error, markRead, markAllRead, dismiss };
+  return {
+    items,
+    unreadCount,
+    isLoading: res.isLoading,
+    error: res.error,
+    markRead,
+    markAllRead,
+    dismiss,
+  };
 }

@@ -48,9 +48,9 @@ export function useOnboardingSession(): UseOnboardingSession {
     const guestId = getGuestSessionId() ?? undefined;
 
     const load = existingId
-      ? onboardingApi.getOnboardingSession(existingId).catch(() =>
-          onboardingApi.createOnboardingSession({ sessionId: guestId }),
-        )
+      ? onboardingApi
+          .getOnboardingSession(existingId)
+          .catch(() => onboardingApi.createOnboardingSession({ sessionId: guestId }))
       : onboardingApi.createOnboardingSession({ sessionId: guestId });
 
     load

@@ -50,7 +50,12 @@ export interface SecondaryButtonProps {
 }
 
 /** Full-width white outlined button with navy text. */
-export function SecondaryButton({ label, onPress, disabled = false, className }: SecondaryButtonProps) {
+export function SecondaryButton({
+  label,
+  onPress,
+  disabled = false,
+  className,
+}: SecondaryButtonProps) {
   return (
     <button
       type="button"

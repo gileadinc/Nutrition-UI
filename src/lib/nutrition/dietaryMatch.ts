@@ -106,7 +106,8 @@ export const dietaryMatch = {
     const canonical = dietaryMatch.allergensIn(r).filter((a) => set.has(a));
     const text = haystack(r);
     const custom = allergies.filter(
-      (a) => !(a in ALLERGEN_KEYWORDS) && a.trim().length >= 3 && text.includes(a.trim().toLowerCase()),
+      (a) =>
+        !(a in ALLERGEN_KEYWORDS) && a.trim().length >= 3 && text.includes(a.trim().toLowerCase()),
     );
     return [...canonical, ...custom];
   },

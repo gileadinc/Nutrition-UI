@@ -115,7 +115,11 @@ function SideRail({ pathname }: { pathname: string }) {
       data-variant="rail"
       className="panel sticky top-0 flex h-[calc(100dvh-1.25rem)] w-52 shrink-0 flex-col overflow-y-auto p-3 shadow-card lg:w-64 lg:p-4"
     >
-      <Link to="/home" className="tap-44 relative mb-4 flex shrink-0 items-center px-1" aria-label="ForkThis home">
+      <Link
+        to="/home"
+        className="tap-44 relative mb-4 flex shrink-0 items-center px-1"
+        aria-label="ForkThis home"
+      >
         <Logo size="md" decorative />
       </Link>
       <div className="flex flex-col gap-1">
@@ -186,7 +190,9 @@ function TabBar() {
                   <span
                     className={cn(
                       "mt-[3px] text-[11px] leading-none",
-                      isActive ? "type-button text-accent-ink" : "type-button-secondary text-text-secondary",
+                      isActive
+                        ? "type-button text-accent-ink"
+                        : "type-button-secondary text-text-secondary",
                     )}
                     style={{ letterSpacing: "-0.495px" }}
                   >
@@ -231,7 +237,10 @@ export function AppShell({ children }: { children: ReactNode }) {
               id="main"
               ref={main}
               tabIndex={-1}
-              className={cn("min-w-0 focus:outline-none", pad ? "pb-[76px] md:pb-6" : !desktop && "pb-[60px]")}
+              className={cn(
+                "min-w-0 focus:outline-none",
+                pad ? "pb-[76px] md:pb-6" : !desktop && "pb-[60px]",
+              )}
             >
               {children}
             </main>

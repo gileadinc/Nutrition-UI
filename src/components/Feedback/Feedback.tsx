@@ -11,7 +11,10 @@ export function Skeleton({ className }: { className?: string }) {
   return (
     <span
       aria-hidden="true"
-      className={cn("block animate-pulse rounded-md bg-brand-warm-gray motion-reduce:animate-none", className)}
+      className={cn(
+        "block animate-pulse rounded-md bg-brand-warm-gray motion-reduce:animate-none",
+        className,
+      )}
     />
   );
 }
@@ -226,7 +229,10 @@ export function RouteErrorPanel({ error, reset }: { error?: Error; reset?: () =>
         tone="error"
         title="This screen didn't load"
         body="Something failed while opening this page. Your account data is safe on our servers."
-        primary={{ label: reset ? "Try again" : "Reload the page", onPress: reset ?? (() => window.location.reload()) }}
+        primary={{
+          label: reset ? "Try again" : "Reload the page",
+          onPress: reset ?? (() => window.location.reload()),
+        }}
         secondary={{ label: "Go to Home", to: "/home" }}
         detail={error?.message}
       />

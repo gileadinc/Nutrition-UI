@@ -49,12 +49,21 @@ const sameDay = (iso: string, date: string) => isoDate(new Date(iso)) === date;
 /** Daily totals + targets for `date` (default today). */
 export function useDailySummary(date: string = isoDate(new Date())) {
   const s = useAppSession();
-  const key = !s.ready ? null : s.isSignedIn ? `tracking:summary:${date}` : s.isGuest ? `tracking:guest-summary:${date}` : null;
+  const key = !s.ready
+    ? null
+    : s.isSignedIn
+      ? `tracking:summary:${date}`
+      : s.isGuest
+        ? `tracking:guest-summary:${date}`
+        : null;
   return useCached<DailySummary>(key, async () => {
     if (getAppSession().isSignedIn) return trackingApi.getDailySummary(date);
     const id = getAppSession().guestSessionId!;
     const res = await trackingApi.listGuestEntries(id, { limit: 200 });
-    return summarize(date, res.items.filter((e) => sameDay(e.loggedAt, date)));
+    return summarize(
+      date,
+      res.items.filter((e) => sameDay(e.loggedAt, date)),
+    );
   });
 }
 

@@ -87,7 +87,11 @@ export function AppTextField({
             aria-label={revealed ? "Hide password" : "Show password"}
             className="absolute right-1.5 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-focus"
           >
-            <Icon name={revealed ? "eyeOff" : "eye"} size={20} color="var(--color-text-secondary)" />
+            <Icon
+              name={revealed ? "eyeOff" : "eye"}
+              size={20}
+              color="var(--color-text-secondary)"
+            />
           </button>
         )}
       </div>

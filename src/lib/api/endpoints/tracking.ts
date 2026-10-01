@@ -81,7 +81,9 @@ export function getFirstTimeState(): Promise<unknown> {
 
 /* ---- Guest ---- */
 
-export function createGuestEntry(input: EntryInput & { sessionId: string }): Promise<NutritionEntry> {
+export function createGuestEntry(
+  input: EntryInput & { sessionId: string },
+): Promise<NutritionEntry> {
   return apiClient.post<NutritionEntry>("/api/tracking/guest/entries", input);
 }
 

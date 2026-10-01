@@ -89,7 +89,8 @@ export const BMI_BANDS = [
   { label: "Overweight", start: 25, end: 30 },
   { label: "Obesity", start: 30, end: 45 },
 ] as const;
-export const bmiBand = (bmi: number) => BMI_BANDS.find((b) => bmi < b.end) ?? BMI_BANDS[BMI_BANDS.length - 1];
+export const bmiBand = (bmi: number) =>
+  BMI_BANDS.find((b) => bmi < b.end) ?? BMI_BANDS[BMI_BANDS.length - 1];
 
 export const inchesToCm = (inches: number) => inches * 2.54;
 export const cmToInches = (cm: number) => cm / 2.54;
@@ -139,7 +140,8 @@ export function parseMealLabel(v: string | null | undefined): MealLabel | null {
 /** API meal type ("breakfast") <-> UI label ("Breakfast"). */
 export const mealLabel = (t: string): MealLabel =>
   MEAL_TYPES.find((m) => m.toLowerCase() === t.toLowerCase()) ?? "Snack";
-export const mealApi = (l: MealLabel) => l.toLowerCase() as "breakfast" | "lunch" | "dinner" | "snack";
+export const mealApi = (l: MealLabel) =>
+  l.toLowerCase() as "breakfast" | "lunch" | "dinner" | "snack";
 
 /** Portion multipliers offered in the portion sheet. */
 export const PORTION_STEPS = [0.5, 1, 1.5, 2] as const;

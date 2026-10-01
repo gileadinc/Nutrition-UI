@@ -125,13 +125,11 @@ export interface UseProfile {
 
 export function useProfile(): UseProfile {
   const session = useAppSession();
-  const account = useCached<Profile>(
-    session.isSignedIn ? "profile:account" : null,
-    () => profileApi.getProfile(),
+  const account = useCached<Profile>(session.isSignedIn ? "profile:account" : null, () =>
+    profileApi.getProfile(),
   );
-  const guest = useCached<OnboardingSession>(
-    session.isGuest ? "profile:guest" : null,
-    () => getOrCreateOnboardingSession(),
+  const guest = useCached<OnboardingSession>(session.isGuest ? "profile:guest" : null, () =>
+    getOrCreateOnboardingSession(),
   );
 
   const profile = useMemo(
@@ -186,4 +184,5 @@ export function useProfile(): UseProfile {
 }
 
 /** First name for greetings, or null. */
-export const firstNameOf = (p: UserProfile | null) => p?.firstName.trim() || p?.name.split(" ")[0] || null;
+export const firstNameOf = (p: UserProfile | null) =>
+  p?.firstName.trim() || p?.name.split(" ")[0] || null;

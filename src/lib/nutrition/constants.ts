@@ -40,7 +40,11 @@ export type Allergen = (typeof ALLERGEN)[keyof typeof ALLERGEN];
 export const ALLERGENS: Allergen[] = Object.values(ALLERGEN);
 
 /** Add a custom (free-text) entry to a list, de-duplicating case-insensitively and preferring the canonical spelling. */
-export function addCustomEntry(list: string[], raw: string, canonical: readonly string[]): string[] {
+export function addCustomEntry(
+  list: string[],
+  raw: string,
+  canonical: readonly string[],
+): string[] {
   const value = raw.trim().replace(/\s+/g, " ");
   if (!value) return list;
   const match = canonical.find((c) => c.toLowerCase() === value.toLowerCase()) ?? value;
@@ -58,11 +62,7 @@ export const GOAL_KEYS = Object.keys(GOAL_LABEL) as GoalKey[];
 export const isGoalKey = (v: unknown): v is GoalKey => typeof v === "string" && v in GOAL_LABEL;
 
 export type ActivityKey =
-  | "mostlyInactive"
-  | "lightlyActive"
-  | "moderatelyActive"
-  | "veryActive"
-  | "extremelyActive";
+  "mostlyInactive" | "lightlyActive" | "moderatelyActive" | "veryActive" | "extremelyActive";
 export const ACTIVITY_LABEL: Record<ActivityKey, string> = {
   mostlyInactive: "Sedentary",
   lightlyActive: "Lightly active",
@@ -95,7 +95,9 @@ const SURGICAL_LEGACY: Record<string, string> = {
 /** Map legacy/unknown values onto the current vocabulary; null when unrecognised. */
 export function normalizeSurgicalContext(v: string | null | undefined): SurgicalContext | null {
   const mapped = SURGICAL_LEGACY[v ?? ""] ?? v ?? "";
-  return (SURGICAL_CONTEXTS as readonly string[]).includes(mapped) ? (mapped as SurgicalContext) : null;
+  return (SURGICAL_CONTEXTS as readonly string[]).includes(mapped)
+    ? (mapped as SurgicalContext)
+    : null;
 }
 
 /** Recipe listing quick filters (chips). */

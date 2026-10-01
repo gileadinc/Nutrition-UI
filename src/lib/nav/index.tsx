@@ -24,13 +24,7 @@ import {
   useSearchParams as useNextSearchParams,
   useParams as useNextParams,
 } from "next/navigation";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  type AnchorHTMLAttributes,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useMemo, type AnchorHTMLAttributes, type ReactNode } from "react";
 
 export interface NavigateOptions {
   replace?: boolean;
@@ -45,8 +39,8 @@ export type NavigateFn = {
 
 export function useNavigate(): NavigateFn {
   const router = useRouter();
-  return useCallback(
-    ((to: string | number, options?: NavigateOptions) => {
+  const fn = useCallback(
+    (to: string | number, options?: NavigateOptions) => {
       if (typeof to === "number") {
         if (to === -1) router.back();
         else if (to === 1) router.forward();
@@ -55,9 +49,10 @@ export function useNavigate(): NavigateFn {
       }
       if (options?.replace) router.replace(to);
       else router.push(to);
-    }) as NavigateFn,
+    },
     [router],
   );
+  return fn as NavigateFn;
 }
 
 /**
@@ -76,10 +71,7 @@ export function useLocation() {
   const pathname = usePathname();
   const params = useNextSearchParams();
   const search = params.toString();
-  return useMemo(
-    () => ({ pathname, search: search ? `?${search}` : "" }),
-    [pathname, search],
-  );
+  return useMemo(() => ({ pathname, search: search ? `?${search}` : "" }), [pathname, search]);
 }
 
 export function useSearchParams(): [
@@ -111,8 +103,7 @@ export function useParams<T extends Record<string, string> = Record<string, stri
   return useNextParams() as unknown as T;
 }
 
-export interface LinkProps
-  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
+export interface LinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
   to: string;
   replace?: boolean;
   scroll?: boolean;
@@ -126,8 +117,7 @@ export function Link({ to, state: _state, ...rest }: LinkProps) {
   return <NextLink href={to} {...rest} />;
 }
 
-export interface NavLinkProps
-  extends Omit<LinkProps, "className" | "children"> {
+export interface NavLinkProps extends Omit<LinkProps, "className" | "children"> {
   className?: string | ((s: { isActive: boolean }) => string);
   children?: ReactNode | ((s: { isActive: boolean }) => ReactNode);
   /** Match only the exact path (default: prefix match on segment boundary). */

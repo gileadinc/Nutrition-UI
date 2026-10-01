@@ -21,7 +21,9 @@ import { keyOf, useCached } from "./resource";
 import { useAppSession } from "./session";
 
 export const useRecipes = (params?: RecipeListParams) =>
-  useCached<Paginated<Recipe>>(keyOf("catalog:recipes", params), () => recipesApi.listRecipes(params));
+  useCached<Paginated<Recipe>>(keyOf("catalog:recipes", params), () =>
+    recipesApi.listRecipes(params),
+  );
 
 export const useRecipe = (id: string | null | undefined) =>
   useCached<Recipe>(id ? `catalog:recipe:${id}` : null, () => recipesApi.getRecipe(id!));
@@ -32,7 +34,9 @@ export const useSimilarRecipes = (id: string | null | undefined, limit = 4) =>
   );
 
 export const useFastHacks = (params?: EatOutListParams) =>
-  useCached<Paginated<FastHack>>(keyOf("catalog:hacks", params), () => eatOutApi.listFastHacks(params));
+  useCached<Paginated<FastHack>>(keyOf("catalog:hacks", params), () =>
+    eatOutApi.listFastHacks(params),
+  );
 
 export const useFastHack = (id: string | null | undefined) =>
   useCached<FastHack>(id ? `catalog:hack:${id}` : null, () => eatOutApi.getFastHack(id!));
@@ -63,9 +67,13 @@ export const useDiscoveryFilters = () =>
  */
 export function useHome(params?: DiscoveryParams) {
   const s = useAppSession();
-  const signed = useCached<HomeFeed>(s.isSignedIn ? "home:feed" : null, () => discoveryApi.getHome());
+  const signed = useCached<HomeFeed>(s.isSignedIn ? "home:feed" : null, () =>
+    discoveryApi.getHome(),
+  );
   const guest = useCached<GuestHome>(
-    !s.isSignedIn && s.ready ? keyOf("home:guest", { ...params, sessionId: s.guestSessionId }) : null,
+    !s.isSignedIn && s.ready
+      ? keyOf("home:guest", { ...params, sessionId: s.guestSessionId })
+      : null,
     () => discoveryApi.getGuestHome({ ...params, sessionId: s.guestSessionId ?? undefined }),
   );
   return { signedIn: signed, guest, isSignedIn: s.isSignedIn };

@@ -78,7 +78,14 @@ export function FilterSheet(props: FilterSheetProps) {
   return createPortal(<SheetBody {...props} />, document.body);
 }
 
-function SheetBody({ onClose, label, activeCount, onReset, resultLabel, children }: FilterSheetProps) {
+function SheetBody({
+  onClose,
+  label,
+  activeCount,
+  onReset,
+  resultLabel,
+  children,
+}: FilterSheetProps) {
   const panel = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);
   useEffect(() => {
@@ -110,7 +117,8 @@ function SheetBody({ onClose, label, activeCount, onReset, resultLabel, children
         first.focus();
       }
     };
-    const mql = typeof window.matchMedia === "function" ? window.matchMedia("(min-width: 1024px)") : null;
+    const mql =
+      typeof window.matchMedia === "function" ? window.matchMedia("(min-width: 1024px)") : null;
     const onMq = (e: MediaQueryListEvent) => {
       if (e.matches) closeRef.current();
     };
@@ -147,9 +155,14 @@ function SheetBody({ onClose, label, activeCount, onReset, resultLabel, children
         className="filter-sheet-panel relative flex max-h-[85dvh] w-full flex-col overflow-hidden rounded-t-[20px] bg-white focus:outline-none md:h-dvh md:max-h-none md:w-[420px] md:rounded-none md:rounded-l-[20px]"
       >
         <header className="shrink-0 border-b border-border-divider px-5 pb-2">
-          <span aria-hidden className="mx-auto mt-2.5 block h-1 w-9 rounded-full bg-border-default md:hidden" />
+          <span
+            aria-hidden
+            className="mx-auto mt-2.5 block h-1 w-9 rounded-full bg-border-default md:hidden"
+          />
           <div className="flex min-h-12 items-center gap-2 pt-1 md:pt-3">
-            <h2 className="text-[20px] type-section-title tracking-[-0.9px] text-brand-navy">Filters</h2>
+            <h2 className="text-[20px] type-section-title tracking-[-0.9px] text-brand-navy">
+              Filters
+            </h2>
             {activeCount > 0 && <CountBadge count={activeCount} />}
             <button
               type="button"
@@ -208,7 +221,9 @@ export function FilterSection({
           className="flex min-h-14 w-full items-center gap-3 py-2.5 text-left"
         >
           <span className="min-w-0 flex-1">
-            <span className="block text-[14px] type-item-title tracking-[-0.4px] text-brand-navy">{title}</span>
+            <span className="block text-[14px] type-item-title tracking-[-0.4px] text-brand-navy">
+              {title}
+            </span>
             {!open && (
               <span
                 className={cn(
@@ -222,7 +237,10 @@ export function FilterSection({
           </span>
           <span
             aria-hidden
-            className={cn("flex transition-transform motion-reduce:transition-none", open ? "-rotate-90" : "rotate-90")}
+            className={cn(
+              "flex transition-transform motion-reduce:transition-none",
+              open ? "-rotate-90" : "rotate-90",
+            )}
           >
             <Icon name="chevronRight" size={16} color="var(--color-text-secondary)" />
           </span>
@@ -277,7 +295,11 @@ export function FitsTodayToggle({
           disabled && "cursor-not-allowed opacity-60",
         )}
       >
-        <Icon name="target" size={18} color={checked ? "var(--color-primary)" : "var(--color-brand-navy)"} />
+        <Icon
+          name="target"
+          size={18}
+          color={checked ? "var(--color-primary)" : "var(--color-brand-navy)"}
+        />
         <span className="min-w-0 flex-1">
           <span className="block text-[14px] type-item-title tracking-[-0.4px] text-brand-navy">
             Fits what&apos;s left today
@@ -322,7 +344,11 @@ export function ChipGroup({
   if (options.length === 0) return null;
   return (
     <fieldset>
-      <legend className={cn(showLegend ? "mb-2 text-[12px] type-item-title text-text-secondary" : "sr-only")}>
+      <legend
+        className={cn(
+          showLegend ? "mb-2 text-[12px] type-item-title text-text-secondary" : "sr-only",
+        )}
+      >
         {legend}
       </legend>
       <div className="flex flex-wrap gap-2">
@@ -353,7 +379,11 @@ export function ChipGroup({
                 aria-hidden
                 className={cn(
                   "text-[11px] type-meta",
-                  on ? "text-on-selected/85" : disabled ? "text-text-neutral-400" : "text-text-secondary",
+                  on
+                    ? "text-on-selected/85"
+                    : disabled
+                      ? "text-text-neutral-400"
+                      : "text-text-secondary",
                 )}
               >
                 {o.count}
@@ -403,7 +433,9 @@ export function RangeSlider({
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         className="range-track h-11 w-full cursor-pointer"
-        style={{ "--fill": `${max === min ? 0 : ((value - min) / (max - min)) * 100}%` } as CSSProperties}
+        style={
+          { "--fill": `${max === min ? 0 : ((value - min) / (max - min)) * 100}%` } as CSSProperties
+        }
       />
     </div>
   );
@@ -430,7 +462,8 @@ export function CheckList({
   const id = useId();
   const q = query.trim().toLowerCase();
   const matches = q ? options.filter((o) => o.label.toLowerCase().includes(q)) : options;
-  const shown = q || all ? matches : matches.filter((o, i) => i < initialVisible || selected.includes(o.value));
+  const shown =
+    q || all ? matches : matches.filter((o, i) => i < initialVisible || selected.includes(o.value));
   const hidden = matches.length - shown.length;
   return (
     <fieldset>
@@ -474,10 +507,16 @@ export function CheckList({
                     <BrandMark restaurant={o.value} />
                   </span>
                 ) : (
-                  <span aria-hidden className="size-[22px] shrink-0 rounded-[7px] bg-brand-warm-gray" />
+                  <span
+                    aria-hidden
+                    className="size-[22px] shrink-0 rounded-[7px] bg-brand-warm-gray"
+                  />
                 )}
                 <span
-                  className={cn("min-w-0 flex-1 truncate text-[13px] type-item-title", disabled && "line-through")}
+                  className={cn(
+                    "min-w-0 flex-1 truncate text-[13px] type-item-title",
+                    disabled && "line-through",
+                  )}
                 >
                   {o.label}
                 </span>
@@ -644,7 +683,10 @@ export function AppliedFilters({
   if (filters.length === 0) return null;
   return (
     <div className="flex items-center gap-2 pb-2.5">
-      <ul aria-label="Applied filters" className="rail-scroll -my-1 flex min-w-0 flex-1 gap-2 overflow-x-auto py-1">
+      <ul
+        aria-label="Applied filters"
+        className="rail-scroll -my-1 flex min-w-0 flex-1 gap-2 overflow-x-auto py-1"
+      >
         {filters.map((f) => (
           <li key={f.label} className="shrink-0">
             <button
@@ -725,7 +767,10 @@ export function FacetGroup({
               {o.label}
               <span
                 aria-hidden
-                className={cn("text-[11px] type-meta", on ? "text-on-selected/80" : "text-text-neutral-500")}
+                className={cn(
+                  "text-[11px] type-meta",
+                  on ? "text-on-selected/80" : "text-text-neutral-500",
+                )}
               >
                 {o.count}
               </span>
@@ -760,7 +805,11 @@ export function AdvancedFilters({
         <Icon name="filterSliders" size={15} color="var(--color-brand-navy)" />
         Advanced
         {activeCount > 0 && <CountBadge count={activeCount} />}
-        <Icon name={open ? "arrowUpSmall" : "arrowDownSmall"} size={14} color="var(--color-text-secondary)" />
+        <Icon
+          name={open ? "arrowUpSmall" : "arrowDownSmall"}
+          size={14}
+          color="var(--color-text-secondary)"
+        />
       </button>
       {open && <div className="mt-4 flex flex-col gap-5">{children}</div>}
     </div>

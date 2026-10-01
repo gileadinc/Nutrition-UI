@@ -86,7 +86,9 @@ export function FoodCard({
           )}
         </ProductCardImage>
         <ProductCardContent className="border-t border-border-default/70 px-[14px] pb-[10px] pt-[11px]">
-          <ProductCardTitle className={cn("text-[15px] leading-[1.1] tracking-[-0.675px]", onSave && "pr-7")}>
+          <ProductCardTitle
+            className={cn("text-[15px] leading-[1.1] tracking-[-0.675px]", onSave && "pr-7")}
+          >
             {title}
           </ProductCardTitle>
           {subtitle && (

@@ -11,8 +11,10 @@ const SIZES = {
   lg: { box: "h-12", text: "text-[15px]", icon: 18, pad: "pl-4" },
 } as const;
 
-export interface SearchFieldProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "onChange" | "value" | "size"> {
+export interface SearchFieldProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "onChange" | "value" | "size"
+> {
   /** Accessible label (visually hidden). */
   label: string;
   value: string;

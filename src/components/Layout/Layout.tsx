@@ -54,7 +54,9 @@ export function TwoColumn({
         className,
       )}
     >
-      <div className={cn("min-w-0", mobileSidebar === "before" && "order-2 xl:order-1")}>{children}</div>
+      <div className={cn("min-w-0", mobileSidebar === "before" && "order-2 xl:order-1")}>
+        {children}
+      </div>
       <aside
         aria-label={sidebarLabel}
         className={cn(
@@ -86,9 +88,19 @@ function relatedFor(pathname: string): { eyebrow: string; title: string; links: 
       title: "Keep today current",
       links: [
         { label: "Track dashboard", detail: "Today at a glance", to: "/track", icon: "activity" },
-        { label: "Log a meal", detail: "Calories and macros", to: "/track/log-meal", icon: "forkSpoon" },
+        {
+          label: "Log a meal",
+          detail: "Calories and macros",
+          to: "/track/log-meal",
+          icon: "forkSpoon",
+        },
         { label: "Add water", detail: "Update hydration", to: "/track/water", icon: "droplet" },
-        { label: "History & insights", detail: "See trends over time", to: "/track/insights", icon: "chartIncrease" },
+        {
+          label: "History & insights",
+          detail: "See trends over time",
+          to: "/track/insights",
+          icon: "chartIncrease",
+        },
       ],
     };
   }
@@ -99,7 +111,12 @@ function relatedFor(pathname: string): { eyebrow: string; title: string; links: 
       links: [
         { label: "Profile overview", detail: "Your plan at a glance", to: "/you", icon: "person" },
         { label: "Saved items", detail: "Hacks and recipes", to: "/you/saved", icon: "bookmark" },
-        { label: "Notifications", detail: "Reminders and updates", to: "/you/notifications", icon: "bell" },
+        {
+          label: "Notifications",
+          detail: "Reminders and updates",
+          to: "/you/notifications",
+          icon: "bell",
+        },
       ],
     };
   }
@@ -108,8 +125,18 @@ function relatedFor(pathname: string): { eyebrow: string; title: string; links: 
       eyebrow: "COOKING WORKSPACE",
       title: "From idea to table",
       links: [
-        { label: "Browse recipes", detail: "Meals picked for you", to: "/recipes", icon: "tabRecipes" },
-        { label: "Search recipes", detail: "Find an ingredient or dish", to: "/search?scope=recipes", icon: "search" },
+        {
+          label: "Browse recipes",
+          detail: "Meals picked for you",
+          to: "/recipes",
+          icon: "tabRecipes",
+        },
+        {
+          label: "Search recipes",
+          detail: "Find an ingredient or dish",
+          to: "/search?scope=recipes",
+          icon: "search",
+        },
       ],
     };
   }
@@ -147,12 +174,21 @@ export function RelatedPagesPanel({ pathname }: { pathname: string }) {
             to={l.to}
             className="group flex items-center gap-3 border-b border-border-divider py-3.5 last:border-b-0"
           >
-            <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl", ICON_WELL)}>
+            <span
+              className={cn(
+                "flex size-9 shrink-0 items-center justify-center rounded-xl",
+                ICON_WELL,
+              )}
+            >
               <Icon name={l.icon} size={17} color="var(--color-icon-well-ink)" />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[13px] type-item-title text-text-primary">{l.label}</span>
-              <span className="mt-0.5 block truncate type-meta text-[11px] text-text-secondary">{l.detail}</span>
+              <span className="block truncate text-[13px] type-item-title text-text-primary">
+                {l.label}
+              </span>
+              <span className="mt-0.5 block truncate type-meta text-[11px] text-text-secondary">
+                {l.detail}
+              </span>
             </span>
             <Icon name="chevronRight" size={15} color="var(--color-text-neutral-400)" />
           </Link>
@@ -211,7 +247,10 @@ export function PageContainer({
 /* ----------------------------------------------------------- Bento grid */
 
 const CONTAINER = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } } };
-const CELL = { hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0, transition: SPRING_SOFT } };
+const CELL = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0, transition: SPRING_SOFT },
+};
 
 /** 12-col staggered grid; children should be <BentoCell> with `lg:col-span-*`. */
 export function BentoGrid({
@@ -303,12 +342,20 @@ export function PageHeader({
           </button>
         )}
         <div className="flex min-w-0 flex-1 flex-col gap-1">
-          {eyebrow && <p className="type-eyebrow text-[11px] tracking-[-0.495px] text-primary">{eyebrow}</p>}
+          {eyebrow && (
+            <p className="type-eyebrow text-[11px] tracking-[-0.495px] text-primary">{eyebrow}</p>
+          )}
           <h1 className={PAGE_TITLE}>{title}</h1>
-          {subtitle && <div className="type-meta text-[13px] tracking-[-0.3px] text-text-secondary">{subtitle}</div>}
+          {subtitle && (
+            <div className="type-meta text-[13px] tracking-[-0.3px] text-text-secondary">
+              {subtitle}
+            </div>
+          )}
         </div>
       </div>
-      {actions && <div className="flex shrink-0 items-center gap-2 self-start sm:self-auto">{actions}</div>}
+      {actions && (
+        <div className="flex shrink-0 items-center gap-2 self-start sm:self-auto">{actions}</div>
+      )}
     </header>
   );
 }
@@ -362,10 +409,14 @@ export function SectionHeader({
           {title}
         </h2>
         {subtitle && (
-          <p className="type-meta text-xs leading-4 tracking-[-0.54px] text-text-secondary">{subtitle}</p>
+          <p className="type-meta text-xs leading-4 tracking-[-0.54px] text-text-secondary">
+            {subtitle}
+          </p>
         )}
       </div>
-      {meta && <span className="type-meta shrink-0 pb-0.5 text-xs text-text-secondary">{meta}</span>}
+      {meta && (
+        <span className="type-meta shrink-0 pb-0.5 text-xs text-text-secondary">{meta}</span>
+      )}
       {action && (
         <SectionLink to={action.to} onPress={action.onPress}>
           {action.label}
@@ -491,9 +542,14 @@ export function ListingHeader({
     <header className="flex flex-col">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          {eyebrow && <p className="text-[11px] type-meta tracking-[-0.495px] text-primary">{eyebrow}</p>}
+          {eyebrow && (
+            <p className="text-[11px] type-meta tracking-[-0.495px] text-primary">{eyebrow}</p>
+          )}
           <h1
-            className={cn(PAGE_TITLE, "mt-1 truncate text-[length:var(--page-title-size)] md:text-[28px]")}
+            className={cn(
+              PAGE_TITLE,
+              "mt-1 truncate text-[length:var(--page-title-size)] md:text-[28px]",
+            )}
             style={{ "--page-title-size": `${titleFontSize}px` } as React.CSSProperties}
           >
             {title}
@@ -503,7 +559,9 @@ export function ListingHeader({
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {savedCount !== undefined && savedTo && <SavedCountLink count={savedCount} to={savedTo} />}
+          {savedCount !== undefined && savedTo && (
+            <SavedCountLink count={savedCount} to={savedTo} />
+          )}
           {topActionTo && (
             <Link
               to={topActionTo}
@@ -516,7 +574,9 @@ export function ListingHeader({
           )}
         </div>
       </div>
-      <p className="mt-1 hidden truncate text-[13px] type-meta text-text-secondary md:block">{subtitle}</p>
+      <p className="mt-1 hidden truncate text-[13px] type-meta text-text-secondary md:block">
+        {subtitle}
+      </p>
       <div className="mt-3 flex gap-2 md:hidden">
         <div className="flex h-12 min-w-0 flex-1 items-center gap-3 rounded-full border border-border-default bg-white px-4 focus-within:border-focus">
           <Link to={searchTo} className="flex min-w-0 flex-1 items-center gap-3 self-stretch">

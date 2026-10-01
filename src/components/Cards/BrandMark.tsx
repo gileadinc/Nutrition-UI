@@ -25,7 +25,11 @@ export function BrandMark({ restaurant }: { restaurant: string }) {
   const letter = RESTAURANT_LETTERS[restaurant];
   if (logo) {
     return (
-      <span title={restaurant} data-testid={`restaurant-brand-mark-${restaurant}`} className={`${TILE} p-[3px]`}>
+      <span
+        title={restaurant}
+        data-testid={`restaurant-brand-mark-${restaurant}`}
+        className={`${TILE} p-[3px]`}
+      >
         <AppImage src={logo} alt="" sizes="22px" className="size-full object-contain" />
       </span>
     );
