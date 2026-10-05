@@ -55,6 +55,7 @@ import {
 import { getAppSession } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { safeNext } from "./Login";
+import { SOCIAL_PROVIDER_LABEL, startSocialSignIn, type SocialProvider } from "@/lib/auth";
 import {
   BuildingScreen,
   COMPLETE_IMAGE,
@@ -627,6 +628,16 @@ function QuestionnaireFlow({
       return false;
     }
   };
+  /** Saves the answers to the guest session, then hands off to the provider; sign-in migrates them. */
+  const onSocial = async (provider: SocialProvider) => {
+    if (!(await complete("email"))) return;
+    try {
+      await startSocialSignIn(provider, TOUR_URL);
+    } catch (e) {
+      setNotice(`Couldn't start ${SOCIAL_PROVIDER_LABEL[provider]} sign-in. ${getErrorMessage(e)} Continue with email instead.`);
+      setBusy(false);
+    }
+  };
   const onRevealPrimary = async () => {
     if (!session.isSignedIn) return go("save");
     if (await complete("next")) navigate(completionReturnTo ?? TOUR_URL);
@@ -669,8 +680,8 @@ function QuestionnaireFlow({
         busy={busy}
         notice={notice}
         onBack={() => go("reveal", step, "back")}
-        onApple={() => setNotice("Apple sign-in is not available yet. Continue with email instead.")}
-        onGoogle={() => setNotice("Google sign-in is not available yet. Continue with email instead.")}
+        onApple={() => void onSocial("apple")}
+        onGoogle={() => void onSocial("google")}
         onEmail={async () => {
           if (await complete("email")) navigate(`/signup?next=${encodeURIComponent(TOUR_URL)}`);
         }}

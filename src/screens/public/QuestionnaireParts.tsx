@@ -1072,12 +1072,14 @@ export function SaveScreen({
             dark
             icon={<AppleLogo color="currentColor" />}
             onPress={onApple}
+            disabled={busy}
             className={cn("h-14", ONB_TYPE.body)}
           />
           <SocialButton
             label="Continue with Google"
             icon={<GoogleLogo />}
             onPress={onGoogle}
+            disabled={busy}
             className={cn("h-14", ONB_TYPE.body)}
           />
           <SocialButton

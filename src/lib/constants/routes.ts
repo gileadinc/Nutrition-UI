@@ -11,6 +11,7 @@ export const ROUTES = {
   resetLinkSent: "/reset-link-sent",
   passwordResetSuccess: "/password-reset-success",
   emailVerified: "/email-verified",
+  oauthCallback: "/auth/callback",
   home: "/home",
   guest: "/guest",
   fastHacks: "/fast-hacks",

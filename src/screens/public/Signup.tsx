@@ -19,6 +19,7 @@ import { Link, useNavigate, useSearchParam } from "@/lib/nav";
 import { isValidEmail } from "@/lib/nutrition";
 import { completeSignIn, endGuestSession, syncOnboardingToProfile } from "@/lib/store";
 import { safeNext } from "./Login";
+import { useSocialSignIn } from "./useSocialSignIn";
 
 type Errors = Partial<
   Record<"firstName" | "email" | "password" | "confirmPassword" | "terms" | "form", string>
@@ -27,13 +28,13 @@ type Errors = Partial<
 export function SignupScreen() {
   const navigate = useNavigate();
   const next = safeNext(useSearchParam("next"));
+  const social = useSocialSignIn(next);
   const [name, setName] = useState<NameValue>({ firstName: "", middleName: "", lastName: "" });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [agreed, setAgreed] = useState(true);
   const [errors, setErrors] = useState<Errors>({});
-  const [notice, setNotice] = useState<string>();
   const [busy, setBusy] = useState(false);
 
   const submit = async () => {
@@ -189,17 +190,19 @@ export function SignupScreen() {
             label="Apple"
             dark
             icon={<AppleLogo color="currentColor" />}
-            onPress={() => setNotice("Apple sign-up is not available yet.")}
+            onPress={() => void social.start("apple")}
+            disabled={busy || social.busy !== null}
           />
           <SocialButton
             label="Google"
             icon={<GoogleLogo />}
-            onPress={() => setNotice("Google sign-up is not available yet.")}
+            onPress={() => void social.start("google")}
+            disabled={busy || social.busy !== null}
           />
         </div>
-        {notice && (
+        {social.error && (
           <p role="status" className="mt-3 text-center type-meta text-[13px] text-text-secondary">
-            {notice}
+            {social.error}
           </p>
         )}
         <p className="mt-4 text-center text-sm type-meta text-text-secondary">

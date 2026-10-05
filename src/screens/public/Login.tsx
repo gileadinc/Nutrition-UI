@@ -11,6 +11,7 @@ import { useIsLg } from "@/lib/hooks";
 import { Link, useNavigate, useSearchParam } from "@/lib/nav";
 import { isValidEmail } from "@/lib/nutrition";
 import { completeSignIn, syncOnboardingToProfile } from "@/lib/store";
+import { useSocialSignIn } from "./useSocialSignIn";
 
 /** Only follow same-origin relative `next` targets. */
 export const safeNext = (v: string | null) => (v && v.startsWith("/") && !v.startsWith("//") ? v : null);
@@ -62,6 +63,7 @@ export function LoginScreen() {
   const [passwordError, setPasswordError] = useState<string>();
   const [notice, setNotice] = useState<string>();
   const [busy, setBusy] = useState(false);
+  const social = useSocialSignIn(next);
 
   const submit = async () => {
     if (busy) return;
@@ -146,17 +148,19 @@ export function LoginScreen() {
             label="Apple"
             dark
             icon={<AppleLogo color="currentColor" />}
-            onPress={() => setNotice("Apple sign-in is not available yet.")}
+            onPress={() => void social.start("apple")}
+            disabled={busy || social.busy !== null}
           />
           <SocialButton
             label="Google"
             icon={<GoogleLogo />}
-            onPress={() => setNotice("Google sign-in is not available yet.")}
+            onPress={() => void social.start("google")}
+            disabled={busy || social.busy !== null}
           />
         </div>
-        {notice && (
+        {(social.error || notice) && (
           <p role="status" className="mt-3 text-center type-meta text-[13px] text-text-secondary">
-            {notice}
+            {social.error ?? notice}
           </p>
         )}
         <p className="mt-3 text-center text-sm type-meta text-text-secondary">

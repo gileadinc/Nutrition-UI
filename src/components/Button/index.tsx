@@ -80,17 +80,19 @@ export interface SocialButtonProps {
   onPress?: () => void;
   /** Black (Apple) variant. */
   dark?: boolean;
+  disabled?: boolean;
   className?: string;
 }
 
 /** Google / Apple sign-in button. */
-export function SocialButton({ label, icon, onPress, dark = false, className }: SocialButtonProps) {
+export function SocialButton({ label, icon, onPress, dark = false, disabled = false, className }: SocialButtonProps) {
   return (
     <button
       type="button"
       onClick={onPress}
+      disabled={disabled}
       className={cn(
-        "flex h-[52px] w-full items-center justify-center gap-3 rounded-2xl border",
+        "flex h-[52px] w-full items-center justify-center gap-3 rounded-2xl border disabled:cursor-not-allowed disabled:opacity-60",
         dark
           ? "border-text-primary bg-text-primary text-white"
           : "border-border-google bg-white text-google-label",
