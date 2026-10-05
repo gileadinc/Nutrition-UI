@@ -184,6 +184,25 @@ export async function getOrCreateOnboardingSession(): Promise<OnboardingSession>
 }
 
 /**
+ * Has the signed-in user already answered the questionnaire? Judged from the account PROFILE, because
+ * guest sign-in migration clears the local onboarding-session id and a fresh session would always look
+ * empty. Falls back to the onboarding session if the profile can't be read.
+ */
+export async function hasCompletedOnboarding(): Promise<boolean> {
+  try {
+    const p = await profileApi.getProfile();
+    if (p.goal && p.heightCm && p.weightKg) return true;
+  } catch {
+    // fall through to the session check
+  }
+  try {
+    return (await getOrCreateOnboardingSession()).isCompleted === true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Persist the finished questionnaire: backend onboarding session (always) and
  * the profile (when signed in). Clears the local draft on success.
  */

@@ -10,7 +10,7 @@ import { AppTextField } from "@/components/TextField";
 import { authApi, getErrorMessage } from "@/lib/api";
 import { useNavigate, useSearchParam } from "@/lib/nav";
 import { validatePassword } from "@/lib/nutrition";
-import { getAppSession, getOrCreateOnboardingSession, startGuestSession, toast } from "@/lib/store";
+import { getAppSession, hasCompletedOnboarding, startGuestSession, toast } from "@/lib/store";
 import { safeNext } from "./Login";
 
 function StatusFrame({
@@ -261,12 +261,7 @@ export function EmailVerifiedScreen() {
       return;
     }
     setBusy(true);
-    let done = false;
-    try {
-      done = (await getOrCreateOnboardingSession()).isCompleted === true;
-    } catch {
-      done = false;
-    }
+    const done = await hasCompletedOnboarding();
     navigate(
       done
         ? (returnTo ?? "/home")
