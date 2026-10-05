@@ -13,3 +13,5 @@ export * from "./styles";
 export * from "./Charts";
 export * from "./Detail";
 export * from "./PortionSheet";
+export * from "./Collections";
+export * from "./Ratings";

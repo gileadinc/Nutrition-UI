@@ -14,6 +14,8 @@ import {
   MethodPanel,
   NutritionLine,
   PrimaryButton,
+  RecipeRatingLine,
+  RecipeRatingsSection,
   RelatedHeading,
   RelatedRow,
   SaveHeartButton,
@@ -100,6 +102,13 @@ export function RecipeDetailScreen() {
           badge={r.badge}
           title={r.title}
           subtitle={r.time}
+          meta={
+            <RecipeRatingLine
+              recipeId={r.id}
+              fallbackAverage={one.data.averageRating}
+              fallbackCount={one.data.ratingCount}
+            />
+          }
           fallbackRoute="/recipes"
           fit={fitFor(r, budget)}
           prev={neighbour(-1)}
@@ -185,6 +194,7 @@ export function RecipeDetailScreen() {
               variant="detail"
             />
           </Disclosure>
+          <RecipeRatingsSection recipeId={r.id} />
           <MedicalNote />
           {related.length > 0 && (
             <section className="flex flex-col gap-3 border-t border-border-divider pt-5">

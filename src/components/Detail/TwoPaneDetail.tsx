@@ -21,6 +21,7 @@ export function DetailFrame({
   badge,
   title,
   subtitle,
+  meta,
   fallbackRoute,
   footer,
   fit,
@@ -32,6 +33,8 @@ export function DetailFrame({
   badge?: string;
   title: string;
   subtitle?: string;
+  /** Extra line under the title (e.g. rating summary). */
+  meta?: ReactNode;
   fallbackRoute: string;
   footer: ReactNode;
   fit?: Fit;
@@ -77,6 +80,7 @@ export function DetailFrame({
         <h1 className="text-2xl type-display leading-8 tracking-[-1.08px] text-brand-navy">
           {title}
         </h1>
+        {meta}
         <div className="mt-3 flex flex-col gap-5">{children}</div>
       </div>
       <div

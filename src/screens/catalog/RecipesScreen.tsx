@@ -18,6 +18,7 @@ import {
   StatePanel,
   CenteredShell,
   FoodCard,
+  RatingBadge,
   matchesGroups,
   replaceInGroup,
   groupOf,
@@ -297,7 +298,17 @@ export function RecipesScreen() {
       subtitle={layout === "grid" ? r.time : undefined}
       leadingBadge={layout === "rail" ? r.time || undefined : undefined}
       badge={r.badge || undefined}
-      meta={`${r.calories} kcal · ${r.protein}g protein`}
+      meta={
+        <>
+          {r.ratingCount > 0 && (
+            <>
+              <RatingBadge average={r.averageRating} count={r.ratingCount} />
+              {" · "}
+            </>
+          )}
+          {`${r.calories} kcal · ${r.protein}g protein`}
+        </>
+      }
       fit={fitFor(r, budget)}
       saved={saved.isSaved("recipe", r.id)}
       onSave={() =>

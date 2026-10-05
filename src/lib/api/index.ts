@@ -21,12 +21,20 @@ export * as eatOutApi from "./endpoints/eatOut";
 export * as discoveryApi from "./endpoints/discovery";
 export * as trackingApi from "./endpoints/tracking";
 export * as savedItemsApi from "./endpoints/savedItems";
+export * as collectionsApi from "./endpoints/collections";
+export * as ratingsApi from "./endpoints/ratings";
 export * as shoppingListsApi from "./endpoints/shoppingLists";
 export * as medicationApi from "./endpoints/medication";
 export * as profileApi from "./endpoints/profile";
 export * as onboardingApi from "./endpoints/onboarding";
 export * as ageGateApi from "./endpoints/ageGate";
 export * as adminApi from "./endpoints/admin";
+export type {
+  CollectionInput,
+  CollectionPatch,
+  CollectionDetailParams,
+} from "./endpoints/collections";
+export type { UpsertRatingInput } from "./endpoints/ratings";
 export type {
   AdminOverview,
   AdminDashboard,

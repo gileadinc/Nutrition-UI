@@ -31,6 +31,9 @@ export interface Recipe {
   imageUrl: string;
   ingredients: string[];
   steps: string[];
+  /** Mean of all star ratings (1-5); null/absent when nobody has rated it. */
+  averageRating?: number | null;
+  ratingCount?: number;
 }
 
 export interface MenuItem {
@@ -123,7 +126,67 @@ export interface SavedItem {
   itemId: string;
   title: string;
   subtitle: string | null;
+  /** Collections (folders) this item is filed in. */
+  collectionIds?: string[];
   createdAt: string | null;
+}
+
+/** A named folder of saved items. */
+export interface SavedCollection {
+  collectionId: string;
+  name: string;
+  description: string | null;
+  /** Single emoji, or null. */
+  emoji: string | null;
+  itemCount: number;
+  /** Up to four most recently saved items, for cover thumbnails. */
+  previewItems: SavedItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** `GET .../collections/{id}`: the collection plus a page of its saved items. */
+export interface SavedCollectionDetail extends SavedCollection {
+  items: SavedItem[];
+  pagination: Pagination;
+}
+
+export interface RatingDistribution {
+  "1": number;
+  "2": number;
+  "3": number;
+  "4": number;
+  "5": number;
+}
+
+export interface RecipeRatingSummary {
+  recipeId: string;
+  /** null when there are no ratings. */
+  averageRating: number | null;
+  ratingCount: number;
+  distribution: RatingDistribution;
+}
+
+/** One person's rating of a recipe (also the shape of review rows). */
+export interface RecipeRating {
+  recipeId: string;
+  rating: number;
+  review: string | null;
+  /** Reviewer's first name; may be absent. */
+  authorName?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** `GET /api/recipes/{id}/ratings`: summary + reviews page (newest first). */
+export interface RecipeRatingsPage extends Paginated<RecipeRating> {
+  summary: RecipeRatingSummary;
+}
+
+/** `GET/PUT /api/recipes/{id}/ratings/me`. `rating` is null when not rated. */
+export interface MyRecipeRating {
+  rating: RecipeRating | null;
+  summary: RecipeRatingSummary;
 }
 
 export interface NotificationPrefs {

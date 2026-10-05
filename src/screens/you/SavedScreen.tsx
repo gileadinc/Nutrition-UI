@@ -1,13 +1,16 @@
 "use client";
 
-import { useId, useRef } from "react";
+import { useId, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { CheckMark } from "@/components/Layout";
 import { EmptyState } from "@/components/Feedback";
 import { FoodCard } from "@/components/Cards";
 import { FormSection, ProfileLayout } from "@/components/Track/ProfileParts";
+import { Icon } from "@/components/Icon";
+import { CollectionCard, CollectionFormDialog, CollectionPicker } from "@/components/Collections";
 import { Link, useSearchParams } from "@/lib/nav";
-import { useAppSession, useSaved } from "@/lib/store";
+import { useAppSession, useCollections, useRequireAccount, useSaved } from "@/lib/store";
+import type { SavedItem } from "@/lib/api";
 import { SELECTED_CHIP } from "@/components/styles";
 
 const TABS = [
@@ -22,6 +25,10 @@ const LINK = "type-button text-primary underline underline-offset-2";
 export function SavedScreen() {
   const session = useAppSession();
   const saved = useSaved();
+  const collections = useCollections();
+  const requireAccount = useRequireAccount();
+  const [creating, setCreating] = useState(false);
+  const [pickFor, setPickFor] = useState<SavedItem | null>(null);
   const [params, setParams] = useSearchParams();
   const tabParam = params.get("tab");
   const tab: Tab = tabParam === "hacks" || tabParam === "recipes" ? tabParam : "all";
@@ -73,6 +80,17 @@ export function SavedScreen() {
             }
             to={kind === "recipe" ? `/recipes/${i.itemId}` : `/hack/${i.itemId}`}
           />
+          <button
+            type="button"
+            onClick={() => setPickFor(i)}
+            disabled={i.savedItemId.startsWith("pending-")}
+            className="tap-44 mt-1.5 flex min-h-11 items-center gap-1.5 px-1 text-[13px] type-button text-primary disabled:opacity-50"
+          >
+            <Icon name="folderAdd" size={16} color="var(--color-primary)" />
+            {(i.collectionIds?.length ?? 0) > 0
+              ? `In ${i.collectionIds!.length} ${i.collectionIds!.length === 1 ? "collection" : "collections"}`
+              : "Add to collection"}
+          </button>
         </li>
       ))}
     </ul>
@@ -111,8 +129,50 @@ export function SavedScreen() {
     ? "Hacks and recipes you keep for later."
     : `${plural(hacks.length, "fast hack", "fast hacks")} · ${plural(recipes.length, "recipe", "recipes")}`;
 
+  const newCollection = () => {
+    if (requireAccount("Collections")) setCreating(true);
+  };
+  const showCollections = session.isSignedIn;
+
+  const collectionsSection = showCollections && (
+    <FormSection
+      title="Collections"
+      action={collections.collections.length > 0 ? String(collections.collections.length) : undefined}
+      className="mb-7"
+    >
+      {collections.isLoading && collections.collections.length === 0 ? (
+        <p className="type-meta text-[13px] text-text-secondary">Loading…</p>
+      ) : (
+        <>
+          {collections.collections.length === 0 ? (
+            <p className="mb-3 type-meta text-[13px] text-text-secondary">
+              Group your saved recipes and hacks into folders, like Weeknight dinners.
+            </p>
+          ) : (
+            <ul className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {collections.collections.map((c) => (
+                <li key={c.collectionId} className="min-w-0">
+                  <CollectionCard collection={c} />
+                </li>
+              ))}
+            </ul>
+          )}
+          <button
+            type="button"
+            onClick={newCollection}
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-border-default bg-white text-sm type-button text-primary transition-colors hover:border-text-neutral-400"
+          >
+            <Icon name="plusSign" size={16} color="var(--color-primary)" />
+            New collection
+          </button>
+        </>
+      )}
+    </FormSection>
+  );
+
   return (
     <ProfileLayout title="Saved" subtitle={subtitle}>
+      {collectionsSection}
       {session.isSignedIn && saved.isLoading && empty ? (
         <p className="panel p-4 text-[13px] type-meta text-text-secondary">Loading…</p>
       ) : empty || !session.isSignedIn ? (
@@ -180,6 +240,10 @@ export function SavedScreen() {
           </div>
         </>
       )}
+      {creating && (
+        <CollectionFormDialog onClose={() => setCreating(false)} />
+      )}
+      {pickFor && <CollectionPicker item={pickFor} onClose={() => setPickFor(null)} />}
     </ProfileLayout>
   );
 }

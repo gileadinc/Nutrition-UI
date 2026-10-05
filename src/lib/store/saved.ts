@@ -8,6 +8,7 @@
 import { useCallback } from "react";
 import { savedItemsApi, getErrorMessage, type SavedItem } from "@/lib/api";
 import { patchSavedItemsCache, refreshSavedItems, useSavedItems } from "@/lib/hooks";
+import { refreshCollections } from "./collections";
 import { useRequireAccount } from "./gate";
 import { toast } from "./toast";
 
@@ -40,6 +41,7 @@ export function useSaved() {
             list.filter((i) => i.savedItemId !== existing.savedItemId),
           );
           await savedItemsApi.removeSavedItem(existing.savedItemId);
+          if (existing.collectionIds?.length) refreshCollections();
           toast.success(`${t.title} removed`, {
             body: "Taken out of your saved items.",
             action: {

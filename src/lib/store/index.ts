@@ -19,6 +19,8 @@ export * from "./catalog";
 export * from "./tracking";
 export { useSaved } from "./saved";
 export type { SaveTarget } from "./saved";
+export { useCollections, useCollection, refreshCollections } from "./collections";
+export { useRecipeReviews, useMyRating } from "./ratings";
 export { useNotifications } from "./notifications";
 export { useRecentSearches } from "./local";
 export { useShoppingList } from "./shopping";

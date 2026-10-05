@@ -37,6 +37,9 @@ export interface RecipeVM {
   goalTags: string[];
   /** Quick-filter chips this recipe satisfies (see `RECIPE_FILTER`). */
   tags: string[];
+  /** Star average and count, when the API returned them (list + detail do). */
+  averageRating: number | null;
+  ratingCount: number;
 }
 
 export function toRecipeVM(r: Recipe): RecipeVM {
@@ -73,6 +76,8 @@ export function toRecipeVM(r: Recipe): RecipeVM {
     steps: r.steps ?? [],
     goalTags,
     tags,
+    averageRating: typeof r.averageRating === "number" ? r.averageRating : null,
+    ratingCount: num(r.ratingCount),
   };
 }
 

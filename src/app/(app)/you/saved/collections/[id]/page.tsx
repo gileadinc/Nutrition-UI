@@ -1,8 +1,7 @@
 "use client";
 
-import { ScreenTodo } from "@/components/ScreenTodo";
+import { CollectionDetailScreen } from "@/screens/you/CollectionDetailScreen";
 
-// OUT OF SCOPE: no backend endpoint (CollectionDetailScreen). Shows a "not available" panel.
 export default function Page() {
-  return <ScreenTodo route="/you/saved/collections/[id]" outOfScope />;
+  return <CollectionDetailScreen />;
 }
