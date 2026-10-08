@@ -30,6 +30,8 @@ export function OAuthCallbackScreen() {
     const providerError = params.get("error_description") ?? params.get("error");
     const code = params.get("code");
     const pending = consumePendingSocialSignIn(params.get("state"));
+    // The code is single use; don't leave it in the address bar or history.
+    window.history.replaceState(null, "", window.location.pathname);
 
     void (async () => {
       try {

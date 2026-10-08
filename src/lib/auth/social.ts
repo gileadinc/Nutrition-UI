@@ -12,7 +12,7 @@
  *
  * The backend builds its URL with its own `/api/auth/oauth/callback` as redirect, which answers with
  * raw JSON, so for a web app we swap in our page. Cognito only accepts redirect URIs registered on the
- * app client, so this app's `/auth/callback` must be listed there (see README).
+ * app client, so this app's `/auth/callback` (local and production) must be listed there.
  */
 
 import { authApi } from "@/lib/api";
