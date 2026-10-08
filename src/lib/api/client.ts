@@ -1,3 +1,4 @@
+import { clearSession } from "@/lib/auth/session";
 import { ApiError } from "./ApiError";
 import type { ApiEnvelope } from "./types";
 
@@ -16,6 +17,29 @@ function buildUrl(path: string): string {
   if (/^https?:\/\//.test(path)) return path;
   const base = getBaseUrl();
   return `${base}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+let redirectingToLogin = false;
+
+/**
+ * A 401 on a request that carried a bearer token means the session is dead (expired / revoked):
+ * clear it and send the user to the login page, keeping where they were as `next`. Requests
+ * without a token (e.g. a wrong password on sign-in) are left for the caller to report.
+ */
+function handleUnauthorized(headers: HeadersInit | undefined) {
+  if (typeof window === "undefined" || redirectingToLogin) return;
+  const sent = new Headers(headers).has("Authorization");
+  if (!sent) return;
+
+  redirectingToLogin = true;
+  clearSession();
+  const { pathname, search } = window.location;
+  if (pathname === "/login") {
+    redirectingToLogin = false;
+    return;
+  }
+  const next = encodeURIComponent(`${pathname}${search}`);
+  window.location.replace(`/login?next=${next}`);
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
@@ -49,6 +73,8 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   } finally {
     clearTimeout(timeout);
   }
+
+  if (response.status === 401) handleUnauthorized(headers);
 
   let payload: ApiEnvelope<T> | undefined;
   const rawText = await response.text();

@@ -22,5 +22,6 @@ export {
   consumePendingSocialSignIn,
   SOCIAL_PROVIDER_LABEL,
   OAUTH_CALLBACK_PATH,
+  APPLE_SIGN_IN_ENABLED,
 } from "./social";
 export type { SocialProvider, PendingResult } from "./social";

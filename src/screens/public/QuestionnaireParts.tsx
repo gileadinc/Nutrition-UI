@@ -21,6 +21,7 @@ import { Logo } from "@/components/Shell/Logo";
 import { SocialButton } from "@/components/Button";
 import { AppleLogo, GoogleLogo } from "@/components/TextField";
 import { ICON_WELL, ONB_SPACING, ONB_TYPE, SELECTED_CHIP } from "@/components/styles";
+import { APPLE_SIGN_IN_ENABLED } from "@/lib/auth";
 import { useReducedMotion } from "@/lib/hooks";
 import { GOAL_CALORIE_DELTA, MACRO_SPLIT, type GoalKey } from "@/lib/nutrition";
 import { cn } from "@/lib/utils";
@@ -1067,14 +1068,16 @@ export function SaveScreen({
           Create an account to keep your plan and progress on every device you use.
         </p>
         <div className="mt-8 flex flex-col gap-3">
-          <SocialButton
-            label="Continue with Apple"
-            dark
-            icon={<AppleLogo color="currentColor" />}
-            onPress={onApple}
-            disabled={busy}
-            className={cn("h-14", ONB_TYPE.body)}
-          />
+          {APPLE_SIGN_IN_ENABLED && (
+            <SocialButton
+              label="Continue with Apple"
+              dark
+              icon={<AppleLogo color="currentColor" />}
+              onPress={onApple}
+              disabled={busy}
+              className={cn("h-14", ONB_TYPE.body)}
+            />
+          )}
           <SocialButton
             label="Continue with Google"
             icon={<GoogleLogo />}

@@ -24,6 +24,9 @@ export const SOCIAL_PROVIDER_LABEL: Record<SocialProvider, string> = {
   apple: "Apple",
 };
 
+/** Apple sign-in isn't accepted by the backend yet; flip to `true` to show the buttons again. */
+export const APPLE_SIGN_IN_ENABLED = false;
+
 export const OAUTH_CALLBACK_PATH = "/auth/callback";
 
 const PENDING_KEY = "forkthis.oauth.pending";

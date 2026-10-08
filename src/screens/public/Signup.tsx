@@ -15,6 +15,7 @@ import {
   type NameValue,
 } from "@/components/TextField";
 import { authApi, getErrorMessage } from "@/lib/api";
+import { APPLE_SIGN_IN_ENABLED } from "@/lib/auth";
 import { Link, useNavigate, useSearchParam } from "@/lib/nav";
 import { isValidEmail } from "@/lib/nutrition";
 import { completeSignIn, endGuestSession, syncOnboardingToProfile } from "@/lib/store";
@@ -186,13 +187,15 @@ export function SignupScreen() {
           <span className="h-px flex-1 bg-border-divider" />
         </div>
         <div className="flex gap-3">
-          <SocialButton
-            label="Apple"
-            dark
-            icon={<AppleLogo color="currentColor" />}
-            onPress={() => void social.start("apple")}
-            disabled={busy || social.busy !== null}
-          />
+          {APPLE_SIGN_IN_ENABLED && (
+            <SocialButton
+              label="Apple"
+              dark
+              icon={<AppleLogo color="currentColor" />}
+              onPress={() => void social.start("apple")}
+              disabled={busy || social.busy !== null}
+            />
+          )}
           <SocialButton
             label="Google"
             icon={<GoogleLogo />}

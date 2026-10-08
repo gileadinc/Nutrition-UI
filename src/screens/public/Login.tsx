@@ -7,6 +7,7 @@ import { OnboardingDesktopFrame } from "@/components/Onboarding";
 import { Logo } from "@/components/Shell/Logo";
 import { AppTextField, AppleLogo, GoogleLogo } from "@/components/TextField";
 import { authApi, getErrorMessage } from "@/lib/api";
+import { APPLE_SIGN_IN_ENABLED } from "@/lib/auth";
 import { useIsLg } from "@/lib/hooks";
 import { Link, useNavigate, useSearchParam } from "@/lib/nav";
 import { isValidEmail } from "@/lib/nutrition";
@@ -47,7 +48,7 @@ function LoginFrame({ children }: { children: ReactNode }) {
             "linear-gradient(to bottom, rgb(255 255 255 / 0) 22%, rgb(255 255 255 / 0.2) 48%, rgb(255 255 255 / 0.95) 68%, rgb(255 255 255) 100%)",
         }}
       />
-      <div className="absolute inset-x-0 bottom-0 px-5 pb-3 pt-2 sm:bg-[linear-gradient(to_bottom,rgb(255_255_255/0),rgb(255_255_255)_6rem)] sm:pt-24">
+      <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(to_bottom,rgb(255_255_255/0),rgb(255_255_255/0.9)_4rem,rgb(255_255_255)_7rem)] px-5 pb-3 pt-20 sm:pt-24">
         <div className="mx-auto w-full max-w-md">{children}</div>
       </div>
     </main>
@@ -144,13 +145,15 @@ export function LoginScreen() {
           <span className="h-px flex-1 bg-border-divider" />
         </div>
         <div className="flex gap-3">
-          <SocialButton
-            label="Apple"
-            dark
-            icon={<AppleLogo color="currentColor" />}
-            onPress={() => void social.start("apple")}
-            disabled={busy || social.busy !== null}
-          />
+          {APPLE_SIGN_IN_ENABLED && (
+            <SocialButton
+              label="Apple"
+              dark
+              icon={<AppleLogo color="currentColor" />}
+              onPress={() => void social.start("apple")}
+              disabled={busy || social.busy !== null}
+            />
+          )}
           <SocialButton
             label="Google"
             icon={<GoogleLogo />}
