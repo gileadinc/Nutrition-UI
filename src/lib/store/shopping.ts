@@ -220,6 +220,27 @@ export function useShoppingList() {
     [list, mutate, fail],
   );
 
+  /** Deletes one item (optimistic) and offers Undo, which adds it back. */
+  const remove = useCallback(
+    (id: string) => {
+      if (!list || id.startsWith("pending-")) return;
+      const cur = list.items.find((i) => i.itemId === id);
+      if (!cur) return;
+      mutate({ ...list, items: list.items.filter((i) => i.itemId !== id) });
+      shoppingListsApi
+        .deleteShoppingListItem(list.listId, id)
+        .then(mutate)
+        .catch((err) => fail("Couldn't remove that item", err));
+      toast.success(`${cur.name} removed`, {
+        action: {
+          label: "Undo",
+          run: () => add([cur.name], cur.notes, { recipeId: cur.recipeId ?? undefined }),
+        },
+      });
+    },
+    [list, mutate, fail, add],
+  );
+
   const clearChecked = useCallback(() => {
     if (!list) return;
     mutate({ ...list, items: list.items.filter((i) => !i.checked) });
@@ -239,5 +260,5 @@ export function useShoppingList() {
       .catch((err) => fail("Couldn't clear your shopping list", err));
   }, [list, mutate, fail]);
 
-  return { items, add, toggle, clearChecked, clearAll };
+  return { items, add, toggle, remove, clearChecked, clearAll };
 }

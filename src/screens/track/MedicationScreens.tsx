@@ -3,6 +3,7 @@
 import { useState, useSyncExternalStore, type ReactNode } from "react";
 import { Icon } from "@/components/Icon";
 import { PageContainer } from "@/components/Layout";
+import { ConfirmDialog } from "@/components/Collections";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
 import { AppTextField } from "@/components/TextField";
 import { CenteredShell, StatePanel } from "@/components/Feedback";
@@ -372,6 +373,7 @@ export function MedicationDetailScreen() {
   const navigate = useNavigate();
   const requireAccount = useRequireAccount();
   const { meds, take, remove, isLoading } = useMedications();
+  const [confirming, setConfirming] = useState(false);
   const now = useNow(60_000);
   if (!hydrated || isLoading) return null;
   const m = meds.find((x) => x.id === id);
@@ -412,13 +414,22 @@ export function MedicationDetailScreen() {
         <SecondaryButton label="Edit medication" onPress={() => navigate(`/track/medication/edit/${m.id}`)} />
         <SecondaryButton
           label="Delete medication"
-          onPress={() => {
-            if (!requireAccount("Tracking")) return;
+          onPress={() => setConfirming(true)}
+        />
+      </div>
+      {confirming && (
+        <ConfirmDialog
+          title={`Delete ${m.name}?`}
+          body="The medication and its reminders will be removed. Doses you've already logged stay in your history."
+          confirmLabel="Yes, delete it"
+          onConfirm={() => {
+            if (!requireAccount("Tracking")) return setConfirming(false);
             void remove(m.id);
             navigate("/track/medication");
           }}
+          onCancel={() => setConfirming(false)}
         />
-      </div>
+      )}
     </PageContainer>
   );
 }

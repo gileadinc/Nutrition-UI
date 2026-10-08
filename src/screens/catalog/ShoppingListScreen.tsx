@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import { SecondaryButton } from "@/components/Button";
 import { PageContainer } from "@/components/Layout";
+import { ConfirmDialog } from "@/components/Collections";
 import { EmptyState } from "@/components/Feedback";
 import { CONTROL_ON } from "@/components/styles";
 import { useBack } from "@/lib/nav";
@@ -35,6 +37,9 @@ function aisleOf(name: string): Aisle {
 export function ShoppingListScreen() {
   const back = useBack("/you");
   const list = useShoppingList();
+  const [confirm, setConfirm] = useState<
+    { kind: "item"; id: string; name: string } | { kind: "checked" } | { kind: "all" } | null
+  >(null);
   const picked = list.items.filter((i) => i.checked).length;
   const groups = AISLES.map((a) => ({
     ...a,
@@ -75,13 +80,16 @@ export function ShoppingListScreen() {
                 <h2 className="onb-eyebrow">{g.label}</h2>
                 <ul className="mt-1 border-y border-border-divider">
                   {g.items.map((item) => (
-                    <li key={item.id} className="border-b border-border-divider last:border-b-0">
+                    <li
+                      key={item.id}
+                      className="flex items-center border-b border-border-divider last:border-b-0"
+                    >
                       <button
                         type="button"
                         role="checkbox"
                         aria-checked={item.checked}
                         onClick={() => list.toggle(item.id)}
-                        className="flex min-h-12 w-full items-center gap-3 py-3 text-left"
+                        className="flex min-h-12 min-w-0 flex-1 items-center gap-3 py-3 text-left"
                       >
                         <span
                           className={cn(
@@ -112,6 +120,14 @@ export function ShoppingListScreen() {
                           </span>
                         )}
                       </button>
+                      <button
+                        type="button"
+                        aria-label={`Remove ${item.name}`}
+                        onClick={() => setConfirm({ kind: "item", id: item.id, name: item.name })}
+                        className="-mr-2 ml-1 flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-brand-warm-gray/70"
+                      >
+                        <Icon name="trash" size={16} color="var(--color-text-secondary)" />
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -122,12 +138,42 @@ export function ShoppingListScreen() {
             <SecondaryButton
               label="Clear picked up"
               className="text-onb-body"
-              onPress={list.clearChecked}
+              onPress={() => setConfirm({ kind: "checked" })}
               disabled={picked === 0}
             />
-            <SecondaryButton label="Clear whole list" className="text-onb-body" onPress={list.clearAll} />
+            <SecondaryButton
+              label="Clear whole list"
+              className="text-onb-body"
+              onPress={() => setConfirm({ kind: "all" })}
+            />
           </div>
         </>
+      )}
+      {confirm && (
+        <ConfirmDialog
+          title={
+            confirm.kind === "item"
+              ? `Remove ${confirm.name}?`
+              : confirm.kind === "checked"
+                ? "Clear picked-up items?"
+                : "Clear your whole list?"
+          }
+          body={
+            confirm.kind === "item"
+              ? "It will be taken off your shopping list."
+              : confirm.kind === "checked"
+                ? `${picked} picked-up ${picked === 1 ? "item" : "items"} will be removed from the list.`
+                : "Every item on your shopping list will be removed."
+          }
+          confirmLabel={confirm.kind === "item" ? "Yes, remove it" : "Yes, clear it"}
+          onConfirm={() => {
+            if (confirm.kind === "item") list.remove(confirm.id);
+            else if (confirm.kind === "checked") list.clearChecked();
+            else list.clearAll();
+            setConfirm(null);
+          }}
+          onCancel={() => setConfirm(null)}
+        />
       )}
     </PageContainer>
   );

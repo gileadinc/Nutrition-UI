@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { PageContainer } from "@/components/Layout";
+import { ConfirmDialog } from "@/components/Collections";
 import { GettingStarted, MomentumCard, RecommendedMeals } from "@/components/Track/TrackExtras";
 import { profileApi } from "@/lib/api";
 import {
@@ -53,6 +55,7 @@ export function TrackDashboardScreen() {
   const momentum = useMomentum();
   const recs = useTrackingRecommendations(undefined, 3);
   const firstTime = useFirstTimeState();
+  const [mealToRemove, setMealToRemove] = useState<TrackMeal | null>(null);
   const weight = useWeight();
   const latestWeight = weight.todayReading ?? weight.previous;
   const todayKey = isoDate(now);
@@ -185,12 +188,25 @@ export function TrackDashboardScreen() {
                 day={today}
                 titleClassName={cn(EYEBROW, "text-brand-navy", SECTION_TITLE && "")}
                 history={{ label: "History", to: "/track/insights" }}
-                onRemoveMeal={(m) => void removeMeal(m)}
+                onRemoveMeal={setMealToRemove}
               />
             </div>
           </div>
         </div>
       </div>
+      {mealToRemove && (
+        <ConfirmDialog
+          title={`Remove ${mealToRemove.title}?`}
+          body="It will be deleted from today's log and your totals will update."
+          confirmLabel="Yes, remove it"
+          onConfirm={() => {
+            const m = mealToRemove;
+            setMealToRemove(null);
+            void removeMeal(m);
+          }}
+          onCancel={() => setMealToRemove(null)}
+        />
+      )}
     </PageContainer>
   );
 }
