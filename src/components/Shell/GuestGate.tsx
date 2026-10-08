@@ -34,7 +34,7 @@ export function GuestFeatureGate({
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 flex bg-black/55",
+        "fixed inset-0 z-[60] flex bg-black/55",
         desktop ? "items-center justify-center p-6" : "items-end",
       )}
     >

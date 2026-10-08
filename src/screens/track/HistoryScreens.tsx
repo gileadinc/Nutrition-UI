@@ -1,5 +1,6 @@
 "use client";
 
+import { lockBodyScroll } from "@/lib/hooks/scrollLock";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
@@ -502,7 +503,6 @@ function MetricDetail({
   const withUnit = (v: number) => `${fmt(v)} ${metric.unit}`;
 
   useEffect(() => {
-    const overflow = document.body.style.overflow;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") return onClose();
       if (e.key !== "Tab" || !panel.current) return;
@@ -522,11 +522,11 @@ function MetricDetail({
         first.focus();
       }
     };
-    document.body.style.overflow = "hidden";
+    const unlockScroll = lockBodyScroll();
     document.addEventListener("keydown", onKey);
     panel.current?.focus();
     return () => {
-      document.body.style.overflow = overflow;
+      unlockScroll();
       document.removeEventListener("keydown", onKey);
     };
   }, [onClose]);

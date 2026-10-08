@@ -1,10 +1,11 @@
 "use client";
 
+import { lockBodyScroll } from "@/lib/hooks/scrollLock";
 import { useEffect, useRef, type ReactNode } from "react";
 import { useBack } from "@/lib/nav";
 
 /**
- * Modal detail panel (bottom sheet on mobile, centred card on md+). The
+ * Modal detail panel (full screen on mobile, centred card on md+). The
  * deployed app opened /hack/:id and /recipes/:id in this over the previous
  * screen; in Next these are regular pages, so use this only if a screen wants
  * the modal look. Escape / scrim click call `onClose` (default: history back).
@@ -24,12 +25,11 @@ export function DetailDrawer({
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlockScroll = lockBodyScroll();
     panel.current?.focus();
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      unlockScroll();
     };
   }, [close]);
   return (
@@ -49,7 +49,7 @@ export function DetailDrawer({
         aria-label="Details"
         tabIndex={0}
         data-testid="detail-drawer"
-        className="drawer-panel relative z-10 h-[calc(100dvh-0.75rem)] w-full overflow-y-auto rounded-t-[28px] bg-brand-cream focus:outline-none md:h-[min(860px,calc(100dvh-5rem))] md:max-w-5xl md:rounded-[20px] md:border md:border-border-default md:shadow-raised"
+        className="drawer-panel relative z-10 h-dvh w-full overflow-y-auto bg-brand-cream [--pane-h:100dvh] md:[--pane-h:min(860px,calc(100dvh-5rem))] focus:outline-none md:h-[min(860px,calc(100dvh-5rem))] md:max-w-5xl md:rounded-[20px] md:border md:border-border-default md:shadow-raised"
       >
         {children}
       </div>

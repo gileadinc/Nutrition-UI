@@ -1,5 +1,6 @@
 "use client";
 
+import { lockBodyScroll } from "@/lib/hooks/scrollLock";
 import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
@@ -94,7 +95,6 @@ function SheetBody({
 
   useEffect(() => {
     const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const prevOverflow = document.body.style.overflow;
     const root = document.getElementById("app-root");
     const wasInert = root?.hasAttribute("inert") ?? false;
     const onKey = (e: KeyboardEvent) => {
@@ -122,13 +122,13 @@ function SheetBody({
     const onMq = (e: MediaQueryListEvent) => {
       if (e.matches) closeRef.current();
     };
-    document.body.style.overflow = "hidden";
+    const unlockScroll = lockBodyScroll();
     root?.setAttribute("inert", "");
     document.addEventListener("keydown", onKey);
     mql?.addEventListener?.("change", onMq);
     panel.current?.focus();
     return () => {
-      document.body.style.overflow = prevOverflow;
+      unlockScroll();
       if (!wasInert) root?.removeAttribute("inert");
       document.removeEventListener("keydown", onKey);
       mql?.removeEventListener?.("change", onMq);

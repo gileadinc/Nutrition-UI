@@ -1,5 +1,6 @@
 "use client";
 
+import { lockBodyScroll } from "@/lib/hooks/scrollLock";
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
@@ -41,8 +42,7 @@ export function Dialog({
   useEffect(() => {
     const opener = document.activeElement as HTMLElement | null;
     const node = panel.current;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlockScroll = lockBodyScroll();
     const first = node?.querySelector<HTMLElement>("input,textarea") ?? node;
     first?.focus();
     const onKey = (e: KeyboardEvent) => {
@@ -68,7 +68,7 @@ export function Dialog({
     document.addEventListener("keydown", onKey, true);
     return () => {
       document.removeEventListener("keydown", onKey, true);
-      document.body.style.overflow = prevOverflow;
+      unlockScroll();
       opener?.focus?.();
     };
   }, [dismissible]);

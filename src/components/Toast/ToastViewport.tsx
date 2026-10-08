@@ -19,7 +19,7 @@ export function ToastViewport() {
   return (
     <div
       // Bottom-right; on mobile sit above the 60px tab bar.
-      className="pointer-events-none fixed inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-[60] flex flex-col items-end gap-2 p-4 sm:inset-x-auto sm:bottom-0 sm:right-0"
+      className="pointer-events-none fixed inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-[70] flex flex-col items-end gap-2 p-4 sm:inset-x-auto sm:bottom-0 sm:right-0"
       aria-live="polite"
       aria-relevant="additions"
     >

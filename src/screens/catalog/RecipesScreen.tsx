@@ -358,7 +358,7 @@ export function RecipesScreen() {
               <SectionTitle action="See all" actionTo="/search?scope=recipes">
                 Featured for you
               </SectionTitle>
-              <div className="rail-scroll -mx-5 mt-3 flex gap-3 overflow-x-auto px-5 pb-1 md:mx-0 md:px-0 md:@2xl:grid md:@2xl:grid-cols-3 md:@2xl:gap-4 md:@2xl:overflow-visible">
+              <div className="rail-scroll -mx-5 mt-3 flex gap-3 overflow-x-auto px-5 pb-1 md:mx-0 md:px-0 md:@2xl:grid md:@2xl:grid-cols-3 md:@2xl:gap-4 md:@2xl:overflow-visible md:[&>*]:w-64! md:@2xl:[&>*]:w-auto!">
                 {featured.map((r) => card(r, "rail"))}
               </div>
             </section>

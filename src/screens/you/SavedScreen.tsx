@@ -84,7 +84,7 @@ export function SavedScreen() {
             type="button"
             onClick={() => setPickFor(i)}
             disabled={i.savedItemId.startsWith("pending-")}
-            className="tap-44 mt-1.5 flex min-h-11 items-center gap-1.5 px-1 text-[13px] type-button text-primary disabled:opacity-50"
+            className="tap-44 relative mt-1.5 flex min-h-11 items-center gap-1.5 px-1 text-[13px] type-button text-primary disabled:opacity-50"
           >
             <Icon name="folderAdd" size={16} color="var(--color-primary)" />
             {(i.collectionIds?.length ?? 0) > 0

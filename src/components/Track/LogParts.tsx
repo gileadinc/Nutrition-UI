@@ -1,5 +1,6 @@
 "use client";
 
+import { lockBodyScroll } from "@/lib/hooks/scrollLock";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
@@ -337,7 +338,6 @@ function PortionSheet({
   }, [onClose]);
   useEffect(() => {
     const prev = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const overflow = document.body.style.overflow;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
@@ -359,18 +359,18 @@ function PortionSheet({
         first.focus();
       }
     };
-    document.body.style.overflow = "hidden";
+    const unlockScroll = lockBodyScroll();
     window.addEventListener("keydown", onKey, true);
     panel.current?.focus();
     return () => {
-      document.body.style.overflow = overflow;
+      unlockScroll();
       window.removeEventListener("keydown", onKey, true);
       if (prev?.isConnected) prev.focus();
     };
   }, []);
   const scaled = servings === null ? null : scaleMacros(item, servings);
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center md:p-8">
+    <div className="fixed inset-0 z-[60] flex items-end justify-center md:items-center md:p-8">
       <button
         type="button"
         aria-label="Close portion picker"

@@ -1,5 +1,6 @@
 "use client";
 
+import { lockBodyScroll } from "@/lib/hooks/scrollLock";
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useDragControls } from "motion/react";
@@ -149,7 +150,6 @@ function useModal(ref: React.RefObject<HTMLElement | null>, onClose: () => void,
   useEffect(() => {
     if (!active) return;
     const prevFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const prevOverflow = document.body.style.overflow;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
@@ -171,11 +171,11 @@ function useModal(ref: React.RefObject<HTMLElement | null>, onClose: () => void,
         first.focus();
       }
     };
-    document.body.style.overflow = "hidden";
+    const unlockScroll = lockBodyScroll();
     window.addEventListener("keydown", onKey, true);
     ref.current?.focus();
     return () => {
-      document.body.style.overflow = prevOverflow;
+      unlockScroll();
       window.removeEventListener("keydown", onKey, true);
       if (prevFocus?.isConnected) prevFocus.focus();
     };
@@ -280,7 +280,7 @@ function PortionDialog({
   useModal(ref, onClose);
   const scaled = servings === null ? null : scaleMacros(item, servings);
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center md:p-8">
+    <div className="fixed inset-0 z-[60] flex items-end justify-center md:items-center md:p-8">
       <button
         type="button"
         aria-label="Close portion picker"
@@ -614,7 +614,7 @@ function SuccessBody({
             <button
               type="button"
               onClick={outcome.undo}
-              className="tap-44 type-button text-primary underline-offset-2 hover:underline"
+              className="tap-44 relative type-button text-primary underline-offset-2 hover:underline"
             >
               Undo
             </button>
@@ -746,7 +746,7 @@ function OutcomeDialog({
         };
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center md:items-center md:p-8"
+      className="fixed inset-0 z-[60] flex items-end justify-center md:items-center md:p-8"
       data-testid="outcome-layer"
     >
       <motion.button

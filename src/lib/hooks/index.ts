@@ -19,3 +19,4 @@ export {
 } from "./useMedia";
 export { useFilterParams } from "./useFilterParams";
 export type { FilterParams } from "./useFilterParams";
+export { lockBodyScroll } from "./scrollLock";

@@ -9,7 +9,7 @@ import { useBack, useNavigate, useParams } from "@/lib/nav";
 import { useAppSession, useCollection, useCollections, useRequireAccount, useSaved } from "@/lib/store";
 import type { SavedItem } from "@/lib/api";
 
-const LINK = "tap-44 flex min-h-11 items-center gap-1.5 px-1 text-[13px] type-button text-primary";
+const LINK = "tap-44 relative flex min-h-11 items-center gap-1.5 px-1 text-[13px] type-button text-primary";
 
 export function CollectionDetailScreen() {
   const { id = "" } = useParams<{ id: string }>();

@@ -11,7 +11,7 @@ import {
   StatePanel,
   usePortionSheet,
 } from "@/components";
-import { CONTROL_ON, PRIMARY_DISABLED } from "@/components/styles";
+import { CONTROL_ON } from "@/components/styles";
 import { getErrorMessage } from "@/lib/api";
 import { Link, useNavigate, useParams } from "@/lib/nav";
 import { toast, useRecipe, useRequireAccount, useShoppingList } from "@/lib/store";
@@ -198,6 +198,12 @@ function StepTimer({ stepText, stepIndex }: { stepText: string; stepIndex: numbe
   const [running, setRunning] = useState(false);
   const [seenIndex, setSeenIndex] = useState(stepIndex);
   const timer = useRef<number | null>(null);
+  // Latest value for the effect to read when it starts, without restarting on every tick.
+  const leftRef = useRef(left);
+  const endsAt = useRef(0);
+  useEffect(() => {
+    leftRef.current = left;
+  }, [left]);
   if (seenIndex !== stepIndex) {
     setSeenIndex(stepIndex);
     setLeft(suggested ?? 0);
@@ -205,16 +211,16 @@ function StepTimer({ stepText, stepIndex }: { stepText: string; stepIndex: numbe
   }
   useEffect(() => {
     if (!running) return;
+    // Count down to a fixed end time so throttled background tabs don't drift.
+    endsAt.current = Date.now() + leftRef.current * 1000;
     timer.current = window.setInterval(() => {
-      setLeft((t) => {
-        if (t <= 1) {
-          setRunning(false);
-          toast.success("Timer done", { body: stepText, duration: 0 });
-          return 0;
-        }
-        return t - 1;
-      });
-    }, 1000);
+      const remaining = Math.max(0, Math.ceil((endsAt.current - Date.now()) / 1000));
+      setLeft(remaining);
+      if (remaining > 0) return;
+      window.clearInterval(timer.current ?? undefined);
+      setRunning(false);
+      toast.success("Timer done", { body: stepText, duration: 0 });
+    }, 250);
     return () => {
       if (timer.current !== null) window.clearInterval(timer.current);
     };
@@ -244,7 +250,10 @@ function StepTimer({ stepText, stepIndex }: { stepText: string; stepIndex: numbe
           <button
             key={m}
             type="button"
-            onClick={() => setLeft((t) => t + m * 60)}
+            onClick={() => {
+              setLeft((t) => t + m * 60);
+              if (running) endsAt.current += m * 60000;
+            }}
             className="min-h-11 rounded-full border border-border-default px-4 text-onb-meta type-button-secondary text-text-primary"
           >
             +{m} min
@@ -252,9 +261,13 @@ function StepTimer({ stepText, stepIndex }: { stepText: string; stepIndex: numbe
         ))}
         <button
           type="button"
-          onClick={() => setRunning((r) => !r)}
-          disabled={left === 0}
-          className={`flex min-h-11 items-center gap-1.5 rounded-full bg-primary px-4 text-onb-meta type-button text-white ${PRIMARY_DISABLED}`}
+          onClick={() => {
+            if (running) return setRunning(false);
+            // Nothing set yet: start a 1-minute countdown instead of doing nothing.
+            if (left === 0) setLeft(60);
+            setRunning(true);
+          }}
+          className="flex min-h-11 items-center gap-1.5 rounded-full bg-primary px-4 text-onb-meta type-button text-white"
         >
           <Icon name={running ? "pause" : "play"} size={13} color="currentColor" />
           {running ? "Pause" : "Start"}
@@ -312,7 +325,7 @@ export function CookingModeScreen() {
           <button
             type="button"
             aria-label="Close"
-            onClick={() => navigate(`/recipes/${r.id}`)}
+            onClick={() => navigate("/recipes")}
             className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border-default bg-white"
           >
             <Icon name="close" size={18} color="var(--color-text-primary)" />
@@ -450,9 +463,9 @@ export function CookingCompleteScreen() {
             }
           />
           <SecondaryButton
-            label="Back to recipe"
+            label="Back to recipes"
             className="text-onb-body"
-            onPress={() => navigate(`/recipes/${r.id}`)}
+            onPress={() => navigate("/recipes")}
           />
         </div>
       </div>

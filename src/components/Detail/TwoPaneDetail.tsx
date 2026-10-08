@@ -491,7 +491,7 @@ export function TwoPaneDetail({
     <div className="flex min-h-dvh">
       <nav
         aria-label={listLabel}
-        className="w-80 shrink-0 overflow-y-auto border-r border-border-divider bg-white p-4"
+        className="sticky top-0 h-[var(--pane-h,100dvh)] w-80 shrink-0 self-start overflow-y-auto border-r border-border-divider bg-white p-4"
       >
         <h2 className="px-1 text-[13px] type-section-title text-text-neutral-600">{listTitle}</h2>
         <ul className="mt-3 flex flex-col gap-1.5">
