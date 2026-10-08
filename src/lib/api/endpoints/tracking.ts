@@ -1,5 +1,5 @@
 import { apiClient } from "../client";
-import type { DailySummary, MealType, NutritionEntry, Paginated } from "../models";
+import type { DailySummary, MacroTotals, MealType, NutritionEntry, Paginated } from "../models";
 import { authHeader } from "@/lib/auth";
 import { toQuery, type ListParams } from "./query";
 
@@ -57,16 +57,51 @@ export function getDailySummary(date?: string): Promise<DailySummary> {
   });
 }
 
-export function getMomentum(date?: string): Promise<unknown> {
-  return apiClient.get<unknown>(`/api/tracking/me/momentum${toQuery({ date })}`, {
+export interface Momentum {
+  points: number;
+  currentStreak: number;
+  longestStreak: number;
+  daysLogged: number;
+  scoring: { pointsPerEntry: number; dailyConsistencyBonus: number };
+}
+
+export function getMomentum(date?: string): Promise<Momentum> {
+  return apiClient.get<Momentum>(`/api/tracking/me/momentum${toQuery({ date })}`, {
     headers: authHeader(),
   });
 }
 
-export function getTrackingRecommendations(date?: string): Promise<unknown> {
-  return apiClient.get<unknown>(`/api/tracking/me/recommendations${toQuery({ date })}`, {
-    headers: authHeader(),
-  });
+type Macros = Pick<MacroTotals, "calories" | "protein" | "carbs" | "fat">;
+
+/** A meal that fits today's remaining macros, best match first. */
+export interface MealRecommendation extends Macros {
+  id: string;
+  title: string;
+  description?: string | null;
+  prepTimeMinutes?: number | null;
+  servings?: number | null;
+  goalTags?: string[];
+  category?: string | null;
+  imageUrl?: string | null;
+  ingredients?: string[];
+  steps?: string[];
+  matchScore: number;
+}
+
+export interface MealRecommendations {
+  date: string;
+  remaining: Macros;
+  items: MealRecommendation[];
+}
+
+export function getTrackingRecommendations(
+  date?: string,
+  limit?: number,
+): Promise<MealRecommendations> {
+  return apiClient.get<MealRecommendations>(
+    `/api/tracking/me/recommendations${toQuery({ date, limit })}`,
+    { headers: authHeader() },
+  );
 }
 
 export function getSnapshot(date?: string): Promise<unknown> {
@@ -75,8 +110,15 @@ export function getSnapshot(date?: string): Promise<unknown> {
   });
 }
 
-export function getFirstTimeState(): Promise<unknown> {
-  return apiClient.get<unknown>("/api/tracking/me/first-time", { headers: authHeader() });
+export interface FirstTimeState {
+  isFirstTime: boolean;
+  guidanceCompleted: boolean;
+  /** e.g. "log_meal", "log_water", "set_goal". */
+  suggestedActions: string[];
+}
+
+export function getFirstTimeState(): Promise<FirstTimeState> {
+  return apiClient.get<FirstTimeState>("/api/tracking/me/first-time", { headers: authHeader() });
 }
 
 /* ---- Guest ---- */

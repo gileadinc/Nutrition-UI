@@ -22,8 +22,9 @@ export function getMenuItem(menuItemId: string): Promise<MenuItem> {
   return apiClient.get<MenuItem>(`/api/eat-out/menu-items/${encodeURIComponent(menuItemId)}`);
 }
 
-export function getRecommendations(params?: EatOutListParams): Promise<unknown> {
-  return apiClient.get<unknown>(`/api/eat-out/recommendations${toQuery(params)}`);
+/** Fast hacks ranked for the given goal (`params.goal`), best match first. */
+export function getRecommendations(params?: EatOutListParams): Promise<Paginated<FastHack>> {
+  return apiClient.get<Paginated<FastHack>>(`/api/eat-out/recommendations${toQuery(params)}`);
 }
 
 export function listFastHacks(params?: EatOutListParams): Promise<Paginated<FastHack>> {

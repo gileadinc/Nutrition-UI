@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
+import { discoveryApi, type FeatureGate } from "@/lib/api";
 import { useIsDesktop } from "@/lib/hooks";
 import { useLocation, useNavigate } from "@/lib/nav";
 import { GuestGateContext } from "@/lib/store/gate";
@@ -14,6 +15,44 @@ const PERKS = [
   { icon: "lock", label: "No credit card" },
   { icon: "tick", label: "Free forever" },
 ] as const;
+
+const FALLBACK_COPY: Pick<FeatureGate, "description" | "ctaLabel"> = {
+  description:
+    "Tracking meals, saving favourites and personalised recommendations need somewhere to save to. Creating an account is free and takes about a minute — no credit card required.",
+  ctaLabel: "Create free account",
+};
+
+const gateCache = new Map<string, FeatureGate>();
+const gateKey = (feature: string) =>
+  feature
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+/** Account-gate copy from `GET /api/discovery/feature-gates/{key}`; static copy until it loads (or if it fails). */
+function useGateCopy(feature: string | undefined) {
+  const key = feature ? gateKey(feature) : "";
+  const [loaded, setLoaded] = useState<FeatureGate | null>(null);
+  useEffect(() => {
+    if (!key) return;
+    let cancelled = false;
+    discoveryApi
+      .getFeatureGate(key)
+      .then((g) => {
+        gateCache.set(key, g);
+        if (!cancelled) setLoaded(g);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [key]);
+  const gate = (key && gateCache.get(key)) || loaded;
+  return {
+    description: gate?.description || FALLBACK_COPY.description,
+    ctaLabel: gate?.ctaLabel || FALLBACK_COPY.ctaLabel,
+  };
+}
 
 /**
  * "This needs an account" sheet. Rendered by <GuestGateProvider> and by the
@@ -31,6 +70,7 @@ export function GuestFeatureGate({
 }) {
   const navigate = useNavigate();
   const desktop = useIsDesktop();
+  const copy = useGateCopy(feature);
   return (
     <div
       className={cn(
@@ -59,10 +99,7 @@ export function GuestFeatureGate({
           >
             {feature ? `${feature} needs an account` : "This feature needs an account"}
           </h1>
-          <p className="mt-4 text-[15px] text-text-secondary">
-            Tracking meals, saving favourites and personalised recommendations need somewhere to
-            save to. Creating an account is free and takes about a minute — no credit card required.
-          </p>
+          <p className="mt-4 text-[15px] text-text-secondary">{copy.description}</p>
           <ul className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2.5">
             {PERKS.map((p) => (
               <li key={p.label} className="flex items-center gap-1.5">
@@ -73,7 +110,7 @@ export function GuestFeatureGate({
           </ul>
           <div className="mt-6 flex w-full flex-col gap-3">
             <PrimaryButton
-              label="Create free account"
+              label={copy.ctaLabel}
               onPress={() =>
                 navigate(next ? `/signup?next=${encodeURIComponent(next)}` : "/signup")
               }

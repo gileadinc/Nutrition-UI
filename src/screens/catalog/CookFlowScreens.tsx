@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   CenteredShell,
   DetailPageSkeleton,
@@ -14,7 +14,7 @@ import {
 import { CONTROL_ON } from "@/components/styles";
 import { getErrorMessage } from "@/lib/api";
 import { Link, useNavigate, useParams } from "@/lib/nav";
-import { toast, useRecipe, useRequireAccount, useShoppingList } from "@/lib/store";
+import { toast, useCookingProgress, useRecipe, useRequireAccount, useShoppingList } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { toRecipeVM, type RecipeVM } from "./adapt";
 
@@ -192,7 +192,19 @@ export function IngredientsChecklistScreen() {
   );
 }
 
-function StepTimer({ stepText, stepIndex }: { stepText: string; stepIndex: number }) {
+function StepTimer({
+  stepText,
+  stepIndex,
+  resumeSeconds,
+  onTimerChange,
+}: {
+  stepText: string;
+  stepIndex: number;
+  /** Seconds left from a saved session; applied once. */
+  resumeSeconds?: number | null;
+  /** Called with the seconds left when the user changes the timer, and every 10s while it runs. */
+  onTimerChange?: (seconds: number) => void;
+}) {
   const suggested = timerSeconds(stepText);
   const [left, setLeft] = useState(suggested ?? 0);
   const [running, setRunning] = useState(false);
@@ -204,10 +216,15 @@ function StepTimer({ stepText, stepIndex }: { stepText: string; stepIndex: numbe
   useEffect(() => {
     leftRef.current = left;
   }, [left]);
+  const [resumed, setResumed] = useState(false);
   if (seenIndex !== stepIndex) {
     setSeenIndex(stepIndex);
     setLeft(suggested ?? 0);
     setRunning(false);
+  }
+  if (!resumed && resumeSeconds != null) {
+    setResumed(true);
+    setLeft(resumeSeconds);
   }
   useEffect(() => {
     if (!running) return;
@@ -216,15 +233,19 @@ function StepTimer({ stepText, stepIndex }: { stepText: string; stepIndex: numbe
     timer.current = window.setInterval(() => {
       const remaining = Math.max(0, Math.ceil((endsAt.current - Date.now()) / 1000));
       setLeft(remaining);
-      if (remaining > 0) return;
+      if (remaining > 0) {
+        if (remaining % 10 === 0) onTimerChange?.(remaining);
+        return;
+      }
       window.clearInterval(timer.current ?? undefined);
+      onTimerChange?.(0);
       setRunning(false);
       toast.success("Timer done", { body: stepText, duration: 0 });
     }, 250);
     return () => {
       if (timer.current !== null) window.clearInterval(timer.current);
     };
-  }, [running, stepText]);
+  }, [running, stepText, onTimerChange]);
   const mm = String(Math.floor(left / 60)).padStart(2, "0");
   const ss = String(left % 60).padStart(2, "0");
   return (
@@ -251,8 +272,9 @@ function StepTimer({ stepText, stepIndex }: { stepText: string; stepIndex: numbe
             key={m}
             type="button"
             onClick={() => {
-              setLeft((t) => t + m * 60);
+              setLeft(left + m * 60);
               if (running) endsAt.current += m * 60000;
+              onTimerChange?.(left + m * 60);
             }}
             className="min-h-11 rounded-full border border-border-default px-4 text-onb-meta type-button-secondary text-text-primary"
           >
@@ -262,9 +284,13 @@ function StepTimer({ stepText, stepIndex }: { stepText: string; stepIndex: numbe
         <button
           type="button"
           onClick={() => {
-            if (running) return setRunning(false);
+            if (running) {
+              onTimerChange?.(left);
+              return setRunning(false);
+            }
             // Nothing set yet: start a 1-minute countdown instead of doing nothing.
             if (left === 0) setLeft(60);
+            onTimerChange?.(left === 0 ? 60 : left);
             setRunning(true);
           }}
           className="flex min-h-11 items-center gap-1.5 rounded-full bg-primary px-4 text-onb-meta type-button text-white"
@@ -277,6 +303,7 @@ function StepTimer({ stepText, stepIndex }: { stepText: string; stepIndex: numbe
           onClick={() => {
             setRunning(false);
             setLeft(0);
+            onTimerChange?.(0);
           }}
           className="flex min-h-11 items-center gap-1.5 rounded-full border border-border-default px-4 text-onb-meta type-button-secondary text-text-primary"
         >
@@ -293,6 +320,28 @@ export function CookingModeScreen() {
   const { recipe: r, node } = useCookRecipe();
   const [step, setStep] = useState(0);
   const count = r?.steps.length ?? 0;
+  const progress = useCookingProgress(r?.id);
+  const [resumed, setResumed] = useState<number | null>(null);
+  if (progress.resume && count > 0 && resumed === null) {
+    const at = Math.min(count - 1, Math.max(0, progress.resume.currentStep));
+    setResumed(at);
+    setStep(at);
+  }
+  const recipeId = r?.id;
+  useEffect(() => {
+    if (!recipeId || count === 0) return;
+    progress.save({ recipeId, currentStep: step, completed: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- save only when the step changes
+  }, [recipeId, count, step]);
+  const saveTimer = useCallback(
+    (seconds: number) => {
+      if (recipeId) {
+        progress.save({ recipeId, currentStep: step, timerSecondsRemaining: seconds, completed: false });
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `progress.save` is stable per sign-in
+    [recipeId, step, progress.save],
+  );
   useEffect(() => {
     if (count === 0) return;
     const onKey = (e: KeyboardEvent) => {
@@ -406,7 +455,12 @@ export function CookingModeScreen() {
           </p>
         )}
         <div className="mt-6">
-          <StepTimer stepText={steps[step]} stepIndex={step} />
+          <StepTimer
+            stepText={steps[step]}
+            stepIndex={step}
+            resumeSeconds={resumed === step ? progress.resume?.timerSecondsRemaining : null}
+            onTimerChange={saveTimer}
+          />
         </div>
         <div className="mt-6 border-t border-border-divider bg-white py-3 md:border-0 md:bg-transparent md:py-0">
           <div className="flex w-full gap-3 md:max-w-md md:justify-start">
@@ -418,11 +472,11 @@ export function CookingModeScreen() {
             />
             <PrimaryButton
               label={last ? "Finish" : "Next step"}
-              onPress={() =>
-                last
-                  ? navigate(`/recipes/${r.id}/cook/complete`)
-                  : setStep((s) => Math.min(steps.length - 1, s + 1))
-              }
+              onPress={() => {
+                if (!last) return setStep((s) => Math.min(steps.length - 1, s + 1));
+                progress.save({ recipeId: r.id, currentStep: step, completed: true }, true);
+                navigate(`/recipes/${r.id}/cook/complete`);
+              }}
             />
           </div>
         </div>

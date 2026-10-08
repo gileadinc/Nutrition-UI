@@ -4,8 +4,8 @@ import { useMemo, useState } from "react";
 import { NotificationList, toNotificationVM } from "@/components/Notifications";
 import { cn } from "@/lib/utils";
 import { ProfileLayout } from "@/components/Track/ProfileParts";
-import { getErrorMessage, profileApi, type NotificationPrefs } from "@/lib/api";
-import { invalidate, toast, useAppSession, useNotifications, useProfile } from "@/lib/store";
+import { getErrorMessage, profileApi, type NotificationPrefs, type Preferences as AllPrefs, type PrivacyPrefs } from "@/lib/api";
+import { invalidate, toast, useAppSession, useCached, useNotifications, useProfile } from "@/lib/store";
 import { SWITCH_ON } from "@/components/styles";
 
 const PREFS: { key: keyof NotificationPrefs; label: string }[] = [
@@ -72,6 +72,61 @@ function Preferences() {
   );
 }
 
+const PREFS_KEY = "profile:preferences";
+
+const PRIVACY: { key: "analytics" | "personalizedRecommendations"; label: string; hint: string }[] = [
+  {
+    key: "personalizedRecommendations",
+    label: "Personalised recommendations",
+    hint: "Use your goal and what you log to suggest meals.",
+  },
+  { key: "analytics", label: "Usage analytics", hint: "Share anonymous usage to help improve ForkThis." },
+];
+
+/** Privacy switches from `GET/PATCH /api/profile/me/preferences`. */
+function PrivacySettings() {
+  const prefs = useCached<AllPrefs>(PREFS_KEY, () => profileApi.getPreferences());
+  const [busy, setBusy] = useState(false);
+  const current = prefs.data?.privacy;
+  const toggle = async (key: keyof PrivacyPrefs) => {
+    if (!current) return;
+    setBusy(true);
+    try {
+      await profileApi.updatePreferences({ privacy: { ...current, [key]: !current[key] } });
+      invalidate(PREFS_KEY);
+    } catch (err) {
+      toast.error("Couldn't update privacy settings", { body: getErrorMessage(err) });
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <section className="panel p-4">
+      <h2 className="text-[15px] type-section-title tracking-[-0.5px] text-brand-navy">Privacy</h2>
+      <p className="mt-1 type-meta text-xs leading-5 text-text-secondary">Control how your data is used.</p>
+      <div className="mt-2">
+        {PRIVACY.map((p) => (
+          <div
+            key={p.key}
+            className="flex min-h-12 items-center gap-3 border-b border-border-divider py-2 last:border-b-0"
+          >
+            <span className="min-w-0 flex-1">
+              <span className="block type-item-title text-sm text-text-primary">{p.label}</span>
+              <span className="block type-meta text-xs leading-5 text-text-secondary">{p.hint}</span>
+            </span>
+            <Switch
+              on={Boolean(current?.[p.key])}
+              label={p.label}
+              disabled={!current || busy}
+              onToggle={() => void toggle(p.key)}
+            />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function NotificationsScreen() {
   const session = useAppSession();
   const n = useNotifications();
@@ -81,7 +136,14 @@ export function NotificationsScreen() {
     <ProfileLayout
       title="Notifications"
       subtitle="Reminders and updates that help you stay on track."
-      aside={session.isSignedIn ? <Preferences /> : undefined}
+      aside={
+        session.isSignedIn ? (
+          <div className="flex flex-col gap-4">
+            <Preferences />
+            <PrivacySettings />
+          </div>
+        ) : undefined
+      }
       asideLabel="Notification preferences"
     >
       <section aria-label="Recent activity" className="panel overflow-hidden">

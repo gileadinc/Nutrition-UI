@@ -26,7 +26,7 @@ import {
 import { getErrorMessage } from "@/lib/api";
 import { useFilterParams } from "@/lib/hooks";
 import { HACK_FILTER, fitFor } from "@/lib/nutrition";
-import { useDayBudget, useFastHacks, useSaved } from "@/lib/store";
+import { useDayBudget, useEatOutRecommendations, useFastHacks, useProfile, useSaved } from "@/lib/store";
 import { toHackVM, type HackVM } from "./adapt";
 
 const SORTS = [
@@ -74,6 +74,8 @@ export function FastHacksScreen() {
   const f = useFilterParams({}, ["sort", "adv"]);
   const [open, setOpen] = useState(false);
   const { data, error, isLoading, refresh } = useFastHacks({ limit: 100 });
+  const { profile } = useProfile();
+  const recs = useEatOutRecommendations({ goal: profile?.goal ?? undefined, limit: 6 });
   const saved = useSaved();
   const { budget } = useDayBudget();
   const all = useMemo(() => (data?.items ?? []).map((h) => toHackVM(h)), [data]);
@@ -165,7 +167,13 @@ export function FastHacksScreen() {
     f.clear(["fits", "tag", "kcal", "protein", "mi", "rating", "eta", "at", "adv"]);
   const clearAll = () => f.clear();
   const pristine = applied.length === 0 && sort === "recommended";
-  const featured = pristine ? results.slice(0, FEATURED) : [];
+  // "Featured for you" follows the backend's ranking for the user's goal, then fills from the list.
+  const recRank = new Map((recs.data?.items ?? []).map((h, i) => [h.id, i]));
+  const featured = pristine
+    ? [...results]
+        .sort((a, b) => (recRank.get(a.id) ?? 999) - (recRank.get(b.id) ?? 999))
+        .slice(0, FEATURED)
+    : [];
   const rest = results.filter((h) => !featured.includes(h));
   const sparse = !pristine && results.length > 0 && results.length <= SPARSE;
 

@@ -20,11 +20,13 @@ import {
 } from "@/components";
 import type { IconName } from "@/components";
 import { LINK_ACTION, SECTION_TITLE } from "@/components/styles";
+import { profileApi } from "@/lib/api";
 import { useIsLg, useScrollToTopOnMount } from "@/lib/hooks";
 import { Link, useSearchParams } from "@/lib/nav";
 import { GOAL_LABEL, fitFor, type Budget } from "@/lib/nutrition";
 import {
   firstNameOf,
+  invalidate,
   startGuestSession,
   useAppSession,
   useDayBudget,
@@ -418,6 +420,13 @@ export function HomeScreen() {
       window.localStorage.setItem(TOUR_KEY, "1");
     } catch {
       // ignore
+    }
+    // Remember it on the account too, so the tour doesn't come back on another device.
+    if (home.signedIn.data) {
+      void profileApi
+        .updateExperienceState({ quickTourCompleted: true })
+        .then(() => invalidate("home"))
+        .catch(() => undefined);
     }
     setDismissed(true);
     if (params.has("tour")) {

@@ -35,6 +35,18 @@ export type {
   CollectionDetailParams,
 } from "./endpoints/collections";
 export type { UpsertRatingInput } from "./endpoints/ratings";
+export type { AccountPrompt, FeatureGate } from "./endpoints/discovery";
+export type {
+  FirstTimeState,
+  MealRecommendation,
+  MealRecommendations,
+  Momentum,
+} from "./endpoints/tracking";
+export type {
+  CookingState,
+  CookingStateUpdate,
+  ExperienceState,
+} from "./endpoints/profile";
 export type {
   AdminOverview,
   AdminDashboard,

@@ -11,7 +11,10 @@ import { useCallback } from "react";
 import {
   trackingApi,
   type DailySummary,
+  type FirstTimeState,
   type MacroTotals,
+  type MealRecommendations,
+  type Momentum,
   type NutritionEntry,
   type Paginated,
 } from "@/lib/api";
@@ -93,15 +96,23 @@ export function useEntries(params?: EntryListParams) {
 
 export function useMomentum(date?: string) {
   const s = useAppSession();
-  return useCached<unknown>(s.isSignedIn ? keyOf("tracking:momentum", { date }) : null, () =>
+  return useCached<Momentum>(s.isSignedIn ? keyOf("tracking:momentum", { date }) : null, () =>
     trackingApi.getMomentum(date),
   );
 }
 
-export function useTrackingRecommendations(date?: string) {
+export function useTrackingRecommendations(date?: string, limit = 3) {
   const s = useAppSession();
-  return useCached<unknown>(s.isSignedIn ? keyOf("tracking:recs", { date }) : null, () =>
-    trackingApi.getTrackingRecommendations(date),
+  return useCached<MealRecommendations>(
+    s.isSignedIn ? keyOf("tracking:recs", { date, limit }) : null,
+    () => trackingApi.getTrackingRecommendations(date, limit),
+  );
+}
+
+export function useFirstTimeState() {
+  const s = useAppSession();
+  return useCached<FirstTimeState>(s.isSignedIn ? "tracking:first-time" : null, () =>
+    trackingApi.getFirstTimeState(),
   );
 }
 

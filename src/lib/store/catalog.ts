@@ -38,6 +38,12 @@ export const useFastHacks = (params?: EatOutListParams) =>
     eatOutApi.listFastHacks(params),
   );
 
+/** Fast hacks the backend ranks highest for the user's goal (`GET /api/eat-out/recommendations`). */
+export const useEatOutRecommendations = (params?: EatOutListParams) =>
+  useCached<Paginated<FastHack>>(keyOf("catalog:hack-recs", params), () =>
+    eatOutApi.getRecommendations(params),
+  );
+
 export const useFastHack = (id: string | null | undefined) =>
   useCached<FastHack>(id ? `catalog:hack:${id}` : null, () => eatOutApi.getFastHack(id!));
 

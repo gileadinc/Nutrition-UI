@@ -79,12 +79,42 @@ export function resetDemo(): Promise<unknown> {
   });
 }
 
-export function getExperienceState(): Promise<unknown> {
-  return apiClient.get<unknown>("/api/profile/me/experience-state", { headers: authHeader() });
+/** Free-form guidance flags, e.g. `{ quickTourCompleted: true }`. Empty until something is saved. */
+export type ExperienceState = Record<string, unknown>;
+
+export function getExperienceState(): Promise<ExperienceState> {
+  return apiClient.get<ExperienceState>("/api/profile/me/experience-state", {
+    headers: authHeader(),
+  });
 }
 
-export function updateExperienceState(update: Record<string, unknown>): Promise<unknown> {
-  return apiClient.patch<unknown>("/api/profile/me/experience-state", update, {
+export function updateExperienceState(update: ExperienceState): Promise<ExperienceState> {
+  return apiClient.patch<ExperienceState>("/api/profile/me/experience-state", update, {
+    headers: authHeader(),
+  });
+}
+
+/** Where the user is in cook mode, so it can resume after a refresh or on another device. */
+export interface CookingState {
+  recipeId: string | null;
+  currentStep: number;
+  timerSecondsRemaining: number | null;
+  completed: boolean;
+}
+
+export interface CookingStateUpdate {
+  recipeId: string;
+  currentStep: number;
+  timerSecondsRemaining?: number;
+  completed: boolean;
+}
+
+export function getCookingState(): Promise<CookingState> {
+  return apiClient.get<CookingState>("/api/profile/me/cooking-state", { headers: authHeader() });
+}
+
+export function updateCookingState(update: CookingStateUpdate): Promise<CookingState> {
+  return apiClient.patch<CookingState>("/api/profile/me/cooking-state", update, {
     headers: authHeader(),
   });
 }
