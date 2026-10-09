@@ -100,7 +100,7 @@ export function RingsByDay({
               <>
                 <span
                   className={cn(
-                    "mt-1.5 text-[10px]",
+                    "mt-1.5 text-[14px]",
                     on ? "type-button text-text-primary" : "type-button-secondary text-text-secondary",
                   )}
                 >
@@ -108,7 +108,7 @@ export function RingsByDay({
                 </span>
                 <span
                   className={cn(
-                    "text-[10px] tabular-nums",
+                    "text-[14px] tabular-nums",
                     on ? "type-row-figure text-text-primary" : "type-meta text-text-neutral-500",
                   )}
                 >
@@ -314,8 +314,8 @@ function Columns({
             }}
           >
             <div className="min-w-0 whitespace-nowrap rounded-lg border border-border-default bg-white px-2.5 py-1.5 shadow-card">
-              <p className="text-[10px] type-meta text-text-secondary">{shortDate(sel.key)}</p>
-              <p className="flex items-center gap-1.5 text-[12px] type-row-figure tabular-nums text-text-primary">
+              <p className="text-[14px] type-meta text-text-secondary">{shortDate(sel.key)}</p>
+              <p className="flex items-center gap-1.5 text-[16px] type-row-figure tabular-nums text-text-primary">
                 <span className="size-2 rounded-full" style={{ backgroundColor: metric.accent }} />
                 {metric.label} {fmt(sel.value)}
               </p>
@@ -346,7 +346,7 @@ export function MetricChart({
 }) {
   if (days.length === 0) {
     return (
-      <p className="flex h-full items-center justify-center text-center text-[15px] tracking-[-0.675px] text-text-secondary">
+      <p className="flex h-full items-center justify-center text-center text-[19px] tracking-[-0.675px] text-text-secondary">
         Nothing logged yet.
       </p>
     );
@@ -379,7 +379,7 @@ export function MetricChart({
           names={days.map((d) => `${shortDate(d.date)}: ${fmt(metric.valueOf(d))} ${metric.unit}`)}
         />
         {!compact && (
-          <p className="mt-3 text-center text-[11px] type-meta text-text-secondary">
+          <p className="mt-3 text-center text-[15px] type-meta text-text-secondary">
             A full ring is the {fmt(goal)} {metric.unit} goal; a shadowed second lap means over it.
           </p>
         )}
@@ -488,24 +488,24 @@ export function MetricCard({
         >
           <Icon name={icon} size={14} color="var(--color-icon-well-ink)" />
         </span>
-        <span className="min-w-0 flex-1 truncate text-[13px] type-item-title tracking-[-0.585px] text-text-neutral-500">
+        <span className="min-w-0 flex-1 truncate text-[17px] type-item-title tracking-[-0.585px] text-text-neutral-500">
           {metric.label}
         </span>
         <Icon name="chevronRight" size={14} color="var(--color-text-neutral-400)" />
       </span>
       <span className="mt-3 flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
-        <span className="text-[26px] type-numeral leading-none tabular-nums tracking-[-1.1px] text-text-primary">
+        <span className="text-[30px] type-numeral leading-none tabular-nums tracking-[-1.1px] text-text-primary">
           {latest}
         </span>
         <span className="text-xs type-meta text-text-secondary">{metric.unit}</span>
-        {caption && <span className="text-[11px] type-meta text-text-neutral-500">{caption}</span>}
+        {caption && <span className="text-[15px] type-meta text-text-neutral-500">{caption}</span>}
         {delta !== null && (
           <span className="ml-auto">
             <DeltaPill delta={delta} moreIsBetter={metric.moreIsBetter} label={metric.label} />
           </span>
         )}
       </span>
-      <span className="mt-1.5 block text-[11px] type-meta leading-4 text-text-secondary">
+      <span className="mt-1.5 block text-[15px] type-meta leading-4 text-text-secondary">
         Goal {fmt(goal)} {metric.unit}
         {days.length > 1 && logged > 0 && (
           <>
@@ -527,7 +527,7 @@ export function MetricCard({
       {days.length > 7 && (
         <span
           aria-hidden="true"
-          className="mt-1.5 flex justify-between text-[10px] type-meta tabular-nums text-text-neutral-500"
+          className="mt-1.5 flex justify-between text-[14px] type-meta tabular-nums text-text-neutral-500"
         >
           <span>{monthDay(days[0].date)}</span>
           <span>{monthDay(days[days.length - 1].date)}</span>

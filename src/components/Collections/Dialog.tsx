@@ -101,12 +101,12 @@ export function Dialog({
           <div className="min-w-0 flex-1">
             <h2
               id={titleId}
-              className="text-[22px] type-display leading-7 tracking-[-1px] text-brand-navy"
+              className="text-[26px] type-display leading-7 tracking-[-1px] text-brand-navy"
             >
               {title}
             </h2>
             {description && (
-              <p className="mt-1.5 type-meta text-[13px] leading-5 text-text-secondary">
+              <p className="mt-1.5 type-meta text-[17px] leading-5 text-text-secondary">
                 {description}
               </p>
             )}

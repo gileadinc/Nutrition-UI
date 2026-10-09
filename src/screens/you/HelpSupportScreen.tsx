@@ -51,7 +51,7 @@ function Question({ q, a }: { q: string; a: string }) {
           </span>
         </button>
       </h3>
-      <div id={id} hidden={!open} className="px-4 pb-4 type-meta text-[13px] leading-5 text-text-secondary">
+      <div id={id} hidden={!open} className="px-4 pb-4 type-meta text-[17px] leading-5 text-text-secondary">
         {a}
       </div>
     </li>
@@ -95,12 +95,12 @@ function YourData() {
     <FormSection title="Your data" className="mt-10">
       <div className="rounded-2xl border border-primary-soft bg-navy-50 p-4">
         <p className="text-sm type-section-title text-text-primary">Export or delete</p>
-        <p className="mt-1 type-meta text-[13px] leading-5 text-text-secondary">
+        <p className="mt-1 type-meta text-[17px] leading-5 text-text-secondary">
           Download everything we hold about you, or delete your account and all of its data.
         </p>
         {confirm ? (
           <div role="alertdialog" aria-label="Confirm deleting your account" className="mt-3">
-            <p className="text-[13px] type-item-title text-text-primary">
+            <p className="text-[17px] type-item-title text-text-primary">
               This can&apos;t be undone. Delete your account?
             </p>
             <div className="mt-3 grid grid-cols-2 gap-2">

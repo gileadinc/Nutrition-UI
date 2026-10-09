@@ -35,10 +35,10 @@ function Today({ onNavigate }: { onNavigate: () => void }) {
         <Icon name="fire" size={16} color="var(--color-accent-ink)" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-[11px] type-meta leading-4 text-text-secondary">
+        <span className="block text-[15px] type-meta leading-4 text-text-secondary">
           Today so far{budget.personalised ? "" : " · default goals"}
         </span>
-        <span className="block text-[13px] type-row-figure leading-5 text-text-primary">
+        <span className="block text-[17px] type-row-figure leading-5 text-text-primary">
           <span className="text-accent-ink">{cal}</span>
           <span aria-hidden="true" className="px-1.5 text-text-neutral-400">
             ·
@@ -64,7 +64,7 @@ function RecentChats({ size, onNavigate }: { size: ChatSize; onNavigate: () => v
         <Link
           to="/assistant/history"
           onClick={onNavigate}
-          className="-mr-2 flex min-h-11 items-center gap-0.5 px-2 text-[13px] type-button text-primary"
+          className="flex min-h-9 items-center gap-0.5 rounded-full border border-border-default bg-white px-3 text-[17px] type-button text-primary"
         >
           See all
           <Icon name="chevronRight" size={14} color="var(--color-primary)" />
@@ -79,8 +79,8 @@ function RecentChats({ size, onNavigate }: { size: ChatSize; onNavigate: () => v
               className="flex min-h-12 w-full items-center gap-3 px-1 text-left transition-colors hover:bg-icon-well focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
             >
               <Icon name="history" size={16} color="var(--color-text-neutral-500)" />
-              <span className="min-w-0 flex-1 truncate text-[14px] type-item-title text-text-primary">{c.title}</span>
-              <span className="shrink-0 text-[11px] type-meta text-text-neutral-500">
+              <span className="min-w-0 flex-1 truncate text-[18px] type-item-title text-text-primary">{c.title}</span>
+              <span className="shrink-0 text-[15px] type-meta text-text-neutral-500">
                 {relativeTime(c.updatedAt, now)}
               </span>
             </button>
@@ -122,6 +122,7 @@ export function MeloChat({
   }, [turns.length, typing, pinned]);
   useEffect(() => () => stopSpeaking(), []);
 
+  const wide = size === "page" ? "max-w-5xl" : "max-w-2xl";
   const latestAssistant = [...turns].reverse().find((t) => t.role === "assistant")?.id;
 
   return (
@@ -139,12 +140,12 @@ export function MeloChat({
           )}
         >
           {turns.length === 0 ? (
-            <div className="mx-auto flex w-full max-w-2xl flex-col gap-5">
+            <div className={cn("mx-auto flex w-full flex-col gap-5", wide)}>
               <div>
                 <h2
                   className={cn(
                     "type-display text-text-primary",
-                    size === "sheet" ? "text-[22px] leading-7" : "text-[26px] leading-8 md:text-[28px] md:leading-9",
+                    size === "sheet" ? "text-[26px] leading-7" : "text-[30px] leading-8 md:text-[32px] md:leading-9",
                   )}
                 >
                   {name ? `Hi ${name}, what’s on the plate?` : "Hi, what’s on the plate?"}
@@ -158,11 +159,16 @@ export function MeloChat({
                 <h3 id="melo-starters" className="sr-only">
                   Start with a question
                 </h3>
-                <ul data-testid="melo-starters" className="panel grid grid-cols-2 overflow-hidden">
+                <ul data-testid="melo-starters" className={cn("panel grid grid-cols-2 overflow-hidden", size === "page" && "lg:grid-cols-4")}>
                   {STARTERS.map((s, i) => (
                     <li
                       key={s.text}
-                      className={cn("border-border-divider", i % 2 === 0 && "border-r", i < 2 && "border-b")}
+                      className={cn(
+                        "border-border-divider",
+                        i % 2 === 0 && "border-r",
+                        i < 2 && "border-b",
+                        size === "page" && "lg:border-b-0 lg:border-r lg:last:border-r-0",
+                      )}
                     >
                       <button
                         type="button"
@@ -175,7 +181,7 @@ export function MeloChat({
                           </span>
                           <span className="text-xs type-meta text-text-secondary">{s.intent}</span>
                         </span>
-                        <span className="text-[14px] type-item-title leading-[19px] text-text-primary">{s.text}</span>
+                        <span className="text-[18px] type-item-title leading-[23px] text-text-primary">{s.text}</span>
                       </button>
                     </li>
                   ))}
@@ -191,7 +197,7 @@ export function MeloChat({
                       <button
                         type="button"
                         onClick={() => send(p)}
-                        className="flex min-h-11 items-center rounded-full border border-border-default bg-white px-4 text-[13px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                        className="flex min-h-11 items-center rounded-full border border-border-default bg-white px-4 text-[17px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                       >
                         {p}
                       </button>
@@ -207,7 +213,7 @@ export function MeloChat({
                 role="log"
                 aria-live="polite"
                 aria-label="Conversation with Melo"
-                className="mx-auto flex max-w-2xl flex-col gap-7"
+                className={cn("mx-auto flex flex-col gap-7", wide)}
               >
                 {turns.map((t) =>
                   t.role === "user" ? (
@@ -224,7 +230,7 @@ export function MeloChat({
                 )}
               </div>
               {typing && (
-                <div className="mx-auto mt-7 max-w-2xl">
+                <div className={cn("mx-auto mt-7", wide)}>
                   <TypingIndicator />
                 </div>
               )}
@@ -239,7 +245,7 @@ export function MeloChat({
               setPinned(true);
               scrollEnd();
             }}
-            className="absolute bottom-3 left-1/2 flex min-h-11 -translate-x-1/2 items-center gap-1.5 rounded-full border border-border-default bg-white pl-3 pr-4 text-[13px] type-button-secondary text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus motion-safe:animate-[melo-rise_180ms_ease-out_backwards]"
+            className="absolute bottom-3 left-1/2 flex min-h-11 -translate-x-1/2 items-center gap-1.5 rounded-full border border-border-default bg-white pl-3 pr-4 text-[17px] type-button-secondary text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus motion-safe:animate-[melo-rise_180ms_ease-out_backwards]"
           >
             <Icon name="arrowDownSmall" size={16} color="var(--color-primary)" />
             Latest
@@ -252,7 +258,7 @@ export function MeloChat({
           size === "page" && "md:px-8",
         )}
       >
-        <div className="mx-auto max-w-2xl">
+        <div className={cn("mx-auto", wide)}>
           <MeloComposer
             onSend={send}
             disabled={typing}

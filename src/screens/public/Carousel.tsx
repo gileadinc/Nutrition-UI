@@ -110,12 +110,12 @@ export function OnboardingCarousel() {
           onClick={() => goTo(i)}
           aria-label={`Go to slide ${i + 1}`}
           aria-current={i === index ? "true" : undefined}
-          className="flex h-11 w-7 items-center justify-center"
+          className="flex h-12 w-9 items-center justify-center"
         >
           <span
             className={cn(
-              "block h-1.5 rounded-full transition-all duration-300 motion-reduce:transition-none",
-              i === index ? "w-5 bg-accent" : "w-1.5 bg-navy-200",
+              "block h-3 rounded-full transition-all duration-300 motion-reduce:transition-none",
+              i === index ? "w-9 bg-accent" : "w-3 bg-navy-300",
             )}
           />
         </button>
@@ -127,8 +127,8 @@ export function OnboardingCarousel() {
       type="button"
       onClick={finish}
       className={cn(
-        "h-11 rounded-full px-5 text-onb-body type-button-secondary",
-        card ? "bg-surface-card text-brand-navy" : "text-brand-navy hover:bg-navy-soft",
+        "h-11 rounded-full border border-border-default px-5 text-onb-body type-button-secondary text-brand-navy",
+        card ? "bg-surface-card" : "bg-white hover:border-text-neutral-400",
       )}
     >
       Skip

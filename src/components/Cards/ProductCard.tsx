@@ -85,7 +85,7 @@ export function ProductCardBadge({
     <span
       data-slot="product-card-badge"
       className={cn(
-        "absolute top-[10px] flex h-[22px] items-center rounded-full px-2 text-[11px] type-meta leading-none tracking-[-0.495px]",
+        "absolute top-[10px] flex h-[22px] items-center rounded-full px-2 text-[15px] type-meta leading-none tracking-[-0.495px]",
         position === "start" ? "left-[10px]" : "right-[10px]",
         className,
       )}

@@ -24,7 +24,7 @@ function NewChatButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-primary pl-3.5 pr-4 text-[13px] type-button text-on-primary transition-colors hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+      className="flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-primary pl-3.5 pr-4 text-[17px] type-button text-on-primary transition-colors hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
     >
       <Icon name="pencilEdit" size={16} color="currentColor" />
       New chat
@@ -69,9 +69,9 @@ export function AssistantScreen() {
 
   return (
     <div className="page-settle flex h-[calc(100dvh-76px)] w-full gap-4 md:h-[calc(100dvh-108px)] md:p-4 lg:p-5">
-      <aside aria-label="Conversations" className="hidden w-72 shrink-0 flex-col gap-3 overflow-y-auto pr-3 lg:flex">
+      <aside aria-label="Conversations" className="hidden w-72 shrink-0 flex-col gap-3 overflow-y-auto pr-3 lg:flex xl:w-80">
         <div className="flex items-center justify-between gap-2 pt-1">
-          <h2 className="text-[15px] type-section-title text-text-primary">Chats</h2>
+          <h2 className="text-[19px] type-section-title text-text-primary">Chats</h2>
           <NewChatButton onClick={() => meloActions.newChat()} />
         </div>
         <MeloChatList dense onOpen={(id) => meloActions.reopen(id)} />
@@ -154,7 +154,7 @@ function HistoryBase({ search }: { search: boolean }) {
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-icon-well">
             <Icon name="sparkles" size={17} color="var(--color-icon-well-ink)" />
           </span>
-          <span className="min-w-0 flex-1 truncate text-[14px] type-button text-primary">Ask Melo about “{term}”</span>
+          <span className="min-w-0 flex-1 truncate text-[18px] type-button text-primary">Ask Melo about “{term}”</span>
           <Icon name="chevronRight" size={16} color="var(--color-primary)" />
         </Link>
       )}

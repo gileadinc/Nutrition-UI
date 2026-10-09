@@ -162,11 +162,11 @@ export function QuizStepLayout({
           data-testid="onboarding-column"
           className={cn(
             "contents lg:mx-auto lg:my-auto lg:flex lg:w-full lg:max-w-[34rem] lg:flex-col lg:py-10 lg-short:py-6",
-            wide && "xl:max-w-[50rem]",
+            wide && "lg:max-w-[48rem] xl:max-w-[60rem]",
           )}
         >
           <header className="sticky top-0 z-10 bg-surface-white px-5 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] lg:static lg:p-0">
-            <div className="mx-auto flex w-full max-w-[32rem] flex-col gap-3 lg:max-w-none">
+            <div className={cn("mx-auto flex w-full flex-col gap-3 lg:max-w-none", wide ? "max-w-[48rem]" : "max-w-[32rem]")}>
               <div className="flex h-11 items-center justify-between">
                 {onBack ? (
                   <button
@@ -191,7 +191,8 @@ export function QuizStepLayout({
               key={stepKey}
               data-testid="quiz-step"
               className={cn(
-                "mx-auto w-full max-w-[32rem] lg:max-w-none",
+                "mx-auto w-full lg:max-w-none",
+                wide ? "max-w-[48rem]" : "max-w-[32rem]",
                 !reduced && "onb-step-in",
                 !reduced && direction === "back" && "onb-step-back",
               )}
@@ -222,7 +223,7 @@ export function QuizStepLayout({
             </div>
           </main>
           <footer className="fixed inset-x-0 bottom-0 z-20 border-t border-border-divider bg-surface-white px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 lg:sticky lg:mt-4 lg:border-t-0 lg:px-0 lg:py-4">
-            <div className="mx-auto flex w-full max-w-[32rem] items-center gap-3 lg:max-w-none">
+            <div className={cn("mx-auto flex w-full items-center gap-3 lg:max-w-none", wide ? "max-w-[48rem]" : "max-w-[32rem]")}>
               {actions}
             </div>
           </footer>

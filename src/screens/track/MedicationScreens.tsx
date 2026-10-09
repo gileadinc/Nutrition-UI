@@ -116,12 +116,12 @@ function NextDoseCard({ meds, now }: { meds: Medication[]; now: Date }) {
         <Icon name="medication" size={18} color="var(--color-brand-navy)" />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="eyebrow text-[12px]">Next dose</p>
+        <p className="eyebrow text-[16px]">Next dose</p>
         <p className="mt-1 flex items-center gap-1.5">
           {alert && <Icon name="alert" size={18} color="var(--color-accent-ink)" />}
           <span
             className={cn(
-              "text-[24px] type-numeral leading-[1.05] tracking-[-1.08px]",
+              "text-[28px] type-numeral leading-[1.05] tracking-[-1.08px]",
               alert ? "text-primary" : "text-text-primary",
             )}
           >
@@ -130,7 +130,7 @@ function NextDoseCard({ meds, now }: { meds: Medication[]; now: Date }) {
           {unit && <span className="text-xs type-meta text-text-secondary">{unit}</span>}
         </p>
         <p className="truncate text-xs type-meta text-text-secondary">{sub}</p>
-        <p className="mt-1 text-[11px] type-meta text-text-neutral-500">
+        <p className="mt-1 text-[15px] type-meta text-text-neutral-500">
           {taken === meds.length ? "All taken today" : `${taken} of ${meds.length} taken today`}
         </p>
       </div>
@@ -161,8 +161,8 @@ export function MedicationScreen() {
       asideLabel="Medication"
       aside={
         <section className="panel px-4 pb-2 pt-3.5" aria-label="Today's doses">
-          <h2 className="eyebrow text-[12px]">Today</h2>
-          <p className="mt-1 text-[15px] type-row-figure tabular-nums text-text-primary">
+          <h2 className="eyebrow text-[16px]">Today</h2>
+          <p className="mt-1 text-[19px] type-row-figure tabular-nums text-text-primary">
             {taken} of {list.length} <span className="type-unit text-text-secondary">doses taken</span>
           </p>
           <ul className="mt-2 divide-y divide-border-divider border-t border-border-divider">
@@ -173,7 +173,7 @@ export function MedicationScreen() {
               <li key={l.to}>
                 <Link
                   to={l.to}
-                  className="flex min-h-11 items-center gap-3 text-[13px] type-item-title text-text-primary"
+                  className="flex min-h-11 items-center gap-3 text-[17px] type-item-title text-text-primary"
                 >
                   <Icon name={l.icon} size={16} color="var(--color-text-secondary)" />
                   <span className="flex-1">{l.label}</span>
@@ -204,7 +204,7 @@ export function MedicationScreen() {
       <section className="mt-6" aria-label="Today's schedule">
         <LogSectionTitle
           action={
-            <span className="text-[12px] type-meta tabular-nums text-text-secondary">
+            <span className="text-[16px] type-meta tabular-nums text-text-secondary">
               {taken} of {list.length} taken
             </span>
           }
@@ -213,7 +213,7 @@ export function MedicationScreen() {
         </LogSectionTitle>
         <div className="panel overflow-hidden">
           {list.length === 0 ? (
-            <p className="p-4 text-[13px] type-meta text-text-secondary">
+            <p className="p-4 text-[17px] type-meta text-text-secondary">
               Nothing scheduled yet. Add a medication or supplement to get reminders.
             </p>
           ) : (
@@ -222,7 +222,7 @@ export function MedicationScreen() {
                 const s = doseStatus(m, now);
                 return (
                   <li key={m.id} className="flex min-h-[64px] items-center gap-3 px-4 py-2.5">
-                    <span className="w-[60px] shrink-0 text-[12px] type-meta tabular-nums text-text-secondary">
+                    <span className="w-[60px] shrink-0 text-[16px] type-meta tabular-nums text-text-secondary">
                       {m.time}
                     </span>
                     <Link to={`/track/medication/detail/${m.id}`} className="min-w-0 flex-1">
@@ -237,7 +237,7 @@ export function MedicationScreen() {
                       </span>
                     </Link>
                     {m.taken ? (
-                      <span className="flex h-9 shrink-0 items-center gap-1 rounded-full bg-brand-teal-soft px-3 text-[12px] type-meta text-brand-navy">
+                      <span className="flex h-9 shrink-0 items-center gap-1 rounded-full bg-brand-teal-soft px-3 text-[16px] type-meta text-brand-navy">
                         <Icon name="tick" size={14} color="var(--color-brand-navy)" />
                         Taken
                       </span>
@@ -246,7 +246,7 @@ export function MedicationScreen() {
                         type="button"
                         aria-label={`Take ${m.name}`}
                         onClick={() => onTake(m)}
-                        className="h-9 shrink-0 rounded-full bg-primary px-4 text-[13px] type-button text-white"
+                        className="h-9 shrink-0 rounded-full bg-primary px-4 text-[17px] type-button text-white"
                       >
                         Take
                       </button>
@@ -258,7 +258,7 @@ export function MedicationScreen() {
           )}
           <Link
             to="/track/medication/add"
-            className="flex min-h-12 items-center gap-2 border-t border-border-divider px-4 text-[13px] type-button text-primary"
+            className="flex min-h-12 items-center gap-2 border-t border-border-divider px-4 text-[17px] type-button text-primary"
           >
             <Icon name="plusSign" size={16} color="var(--color-primary)" />
             Add a medication
@@ -383,8 +383,8 @@ export function MedicationDetailScreen() {
     <PageContainer variant="focused">
       <PageHeading title={m.name} subtitle="Medication details and reminders." />
       <section className="panel mt-4 p-5">
-        <p className="text-[20px] type-numeral tracking-[-0.9px] text-brand-navy">{m.dose}</p>
-        <p className="mt-1.5 text-[15px] tracking-[-0.675px] text-text-secondary">Scheduled for {m.time}</p>
+        <p className="text-[24px] type-numeral tracking-[-0.9px] text-brand-navy">{m.dose}</p>
+        <p className="mt-1.5 text-[19px] tracking-[-0.675px] text-text-secondary">Scheduled for {m.time}</p>
         <p
           className={cn(
             "mt-3 inline-flex rounded-xl px-3 py-1.5 text-xs type-meta tracking-[-0.54px]",
@@ -452,7 +452,7 @@ export function MissedDoseScreen() {
         <div className="panel mt-6 p-6 text-center">
           <Icon name="checkCircle" size={24} color="var(--color-status-good)" />
           <p className="mt-2 text-sm type-section-title text-text-primary">Nothing outstanding</p>
-          <p className="mt-1 text-[13px] type-meta text-text-secondary">No dose has gone past its time today.</p>
+          <p className="mt-1 text-[17px] type-meta text-text-secondary">No dose has gone past its time today.</p>
         </div>
       </PageContainer>
     );
@@ -463,7 +463,7 @@ export function MissedDoseScreen() {
   return (
     <PageContainer variant="focused">
       <header>
-        <h1 className="text-[20px] type-display leading-[1.33] tracking-[-0.9px] text-brand-navy">
+        <h1 className="text-[24px] type-display leading-[1.33] tracking-[-0.9px] text-brand-navy">
           {greeting}
           {first ? `, ${first}` : ""}
         </h1>
@@ -528,7 +528,7 @@ export function MedicationRemindersScreen() {
             {isLoading ? "Loading your medications" : "No medications yet"}
           </p>
           {!isLoading && (
-            <p className="mt-1 text-[13px] type-meta text-text-secondary">
+            <p className="mt-1 text-[17px] type-meta text-text-secondary">
               Add a medication to turn on reminders for it.
             </p>
           )}
@@ -641,7 +641,7 @@ export function MedicationHistoryScreen() {
           />
         </AdvancedFilters>
       </div>
-      <p className="mt-4 text-[13px] type-meta text-text-secondary">
+      <p className="mt-4 text-[17px] type-meta text-text-secondary">
         <span className="type-row-figure text-text-primary">{shown.length}</span>
         {shown.length === 1 ? " entry" : " entries"}
         {shown.length !== all.length && ` of ${all.length}`}

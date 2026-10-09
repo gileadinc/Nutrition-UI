@@ -46,7 +46,7 @@ function ChipPicker({
               aria-pressed={on}
               onClick={() => toggle(p)}
               className={cn(
-                "flex min-h-10 items-center gap-1.5 rounded-full border px-3.5 text-[13px] transition-colors",
+                "flex min-h-10 items-center gap-1.5 rounded-full border px-3.5 text-[17px] transition-colors",
                 on
                   ? cn(SELECTED_CHIP, "type-button")
                   : "type-button-secondary border-border-default bg-white text-text-secondary hover:border-text-neutral-400",
@@ -61,7 +61,7 @@ function ChipPicker({
           <span
             key={c}
             className={cn(
-              "flex min-h-10 max-w-full items-center gap-1 rounded-full py-1 pl-3.5 pr-1 text-[13px] type-button",
+              "flex min-h-10 max-w-full items-center gap-1 rounded-full py-1 pl-3.5 pr-1 text-[17px] type-button",
               SELECTED_CHIP,
             )}
           >
@@ -135,7 +135,7 @@ export function DietaryPreferencesScreen() {
         description={
           <div className="flex items-start gap-2.5 rounded-xl bg-missed-dose-surface p-3 text-text-primary">
             <Icon name="alert" size={16} color="var(--color-text-secondary)" />
-            <p className="min-w-0 flex-1 type-meta text-[13px] leading-5">
+            <p className="min-w-0 flex-1 type-meta text-[17px] leading-5">
               We flag recipes whose ingredients name something you avoid. We can&apos;t confirm a recipe is free of
               anything — always check the packaging and ask the restaurant.
             </p>

@@ -6,9 +6,9 @@ import { Icon } from "@/components/Icon";
 import { PILL } from "@/components/styles";
 
 const SIZES = {
-  sm: { box: "h-10", text: "text-[13px]", icon: 15, pad: "pl-3.5" },
+  sm: { box: "h-10", text: "text-[17px]", icon: 15, pad: "pl-3.5" },
   md: { box: "h-11", text: "text-sm", icon: 16, pad: "pl-3.5" },
-  lg: { box: "h-12", text: "text-[15px]", icon: 18, pad: "pl-4" },
+  lg: { box: "h-12", text: "text-[19px]", icon: 18, pad: "pl-4" },
 } as const;
 
 export interface SearchFieldProps extends Omit<

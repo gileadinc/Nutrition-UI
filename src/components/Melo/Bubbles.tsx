@@ -52,13 +52,13 @@ function emphasise(text: string) {
 export function UserBubble({ turn }: { turn: MeloTurn }) {
   return (
     <div className="flex flex-col items-end gap-1 motion-safe:animate-[melo-rise_260ms_cubic-bezier(0.215,0.61,0.355,1)_backwards]">
-      <p className="max-w-[80%] whitespace-pre-wrap break-words rounded-[20px] rounded-br-md bg-primary px-4 py-2.5 text-[15px] leading-6 text-white">
+      <p className="max-w-[80%] whitespace-pre-wrap break-words rounded-[20px] rounded-br-md bg-primary px-4 py-2.5 text-[19px] leading-6 text-white">
         <span className="sr-only">You said: </span>
         {turn.text}
       </p>
       <time
         dateTime={new Date(turn.at).toISOString()}
-        className="pr-1 text-[11px] type-meta text-text-neutral-500"
+        className="pr-1 text-[15px] type-meta text-text-neutral-500"
       >
         {time(turn.at)}
       </time>
@@ -84,7 +84,7 @@ function DishCard({ link, onNavigate }: { link: MeloLink; onNavigate: () => void
         />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-[14px] type-item-title leading-5 text-text-primary">
+        <span className="block truncate text-[18px] type-item-title leading-5 text-text-primary">
           {card.title}
         </span>
         <span className="block truncate text-xs type-meta leading-4 text-text-secondary">
@@ -95,13 +95,13 @@ function DishCard({ link, onNavigate }: { link: MeloLink; onNavigate: () => void
             {card.calories} kcal · {card.protein}g protein
           </span>
           {card.fits && (
-            <span className="rounded-full bg-positive px-2 py-0.5 text-[11px] type-meta text-positive-ink">
+            <span className="rounded-full bg-positive px-2 py-0.5 text-[15px] type-meta text-positive-ink">
               Fits today
             </span>
           )}
         </span>
       </span>
-      <span className="flex shrink-0 items-center gap-0.5 text-[13px] type-button text-primary">
+      <span className="flex shrink-0 items-center gap-0.5 text-[17px] type-button text-primary">
         <span className="hidden sm:inline">Open</span>
         <Icon name="chevronRight" size={16} color="var(--color-primary)" />
       </span>
@@ -117,7 +117,7 @@ function LinkChips({ links, onNavigate }: { links: MeloLink[]; onNavigate: () =>
           <Link
             to={l.to}
             onClick={onNavigate}
-            className="flex min-h-11 items-center gap-1 rounded-full border border-border-default bg-white pl-4 pr-3 text-[13px] type-button-secondary text-primary transition-colors hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+            className="flex min-h-11 items-center gap-1 rounded-full border border-border-default bg-white pl-4 pr-3 text-[17px] type-button-secondary text-primary transition-colors hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
           >
             {l.label}
             <Icon name="chevronRight" size={14} color="var(--color-primary)" />
@@ -211,17 +211,17 @@ export function MeloAnswer({
       aria-label="Melo’s answer"
       className="flex flex-col gap-3 motion-safe:animate-[melo-rise_260ms_cubic-bezier(0.215,0.61,0.355,1)_backwards]"
     >
-      <p className="flex items-center gap-2 text-[13px] type-meta text-text-primary">
+      <p className="flex items-center gap-2 text-[17px] type-meta text-text-primary">
         <MeloMark size={24} />
         Melo
         <time
           dateTime={new Date(turn.at).toISOString()}
-          className="text-[11px] type-meta text-text-neutral-500"
+          className="text-[15px] type-meta text-text-neutral-500"
         >
           {time(turn.at)}
         </time>
       </p>
-      <p className="text-[15px] leading-7 text-text-primary">
+      <p className="text-[19px] leading-7 text-text-primary">
         <span className="sr-only">Melo said: </span>
         {emphasise(turn.text)}
       </p>
@@ -248,7 +248,7 @@ export function MeloAnswer({
                   type="button"
                   aria-label={`Follow up: ${p}`}
                   onClick={() => onFollowUp(p)}
-                  className="flex min-h-11 w-full items-center gap-2.5 py-2 text-left text-[14px] type-button-secondary leading-5 text-text-primary transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                  className="flex min-h-11 w-full items-center gap-2.5 py-2 text-left text-[18px] type-button-secondary leading-5 text-text-primary transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                 >
                   <Icon name={"followUp" as IconName} size={16} color="var(--color-icon-well-ink)" />
                   <span className="min-w-0 flex-1">{p}</span>
@@ -267,7 +267,7 @@ export function TypingIndicator() {
     <div
       role="status"
       aria-live="polite"
-      className="flex w-full items-center gap-2 text-[13px] type-meta text-text-secondary motion-safe:animate-[melo-rise_200ms_ease-out_backwards]"
+      className="flex w-full items-center gap-2 text-[17px] type-meta text-text-secondary motion-safe:animate-[melo-rise_200ms_ease-out_backwards]"
     >
       <MeloMark size={24} />
       <span className="flex items-center gap-1" aria-hidden="true">

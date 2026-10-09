@@ -69,7 +69,7 @@ function ToastCard({ toast }: { toast: ToastItem }) {
           {toast.title}
         </p>
         {toast.body && (
-          <p className="mt-0.5 type-meta text-[13px] leading-5 text-text-secondary">{toast.body}</p>
+          <p className="mt-0.5 type-meta text-[17px] leading-5 text-text-secondary">{toast.body}</p>
         )}
         {(toast.action || toast.link) && (
           <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
@@ -80,7 +80,7 @@ function ToastCard({ toast }: { toast: ToastItem }) {
                   toast.action!.run();
                   dismissToast(toast.id);
                 }}
-                className="tap-24 text-[13px] type-button text-primary"
+                className="tap-24 text-[17px] type-button text-primary"
               >
                 {toast.action.label}
               </button>
@@ -94,7 +94,7 @@ function ToastCard({ toast }: { toast: ToastItem }) {
                   toast.link!.run();
                   dismissToast(toast.id);
                 }}
-                className="tap-24 text-[13px] type-button text-primary"
+                className="tap-24 text-[17px] type-button text-primary"
               >
                 {toast.link.label}
               </a>

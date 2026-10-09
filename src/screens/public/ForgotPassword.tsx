@@ -66,7 +66,7 @@ export function ForgotPasswordScreen() {
         >
           Reset your password.
         </h1>
-        <p className="mt-2 type-meta text-[13px] leading-5 text-text-secondary">
+        <p className="mt-2 type-meta text-[17px] leading-5 text-text-secondary">
           Enter the email on your account and we&apos;ll send a link to reset your password.
         </p>
         <div className="mt-6">
@@ -92,7 +92,7 @@ export function ForgotPasswordScreen() {
         <button
           type="button"
           onClick={skip}
-          className="tap-24 mt-5 w-full justify-center text-[13px] text-text-secondary"
+          className="mt-5 h-12 w-full justify-center rounded-2xl border border-border-default bg-white text-[17px] text-text-secondary"
         >
           Skip sign-in and explore the app
         </button>
@@ -100,7 +100,7 @@ export function ForgotPasswordScreen() {
         <button
           type="button"
           onClick={() => navigate("/login")}
-          className="tap-24 w-full justify-center pb-3 text-sm type-button-secondary text-text-primary"
+          className="h-12 w-full justify-center rounded-2xl border border-border-default bg-white text-sm type-button-secondary text-text-primary"
         >
           Back to sign in
         </button>

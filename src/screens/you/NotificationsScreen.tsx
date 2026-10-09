@@ -50,7 +50,7 @@ function Preferences() {
   };
   return (
     <section className="panel p-4">
-      <h2 className="text-[15px] type-section-title tracking-[-0.5px] text-brand-navy">Reminders</h2>
+      <h2 className="text-[19px] type-section-title tracking-[-0.5px] text-brand-navy">Reminders</h2>
       <p className="mt-1 type-meta text-xs leading-5 text-text-secondary">Choose which reminders should reach you.</p>
       <div className="mt-2">
         {PREFS.map((p) => (
@@ -102,7 +102,7 @@ function PrivacySettings() {
   };
   return (
     <section className="panel p-4">
-      <h2 className="text-[15px] type-section-title tracking-[-0.5px] text-brand-navy">Privacy</h2>
+      <h2 className="text-[19px] type-section-title tracking-[-0.5px] text-brand-navy">Privacy</h2>
       <p className="mt-1 type-meta text-xs leading-5 text-text-secondary">Control how your data is used.</p>
       <div className="mt-2">
         {PRIVACY.map((p) => (
@@ -149,7 +149,7 @@ export function NotificationsScreen() {
       <section aria-label="Recent activity" className="panel overflow-hidden">
         <div className="flex items-center border-b border-border-divider px-5 py-4">
           <div className="min-w-0 flex-1">
-            <h2 className="text-[15px] type-section-title tracking-[-0.5px] text-brand-navy">Recent activity</h2>
+            <h2 className="text-[19px] type-section-title tracking-[-0.5px] text-brand-navy">Recent activity</h2>
             <p className="mt-0.5 type-meta text-xs text-text-secondary">
               {n.unreadCount === 0 ? "You're all caught up" : `${n.unreadCount} unread`}
             </p>
@@ -161,13 +161,13 @@ export function NotificationsScreen() {
           )}
         </div>
         {!session.isSignedIn ? (
-          <p className="px-5 py-8 text-center text-[13px] type-meta text-text-secondary">
+          <p className="px-5 py-8 text-center text-[17px] type-meta text-text-secondary">
             Notifications are available with an account.
           </p>
         ) : n.isLoading ? (
-          <p className="px-5 py-8 text-center text-[13px] type-meta text-text-secondary">Loading…</p>
+          <p className="px-5 py-8 text-center text-[17px] type-meta text-text-secondary">Loading…</p>
         ) : n.error ? (
-          <p className="px-5 py-8 text-center text-[13px] type-meta text-text-secondary">{n.error}</p>
+          <p className="px-5 py-8 text-center text-[17px] type-meta text-text-secondary">{n.error}</p>
         ) : (
           <NotificationList
             items={items}

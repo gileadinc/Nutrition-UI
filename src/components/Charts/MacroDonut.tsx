@@ -36,7 +36,7 @@ function slices(m: MacroGrams) {
 export function ChartLegend({
   items,
   className,
-  textClassName = "text-[11px]",
+  textClassName = "text-[15px]",
 }: {
   items: { key: string; label: string; color: string; detail?: string }[];
   className?: string;
@@ -120,7 +120,7 @@ export function MacroDonut({
           <span
             className={cn(
               "type-numeral leading-none tabular-nums tracking-[-0.9px] text-brand-navy",
-              detail ? "text-2xl" : "text-[22px]",
+              detail ? "text-2xl" : "text-[26px]",
             )}
           >
             {center.toLocaleString("en-US")}
@@ -128,7 +128,7 @@ export function MacroDonut({
           <span
             className={cn(
               "mt-0.5 type-meta text-text-secondary",
-              detail ? "text-onb-meta" : "text-[11px]",
+              detail ? "text-onb-meta" : "text-[15px]",
             )}
           >
             {totalUnit}

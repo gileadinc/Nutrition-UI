@@ -388,7 +388,7 @@ export function OptionList<T extends string>({
         pick(options[next].value);
       }}
       className={cn(
-        withImages ? "grid grid-cols-2 gap-3" : "flex flex-col",
+        withImages ? "grid grid-cols-2 gap-4" : "flex flex-col",
         !withImages && ONB_SPACING.options,
         className,
       )}
@@ -424,14 +424,14 @@ export function OptionList<T extends string>({
             )}
           >
             {o.image ? (
-              <span className="relative block aspect-[2/1] w-full overflow-hidden bg-brand-warm-gray sm:aspect-video">
+              <span className="relative block aspect-[4/3] w-full overflow-hidden bg-brand-warm-gray">
                 <AppImage
                   src={o.image.src}
                   alt={o.image.alt}
                   sizes="(min-width: 1280px) 14rem, (min-width: 1024px) 16rem, calc(50vw - 2rem)"
                   className={cn(
-                    "absolute inset-0 size-full object-cover",
-                    !reduced && "transition-[scale] duration-300 ease-out group-hover:scale-105",
+                    "absolute inset-0 size-full scale-[1.07] object-cover",
+                    !reduced && "transition-[scale] duration-300 ease-out group-hover:scale-[1.13]",
                   )}
                 />
               </span>
@@ -448,7 +448,7 @@ export function OptionList<T extends string>({
                 <Icon name={o.icon} size={24} color="currentColor" />
               </span>
             )}
-            <span className={cn("min-w-0 flex-1", withImages && "w-full p-3 sm:p-4")}>
+            <span className={cn("min-w-0 flex-1", withImages && "w-full p-4 sm:p-5")}>
               <span
                 id={titleId}
                 className={cn(

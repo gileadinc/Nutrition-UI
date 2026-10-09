@@ -100,7 +100,7 @@ export function LegalScreen() {
             replace
             aria-current={k === key ? "page" : undefined}
             className={cn(
-              "flex h-10 items-center rounded-full border px-4 text-[13px] transition-colors",
+              "flex h-10 items-center rounded-full border px-4 text-[17px] transition-colors",
               k === key
                 ? "type-button border-transparent bg-brand-navy text-text-on-dark"
                 : "type-button-secondary border-border-default bg-white text-text-secondary hover:border-text-neutral-400",
@@ -111,12 +111,12 @@ export function LegalScreen() {
         ))}
       </nav>
       <article className="panel mt-4 max-w-prose p-5 md:p-7">
-        <p className="text-[15px] leading-6 text-text-primary">{d.intro}</p>
+        <p className="text-[19px] leading-6 text-text-primary">{d.intro}</p>
         {d.sections.map((s) => (
           <section key={s.heading} className="mt-6">
-            <h2 className="text-[15px] type-section-title tracking-[-0.3px] text-brand-navy">{s.heading}</h2>
+            <h2 className="text-[19px] type-section-title tracking-[-0.3px] text-brand-navy">{s.heading}</h2>
             {s.body.map((p) => (
-              <p key={p} className="mt-2 text-[14px] leading-6 text-text-primary">
+              <p key={p} className="mt-2 text-[18px] leading-6 text-text-primary">
                 {p}
               </p>
             ))}

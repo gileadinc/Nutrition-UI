@@ -149,7 +149,7 @@ function FirstRunTour({ onClose }: { onClose: () => void }) {
       aria-labelledby="first-run-tour-title"
       className="panel fixed inset-x-4 bottom-[76px] z-40 p-5 md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem]"
     >
-      <p className="text-[13px] type-meta text-text-secondary">
+      <p className="text-[17px] type-meta text-text-secondary">
         Quick tour · Step {step + 1} of {TOUR.length}
       </p>
       <h2
@@ -159,12 +159,12 @@ function FirstRunTour({ onClose }: { onClose: () => void }) {
       >
         {item.title}
       </h2>
-      <p className="mt-2 type-meta text-[13px] leading-5 text-text-secondary">{item.body}</p>
+      <p className="mt-2 type-meta text-[17px] leading-5 text-text-secondary">{item.body}</p>
       <div className="mt-5 flex items-center gap-2">
         <button
           type="button"
           onClick={onClose}
-          className="h-11 rounded-2xl px-3 text-sm type-button-secondary text-text-secondary hover:bg-navy-soft"
+          className="h-11 rounded-2xl border border-border-default bg-white px-4 text-sm type-button-secondary text-text-secondary hover:border-text-neutral-400"
         >
           Skip tour
         </button>
@@ -287,7 +287,7 @@ function TodayProgress({ budget }: { budget: Budget }) {
             y={RING_C}
             textAnchor="middle"
             dominantBaseline="central"
-            className="fill-brand-navy text-[13px] type-meta"
+            className="fill-brand-navy text-[17px] type-meta"
           >
             Today
           </text>
@@ -316,7 +316,7 @@ function TodayProgress({ budget }: { budget: Budget }) {
               />
               <span
                 className={cn(
-                  "mt-[5px] max-w-full truncate text-[10.5px] type-button tracking-[-0.4725px]",
+                  "mt-[5px] max-w-full truncate text-[14px] type-button tracking-[-0.4725px]",
                   !on && "text-text-secondary",
                 )}
                 style={on ? { color: r.ink } : undefined}
@@ -354,7 +354,7 @@ function ProgressColumn({ withShortcuts, budget }: { withShortcuts: boolean; bud
         aria-labelledby="home-log-heading"
         className="panel flex flex-col p-4 shadow-card"
       >
-        <h3 id="home-log-heading" className="eyebrow text-[11px]">
+        <h3 id="home-log-heading" className="eyebrow text-[15px]">
           Log something
         </h3>
         <div className="mt-3 grid grid-cols-[repeat(2,minmax(0,1fr))] gap-2 lg:grid-cols-[minmax(0,1fr)] xl:grid-cols-[repeat(2,minmax(0,1fr))]">
@@ -363,7 +363,7 @@ function ProgressColumn({ withShortcuts, budget }: { withShortcuts: boolean; bud
               key={s.title}
               to={s.to}
               className={cn(
-                "flex min-h-11 items-center gap-2 rounded-xl border border-border-default px-3 py-2.5 text-[13px] type-button-secondary text-text-primary hover:bg-brand-warm-gray lg:py-3.5 xl:py-2.5",
+                "flex min-h-11 items-center gap-2 rounded-xl border border-border-default px-3 py-2.5 text-[17px] type-button-secondary text-text-primary hover:bg-brand-warm-gray lg:py-3.5 xl:py-2.5",
                 i === SHORTCUTS.length - 1 &&
                   SHORTCUTS.length % 2 === 1 &&
                   "col-span-2 lg:col-span-1 xl:col-span-2",
@@ -376,7 +376,7 @@ function ProgressColumn({ withShortcuts, budget }: { withShortcuts: boolean; bud
         </div>
         <Link
           to="/you/saved"
-          className="tap-24 tap-44 relative mt-4 flex items-center gap-2 self-start text-[13px] type-button-secondary text-text-secondary lg:mt-auto lg:pt-4 xl:mt-4 xl:pt-0"
+          className="tap-24 tap-44 relative mt-4 flex items-center gap-2 self-start text-[17px] type-button-secondary text-text-secondary lg:mt-auto lg:pt-4 xl:mt-4 xl:pt-0"
         >
           <Icon name="bookmark" size={15} color="var(--color-primary)" />
           {saved.count === 0 ? "Nothing saved yet" : `${saved.count} saved`}

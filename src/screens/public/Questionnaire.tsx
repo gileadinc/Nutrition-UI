@@ -857,7 +857,7 @@ function QuestionnaireFlow({
               type="button"
               onClick={onSkip}
               className={cn(
-                "h-14 shrink-0 rounded-2xl px-4 type-button-secondary text-brand-navy hover:bg-navy-soft",
+                "h-14 shrink-0 rounded-2xl border border-border-default bg-white px-5 type-button-secondary text-brand-navy hover:border-text-neutral-400",
                 ONB_TYPE.body,
               )}
             >

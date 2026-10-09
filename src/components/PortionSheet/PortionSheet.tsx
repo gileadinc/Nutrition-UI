@@ -82,7 +82,7 @@ export function SurgeryNote({ children, className }: { children: ReactNode; clas
   return (
     <p
       className={cn(
-        "flex items-start gap-2.5 rounded-2xl bg-brand-teal-soft px-4 py-3 text-[13px] leading-5 text-text-primary type-meta",
+        "flex items-start gap-2.5 rounded-2xl bg-brand-teal-soft px-4 py-3 text-[17px] leading-5 text-text-primary type-meta",
         className,
       )}
     >
@@ -126,7 +126,7 @@ export function SegmentedChoice<T extends string | number>({
             aria-pressed={value === o}
             onClick={() => onChange(o)}
             className={cn(
-              "tap-44 relative flex h-9 min-w-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-1 text-[12px] transition-colors sm:px-3.5 sm:text-[13px]",
+              "tap-44 relative flex h-9 min-w-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-1 text-[16px] transition-colors sm:px-3.5 sm:text-[17px]",
               value === o
                 ? cn(SELECTED_CHIP, "type-button")
                 : "type-button-secondary border-border-default bg-white text-text-secondary hover:border-text-neutral-400",
@@ -185,7 +185,7 @@ function useModal(ref: React.RefObject<HTMLElement | null>, onClose: () => void,
 function Readout({ value, unit, className }: { value: number; unit: string; className?: string }) {
   return (
     <span>
-      <span className={cn("text-[22px] type-row-figure tabular-nums tracking-[-0.6px]", className)}>
+      <span className={cn("text-[26px] type-row-figure tabular-nums tracking-[-0.6px]", className)}>
         {value.toLocaleString("en-US")}
       </span>{" "}
       {unit}
@@ -245,7 +245,7 @@ function PortionPicker({
             onClick={() => onChange(p)}
             onKeyDown={onKey(i)}
             className={cn(
-              "flex h-12 min-w-0 items-center justify-center gap-1 rounded-full border text-[17px] tabular-nums transition-colors",
+              "flex h-12 min-w-0 items-center justify-center gap-1 rounded-full border text-[21px] tabular-nums transition-colors",
               on
                 ? cn(SELECTED_CHIP, "type-button")
                 : "type-button-secondary border-border-default bg-white text-text-primary hover:border-text-neutral-400",
@@ -300,14 +300,14 @@ function PortionDialog({
         <span aria-hidden className="mx-auto mt-3 block h-1 w-9 rounded-full bg-border-default md:hidden" />
         <header className="flex items-start gap-3 pt-3 md:pt-7">
           <div className="min-w-0 flex-1">
-            <p className="text-[13px] type-meta text-text-secondary">How much did you have?</p>
+            <p className="text-[17px] type-meta text-text-secondary">How much did you have?</p>
             <h2
               id={titleId}
               className="mt-1 text-xl type-section-title leading-7 tracking-[-0.9px] text-brand-navy"
             >
               {item.title}
             </h2>
-            <p className="mt-0.5 truncate text-[13px] type-meta text-text-secondary">
+            <p className="mt-0.5 truncate text-[17px] type-meta text-text-secondary">
               {item.subtitle}
             </p>
           </div>
@@ -333,11 +333,11 @@ function PortionDialog({
           data-testid="portion-readout"
         >
           {scaled === null ? (
-            <p className="text-[13px] type-meta text-text-secondary">
+            <p className="text-[17px] type-meta text-text-secondary">
               Choose a portion to see what it adds.
             </p>
           ) : (
-            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[13px] type-meta text-text-secondary">
+            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[17px] type-meta text-text-secondary">
               <Readout value={scaled.calories} unit="kcal" className="text-accent-ink" />
               <Readout value={scaled.protein} unit="g protein" className="text-text-primary" />
               <span className="sr-only">for {portionLabel(servings!)}</span>
@@ -492,8 +492,8 @@ function AddedTile({
   const n = Math.round(useTween(0, value, reduce, 300, 700));
   return (
     <div className="rounded-2xl bg-brand-warm-gray px-4 py-3 text-left">
-      <p className="text-[13px] type-meta text-text-secondary">
-        <span className={cn("text-[22px] type-row-figure tabular-nums tracking-[-0.6px]", className)}>
+      <p className="text-[17px] type-meta text-text-secondary">
+        <span className={cn("text-[26px] type-row-figure tabular-nums tracking-[-0.6px]", className)}>
           +{n.toLocaleString("en-US")}
         </span>{" "}
         {unit}
@@ -519,7 +519,7 @@ function TodayBar({
   const shown = Math.round(useTween(before, after, reduce, 420, 800));
   return (
     <div className="rounded-2xl border border-border-default px-4 py-3 text-left">
-      <div className="flex items-baseline justify-between gap-3 text-[13px] type-meta">
+      <div className="flex items-baseline justify-between gap-3 text-[17px] type-meta">
         <span className="type-item-title text-text-primary">Today</span>
         <span className="tabular-nums text-text-secondary">
           <span className="type-row-figure text-text-primary">{shown.toLocaleString("en-US")}</span>{" "}
@@ -574,11 +574,11 @@ function SuccessBody({
         </p>
         <h2
           id={titleId}
-          className="mt-1.5 text-[22px] type-section-title leading-7 tracking-[-0.9px] text-brand-navy"
+          className="mt-1.5 text-[26px] type-section-title leading-7 tracking-[-0.9px] text-brand-navy"
         >
           {outcome.item.title}
         </h2>
-        <p className="mt-1 text-[13px] type-meta text-text-secondary">
+        <p className="mt-1 text-[17px] type-meta text-text-secondary">
           Added to {outcome.mealType} · {portionText(outcome.servings)}
         </p>
       </Rise>
@@ -609,7 +609,7 @@ function SuccessBody({
           </Link>
         )}
         {outcome.undo && (
-          <p className="text-[13px] type-meta text-text-secondary">
+          <p className="text-[17px] type-meta text-text-secondary">
             Logged by mistake?{" "}
             <button
               type="button"
@@ -669,7 +669,7 @@ function ErrorBody({
       <Rise reduce={reduce} delay={0.12} className="mt-5">
         <h2
           id={titleId}
-          className="text-[22px] type-section-title leading-7 tracking-[-0.9px] text-brand-navy"
+          className="text-[26px] type-section-title leading-7 tracking-[-0.9px] text-brand-navy"
         >
           Couldn&apos;t log that
         </h2>

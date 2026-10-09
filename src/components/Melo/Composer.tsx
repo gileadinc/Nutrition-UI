@@ -160,12 +160,12 @@ export function MeloComposer({
             }
           }}
           placeholder={listening ? "Listening…" : placeholder}
-          className="block min-h-12 min-w-0 flex-1 resize-none bg-transparent py-3 pl-4 pr-1 text-base leading-6 text-text-primary placeholder:text-text-neutral-400 placeholder:type-meta focus:outline-none md:basis-full md:pb-1 md:pr-4 md:text-[15px]"
+          className="block min-h-12 min-w-0 flex-1 resize-none bg-transparent py-3 pl-4 pr-1 text-base leading-6 text-text-primary placeholder:text-text-neutral-400 placeholder:type-meta focus:outline-none md:basis-full md:pb-1 md:pr-4 md:text-[19px]"
         />
         <div className="flex shrink-0 items-center gap-2 p-[3px] md:w-full md:pb-1.5 md:pl-4 md:pr-1.5 md:pt-0">
           <p
             aria-hidden="true"
-            className="hidden min-w-0 flex-1 truncate text-[11px] type-meta text-text-neutral-500 md:block"
+            className="hidden min-w-0 flex-1 truncate text-[15px] type-meta text-text-neutral-500 md:block"
           >
             Enter to send · Shift + Enter for a new line
           </p>
@@ -209,7 +209,7 @@ export function MeloComposer({
       </form>
       <div aria-live="polite" className="empty:hidden">
         {note && (
-          <p data-testid="melo-voice-note" className="px-2 text-[13px] type-meta leading-5 text-text-primary">
+          <p data-testid="melo-voice-note" className="px-2 text-[17px] type-meta leading-5 text-text-primary">
             {note}
           </p>
         )}
@@ -217,13 +217,13 @@ export function MeloComposer({
       {listening ? (
         <p
           data-testid="melo-listening"
-          className="flex items-center justify-center gap-2 text-[11px] type-meta leading-4 text-icon-well-ink"
+          className="flex items-center justify-center gap-2 text-[15px] type-meta leading-4 text-icon-well-ink"
         >
           <Levels />
           Listening… pause to finish
         </p>
       ) : (
-        <p className="text-center text-[11px] type-meta leading-4 text-text-secondary">
+        <p className="text-center text-[15px] type-meta leading-4 text-text-secondary">
           Melo suggests; you decide what to log.
         </p>
       )}

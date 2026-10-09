@@ -173,7 +173,7 @@ export function SearchScreen() {
         />
       </div>
       {scope !== "all" && (
-        <p className="mt-3 flex flex-wrap items-center gap-x-2 text-[13px] type-meta text-text-secondary">
+        <p className="mt-3 flex flex-wrap items-center gap-x-2 text-[17px] type-meta text-text-secondary">
           <span>{scope === "recipes" ? "Recipes only." : "Fast hacks only."}</span>
           <button
             type="button"
@@ -192,34 +192,34 @@ export function SearchScreen() {
       )}
       {q ? (
         loading ? (
-          <p role="status" className="mt-6 text-[13px] type-meta text-text-secondary">
+          <p role="status" className="mt-6 text-[17px] type-meta text-text-secondary">
             Searching…
           </p>
         ) : state.error ? (
           <section className="panel mt-6 p-6 text-center">
             <Icon name="alert" size={24} color="var(--color-text-secondary)" />
             <p className="mt-2 text-sm type-section-title text-text-primary">Search isn&apos;t working right now</p>
-            <p className="mt-1 text-[13px] type-meta text-text-secondary">{state.error}</p>
+            <p className="mt-1 text-[17px] type-meta text-text-secondary">{state.error}</p>
           </section>
         ) : total === 0 ? (
           <section className="panel mt-6 p-6 text-center">
             <Icon name="search" size={24} color="var(--color-text-secondary)" />
             <p className="mt-2 text-sm type-section-title text-text-primary">Nothing matched “{q}”</p>
-            <p className="mt-1 text-[13px] type-meta text-text-secondary">
+            <p className="mt-1 text-[17px] type-meta text-text-secondary">
               Try a shorter phrase, or browse the full catalogues.
             </p>
             <div className="mt-4 flex justify-center gap-3">
-              <Link to="/fast-hacks" className="tap-24 text-[13px] type-button text-primary">
+              <Link to="/fast-hacks" className="tap-24 text-[17px] type-button text-primary">
                 Browse Fast Hacks
               </Link>
-              <Link to="/recipes" className="tap-24 text-[13px] type-button text-primary">
+              <Link to="/recipes" className="tap-24 text-[17px] type-button text-primary">
                 Browse Recipes
               </Link>
             </div>
           </section>
         ) : (
           <div id="search-results" className="mt-5 flex flex-col gap-6">
-            <p className="text-[13px] type-meta text-text-secondary" role="status">
+            <p className="text-[17px] type-meta text-text-secondary" role="status">
               <span className="type-row-figure text-text-primary">{total}</span>
               {total === 1 ? " result" : " results"}
               {scope === "all" && ` · ${hacks.length} to order, ${recipes.length} to cook`}
@@ -251,11 +251,11 @@ export function SearchScreen() {
           {recent.length > 0 && (
             <section className="mt-6">
               <div className="flex items-center">
-                <h2 className="eyebrow flex-1 text-[13px]">Recent</h2>
+                <h2 className="eyebrow flex-1 text-[17px]">Recent</h2>
                 <button
                   type="button"
                   onClick={clear}
-                  className="tap-24 text-[12px] type-button-secondary text-text-neutral-500"
+                  className="tap-24 text-[16px] type-button-secondary text-text-neutral-500"
                 >
                   Clear
                 </button>
@@ -266,7 +266,7 @@ export function SearchScreen() {
                     <button
                       type="button"
                       onClick={() => setValue(r)}
-                      className="flex items-center gap-1.5 rounded-full border border-border-default bg-white px-3.5 py-1.5 text-[13px] type-button-secondary text-text-primary"
+                      className="flex items-center gap-1.5 rounded-full border border-border-default bg-white px-3.5 py-1.5 text-[17px] type-button-secondary text-text-primary"
                     >
                       <Icon name="history" size={13} color="var(--color-text-neutral-500)" />
                       {r}
@@ -277,7 +277,7 @@ export function SearchScreen() {
             </section>
           )}
           <section className="mt-6">
-            <h2 className="eyebrow text-[13px]">Try asking</h2>
+            <h2 className="eyebrow text-[17px]">Try asking</h2>
             <div className="mt-3 flex flex-col gap-2">
               {SUGGESTIONS.map((s) => (
                 <button
@@ -290,7 +290,7 @@ export function SearchScreen() {
                   className="panel flex items-center gap-3 p-3.5 text-left"
                 >
                   <Icon name="sparkles" size={16} color="var(--color-accent-ink)" />
-                  <span className="text-[13px] type-meta text-text-primary">{s}</span>
+                  <span className="text-[17px] type-meta text-text-primary">{s}</span>
                 </button>
               ))}
             </div>
@@ -318,11 +318,11 @@ function ResultGroup({
 }) {
   return (
     <section aria-label={title}>
-      <h2 className="eyebrow text-[13px]">
+      <h2 className="eyebrow text-[17px]">
         {title} · {hits.length}
       </h2>
       {hits.length === 0 ? (
-        <p className="mt-2 text-[13px] type-meta text-text-secondary">{emptyNote}</p>
+        <p className="mt-2 text-[17px] type-meta text-text-secondary">{emptyNote}</p>
       ) : (
         <ul className="mt-2.5 flex flex-col gap-2">
           {hits.map((h) => {
@@ -353,7 +353,7 @@ function ResultGroup({
                     </span>
                   </span>
                   {fitsToday(fit) && (
-                    <span className="shrink-0 rounded-full bg-positive px-2.5 py-1 text-[11px] type-meta text-positive-ink">
+                    <span className="shrink-0 rounded-full bg-positive px-2.5 py-1 text-[15px] type-meta text-positive-ink">
                       Fits today
                     </span>
                   )}

@@ -84,7 +84,7 @@ export function SavedScreen() {
             type="button"
             onClick={() => setPickFor(i)}
             disabled={i.savedItemId.startsWith("pending-")}
-            className="tap-44 relative mt-1.5 flex min-h-11 items-center gap-1.5 px-1 text-[13px] type-button text-primary disabled:opacity-50"
+            className="tap-44 relative mt-1.5 flex min-h-11 items-center gap-1.5 px-1 text-[17px] type-button text-primary disabled:opacity-50"
           >
             <Icon name="folderAdd" size={16} color="var(--color-primary)" />
             {(i.collectionIds?.length ?? 0) > 0
@@ -99,7 +99,7 @@ export function SavedScreen() {
   const hackSection = (
     <FormSection title="Fast Hacks" action={String(hacks.length)}>
       {hacks.length === 0 ? (
-        <p className="type-meta text-[13px] text-text-secondary">
+        <p className="type-meta text-[17px] text-text-secondary">
           No saved fast hacks yet. Tap the heart on a hack to keep it here.{" "}
           <Link to="/fast-hacks" className={LINK}>
             Browse Fast Hacks
@@ -113,7 +113,7 @@ export function SavedScreen() {
   const recipeSection = (
     <FormSection title="Recipes" action={String(recipes.length)}>
       {recipes.length === 0 ? (
-        <p className="type-meta text-[13px] text-text-secondary">
+        <p className="type-meta text-[17px] text-text-secondary">
           No saved recipes yet. Tap the heart on a recipe to keep it here.{" "}
           <Link to="/recipes" className={LINK}>
             Browse recipes
@@ -141,11 +141,11 @@ export function SavedScreen() {
       className="mb-7"
     >
       {collections.isLoading && collections.collections.length === 0 ? (
-        <p className="type-meta text-[13px] text-text-secondary">Loading…</p>
+        <p className="type-meta text-[17px] text-text-secondary">Loading…</p>
       ) : (
         <>
           {collections.collections.length === 0 ? (
-            <p className="mb-3 type-meta text-[13px] text-text-secondary">
+            <p className="mb-3 type-meta text-[17px] text-text-secondary">
               Group your saved recipes and hacks into folders, like Weeknight dinners.
             </p>
           ) : (
@@ -174,7 +174,7 @@ export function SavedScreen() {
     <ProfileLayout title="Saved" subtitle={subtitle}>
       {collectionsSection}
       {session.isSignedIn && saved.isLoading && empty ? (
-        <p className="panel p-4 text-[13px] type-meta text-text-secondary">Loading…</p>
+        <p className="panel p-4 text-[17px] type-meta text-text-secondary">Loading…</p>
       ) : empty || !session.isSignedIn ? (
         <>
           <EmptyState
@@ -183,7 +183,7 @@ export function SavedScreen() {
             body="Tap the heart on any hack or recipe to keep it here for your next order or shop."
             action={{ label: "Browse Fast Hacks", to: "/fast-hacks" }}
           />
-          <p className="mt-3 text-center type-meta text-[13px] text-text-secondary">
+          <p className="mt-3 text-center type-meta text-[17px] text-text-secondary">
             Or{" "}
             <Link to="/recipes" className={LINK}>
               browse recipes
@@ -214,7 +214,7 @@ export function SavedScreen() {
                   onClick={() => select(t.value)}
                   onKeyDown={(e) => onKey(e, i)}
                   className={cn(
-                    "flex min-h-11 items-center justify-center gap-1 rounded-xl border px-2 text-[13px] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus",
+                    "flex min-h-11 items-center justify-center gap-1 rounded-xl border px-2 text-[17px] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus",
                     on
                       ? cn(SELECTED_CHIP, "type-button")
                       : "type-button-secondary border-transparent text-text-primary hover:bg-white",

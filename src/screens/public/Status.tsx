@@ -78,7 +78,7 @@ export function VerificationSentScreen() {
       }
       heading="Check your inbox"
       extra={
-        <p className="text-center text-[15px] text-text-secondary">
+        <p className="text-center text-[19px] text-text-secondary">
           We sent a verification link to{" "}
           <span className="type-item-title text-text-secondary">{email}</span>. Tap it to activate
           your account.
@@ -86,7 +86,7 @@ export function VerificationSentScreen() {
       }
       footer={
         <div className="flex flex-col items-center">
-          <p className="type-meta text-[13px] text-text-secondary">Didn&apos;t receive the email?</p>
+          <p className="type-meta text-[17px] text-text-secondary">Didn&apos;t receive the email?</p>
           <button
             type="button"
             disabled
@@ -95,11 +95,11 @@ export function VerificationSentScreen() {
           >
             Resend email
           </button>
-          <p className="type-meta text-[12px] text-text-secondary">Resending is not available yet.</p>
+          <p className="type-meta text-[16px] text-text-secondary">Resending is not available yet.</p>
           <button
             type="button"
             onClick={() => navigate(backToSignIn(returnTo))}
-            className="tap-24 mt-6 text-sm type-button-secondary text-text-primary"
+            className="mt-6 inline-flex h-11 items-center rounded-full border border-border-default bg-white px-5 text-sm type-button-secondary text-text-primary"
           >
             Back to sign in
           </button>
@@ -158,7 +158,7 @@ export function ResetLinkSentScreen() {
         <div className="flex flex-col gap-4">
           <div className="flex items-start gap-2 rounded-xl bg-navy-50 p-3 text-left">
             <Icon name="info" size={18} color="var(--color-text-secondary)" />
-            <p className="type-meta text-[13px] leading-5 text-text-secondary">
+            <p className="type-meta text-[17px] leading-5 text-text-secondary">
               Make sure to check your spam or promotions folder if you don&apos;t see it.
             </p>
           </div>
@@ -202,7 +202,7 @@ export function ResetLinkSentScreen() {
         <button
           type="button"
           onClick={() => navigate("/login")}
-          className="tap-24 w-full justify-center text-sm type-button-secondary text-text-primary"
+          className="h-12 w-full justify-center rounded-2xl border border-border-default bg-white text-sm type-button-secondary text-text-primary"
         >
           Back to sign in
         </button>

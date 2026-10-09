@@ -401,7 +401,7 @@ export function FastHacksScreen() {
                 data-testid="sparse-note"
                 className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border-divider pt-4"
               >
-                <p className="text-[13px] leading-5 type-meta text-text-secondary">
+                <p className="text-[17px] leading-5 type-meta text-text-secondary">
                   {results.length === 1
                     ? "Only one option matches."
                     : `Only ${results.length} options match.`}{" "}
@@ -410,7 +410,7 @@ export function FastHacksScreen() {
                 <button
                   type="button"
                   onClick={clearAll}
-                  className="-mx-2 min-h-11 rounded-full px-2 text-[13px] type-button text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                  className="min-h-11 rounded-full border border-border-default bg-white px-4 text-[17px] type-button text-primary hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                 >
                   Clear filters
                 </button>

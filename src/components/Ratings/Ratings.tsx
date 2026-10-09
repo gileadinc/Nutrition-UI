@@ -57,7 +57,7 @@ export function RatingSummaryLine({
   if (!count || average == null) return null;
   return (
     <p
-      className={cn("flex items-center gap-1.5 text-[13px] type-meta text-text-secondary", className)}
+      className={cn("flex items-center gap-1.5 text-[17px] type-meta text-text-secondary", className)}
       aria-label={`Rated ${formatAverage(average)} out of 5 from ${count} ${count === 1 ? "rating" : "ratings"}`}
     >
       <Stars value={average} size={15} />
@@ -91,7 +91,7 @@ function ReviewRow({ r }: { r: RecipeRating }) {
       <div className="flex items-center gap-2">
         <Stars value={r.rating} size={14} />
         <span className="sr-only">{r.rating} out of 5 stars</span>
-        <span className="min-w-0 flex-1 truncate text-[13px] type-item-title text-text-primary">
+        <span className="min-w-0 flex-1 truncate text-[17px] type-item-title text-text-primary">
           {r.authorName || "A ForkThis cook"}
         </span>
         <time dateTime={r.createdAt} className="shrink-0 text-xs type-meta text-text-secondary">
@@ -169,7 +169,7 @@ function RateControl({ recipeId }: { recipeId: string }) {
       </div>
       {stars > 0 && (
           <div className="mt-3">
-            <label htmlFor={textId} className="text-[12px] type-section-title text-text-secondary">
+            <label htmlFor={textId} className="text-[16px] type-section-title text-text-secondary">
               Review (optional)
             </label>
             <textarea
@@ -262,13 +262,13 @@ export function RecipeRatingsSection({ recipeId }: { recipeId: string }) {
         )}
         <RateControl recipeId={recipeId} />
         {reviews.isLoading ? (
-          <p className="type-meta text-[13px] text-text-secondary">Loading reviews…</p>
+          <p className="type-meta text-[17px] text-text-secondary">Loading reviews…</p>
         ) : reviews.error && shown.length === 0 ? (
-          <p role="alert" className="type-meta text-[13px] text-error-red">
+          <p role="alert" className="type-meta text-[17px] text-error-red">
             Couldn&apos;t load reviews. {reviews.error}
           </p>
         ) : shown.length === 0 ? (
-          <p className="type-meta text-[13px] text-text-secondary">
+          <p className="type-meta text-[17px] text-text-secondary">
             No reviews yet. Be the first to share how it turned out.
           </p>
         ) : (

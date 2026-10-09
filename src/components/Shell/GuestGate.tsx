@@ -94,17 +94,17 @@ export function GuestFeatureGate({
             <Icon name="shield" size={32} color="var(--color-icon-well-ink)" />
           </span>
           <h1
-            className="mt-4 text-[28px] type-display text-text-primary"
+            className="mt-4 text-[32px] type-display text-text-primary"
             style={{ letterSpacing: "-1.26px", lineHeight: "34px" }}
           >
             {feature ? `${feature} needs an account` : "This feature needs an account"}
           </h1>
-          <p className="mt-4 text-[15px] text-text-secondary">{copy.description}</p>
+          <p className="mt-4 text-[19px] text-text-secondary">{copy.description}</p>
           <ul className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2.5">
             {PERKS.map((p) => (
               <li key={p.label} className="flex items-center gap-1.5">
                 <Icon name={p.icon} size={16} color="var(--color-brand-navy)" />
-                <span className="text-[13px] type-meta text-text-secondary">{p.label}</span>
+                <span className="text-[17px] type-meta text-text-secondary">{p.label}</span>
               </li>
             ))}
           </ul>

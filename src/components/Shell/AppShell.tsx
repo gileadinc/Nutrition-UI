@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Icon, type IconName } from "@/components/Icon";
 import { Link, NavLink, useLocation, useNavigate } from "@/lib/nav";
@@ -66,7 +66,7 @@ function TopBar() {
           <span className="shrink-0">
             <Icon name="search" size={16} color="var(--color-text-secondary)" />
           </span>
-          <span className="min-w-0 flex-1 truncate text-[13px] type-meta text-text-neutral-400">
+          <span className="min-w-0 flex-1 truncate text-[17px] type-meta text-text-neutral-400">
             Search food, recipes and hacks
           </span>
         </button>
@@ -81,7 +81,7 @@ function TopBar() {
               <Icon name="userCircle" size={16} color="var(--color-primary)" />
             </span>
             {desktop && (
-              <span className="max-w-[8rem] truncate text-[13px] type-button-secondary text-text-primary">
+              <span className="max-w-[8rem] truncate text-[17px] type-button-secondary text-text-primary">
                 {name ?? (session.isGuest ? "Guest" : "Account")}
               </span>
             )}
@@ -92,7 +92,7 @@ function TopBar() {
   );
 }
 
-function SideRail({ pathname }: { pathname: string }) {
+function SideRail({ pathname, onCollapse }: { pathname: string; onCollapse?: () => void }) {
   const inTrack = pathname.startsWith("/track");
   return (
     <nav
@@ -107,6 +107,18 @@ function SideRail({ pathname }: { pathname: string }) {
       >
         <Logo size="md" decorative />
       </Link>
+      {onCollapse && (
+        <button
+          type="button"
+          onClick={onCollapse}
+          aria-label="Collapse sidebar"
+          aria-expanded
+          title="Collapse sidebar"
+          className="tap-44 absolute right-3 top-3 flex size-9 items-center justify-center rounded-full border border-border-default bg-white text-text-primary transition-colors hover:border-text-neutral-400 hover:bg-brand-warm-gray"
+        >
+          <SidebarGlyph />
+        </button>
+      )}
       <div className="flex flex-col gap-1">
         {MAIN_TABS.map((tab) => (
           <NavLink
@@ -152,6 +164,45 @@ function SideRail({ pathname }: { pathname: string }) {
   );
 }
 
+/** Inline "sidebar" glyph: a rounded frame with a left rail. */
+function SidebarGlyph() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="16" rx="3" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M9 4v16" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  );
+}
+
+/** Slim stand-in for the side rail on the full-screen Melo page, with the expand button. */
+function CollapsedRail({ onExpand }: { onExpand: () => void }) {
+  return (
+    <div className="panel sticky top-0 flex h-[calc(100dvh-1.25rem)] w-14 shrink-0 flex-col items-center gap-2 py-3 shadow-card">
+      <button
+        type="button"
+        onClick={onExpand}
+        aria-label="Expand sidebar"
+        aria-expanded={false}
+        title="Expand sidebar"
+        className="tap-44 relative flex size-10 items-center justify-center rounded-full border border-border-default bg-white text-text-primary transition-colors hover:border-text-neutral-400 hover:bg-brand-warm-gray"
+      >
+        <SidebarGlyph />
+      </button>
+      {MAIN_TABS.map((tab) => (
+        <Link
+          key={tab.path}
+          to={tab.path}
+          title={tab.label}
+          aria-label={tab.label}
+          className="tap-44 relative flex size-10 items-center justify-center rounded-full transition-colors hover:bg-brand-warm-gray"
+        >
+          <Icon name={tab.icon} size={20} color={IDLE} />
+        </Link>
+      ))}
+    </div>
+  );
+}
+
 function TabBar() {
   return (
     <nav
@@ -177,7 +228,7 @@ function TabBar() {
                   </span>
                   <span
                     className={cn(
-                      "mt-[3px] text-[11px] leading-none",
+                      "mt-[3px] text-[15px] leading-none",
                       isActive
                         ? "type-button text-accent-ink"
                         : "type-button-secondary text-text-secondary",
@@ -213,12 +264,25 @@ export function AppShell({ children }: { children: ReactNode }) {
     main.current?.focus({ preventScroll: true });
   }, [pathname]);
   const pad = showsBottomPad(pathname);
+  // The full-screen Melo page hands its width to the chat: the rail starts collapsed there.
+  const melo = pathname.startsWith("/assistant");
+  const [railOpen, setRailOpen] = useState(false);
+  const [railFor, setRailFor] = useState(melo);
+  if (railFor !== melo) {
+    setRailFor(melo);
+    setRailOpen(false);
+  }
   return (
     <GuestGateProvider>
       <div id="app-root" className="min-h-dvh bg-brand-cream">
         <SkipLink />
         <div className={cn(desktop && "flex gap-2.5 p-2.5")}>
-          {desktop && <SideRail pathname={pathname} />}
+          {desktop &&
+            (melo && !railOpen ? (
+              <CollapsedRail onExpand={() => setRailOpen(true)} />
+            ) : (
+              <SideRail pathname={pathname} onCollapse={melo ? () => setRailOpen(false) : undefined} />
+            ))}
           <div className="min-w-0 flex-1">
             {desktop && <TopBar />}
             <main

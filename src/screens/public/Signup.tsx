@@ -101,7 +101,7 @@ export function SignupScreen() {
         >
           Create your account
         </h1>
-        <p className="mt-1 type-meta text-[13px] leading-5 text-text-secondary">
+        <p className="mt-1 type-meta text-[17px] leading-5 text-text-secondary">
           Just enough to save your progress. Your goals and body context come next.
         </p>
         <div className="mt-4 flex flex-col gap-3">
@@ -146,7 +146,7 @@ export function SignupScreen() {
               {agreed && <Icon name="tick" size={14} color="var(--color-text-on-dark)" />}
             </span>
           </button>
-          <p className="type-meta text-[13px] leading-5 text-text-secondary">
+          <p className="type-meta text-[17px] leading-5 text-text-secondary">
             I agree to the{" "}
             <Link
               to="/you/legal/terms"
@@ -169,12 +169,12 @@ export function SignupScreen() {
           </p>
         </div>
         {errors.terms && (
-          <p role="alert" className="mt-2 type-meta text-[13px] text-error-red">
+          <p role="alert" className="mt-2 type-meta text-[17px] text-error-red">
             {errors.terms}
           </p>
         )}
         {errors.form && (
-          <p role="alert" className="mt-3 type-meta text-[13px] text-error-red">
+          <p role="alert" className="mt-3 type-meta text-[17px] text-error-red">
             {errors.form}
           </p>
         )}
@@ -183,7 +183,7 @@ export function SignupScreen() {
         </div>
         <div className="my-4 flex items-center gap-3">
           <span className="h-px flex-1 bg-border-divider" />
-          <span className="text-[11px] type-meta text-text-neutral-600">OR SIGN UP WITH</span>
+          <span className="text-[15px] type-meta text-text-neutral-600">OR SIGN UP WITH</span>
           <span className="h-px flex-1 bg-border-divider" />
         </div>
         <div className="flex gap-3">
@@ -204,7 +204,7 @@ export function SignupScreen() {
           />
         </div>
         {social.error && (
-          <p role="status" className="mt-3 text-center type-meta text-[13px] text-text-secondary">
+          <p role="status" className="mt-3 text-center type-meta text-[17px] text-text-secondary">
             {social.error}
           </p>
         )}

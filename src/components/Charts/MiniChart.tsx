@@ -154,7 +154,7 @@ function Tip({
 }) {
   return (
     <span
-      className="pointer-events-none absolute z-20 -translate-x-1/2 whitespace-nowrap rounded-md bg-text-primary px-1.5 py-0.5 text-[10px] type-row-figure tabular-nums text-text-on-dark"
+      className="pointer-events-none absolute z-20 -translate-x-1/2 whitespace-nowrap rounded-md bg-text-primary px-1.5 py-0.5 text-[14px] type-row-figure tabular-nums text-text-on-dark"
       style={{ left, top, bottom }}
     >
       {text}
@@ -265,7 +265,7 @@ export function MiniChart({
               {showLabels && (
                 <span
                   className={cn(
-                    "text-center text-[9px] type-meta leading-[14px]",
+                    "text-center text-[13px] type-meta leading-[18px]",
                     hover === i ? "text-text-primary" : "text-text-secondary",
                   )}
                 >
@@ -325,7 +325,7 @@ export function MiniChart({
             {showLabels && (
               <span
                 className={cn(
-                  "mt-0.5 h-[12px] text-[9px] type-meta leading-[12px]",
+                  "mt-0.5 h-[16px] text-[13px] type-meta leading-[16px]",
                   hover === i ? "text-text-primary" : "text-text-secondary",
                 )}
               >

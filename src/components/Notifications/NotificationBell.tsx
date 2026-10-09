@@ -49,7 +49,7 @@ export function NotificationBell() {
         {unread > 0 && (
           <span
             aria-hidden="true"
-            className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full border-2 border-white bg-primary text-[9px] type-meta text-white"
+            className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full border-2 border-white bg-primary text-[13px] type-meta text-white"
           >
             {unread}
           </span>
@@ -101,7 +101,7 @@ export function NotificationBell() {
           <Link
             to="/you/notifications"
             onClick={() => setOpen(false)}
-            className="block border-t border-border-divider px-4 py-3 text-center text-[13px] type-button text-primary"
+            className="block border-t border-border-divider px-4 py-3 text-center text-[17px] type-button text-primary"
           >
             View notification center
           </Link>

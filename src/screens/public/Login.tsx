@@ -106,7 +106,7 @@ export function LoginScreen() {
         >
           Welcome back
         </h1>
-        <p className="mt-2 type-meta text-[13px] leading-5 text-text-secondary">
+        <p className="mt-2 type-meta text-[17px] leading-5 text-text-secondary">
           Sign in to keep your ForkThis! moments, saves, and momentum together.
         </p>
         <div className="mt-4 flex flex-col gap-3">
@@ -141,7 +141,7 @@ export function LoginScreen() {
         <PrimaryButton label={busy ? "Signing in..." : "Sign in"} type="submit" disabled={busy} />
         <div className="my-4 flex items-center gap-3">
           <span className="h-px flex-1 bg-border-divider" />
-          <span className="text-[11px] type-meta text-text-neutral-600">OR SIGN IN WITH</span>
+          <span className="text-[15px] type-meta text-text-neutral-600">OR SIGN IN WITH</span>
           <span className="h-px flex-1 bg-border-divider" />
         </div>
         <div className="flex gap-3">
@@ -162,7 +162,7 @@ export function LoginScreen() {
           />
         </div>
         {(social.error || notice) && (
-          <p role="status" className="mt-3 text-center type-meta text-[13px] text-text-secondary">
+          <p role="status" className="mt-3 text-center type-meta text-[17px] text-text-secondary">
             {social.error ?? notice}
           </p>
         )}

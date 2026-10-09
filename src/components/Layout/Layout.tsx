@@ -193,10 +193,10 @@ export function RelatedPagesPanel({ pathname }: { pathname: string }) {
               <Icon name={l.icon} size={17} color="var(--color-icon-well-ink)" />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[13px] type-item-title text-text-primary">
+              <span className="block truncate text-[17px] type-item-title text-text-primary">
                 {l.label}
               </span>
-              <span className="mt-0.5 block truncate type-meta text-[11px] text-text-secondary">
+              <span className="mt-0.5 block truncate type-meta text-[15px] text-text-secondary">
                 {l.detail}
               </span>
             </span>
@@ -244,7 +244,7 @@ export function PageContainer({
       <div
         className={cn(
           "page-settle mx-auto w-full px-5 py-6 md:px-8 md:py-8 lg:px-10 lg:py-10 2xl:px-12",
-          variant === "focused" ? "max-w-6xl" : "max-w-[1680px]",
+          variant === "focused" ? "max-w-[1400px]" : "max-w-[1680px]",
           className,
         )}
       >
@@ -353,11 +353,11 @@ export function PageHeader({
         )}
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           {eyebrow && (
-            <p className="type-eyebrow text-[11px] tracking-[-0.495px] text-primary">{eyebrow}</p>
+            <p className="type-eyebrow text-[15px] tracking-[-0.495px] text-primary">{eyebrow}</p>
           )}
           <h1 className={PAGE_TITLE}>{title}</h1>
           {subtitle && (
-            <div className="type-meta text-[13px] tracking-[-0.3px] text-text-secondary">
+            <div className="type-meta text-[17px] tracking-[-0.3px] text-text-secondary">
               {subtitle}
             </div>
           )}
@@ -506,7 +506,7 @@ export function FilterChips({
             aria-pressed={active}
             onClick={() => (isAll ? onClear() : onToggle(opt))}
             className={cn(
-              "tap-44 relative flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[13px]",
+              "tap-44 relative flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[17px]",
               active ? SELECTED_CHIP : "border-border-default bg-white text-text-secondary",
               active ? "type-button" : "type-button-secondary",
             )}
@@ -553,18 +553,18 @@ export function ListingHeader({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           {eyebrow && (
-            <p className="text-[11px] type-meta tracking-[-0.495px] text-primary">{eyebrow}</p>
+            <p className="text-[15px] type-meta tracking-[-0.495px] text-primary">{eyebrow}</p>
           )}
           <h1
             className={cn(
               PAGE_TITLE,
-              "mt-1 truncate text-[length:var(--page-title-size)] md:text-[28px]",
+              "mt-1 truncate text-[length:var(--page-title-size)] md:text-[32px]",
             )}
             style={{ "--page-title-size": `${titleFontSize}px` } as React.CSSProperties}
           >
             {title}
           </h1>
-          <p className="mt-0.5 truncate text-[13px] type-meta tracking-[-0.585px] text-text-secondary md:hidden">
+          <p className="mt-0.5 truncate text-[17px] type-meta tracking-[-0.585px] text-text-secondary md:hidden">
             {subtitle}
           </p>
         </div>
@@ -584,7 +584,7 @@ export function ListingHeader({
           )}
         </div>
       </div>
-      <p className="mt-1 hidden truncate text-[13px] type-meta text-text-secondary md:block">
+      <p className="mt-1 hidden truncate text-[17px] type-meta text-text-secondary md:block">
         {subtitle}
       </p>
       <div className="mt-3 flex gap-2 md:hidden">

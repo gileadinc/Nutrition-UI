@@ -93,7 +93,7 @@ function TodayMealsPanel() {
         onRemove: () => void onRemove(m),
       }))}
       footer={
-        <Link to="/track/meals" className="tap-24 text-[13px] type-button text-primary">
+        <Link to="/track/meals" className="tap-24 text-[17px] type-button text-primary">
           Meal history
         </Link>
       }
@@ -207,7 +207,7 @@ export function LogMealPickerScreen() {
         />
         <Link
           to={`/track/log-meal/custom?type=${meal}`}
-          className="flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-border-default bg-white px-4 text-[13px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400"
+          className="flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-border-default bg-white px-4 text-[17px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400"
         >
           <Icon name="pencilEdit" size={15} color="var(--color-text-primary)" />
           Enter it yourself
@@ -243,7 +243,7 @@ export function LogMealPickerScreen() {
         {loading && catalogue.length === 0 ? (
           <CatalogueSkeleton />
         ) : catalogue.length === 0 ? (
-          <p className="panel p-4 text-[13px] type-meta text-text-secondary">
+          <p className="panel p-4 text-[17px] type-meta text-text-secondary">
             Nothing matches “{query.trim()}”.{" "}
             <Link to={`/track/log-meal/custom?type=${meal}`} className="type-button text-primary">
               Enter it yourself
@@ -410,7 +410,7 @@ export function LogMealScreen() {
           </div>
         </fieldset>
         <div
-          className="rounded-2xl bg-brand-warm-gray px-4 py-3 text-[13px] type-meta text-text-secondary"
+          className="rounded-2xl bg-brand-warm-gray px-4 py-3 text-[17px] type-meta text-text-secondary"
           aria-live="polite"
         >
           {kcal === null ? (
@@ -526,8 +526,8 @@ export function LogWaterScreen() {
       aside={
         <section aria-label="This week's water">
           <div className="flex items-baseline gap-2">
-            <h2 className="eyebrow flex-1 text-[13px]">This week</h2>
-            <Link to="/track/water/history" className="tap-24 text-[13px] type-button text-primary">
+            <h2 className="eyebrow flex-1 text-[17px]">This week</h2>
+            <Link to="/track/water/history" className="tap-24 text-[17px] type-button text-primary">
               History
             </Link>
           </div>
@@ -611,7 +611,7 @@ export function LogWaterScreen() {
             />
             <div
               aria-hidden="true"
-              className="mt-1.5 flex justify-between text-[11px] type-meta tabular-nums text-text-secondary"
+              className="mt-1.5 flex justify-between text-[15px] type-meta tabular-nums text-text-secondary"
             >
               <span>{CUSTOM_STOPS[0]} oz</span>
               <span>{CUSTOM_STOPS[CUSTOM_STOPS.length - 1]} oz</span>
@@ -641,7 +641,7 @@ export function LogWaterScreen() {
       </section>
       <section className="mt-5" aria-label="Today's water">
         <div className="flex items-baseline gap-2">
-          <h2 className="eyebrow flex-1 text-[13px]">Today</h2>
+          <h2 className="eyebrow flex-1 text-[17px]">Today</h2>
           {drinks.length > 0 && (
             <span className="text-xs type-meta text-text-secondary">
               {drinks.length} {drinks.length === 1 ? "drink" : "drinks"} ·{" "}
@@ -650,7 +650,7 @@ export function LogWaterScreen() {
           )}
         </div>
         {drinks.length === 0 ? (
-          <p className="panel mt-2.5 px-4 py-5 text-center text-[13px] type-meta text-text-secondary">
+          <p className="panel mt-2.5 px-4 py-5 text-center text-[17px] type-meta text-text-secondary">
             Nothing logged yet. Tap an amount above and it shows up here.
           </p>
         ) : (
@@ -697,7 +697,7 @@ export function LogWaterScreen() {
                 type="button"
                 onClick={() => setShowAll((s) => !s)}
                 aria-expanded={showAll}
-                className="tap-24 mt-2 w-full justify-center text-[13px] type-button text-primary"
+                className="mt-2 h-12 w-full justify-center rounded-2xl border border-border-default bg-white text-[17px] type-button text-primary"
               >
                 {showAll ? "Show less" : `Show all ${rows.length} (${rows.length - shown.length} more)`}
               </button>
@@ -782,7 +782,7 @@ export function TrackLogErrorScreen() {
         >
           Couldn&apos;t Log {c.noun}
         </h1>
-        <p className="mt-2 text-[13px] type-meta leading-[1.4] tracking-[-0.585px] text-text-neutral-500">
+        <p className="mt-2 text-[17px] type-meta leading-[1.4] tracking-[-0.585px] text-text-neutral-500">
           {c.errorMessage}
         </p>
       </div>
