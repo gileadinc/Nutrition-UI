@@ -156,9 +156,9 @@ function PlanRings({ readings }: { readings: { key: "calories" | "protein" | "wa
               className="flex min-w-0 flex-col items-center rounded-2xl px-1 pb-2 pt-1 text-center transition-colors hover:bg-navy-soft"
             >
               <span className="text-[17px] type-item-title text-text-secondary">{r.label}</span>
-              <span className="mt-2 w-full max-w-[104px]">
-                <MiniRing value={r.eaten} goal={r.goal} size={104} stroke={9} color={colors[r.key]} overlap fluid label={spoken}>
-                  <Icon name={icons[r.key]} size={20} color={colors[r.key]} />
+              <span className="mt-2 w-full max-w-[136px]">
+                <MiniRing value={r.eaten} goal={r.goal} size={136} stroke={11} color={colors[r.key]} overlap fluid label={spoken}>
+                  <Icon name={icons[r.key]} size={26} color={colors[r.key]} />
                 </MiniRing>
               </span>
               <span aria-hidden="true" className={cn(R, "mt-2")}>
