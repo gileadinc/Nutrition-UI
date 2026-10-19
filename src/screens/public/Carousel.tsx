@@ -7,25 +7,10 @@ import { OnboardingSplit } from "@/components/Onboarding";
 import { Logo } from "@/components/Shell/Logo";
 import { useIsLg, useReducedMotion } from "@/lib/hooks";
 import { useNavigate } from "@/lib/nav";
+import { CAROUSEL } from "@/content";
 import { cn } from "@/lib/utils";
 
-const SLIDES = [
-  {
-    image: "/img/onboarding/tour-smart-order-v2",
-    heading: "Eat smart, anywhere.",
-    body: "Know exactly what to order at your favorite restaurants to stay on track.",
-  },
-  {
-    image: "/img/onboarding/tour-personalized-plan-v2",
-    heading: "Personalized to your goal.",
-    body: "Your plan adapts to your body, your goal and any surgical context.",
-  },
-  {
-    image: "/img/onboarding/tour-clinical-support-v2",
-    heading: "Clinical depth, real empathy.",
-    body: "Built by a plastic surgeon and a creator who lost 260 lb. Support, not judgement.",
-  },
-];
+const { slides: SLIDES } = CAROUSEL;
 const LAST = SLIDES.length - 1;
 const DIST_RATIO = 0.18;
 const VELOCITY = 0.5;
@@ -95,7 +80,7 @@ export function OnboardingCarousel() {
     }
   };
 
-  const nextLabel = index === LAST ? "Let's begin" : "Next";
+  const nextLabel = index === LAST ? CAROUSEL.lastLabel : CAROUSEL.nextLabel;
   const announcer = (
     <p data-testid="tour-announcer" aria-live="polite" aria-atomic="true" className="sr-only">
       {interacted ? `Slide ${index + 1} of ${SLIDES.length}: ${slide.heading}` : ""}

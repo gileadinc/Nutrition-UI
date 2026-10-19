@@ -1,0 +1,21 @@
+{
+  "slides": [
+    {
+      "image": "/img/onboarding/tour-smart-order-v2",
+      "heading": "Eat smart, anywhere.",
+      "body": "Know exactly what to order at your favorite restaurants to stay on track."
+    },
+    {
+      "image": "/img/onboarding/tour-personalized-plan-v2",
+      "heading": "Personalized to your goal.",
+      "body": "Your plan adapts to your body, your goal and any surgical context."
+    },
+    {
+      "image": "/img/onboarding/tour-clinical-support-v2",
+      "heading": "Clinical depth, real empathy.",
+      "body": "Built by a plastic surgeon and a creator who lost 260 lb. Support, not judgement."
+    }
+  ],
+  "nextLabel": "Next",
+  "lastLabel": "Let's begin"
+}

@@ -6,6 +6,7 @@
  */
 
 import { useSyncExternalStore } from "react";
+import { MELO_COPY } from "@/content";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const w = () => (typeof window === "undefined" ? ({} as any) : (window as any));
@@ -22,12 +23,7 @@ export const useCanSpeak = () => useSyncExternalStore(noop, canSpeak, () => fals
 const language = () => (typeof navigator !== "undefined" && navigator.language) || "en-US";
 
 export type VoiceError = "denied" | "no-speech" | "network" | "unavailable";
-export const VOICE_MESSAGES: Record<VoiceError, string> = {
-  denied: "Microphone access is off. Allow it in your browser's site settings.",
-  "no-speech": "Didn't catch that. Tap the mic and try again, or type your question.",
-  network: "Voice input needs a connection. Try again, or type your question.",
-  unavailable: "Voice input isn't available right now. Type your question instead.",
-};
+export const VOICE_MESSAGES: Record<VoiceError, string> = MELO_COPY.voiceMessages;
 
 const mapError = (code: string): VoiceError | null => {
   switch (code) {

@@ -4,6 +4,7 @@
  * recipes from the API). Pure functions, no I/O.
  */
 
+import { MELO_COPY } from "@/content";
 import { fitFor, type Budget } from "@/lib/nutrition";
 import { dayCalories, dayProtein, dayWaterOz, type TrackDay } from "@/lib/track";
 
@@ -404,31 +405,10 @@ export function answer(input: string, ctx: MeloContext): MeloReply {
 
 /* ------------------------------------------------------------------ prompts */
 
-export const STARTERS: {
-  intent: string;
-  text: string;
-  icon: "restaurant" | "timer" | "dumbbell" | "chartIncrease";
-}[] = [
-  { intent: "Eat out", text: "What can I order that fits?", icon: "restaurant" },
-  { intent: "Cook", text: "Something quick to cook", icon: "timer" },
-  { intent: "My day", text: "Help me hit my protein goal", icon: "dumbbell" },
-  { intent: "My day", text: "How am I doing this week?", icon: "chartIncrease" },
-];
+export const STARTERS = MELO_COPY.starters;
 
-export const QUICK_PROMPTS = ["Suggest a healthy swap", "How much water have I had?", "Where am I on protein?"];
+export const QUICK_PROMPTS = MELO_COPY.quickPrompts;
 
-const FOLLOW_UPS: Record<MeloRule, string[]> = {
-  dish: ["What fits the rest of my day?", "Suggest a healthy swap", "Where am I on protein?"],
-  fits: ["Where am I on protein?", "Suggest a healthy swap", "How am I doing this week?"],
-  "fits-over": ["Suggest a healthy swap", "How am I doing this week?", "How much water have I had?"],
-  "fits-none": ["Suggest a healthy swap", "Where am I on protein?"],
-  progress: ["What fits the rest of my day?", "Where am I on protein?"],
-  "progress-empty": ["What fits the rest of my day?", "Something quick to cook"],
-  protein: ["What fits the rest of my day?", "How much water have I had?", "Suggest a healthy swap"],
-  water: ["Where am I on protein?", "How am I doing this week?"],
-  search: ["What fits the rest of my day?", "Suggest a healthy swap", "Where am I on protein?"],
-  swap: ["What can I order that fits?", "Where am I on protein?"],
-  fallback: ["What fits the rest of my day?", "How am I doing this week?", "Where am I on protein?"],
-};
+const FOLLOW_UPS: Record<string, string[]> = MELO_COPY.followUps;
 
 export const followUps = (rule: MeloRule) => FOLLOW_UPS[rule] ?? FOLLOW_UPS.fallback;

@@ -27,6 +27,8 @@ import { getErrorMessage } from "@/lib/api";
 import { useFilterParams } from "@/lib/hooks";
 import { HACK_FILTER, fitFor } from "@/lib/nutrition";
 import { useDayBudget, useEatOutRecommendations, useFastHacks, useProfile, useSaved } from "@/lib/store";
+import { LocationPrompt } from "@/components/Location";
+import { nearParams, useUserLocation } from "@/lib/location";
 import { toHackVM, type HackVM } from "./adapt";
 
 const SORTS = [
@@ -73,9 +75,11 @@ const summary = (parts: (string | false)[]) => parts.filter(Boolean).join(", ") 
 export function FastHacksScreen() {
   const f = useFilterParams({}, ["sort", "adv"]);
   const [open, setOpen] = useState(false);
-  const { data, error, isLoading, refresh } = useFastHacks({ limit: 100 });
+  const { coords } = useUserLocation();
+  const near = nearParams(coords);
+  const { data, error, isLoading, refresh } = useFastHacks({ limit: 100, ...near });
   const { profile } = useProfile();
-  const recs = useEatOutRecommendations({ goal: profile?.goal ?? undefined, limit: 6 });
+  const recs = useEatOutRecommendations({ goal: profile?.goal ?? undefined, limit: 6, ...near });
   const saved = useSaved();
   const { budget } = useDayBudget();
   const all = useMemo(() => (data?.items ?? []).map((h) => toHackVM(h)), [data]);
@@ -364,7 +368,8 @@ export function FastHacksScreen() {
           {panel("panel-")}
         </FilterSidebar>
         <div className="@container min-w-0 flex-1">
-          <div className="sticky top-0 z-20 -mx-5 border-b border-border-divider bg-brand-cream px-5 md:top-16 md:mx-0 md:px-0">
+          <LocationPrompt className="mt-4" />
+          <div className="sticky top-0 z-20 -mx-5 mt-4 border-b border-border-divider bg-brand-cream px-5 md:top-16 md:mx-0 md:px-0">
             <CategoryChips selected={f.get("meal")} onSelect={(c) => f.set("meal", c)} />
             <AppliedFilters filters={applied} onClearAll={resetFilters} />
           </div>

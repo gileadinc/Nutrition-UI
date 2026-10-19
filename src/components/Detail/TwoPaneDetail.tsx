@@ -8,6 +8,7 @@ import { POSITIVE } from "@/components/styles";
 import { Link, useNavigate } from "@/lib/nav";
 import { useIsDesktop } from "@/lib/hooks";
 import { fitsToday, type Fit } from "@/lib/nutrition";
+import { UI } from "@/content";
 import { dietaryMatch, type DietaryRecipe } from "@/lib/nutrition";
 
 export interface DetailNeighbour {
@@ -127,7 +128,7 @@ function FitsBadge({ fit }: { fit: Fit }) {
       )}
     >
       <Icon name="checkCircle" size={14} color="var(--color-positive-ink)" />
-      Fits today
+      {UI.fitsBadge}
     </span>
   ) : null;
 }

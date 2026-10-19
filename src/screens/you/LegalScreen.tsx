@@ -3,88 +3,9 @@
 import { cn } from "@/lib/utils";
 import { Link, useParams } from "@/lib/nav";
 import { ProfileLayout } from "@/components/Track/ProfileParts";
+import { LEGAL } from "@/content";
 
-const UPDATED = "September 17, 2026";
-
-const DOCS = {
-  terms: {
-    title: "Terms of service",
-    short: "Terms",
-    intro: "These terms describe how you may use ForkThis.",
-    sections: [
-      {
-        heading: "What this is",
-        body: [
-          "ForkThis suggests recipes and restaurant orders and lets you track what you eat. Nutrition figures are estimates.",
-        ],
-      },
-      {
-        heading: "Your use",
-        body: [
-          "Use the app to explore and plan your meals. Don't rely on it for decisions about your health, allergies or diet.",
-        ],
-      },
-      {
-        heading: "Changes",
-        body: ["Features, data and these terms may change from time to time."],
-      },
-    ],
-  },
-  privacy: {
-    title: "Privacy policy",
-    short: "Privacy",
-    intro: "The short version: we keep what you give us to run the app, and you can export or delete it.",
-    sections: [
-      {
-        heading: "What is stored",
-        body: [
-          "Your profile, saved items and logged meals and water are stored against your account so they follow you across devices.",
-        ],
-      },
-      {
-        heading: "Who can see it",
-        body: ["Only you, through your account. You choose whether analytics and personalised recommendations are on."],
-      },
-      {
-        heading: "Removing it",
-        body: [
-          "You can export your data or delete your account from Help & support.",
-          "Deleting your account removes your data permanently.",
-        ],
-      },
-    ],
-  },
-  health: {
-    title: "Health disclaimer",
-    short: "Health",
-    intro: "Please read this before acting on any number the app shows you.",
-    sections: [
-      {
-        heading: "General information only",
-        body: ["ForkThis gives general nutrition information. It is not medical advice, diagnosis or treatment."],
-      },
-      {
-        heading: "Estimates, not measurements",
-        body: [
-          "Calorie and BMI figures are estimates from formulas, not clinical measurements.",
-          "BMI does not account for muscle, frame or age, and calorie targets vary from person to person.",
-        ],
-      },
-      {
-        heading: "Allergies",
-        body: [
-          "Allergen flags are based on ingredient names and can miss things. Always check packaging and ask the restaurant.",
-        ],
-      },
-      {
-        heading: "Talk to a professional",
-        body: [
-          "Talk to a qualified clinician before changing your diet, especially around surgery or a medical condition.",
-        ],
-      },
-    ],
-  },
-};
+const { updated: UPDATED, docs: DOCS } = LEGAL;
 
 export function LegalScreen() {
   const { document: doc = "terms" } = useParams<{ document: string }>();

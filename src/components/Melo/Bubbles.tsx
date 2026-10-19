@@ -18,6 +18,7 @@ import {
   type MeloTurn,
 } from "@/lib/melo";
 import { toast } from "@/lib/store";
+import { UI } from "@/content";
 
 /** The orange chef-hat tile used for Melo everywhere. */
 export function MeloMark({ size = 40, className }: { size?: number; className?: string }) {
@@ -96,7 +97,7 @@ function DishCard({ link, onNavigate }: { link: MeloLink; onNavigate: () => void
           </span>
           {card.fits && (
             <span className="rounded-full bg-positive px-2 py-0.5 text-[15px] type-meta text-positive-ink">
-              Fits today
+              {UI.fitsBadge}
             </span>
           )}
         </span>

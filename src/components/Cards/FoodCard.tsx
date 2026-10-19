@@ -15,6 +15,7 @@ import {
   ProductCardTitle,
 } from "./ProductCard";
 import { fitsToday, type Fit } from "@/lib/nutrition/budget";
+import { UI } from "@/content";
 
 export interface FoodCardProps {
   /** Local image base or full URL. */
@@ -32,7 +33,7 @@ export interface FoodCardProps {
   /** Provide to show the save heart. */
   onSave?: () => void;
   to: string;
-  /** Result of `fitFor()`; shows a "Fits today" badge when it fits. */
+  /** Result of `fitFor()`; shows the fits badge when it fits. */
   fit?: Fit;
   /** `rail` = fixed 252px carousel card, `grid` = fills its cell, `compact` = short grid card. */
   layout?: "rail" | "grid" | "compact";
@@ -81,7 +82,7 @@ export function FoodCard({
           )}
           {fit && fitsToday(fit) && (
             <ProductCardBadge position="end" className="bg-positive text-positive-ink">
-              Fits today
+              {UI.fitsBadge}
             </ProductCardBadge>
           )}
         </ProductCardImage>

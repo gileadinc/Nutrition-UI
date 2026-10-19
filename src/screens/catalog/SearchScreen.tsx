@@ -8,6 +8,7 @@ import { useDebouncedValue } from "@/lib/hooks";
 import { Link, useNavigate, useSearchParams } from "@/lib/nav";
 import { fitFor, fitsToday, type Budget } from "@/lib/nutrition";
 import { useDayBudget, useRecentSearches } from "@/lib/store";
+import { UI } from "@/content";
 import { cn } from "@/lib/utils";
 import { humanize, menuItemToHack, toRecipeVM } from "./adapt";
 
@@ -354,7 +355,7 @@ function ResultGroup({
                   </span>
                   {fitsToday(fit) && (
                     <span className="shrink-0 rounded-full bg-positive px-2.5 py-1 text-[15px] type-meta text-positive-ink">
-                      Fits today
+                      {UI.fitsBadge}
                     </span>
                   )}
                 </button>

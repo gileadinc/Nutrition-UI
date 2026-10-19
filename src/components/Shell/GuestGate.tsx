@@ -9,17 +9,13 @@ import { useIsDesktop } from "@/lib/hooks";
 import { useLocation, useNavigate } from "@/lib/nav";
 import { GuestGateContext } from "@/lib/store/gate";
 import { ICON_WELL } from "@/components/styles";
+import { GUEST_GATE, fill } from "@/content";
 
-const PERKS = [
-  { icon: "shield", label: "Secure" },
-  { icon: "lock", label: "No credit card" },
-  { icon: "tick", label: "Free forever" },
-] as const;
+const PERKS = GUEST_GATE.perks;
 
 const FALLBACK_COPY: Pick<FeatureGate, "description" | "ctaLabel"> = {
-  description:
-    "Tracking meals, saving favourites and personalised recommendations need somewhere to save to. Creating an account is free and takes about a minute — no credit card required.",
-  ctaLabel: "Create free account",
+  description: GUEST_GATE.fallbackDescription,
+  ctaLabel: GUEST_GATE.fallbackCta,
 };
 
 const gateCache = new Map<string, FeatureGate>();
@@ -97,7 +93,7 @@ export function GuestFeatureGate({
             className="mt-4 text-[32px] type-display text-text-primary"
             style={{ letterSpacing: "-1.26px", lineHeight: "34px" }}
           >
-            {feature ? `${feature} needs an account` : "This feature needs an account"}
+            {feature ? fill(GUEST_GATE.title.withFeature, { feature }) : GUEST_GATE.title.generic}
           </h1>
           <p className="mt-4 text-[19px] text-text-secondary">{copy.description}</p>
           <ul className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2.5">
@@ -116,7 +112,7 @@ export function GuestFeatureGate({
               }
             />
             <SecondaryButton
-              label="Continue browsing"
+              label={GUEST_GATE.dismiss}
               onPress={() => (onDismiss ? onDismiss() : navigate("/home", { replace: true }))}
             />
           </div>

@@ -3,6 +3,8 @@
  * filters and dietary matching. Ported from the deployed build.
  */
 
+import { NUTRITION_COPY } from "@/content";
+
 export const DIETARY_PREFERENCE = {
   vegetarian: "Vegetarian",
   vegan: "Vegan",
@@ -52,31 +54,14 @@ export function addCustomEntry(
 }
 
 export type GoalKey = "lose" | "gain" | "maintain" | "recomp";
-export const GOAL_LABEL: Record<GoalKey, string> = {
-  lose: "Lose weight",
-  gain: "Build muscle",
-  maintain: "Maintain",
-  recomp: "Body recomposition",
-};
+export const GOAL_LABEL: Record<GoalKey, string> = NUTRITION_COPY.goalLabel;
 export const GOAL_KEYS = Object.keys(GOAL_LABEL) as GoalKey[];
 export const isGoalKey = (v: unknown): v is GoalKey => typeof v === "string" && v in GOAL_LABEL;
 
 export type ActivityKey =
   "mostlyInactive" | "lightlyActive" | "moderatelyActive" | "veryActive" | "extremelyActive";
-export const ACTIVITY_LABEL: Record<ActivityKey, string> = {
-  mostlyInactive: "Sedentary",
-  lightlyActive: "Lightly active",
-  moderatelyActive: "Moderately active",
-  veryActive: "Very active",
-  extremelyActive: "Extremely active",
-};
-export const ACTIVITY_HINT: Record<ActivityKey, string> = {
-  mostlyInactive: "Little or no activity",
-  lightlyActive: "Exercise 1–3 days per week",
-  moderatelyActive: "Exercise 3–5 days per week",
-  veryActive: "Exercise 5–7 days per week",
-  extremelyActive: "Physical job plus hard training",
-};
+export const ACTIVITY_LABEL: Record<ActivityKey, string> = NUTRITION_COPY.activityLabel;
+export const ACTIVITY_HINT: Record<ActivityKey, string> = NUTRITION_COPY.activityHint;
 export const ACTIVITY_KEYS = Object.keys(ACTIVITY_LABEL) as ActivityKey[];
 export const isActivityKey = (v: unknown): v is ActivityKey =>
   typeof v === "string" && v in ACTIVITY_LABEL;

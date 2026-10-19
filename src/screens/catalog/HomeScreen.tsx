@@ -36,6 +36,9 @@ import {
   useRecipes,
   useSaved,
 } from "@/lib/store";
+import { HOME } from "@/content";
+import { LocationPrompt } from "@/components/Location";
+import { nearParams, useUserLocation } from "@/lib/location";
 import { cn } from "@/lib/utils";
 import { toHackVM, toRecipeVM, type HackVM, type RecipeVM } from "./adapt";
 
@@ -106,24 +109,7 @@ const SHORTCUTS: { title: string; short: string; icon: IconName; to: string }[] 
   { title: "Log Weight", short: "Weight", icon: "weightScale", to: "/track/weight" },
 ];
 
-const TOUR = [
-  {
-    title: "Smart Search",
-    body: "Type or ask anything naturally. We will help you discover healthy local restaurant foods, recipes to cook, or log nutritional values.",
-  },
-  {
-    title: "Eat Out Wisely",
-    body: "Find menu hacks and nutritional choices from popular dining spots near you, calibrated instantly to your target daily limits.",
-  },
-  {
-    title: "Custom Cook Mode",
-    body: "Explore recipes tailored to your active ingredients or preference. Filter instantly by high protein, speed, or minimal prep options.",
-  },
-  {
-    title: "Logging & Tracking",
-    body: "Quickly review your daily nutrition, log dishes, and watch your targets update dynamically as you eat and move throughout the week.",
-  },
-];
+const TOUR = HOME.tour;
 const TOUR_KEY = "forkthis.homeTourDone";
 const tourDone = () => {
   try {
@@ -393,7 +379,8 @@ export function HomeScreen() {
   const saved = useSaved();
   const lg = useIsLg();
   const home = useHome();
-  const hacksRes = useFastHacks({ limit: 12 });
+  const { coords } = useUserLocation();
+  const hacksRes = useFastHacks({ limit: 12, ...nearParams(coords) });
   const recipesRes = useRecipes({ limit: 12 });
   const [params, setParams] = useSearchParams();
   const [eatChips, setEatChips] = useState<string[]>([]);
@@ -476,6 +463,7 @@ export function HomeScreen() {
               action={{ label: "See all", to: "/fast-hacks" }}
             />
           </div>
+          <LocationPrompt className="mt-3" />
           <div className="mt-3">
             {loadingHacks ? (
               <Skeleton className="h-56 w-full" />

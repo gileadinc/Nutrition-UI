@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { PrimaryButton } from "@/components/Button";
+import { QUESTIONNAIRE } from "@/content";
 import { Skeleton } from "@/components/Feedback";
 import {
   ExampleHint,
@@ -90,103 +91,12 @@ const ENCOURAGE_IMAGE = "/img/onboarding/tour-personalized-plan-v2";
 const imageFor = (s: QuestionStep) =>
   PROGRESS_STEPS.indexOf((s === "encourage" ? "goal" : s) as (typeof PROGRESS_STEPS)[number]);
 
-const STEP_COPY: Record<
-  Exclude<QuestionStep, "encourage">,
-  { name: string; eyebrow: string; title: string; why: string; optional: boolean }
-> = {
-  dob: {
-    name: "Date of birth",
-    eyebrow: "About you",
-    title: "How old are you?",
-    why: "age shapes your energy needs, and ForkThis can’t be used by anyone under 13.",
-    optional: false,
-  },
-  goal: {
-    name: "Goal",
-    eyebrow: "Your goal",
-    title: "What's your main goal?",
-    why: "it decides whether your daily target leans toward a deficit, a surplus or balance.",
-    optional: true,
-  },
-  height: {
-    name: "Height",
-    eyebrow: "Your starting point",
-    title: "What's your height?",
-    why: "height and weight together give your baseline energy — what your body uses at rest.",
-    optional: true,
-  },
-  weight: {
-    name: "Weight",
-    eyebrow: "Your starting point",
-    title: "What's your weight?",
-    why: "it completes your baseline energy estimate, and shows your BMI for context.",
-    optional: true,
-  },
-  activity: {
-    name: "Activity",
-    eyebrow: "Your week",
-    title: "How active are you right now?",
-    why: "activity multiplies your baseline. Pick a typical week, not your best one.",
-    optional: true,
-  },
-  surgery: {
-    name: "Surgery",
-    eyebrow: "Your health",
-    title: "Any upcoming or recent surgery?",
-    why: "it surfaces the right nutrition guidance before or after surgery, and stays private to you.",
-    optional: false,
-  },
-};
+const STEP_COPY: Record<Exclude<QuestionStep, "encourage">, (typeof QUESTIONNAIRE.steps)[keyof typeof QUESTIONNAIRE.steps]> =
+  QUESTIONNAIRE.steps;
 
-const GOAL_OPTIONS: QuizOption<GoalKey>[] = [
-  {
-    value: "lose",
-    title: "Lose weight",
-    subtitle: "Sustainable fat loss with muscle preservation",
-    icon: "weightScale",
-    image: {
-      src: "/img/onboarding/goals/goal-lose-v2",
-      alt: "Balanced chicken grain bowl beside walking shoes and a fitness watch",
-    },
-  },
-  {
-    value: "gain",
-    title: "Gain muscle",
-    subtitle: "Build physical strength and energetic support",
-    icon: "dumbbell",
-    image: {
-      src: "/img/onboarding/goals/goal-gain-v2",
-      alt: "Athlete lifting a dumbbell beside a protein-rich meal",
-    },
-  },
-  {
-    value: "maintain",
-    title: "Maintain weight",
-    subtitle: "Focus on longevity, metabolism and vitality",
-    icon: "target",
-    image: {
-      src: "/img/onboarding/goals/goal-maintain-v2",
-      alt: "Salmon grain bowl with vegetables and lemon water in warm sunlight",
-    },
-  },
-  {
-    value: "recomp",
-    title: "Body recomposition",
-    subtitle: "Lose fat and build muscle at the same time",
-    icon: "chartIncrease",
-    image: {
-      src: "/img/onboarding/goals/goal-recomp-v2",
-      alt: "Athlete holding a resistance band beside a high-protein grain bowl",
-    },
-  },
-];
+const GOAL_OPTIONS: QuizOption<GoalKey>[] = QUESTIONNAIRE.goalOptions;
 
-const SURGERY_META: Record<SurgicalContext, [string, "leaf" | "calendar" | "medication" | "shield"]> = {
-  "No surgery": ["Use everyday nutrition guidance", "leaf"],
-  "Preparing for surgery": ["Show pre-op nutrition context", "calendar"],
-  "Recovering from surgery": ["Show gentle portion and protein context", "medication"],
-  "Prefer not to say": ["Keep recommendations general", "shield"],
-};
+const SURGERY_META = QUESTIONNAIRE.surgeryMeta;
 const ACTIVITY_ICON = {
   mostlyInactive: "person",
   lightlyActive: "walking",
@@ -203,8 +113,8 @@ const ACTIVITY_OPTIONS: QuizOption<ActivityKey>[] = ACTIVITY_KEYS.map((k) => ({
 const SURGERY_OPTIONS: QuizOption<SurgicalContext>[] = SURGICAL_CONTEXTS.map((s) => ({
   value: s,
   title: s,
-  subtitle: SURGERY_META[s][0],
-  icon: SURGERY_META[s][1],
+  subtitle: SURGERY_META[s].subtitle,
+  icon: SURGERY_META[s].icon,
 }));
 
 // Neutral starting values for the "Example — tap to enter yours" steppers (display only;

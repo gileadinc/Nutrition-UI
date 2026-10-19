@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Icon, type IconName } from "@/components/Icon";
+import { Icon } from "@/components/Icon";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
 import {
   MeloAnswer,
@@ -15,9 +15,10 @@ import {
   VoiceSettings,
 } from "@/components/Melo";
 import { Link, useBack, useNavigate, useParams, useSearchParams } from "@/lib/nav";
+import { MELO_COPY } from "@/content";
 import { answer, meloActions, useMelo, useMeloContext, type MeloTurn } from "@/lib/melo";
 
-const SUBTITLE = "Grounded in your day";
+const SUBTITLE = MELO_COPY.subtitle;
 
 function NewChatButton({ onClick }: { onClick: () => void }) {
   return (
@@ -216,60 +217,13 @@ export function AssistantContextScreen() {
 
 /* ---------------------------------------------------- /assistant/state/[state] */
 
-interface StateCopy {
-  title: string;
-  body: string;
-  icon: IconName;
-  tone: string;
-  well: string;
-  primary: { label: string; to: string };
-  secondary?: { label: string; to: string };
-}
+const TONE = {
+  well: { ink: "var(--color-icon-well-ink)", well: "bg-icon-well" },
+  error: { ink: "var(--color-error-red)", well: "bg-brand-warm-gray" },
+  muted: { ink: "var(--color-text-neutral-500)", well: "bg-brand-warm-gray" },
+} as const;
 
-const STATES: Record<string, StateCopy> = {
-  moderation: {
-    title: "Melo sticks to food",
-    body: "Ask about meals, eating out, cooking or your log, and Melo can help.",
-    icon: "shield",
-    tone: "var(--color-icon-well-ink)",
-    well: "bg-icon-well",
-    primary: { label: "Ask about food", to: "/assistant" },
-  },
-  error: {
-    title: "Melo couldn’t answer that",
-    body: "Your conversation is still here. Send the question again to get an answer.",
-    icon: "alert",
-    tone: "var(--color-error-red)",
-    well: "bg-brand-warm-gray",
-    primary: { label: "Try again", to: "/assistant" },
-    secondary: { label: "See your chats", to: "/assistant/history" },
-  },
-  offline: {
-    title: "You’re offline",
-    body: "Your chats are still here. Connect to the internet to load fresh recipes and your log.",
-    icon: "offline",
-    tone: "var(--color-text-neutral-500)",
-    well: "bg-brand-warm-gray",
-    primary: { label: "Try again", to: "/assistant" },
-    secondary: { label: "See your chats", to: "/assistant/history" },
-  },
-  success: {
-    title: "Your answer is ready",
-    body: "Melo’s answer is waiting in your chat.",
-    icon: "checkCircle",
-    tone: "var(--color-icon-well-ink)",
-    well: "bg-icon-well",
-    primary: { label: "Open chat", to: "/assistant" },
-  },
-  empty: {
-    title: "No chats yet",
-    body: "Ask about eating out, cooking or your day, and your chats will show up here.",
-    icon: "chefHat",
-    tone: "var(--color-icon-well-ink)",
-    well: "bg-icon-well",
-    primary: { label: "Start a chat", to: "/assistant" },
-  },
-};
+const STATES = MELO_COPY.states;
 
 export function AssistantStateScreen() {
   const { state = "empty" } = useParams<{ state: string }>();
@@ -296,8 +250,8 @@ export function AssistantStateScreen() {
         aria-labelledby="melo-state-title"
         className="mx-auto mt-10 flex max-w-sm flex-col items-center text-center md:mt-16"
       >
-        <span className={cn("flex size-16 items-center justify-center rounded-full", copy.well)}>
-          <Icon name={copy.icon} size={30} color={copy.tone} />
+        <span className={cn("flex size-16 items-center justify-center rounded-full", TONE[copy.tone].well)}>
+          <Icon name={copy.icon} size={30} color={TONE[copy.tone].ink} />
         </span>
         <h2 id="melo-state-title" className="mt-4 text-lg type-section-title text-text-primary">
           {copy.title}
