@@ -7,8 +7,7 @@ import { AppImage } from "@/components/AppImage";
 import { POSITIVE } from "@/components/styles";
 import { Link, useNavigate } from "@/lib/nav";
 import { useIsDesktop } from "@/lib/hooks";
-import { fitsToday, type Fit } from "@/lib/nutrition";
-import { UI } from "@/content";
+import { leavesLabel, type Fit } from "@/lib/nutrition";
 import { dietaryMatch, type DietaryRecipe } from "@/lib/nutrition";
 
 export interface DetailNeighbour {
@@ -120,7 +119,7 @@ function Step({ item, direction }: { item?: DetailNeighbour; direction: "prev" |
 }
 
 function FitsBadge({ fit }: { fit: Fit }) {
-  return fitsToday(fit) ? (
+  return fit.kind !== "over" ? (
     <span
       className={cn(
         "inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[17px] type-meta",
@@ -128,7 +127,7 @@ function FitsBadge({ fit }: { fit: Fit }) {
       )}
     >
       <Icon name="checkCircle" size={14} color="var(--color-positive-ink)" />
-      {UI.fitsBadge}
+      {leavesLabel(fit.leaves)}
     </span>
   ) : null;
 }

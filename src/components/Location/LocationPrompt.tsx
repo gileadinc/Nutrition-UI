@@ -12,7 +12,7 @@ const COPY = UI.location;
  * restaurants nearby. Collapses to a one-line status once location is on.
  */
 export function LocationPrompt({ className }: { className?: string }) {
-  const { coords, status, request, clear } = useUserLocation();
+  const { coords, status, request } = useUserLocation();
   const locating = status === "locating";
 
   if (coords && status === "granted") {
@@ -28,13 +28,6 @@ export function LocationPrompt({ className }: { className?: string }) {
         <span className="min-w-0 flex-1 text-[17px] type-meta text-text-primary">
           {COPY.active}
         </span>
-        <button
-          type="button"
-          onClick={clear}
-          className="min-h-9 rounded-full border border-border-default bg-white px-3.5 text-[15px] type-button text-primary hover:border-text-neutral-400"
-        >
-          {COPY.clear}
-        </button>
       </div>
     );
   }

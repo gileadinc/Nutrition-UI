@@ -42,7 +42,8 @@ export interface MeloCard {
   image: string;
   calories: number;
   protein: number;
-  fits: boolean;
+  /** Calories left in today's goal after this item; undefined when it doesn't fit. */
+  leaves?: number;
 }
 
 export interface MeloLink {
@@ -253,6 +254,7 @@ const list = (xs: string[]) =>
 const LIGHTEST: MeloLink = { label: "See the lightest options", to: "/fast-hacks?sort=calories" };
 
 function cardOf(item: MeloItem, budget: Budget): MeloLink {
+  const fit = fitFor(item, budget);
   return {
     label: item.title,
     to: item.to,
@@ -262,7 +264,7 @@ function cardOf(item: MeloItem, budget: Budget): MeloLink {
       image: item.image,
       calories: item.calories,
       protein: item.protein,
-      fits: fitFor(item, budget).kind !== "over",
+      leaves: fit.kind === "over" ? undefined : fit.leaves,
     },
   };
 }

@@ -115,14 +115,12 @@ export const QUESTIONNAIRE = questionnaireJson as {
 /* --------------------------------------------------------------------- ui */
 
 export const UI = uiJson as {
-  fitsBadge: string;
   location: {
     eyebrow: string;
     title: string;
     body: string;
     allow: string;
     retry: string;
-    clear: string;
     locating: string;
     denied: string;
     unavailable: string;

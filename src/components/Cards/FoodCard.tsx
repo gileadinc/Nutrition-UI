@@ -14,8 +14,7 @@ import {
   ProductCardSubtitle,
   ProductCardTitle,
 } from "./ProductCard";
-import { fitsToday, type Fit } from "@/lib/nutrition/budget";
-import { UI } from "@/content";
+import { leavesLabel, type Fit } from "@/lib/nutrition/budget";
 
 export interface FoodCardProps {
   /** Local image base or full URL. */
@@ -80,9 +79,9 @@ export function FoodCard({
               {leadingBadge}
             </ProductCardBadge>
           )}
-          {fit && fitsToday(fit) && (
+          {fit && fit.kind !== "over" && (
             <ProductCardBadge position="end" className="bg-positive text-positive-ink">
-              {UI.fitsBadge}
+              {leavesLabel(fit.leaves)}
             </ProductCardBadge>
           )}
         </ProductCardImage>

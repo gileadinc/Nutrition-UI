@@ -90,3 +90,7 @@ export function fitFor(item: { calories: number; protein: number }, budget: Budg
 }
 
 export const fitsToday = (fit: Fit) => fit.kind !== "over";
+
+/** Calories still left in today's goal after this item, e.g. "230 kcal left". */
+export const leavesLabel = (leaves: number) =>
+  `${Math.round(leaves).toLocaleString("en-US")} kcal left`;

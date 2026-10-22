@@ -1,11 +1,9 @@
 {
-  "fitsBadge": "In your budget",
   "location": {
     "eyebrow": "Near you",
     "title": "Find restaurants near you",
     "body": "Show hacks from restaurants close by. Only used to sort results.",
     "allow": "Use my location",
-    "clear": "Stop using my location",
     "locating": "Finding you…",
     "denied": "Location access is off. Allow it in your browser’s site settings to see nearby restaurants.",
     "unavailable": "We couldn’t get your location. Try again.",
