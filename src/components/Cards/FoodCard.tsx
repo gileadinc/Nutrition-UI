@@ -81,7 +81,7 @@ export function FoodCard({
           )}
           {fit && fit.kind !== "over" && (
             <ProductCardBadge position="end" className="bg-positive text-positive-ink">
-              {Math.round(fit.leaves).toLocaleString("en-US")} fits
+              Fits today
             </ProductCardBadge>
           )}
         </ProductCardImage>
