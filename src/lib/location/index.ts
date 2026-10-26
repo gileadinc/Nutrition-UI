@@ -1,13 +1,14 @@
 "use client";
 
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 /**
  * The user's device location, used to rank and filter "near you" eat-out results
  * (`latitude` / `longitude` on `GET /api/eat-out/*`).
  *
- * Never requested automatically: the browser prompt only appears after the user taps "Use my location".
- * Coordinates stay on this device (localStorage) and are only sent as query params to the eat-out API.
+ * Requested when the eat-out sections mount (`useAskForLocation`); the browser shows its own permission prompt.
+ * Coordinates are saved on this device (localStorage) and sent as query params to the eat-out API, and to a
+ * reverse-geocoding service to label the place (`usePlaceLabel`).
  */
 
 export interface Coords {
@@ -107,6 +108,68 @@ export function useUserLocation() {
   const request = useCallback(() => requestLocation(), []);
   const clear = useCallback(() => clearLocation(), []);
   return { coords: s.coords, status: s.status, request, clear };
+}
+
+/** Asks for the device location once on mount (browser prompt) if we don't have it yet. */
+export function useAskForLocation() {
+  const { status } = useUserLocation();
+  useEffect(() => {
+    if (status === "idle") requestLocation();
+  }, [status]);
+}
+
+const LABEL_KEY = "forkthis.location.label";
+const labelCache = new Map<string, string>();
+
+/**
+ * Human-readable place for the saved coordinates, e.g. "Tysons, VA". Looked up once per ~1km cell
+ * via a keyless reverse-geocoding service (the rounded coordinates are sent to it) and cached on
+ * this device. Null until resolved, or if the lookup fails.
+ */
+export function usePlaceLabel(coords: Coords | null): string | null {
+  const key = coords ? `${coords.latitude},${coords.longitude}` : null;
+  const [fetched, setFetched] = useState<{ key: string; label: string } | null>(null);
+
+  useEffect(() => {
+    if (!coords || !key || labelCache.has(key)) return;
+    try {
+      const raw = window.localStorage.getItem(LABEL_KEY);
+      const saved = raw ? (JSON.parse(raw) as { key?: string; label?: string }) : null;
+      if (saved?.key === key && saved.label) {
+        labelCache.set(key, saved.label);
+        setFetched({ key, label: saved.label });
+        return;
+      }
+    } catch {
+      // unreadable storage: look it up again
+    }
+    const ctrl = new AbortController();
+    const url =
+      "https://api.bigdatacloud.net/data/reverse-geocode-client?localityLanguage=en" +
+      `&latitude=${coords.latitude}&longitude=${coords.longitude}`;
+    fetch(url, { signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((d: { locality?: string; city?: string; principalSubdivisionCode?: string }) => {
+        const place = d.locality || d.city;
+        if (!place) return;
+        const region = d.principalSubdivisionCode?.split("-")[1];
+        const label = region ? `${place}, ${region}` : place;
+        labelCache.set(key, label);
+        try {
+          window.localStorage.setItem(LABEL_KEY, JSON.stringify({ key, label }));
+        } catch {
+          // not persisted; still used for this session
+        }
+        setFetched({ key, label });
+      })
+      .catch(() => {
+        // keep the generic label
+      });
+    return () => ctrl.abort();
+  }, [coords, key]);
+
+  if (!key) return null;
+  return labelCache.get(key) ?? (fetched?.key === key ? fetched.label : null);
 }
 
 /** Eat-out query params for the saved location, or `{}` when we don't have one. */

@@ -38,7 +38,7 @@ import {
   useSaved,
 } from "@/lib/store";
 import { HOME, UI } from "@/content";
-import { nearParams, requestLocation, useUserLocation } from "@/lib/location";
+import { nearParams, useAskForLocation, usePlaceLabel, useUserLocation } from "@/lib/location";
 import { cn } from "@/lib/utils";
 import { toHackVM, toRecipeVM, type HackVM, type RecipeVM } from "./adapt";
 
@@ -380,6 +380,8 @@ export function HomeScreen() {
   const lg = useIsLg();
   const home = useHome();
   const { coords } = useUserLocation();
+  useAskForLocation();
+  const place = usePlaceLabel(coords);
   const hacksRes = useFastHacks({ limit: 12, ...nearParams(coords) });
   const recipesRes = useRecipes({ limit: 12 });
   const [params, setParams] = useSearchParams();
@@ -458,8 +460,7 @@ export function HomeScreen() {
             <SectionTitle
               action="See all"
               actionTo="/fast-hacks"
-              location={coords ? UI.location.eyebrow : UI.location.allow}
-              onLocation={coords ? undefined : requestLocation}
+              location={coords ? (place ?? UI.location.eyebrow) : undefined}
             >
               Eat Out near you
             </SectionTitle>

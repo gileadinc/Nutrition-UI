@@ -14,7 +14,7 @@ import {
   ProductCardSubtitle,
   ProductCardTitle,
 } from "./ProductCard";
-import { leavesLabel, type Fit } from "@/lib/nutrition/budget";
+import { type Fit } from "@/lib/nutrition/budget";
 
 export interface FoodCardProps {
   /** Local image base or full URL. */
@@ -81,7 +81,7 @@ export function FoodCard({
           )}
           {fit && fit.kind !== "over" && (
             <ProductCardBadge position="end" className="bg-positive text-positive-ink">
-              {leavesLabel(fit.leaves)}
+              {Math.round(fit.leaves).toLocaleString("en-US")} fits
             </ProductCardBadge>
           )}
         </ProductCardImage>

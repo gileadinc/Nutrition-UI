@@ -28,7 +28,7 @@ import { useFilterParams } from "@/lib/hooks";
 import { HACK_FILTER, fitFor } from "@/lib/nutrition";
 import { useDayBudget, useEatOutRecommendations, useFastHacks, useProfile, useSaved } from "@/lib/store";
 import { UI } from "@/content";
-import { nearParams, requestLocation, useUserLocation } from "@/lib/location";
+import { nearParams, useAskForLocation, usePlaceLabel, useUserLocation } from "@/lib/location";
 import { toHackVM, type HackVM } from "./adapt";
 
 const SORTS = [
@@ -76,6 +76,8 @@ export function FastHacksScreen() {
   const f = useFilterParams({}, ["sort", "adv"]);
   const [open, setOpen] = useState(false);
   const { coords } = useUserLocation();
+  useAskForLocation();
+  const place = usePlaceLabel(coords);
   const near = nearParams(coords);
   const { data, error, isLoading, refresh } = useFastHacks({ limit: 100, ...near });
   const { profile } = useProfile();
@@ -377,8 +379,7 @@ export function FastHacksScreen() {
               <SectionTitle
                 action="See all"
                 actionTo="/search"
-                location={coords ? UI.location.eyebrow : UI.location.allow}
-                onLocation={coords ? undefined : requestLocation}
+                location={coords ? (place ?? UI.location.eyebrow) : undefined}
               >
                 Featured near you
               </SectionTitle>
