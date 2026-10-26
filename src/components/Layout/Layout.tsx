@@ -443,18 +443,28 @@ export function SectionTitle({
   actionTo,
   onAction,
   location,
+  onLocation,
 }: {
   children: ReactNode;
   action?: string;
   actionTo?: string;
   onAction?: () => void;
   location?: string;
+  /** Makes the location label tappable (e.g. to ask for the device location). */
+  onLocation?: () => void;
 }) {
+  const locationClass =
+    "flex min-w-0 flex-1 items-center gap-1 text-xs type-meta tracking-[-0.54px] text-text-secondary";
   return (
     <div className="flex items-center gap-3">
       <h2 className={cn(SECTION_TITLE, "min-w-0")}>{children}</h2>
-      {location ? (
-        <span className="flex min-w-0 flex-1 items-center gap-1 text-xs type-meta tracking-[-0.54px] text-text-secondary">
+      {location && onLocation ? (
+        <button type="button" onClick={onLocation} className={cn(locationClass, "text-left")}>
+          <Icon name="location" size={14} color="var(--color-primary)" />
+          <span className="truncate">{location}</span>
+        </button>
+      ) : location ? (
+        <span className={locationClass}>
           <Icon name="location" size={14} color="var(--color-primary)" />
           <span className="truncate">{location}</span>
         </span>

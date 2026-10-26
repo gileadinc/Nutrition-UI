@@ -27,8 +27,8 @@ import { getErrorMessage } from "@/lib/api";
 import { useFilterParams } from "@/lib/hooks";
 import { HACK_FILTER, fitFor } from "@/lib/nutrition";
 import { useDayBudget, useEatOutRecommendations, useFastHacks, useProfile, useSaved } from "@/lib/store";
-import { LocationPrompt } from "@/components/Location";
-import { nearParams, useUserLocation } from "@/lib/location";
+import { UI } from "@/content";
+import { nearParams, requestLocation, useUserLocation } from "@/lib/location";
 import { toHackVM, type HackVM } from "./adapt";
 
 const SORTS = [
@@ -368,14 +368,18 @@ export function FastHacksScreen() {
           {panel("panel-")}
         </FilterSidebar>
         <div className="@container min-w-0 flex-1">
-          <LocationPrompt className="mt-4" />
           <div className="sticky top-0 z-20 -mx-5 mt-4 border-b border-border-divider bg-brand-cream px-5 md:top-16 md:mx-0 md:px-0">
             <CategoryChips selected={f.get("meal")} onSelect={(c) => f.set("meal", c)} />
             <AppliedFilters filters={applied} onClearAll={resetFilters} />
           </div>
           {featured.length > 0 && (
             <section aria-label="Featured near you" className="mt-6">
-              <SectionTitle action="See all" actionTo="/search">
+              <SectionTitle
+                action="See all"
+                actionTo="/search"
+                location={coords ? UI.location.eyebrow : UI.location.allow}
+                onLocation={coords ? undefined : requestLocation}
+              >
                 Featured near you
               </SectionTitle>
               <div className="rail-scroll -mx-5 mt-3 flex gap-3 overflow-x-auto px-5 pb-1 md:mx-0 md:px-0 md:@2xl:grid md:@2xl:grid-cols-3 md:@2xl:gap-4 md:@2xl:overflow-visible md:[&>*]:w-64! md:@2xl:[&>*]:w-auto!">

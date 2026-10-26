@@ -16,6 +16,7 @@ import {
   PrimaryButton,
   Rail,
   SectionHeader,
+  SectionTitle,
   Skeleton,
 } from "@/components";
 import type { IconName } from "@/components";
@@ -23,7 +24,7 @@ import { LINK_ACTION, SECTION_TITLE } from "@/components/styles";
 import { profileApi } from "@/lib/api";
 import { useIsLg, useScrollToTopOnMount } from "@/lib/hooks";
 import { Link, useSearchParams } from "@/lib/nav";
-import { GOAL_LABEL, fitFor, type Budget } from "@/lib/nutrition";
+import { fitFor, type Budget } from "@/lib/nutrition";
 import {
   firstNameOf,
   invalidate,
@@ -36,9 +37,8 @@ import {
   useRecipes,
   useSaved,
 } from "@/lib/store";
-import { HOME } from "@/content";
-import { LocationPrompt } from "@/components/Location";
-import { nearParams, useUserLocation } from "@/lib/location";
+import { HOME, UI } from "@/content";
+import { nearParams, requestLocation, useUserLocation } from "@/lib/location";
 import { cn } from "@/lib/utils";
 import { toHackVM, toRecipeVM, type HackVM, type RecipeVM } from "./adapt";
 
@@ -424,8 +424,6 @@ export function HomeScreen() {
   };
 
   const name = firstNameOf(profile) ?? "there";
-  // Same default the deployed app shows when no goal has been set yet.
-  const goal = GOAL_LABEL[profile?.goal ?? "maintain"];
   const eatOut = hacks.filter((h) => eatChips.every((c) => hackMatches(h, c)));
   const cook = recipes.filter((r) => cookChips.every((c) => recipeMatches(r, c)));
   const toggle = (set: typeof setEatChips) => (c: string) =>
@@ -457,13 +455,15 @@ export function HomeScreen() {
             onClear={() => setEatChips([])}
           />
           <div className="mt-6">
-            <SectionHeader
-              title="Eat Out near you"
-              subtitle={`Picked for your ${goal.toLowerCase()} goal`}
-              action={{ label: "See all", to: "/fast-hacks" }}
-            />
+            <SectionTitle
+              action="See all"
+              actionTo="/fast-hacks"
+              location={coords ? UI.location.eyebrow : UI.location.allow}
+              onLocation={coords ? undefined : requestLocation}
+            >
+              Eat Out near you
+            </SectionTitle>
           </div>
-          <LocationPrompt className="mt-3" />
           <div className="mt-3">
             {loadingHacks ? (
               <Skeleton className="h-56 w-full" />
