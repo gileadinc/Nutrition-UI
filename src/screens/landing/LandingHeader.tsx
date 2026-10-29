@@ -92,7 +92,7 @@ export function LandingHeader() {
         </Link>
         <Link
           to="/signup"
-          className="ml-auto hidden items-center gap-2 rounded-full bg-text-primary px-4 py-2.5 text-xs type-button text-white transition-opacity hover:opacity-90 md:inline-flex"
+          className="ml-auto hidden items-center gap-4 rounded-full bg-primary px-8 py-3.5 text-sm font-normal text-white transition-opacity hover:opacity-90 md:inline-flex"
         >
           Sign up free <span aria-hidden>↗</span>
         </Link>

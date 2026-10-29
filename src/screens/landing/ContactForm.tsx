@@ -4,9 +4,9 @@ import { useState, type FormEvent } from "react";
 
 const MAX = 600;
 const FIELD =
-  "w-full rounded-2xl border border-border-divider bg-navy-soft px-4 py-3.5 text-sm type-meta text-text-primary placeholder:text-text-neutral-400 focus:border-brand-navy focus:outline-none";
+  "w-full rounded-xl border border-border-divider bg-[#f4f6fb] px-4 py-3 text-sm type-meta text-text-primary placeholder:text-text-neutral-400 focus:border-brand-navy focus:outline-none";
 const LABEL =
-  "mb-1.5 flex justify-between text-[11px] uppercase tracking-wider text-text-secondary";
+  "mb-1.5 flex justify-between text-[10px] uppercase tracking-wider text-text-secondary";
 
 export function ContactForm() {
   const [sent, setSent] = useState(false);
@@ -20,10 +20,10 @@ export function ContactForm() {
   return (
     <form
       onSubmit={onSubmit}
-      className="rounded-[2rem] border border-border-divider bg-white p-6 shadow-card md:p-8"
+      className="rounded-[1.75rem] border border-border-divider bg-white p-6 shadow-raised md:p-10"
     >
-      <h3 className="text-2xl type-display text-text-primary">Send us a note</h3>
-      <p className="mb-5 text-sm type-meta text-text-secondary">Takes less than a minute.</p>
+      <h3 className="text-xl type-display text-text-primary md:text-[22px]">Send us a note</h3>
+      <p className="mb-5 text-xs type-meta text-text-secondary">Takes less than a minute.</p>
       {sent ? (
         <p
           role="status"
@@ -33,32 +33,34 @@ export function ContactForm() {
         </p>
       ) : (
         <div className="space-y-4">
-          <div>
-            <label htmlFor="c-name" className={LABEL}>
-              Name
-            </label>
-            <input
-              id="c-name"
-              name="name"
-              required
-              autoComplete="name"
-              placeholder="Alex Rivera"
-              className={FIELD}
-            />
-          </div>
-          <div>
-            <label htmlFor="c-email" className={LABEL}>
-              Email
-            </label>
-            <input
-              id="c-email"
-              name="email"
-              type="email"
-              required
-              autoComplete="email"
-              placeholder="alex@email.com"
-              className={FIELD}
-            />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="c-name" className={LABEL}>
+                Name
+              </label>
+              <input
+                id="c-name"
+                name="name"
+                required
+                autoComplete="name"
+                placeholder="Alex Rivera"
+                className={FIELD}
+              />
+            </div>
+            <div>
+              <label htmlFor="c-email" className={LABEL}>
+                Email
+              </label>
+              <input
+                id="c-email"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="alex@email.com"
+                className={FIELD}
+              />
+            </div>
           </div>
           <div>
             <label htmlFor="c-message" className={LABEL}>
@@ -71,12 +73,12 @@ export function ContactForm() {
               id="c-message"
               name="message"
               required
-              rows={5}
+              rows={4}
               maxLength={MAX}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Tell us what would make ForkThis! more useful…"
-              className={`${FIELD} min-h-32 max-h-60 resize-y`}
+              className={`${FIELD} min-h-28 max-h-52 resize-y`}
             />
           </div>
           <button
@@ -91,7 +93,7 @@ export function ContactForm() {
               ↗
             </span>
           </button>
-          <p className="text-xs type-meta text-text-secondary">
+          <p className="text-[11px] type-meta text-text-secondary">
             Form preview: nothing is sent or stored. Do not include medical, financial, or other
             sensitive information.
           </p>

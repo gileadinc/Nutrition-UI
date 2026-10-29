@@ -8,7 +8,8 @@ import { ContactForm } from "./ContactForm";
 import { LandingHeader } from "./LandingHeader";
 import { TrackingSection } from "./TrackingSection";
 
-const WRAP = "mx-auto w-full max-w-[1272px] px-5 md:px-8 xl:px-0";
+/** Shared content width: fixed on small screens, 84% of the viewport from xl up (matches the design margins). */
+const WRAP = "mx-auto w-full max-w-[1272px] px-5 md:px-8 xl:w-[84vw] xl:max-w-[2000px] xl:px-0";
 const H2 =
   "type-body tracking-[-0.04em] text-text-primary text-[40px] leading-[0.98] md:text-[64px]";
 const SUB = "max-w-xl text-base type-meta text-text-secondary";
@@ -16,7 +17,7 @@ const CTA =
   "inline-flex h-14 items-center justify-between gap-2 rounded-full px-7 text-base type-button transition-colors";
 const IMG = "/img/landing";
 
-/** Social links render only once a real href is filled in. */
+/** Social icons always render; they become links once a real href is filled in. */
 const SOCIALS: { label: string; href: string; icon: ReactNode }[] = [
   { label: "Telegram", href: "", icon: <Icon name="shareMessage" size={20} /> },
   { label: "Instagram", href: "", icon: <Icon name="shareInstagram" size={20} /> },
@@ -64,7 +65,7 @@ function Hero() {
             to="/signup"
             className={cn(
               CTA,
-              "w-full bg-primary text-white hover:bg-primary-hover md:h-12 md:w-auto md:gap-4 md:text-sm",
+              "w-full bg-primary text-white hover:bg-primary-hover md:h-14 md:w-auto md:justify-center md:gap-5 md:px-10 md:text-base md:font-normal",
             )}
           >
             Sign up for free <span aria-hidden>↗</span>
@@ -116,17 +117,17 @@ function Features() {
         </p>
       </div>
       <div className="mt-8 grid gap-4 md:mt-14 md:grid-cols-[472fr_781fr]">
-        <BentoCard className="bg-[#ff6200] text-white md:h-[26.5rem]">
+        <BentoCard className="min-h-0 bg-[#ff5e00] text-white md:h-[26.5rem]">
           <AppImage
             src={`${IMG}/order.webp`}
             alt=""
-            className="absolute right-0 top-0 w-full md:w-[76%]"
+            className="relative ml-auto block w-full md:absolute md:right-0 md:top-0 md:w-[68%]"
           />
-          <div className="absolute inset-x-0 bottom-0 p-7 md:p-8">
-            <h3 className="text-4xl font-medium tracking-[-0.05em] md:text-[2.75rem]">
+          <div className="relative px-6 pb-6 pt-5 md:absolute md:inset-x-0 md:bottom-0 md:px-8 md:pb-7 md:pt-0">
+            <h3 className="text-[2rem] font-medium tracking-[-0.05em] md:text-[2.75rem]">
               OrderThis!
             </h3>
-            <p className="mt-2 max-w-xs text-sm type-meta opacity-90">
+            <p className="mt-2 text-[13px] type-meta opacity-90 md:max-w-xs md:text-sm">
               Track your way — keep an eye on your meals, protein, habits. Choose what habits
               matters to you!
             </p>
@@ -150,17 +151,24 @@ function Features() {
         </BentoCard>
       </div>
       <div className="mt-4 grid gap-4 md:grid-cols-[889fr_363fr]">
-        <BentoCard className="min-h-[36rem] bg-[#9adcdd] md:h-[21.25rem] md:min-h-0">
+        <BentoCard className="min-h-[36rem] bg-[#7ccfd1] md:h-[21.25rem] md:min-h-0">
+          {/* Desktop: the full photo from the design with the text painted out. */}
+          <AppImage
+            src={`${IMG}/track-bg.webp`}
+            alt=""
+            className="absolute inset-0 hidden size-full object-cover object-left md:block"
+          />
+          {/* Mobile: photo anchored bottom-left, fading into the teal. */}
           <AppImage
             src={`${IMG}/track.webp`}
             alt=""
-            className="absolute bottom-0 left-0 h-[50%] w-auto max-w-none [mask-image:linear-gradient(to_right,#000_70%,transparent)] md:h-full"
+            className="absolute bottom-0 left-0 h-[50%] w-auto max-w-none [mask-image:linear-gradient(to_right,#000_70%,transparent)] md:hidden"
           />
-          <div className="relative p-7 md:ml-[39%] md:p-8 md:pt-9">
-            <h3 className="text-4xl type-display tracking-[-0.06em] text-[#0d1b2a] md:text-[2.75rem]">
+          <div className="relative p-7 md:ml-[40%] md:p-0 md:pr-8 md:pt-7">
+            <h3 className="text-4xl type-display tracking-[-0.07em] text-[#101c3a] md:text-[3rem] md:leading-[1.05]">
               TrackThis!
             </h3>
-            <p className="mt-3 max-w-md text-base type-meta text-[#2c4a5a]">
+            <p className="mt-3 max-w-md text-base type-meta text-[#2c4a5a] md:mt-2 md:max-w-[29rem] md:text-[18px] md:leading-[1.25] md:text-[#56717f]">
               ForkThis! allows you to customize your profile around your goals and allows you to
               move at your own pace by tracking meals, movement, and the habits that matter most to
               you!
@@ -218,7 +226,11 @@ function BrowseCard({
       >
         {word}
       </p>
-      <AppImage src={image} alt="" className={cn("relative z-10 -mt-3 md:-mt-8", imageClass)} />
+      <AppImage
+        src={image}
+        alt=""
+        className={cn("relative z-10 -mt-3 md:-mt-[3.6rem]", imageClass)}
+      />
       <div
         className={cn(
           "relative z-20 rounded-[1.75rem] border bg-white p-5 md:p-8",
@@ -271,7 +283,7 @@ function RecipesAndHacks() {
           word="Hacks"
           wordClass="text-accent md:text-[#fbd0b8]"
           image={`${IMG}/hacks-box.webp`}
-          imageClass="-ml-20 w-[22rem] max-w-none md:ml-[2%] md:w-[84%]"
+          imageClass="-ml-20 w-[22rem] max-w-none md:-mt-20 md:ml-[2%] md:w-[84%]"
           cardOffset="ml-14 mr-3 md:ml-[3%] md:mr-0"
           cardClass="border-accent-graphic shadow-[-8px_8px_0_#c54a00] md:shadow-[-18px_17px_0_#cc4c00]"
         >
@@ -312,12 +324,15 @@ function RecipesAndHacks() {
   );
 }
 
-function Eyebrow({ n, label }: { n: string; label: string }) {
+function Eyebrow({ n, label, lineFirst }: { n: string; label: string; lineFirst?: boolean }) {
   return (
     <p className="mb-5 flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-text-secondary md:mb-8">
       <span className="text-accent">{n}</span>
+      {lineFirst && <span aria-hidden className="h-px w-12 bg-border-default" />}
       <span>{label}</span>
-      <span aria-hidden className="h-px flex-1 bg-border-divider md:bg-text-primary" />
+      {!lineFirst && (
+        <span aria-hidden className="h-px flex-1 bg-border-divider md:bg-text-primary" />
+      )}
     </p>
   );
 }
@@ -332,11 +347,14 @@ const TEAM_COPY = [
 
 function Team() {
   return (
-    <section id="team" className="relative overflow-hidden py-14 md:py-24">
+    <section
+      id="team"
+      className="relative overflow-hidden py-14 md:min-h-[calc(190px+min(40vw,600px)*1.438)] md:pb-0 md:pt-48"
+    >
       <AppImage
         src={`${IMG}/team-bowl.webp`}
         alt="A grain bowl with avocado, edamame and chickpeas"
-        className="pointer-events-none absolute right-0 top-[15rem] hidden w-[40%] md:block"
+        className="pointer-events-none absolute right-0 top-[190px] hidden w-[min(40vw,600px)] md:block"
       />
       <div className={cn(WRAP, "relative")}>
         <div className="md:max-w-[62%]">
@@ -382,7 +400,7 @@ function InfoCard({
   tone: string;
 }) {
   return (
-    <li className="flex items-center gap-4 rounded-3xl border border-border-divider bg-white p-4 shadow-card md:max-w-sm md:rounded-2xl md:p-3.5">
+    <li className="flex items-center gap-4 rounded-3xl border border-border-divider bg-white p-4 shadow-card md:max-w-[26rem] md:rounded-2xl md:p-3.5">
       <span
         aria-hidden
         className={cn(
@@ -402,36 +420,44 @@ function InfoCard({
 
 function Contact() {
   return (
-    <section id="contact" className="px-3 pb-3 pt-6 md:px-10 md:pb-6">
-      <div className="mx-auto max-w-[1272px] rounded-[2rem] bg-gradient-to-br from-[#e6f6f8] via-[#f4f7fc] to-[#f3f1fb] py-14 md:py-20">
+    <section
+      id="contact"
+      className="relative z-10 px-3 pb-3 pt-6 md:-mt-10 md:px-6 md:pb-3 md:pt-0"
+    >
+      <div className="mx-auto rounded-[1.75rem] bg-gradient-to-br from-[#e3f6f6] via-[#f4f7fc] to-[#f3f1fb] py-14 md:py-20">
         <div
-          className={cn(WRAP, "md:grid md:grid-cols-2 md:items-center md:gap-12 md:px-12 xl:px-14")}
+          className={cn(
+            WRAP,
+            "md:grid md:grid-cols-[1fr_minmax(0,29rem)] md:items-center md:justify-between md:gap-12",
+          )}
         >
           <div>
-            <Eyebrow n="05" label="Contact us" />
-            <h2 className={cn(H2, "md:text-[clamp(44px,4.4vw,64px)]")}>
-              Help us make ForkThis! better.
+            <Eyebrow n="05" label="Contact us" lineFirst />
+            <h2 className={cn(H2, "md:text-[clamp(44px,4.4vw,68px)]")}>
+              Help us make
+              <br />
+              ForkThis! better.
             </h2>
-            <p className={cn(SUB, "mt-5")}>
+            <p className={cn(SUB, "mt-5 max-w-[21rem] md:text-sm")}>
               We&apos;re always looking for ways to improve the app. Let us know what would make
               ForkThis! more useful to you.
             </p>
             <ul className="mt-6 space-y-3">
               <InfoCard
                 tone="bg-icon-well text-icon-well-ink"
-                icon={<Icon name="shareEmail" size={22} />}
+                icon={<Icon name="shareEmail" size={20} />}
                 title="hello@forkthis.app"
                 sub="Write to us anytime"
               />
               <InfoCard
                 tone="bg-primary-soft text-brand-navy"
-                icon={<Icon name="location" size={22} />}
+                icon={<Icon name="location" size={20} />}
                 title="Remote-first team"
                 sub="Built across time zones"
               />
             </ul>
           </div>
-          <div className="mt-8 md:ml-auto md:mt-0 md:w-full md:max-w-md">
+          <div className="mt-8 md:mt-0">
             <ContactForm />
           </div>
         </div>
@@ -441,45 +467,50 @@ function Contact() {
 }
 
 function Footer() {
-  const socials = SOCIALS.filter((s) => s.href);
   return (
-    <footer className="px-3 pb-3 md:px-10 md:pb-10">
-      <div className="mx-auto max-w-[1272px] rounded-[2rem] bg-text-primary p-7 text-white md:p-12">
-        <div className="md:flex md:min-h-72 md:justify-between md:gap-12">
-          <div className="flex max-w-sm flex-col">
+    <footer className="px-3 pb-3 md:px-6 md:pb-6">
+      <div className="mx-auto flex flex-col rounded-[1.75rem] bg-text-primary px-0 py-8 text-white md:min-h-[32rem] md:py-14">
+        <div className={cn(WRAP, "flex flex-1 flex-col justify-between gap-12 px-7 md:px-8")}>
+          <div>
             <Brand />
-            <p className="mt-8 text-base type-meta opacity-70 md:text-sm">
+            <p className="mt-8 max-w-[22rem] text-sm type-meta text-[#8d96b3]">
               ForkThis! makes healthy living easier with recipes, restaurant hacks, and simple food,
               movement, and habit tracking — all free, all at your pace.
             </p>
-            {socials.length > 0 && (
-              <div className="mt-6 flex gap-3 md:mt-auto md:pt-8">
-                {socials.map((s) => (
-                  <a
-                    key={s.label}
-                    href={s.href}
-                    aria-label={s.label}
-                    className="flex size-11 items-center justify-center rounded-full bg-white text-text-primary"
-                  >
-                    {s.icon}
-                  </a>
-                ))}
-              </div>
-            )}
           </div>
-          <div className="mt-8 flex flex-col md:mt-0 md:justify-end">
-            <h3 className="text-2xl type-body">Contact Us</h3>
-            <a
-              href="mailto:hello@forkthis.app"
-              className="mt-3 block text-base type-meta opacity-70 hover:opacity-100 md:text-sm"
-            >
-              hello@forkthis.app
-            </a>
+          <div className="flex flex-wrap items-end justify-between gap-8">
+            <div className="flex flex-wrap items-center gap-x-12 gap-y-4">
+              <div className="flex gap-2.5">
+                {SOCIALS.map((s) => {
+                  const cls =
+                    "flex size-10 items-center justify-center rounded-full bg-white text-text-primary";
+                  return s.href ? (
+                    <a key={s.label} href={s.href} aria-label={s.label} className={cls}>
+                      {s.icon}
+                    </a>
+                  ) : (
+                    <span key={s.label} aria-hidden className={cls}>
+                      {s.icon}
+                    </span>
+                  );
+                })}
+              </div>
+              <p className="text-xs type-meta text-[#8d96b3]">
+                © {new Date().getFullYear()} ForkThis! All rights reserved.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-xl type-body">Contact Us</h3>
+              <p className="mt-2 text-xs type-meta text-[#8d96b3]">+1 (999) 888-77-66</p>
+              <a
+                href="mailto:hello@forkthis.app"
+                className="block text-xs type-meta text-[#8d96b3] hover:text-white"
+              >
+                hello@forkthis.app
+              </a>
+            </div>
           </div>
         </div>
-        <p className="mt-10 text-xs type-meta opacity-60 md:mt-0 md:text-center">
-          © {new Date().getFullYear()} ForkThis! All rights reserved.
-        </p>
       </div>
     </footer>
   );
