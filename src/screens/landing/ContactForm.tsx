@@ -76,7 +76,7 @@ export function ContactForm() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Tell us what would make ForkThis! more useful…"
-              className={FIELD}
+              className={`${FIELD} min-h-32 max-h-60 resize-y`}
             />
           </div>
           <button

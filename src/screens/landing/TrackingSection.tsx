@@ -95,8 +95,8 @@ export function TrackingSection() {
         <h2 className="mx-auto max-w-2xl text-center text-[34px] type-body leading-[1.15] tracking-tight md:text-[52px]">
           <strong className="type-display">ForkThis!</strong> keeps you on track, all in one place.
         </h2>
-        <div className="mt-10 grid gap-3 rounded-[2rem] bg-white/70 p-2 md:mt-14 md:grid-cols-6 md:p-3">
-          <div className={cn(CARD, "md:col-span-3")}>
+        <div className="mx-auto mt-10 grid max-w-5xl gap-3 rounded-[2rem] bg-white/70 p-2 md:mt-14 md:grid-cols-12 md:p-3">
+          <div className={cn(CARD, "md:col-span-6")}>
             <p className={LABEL}>Today&apos;s food</p>
             <p className="mt-1 text-3xl type-display">1,486 kcal</p>
             <div className="mt-4 flex items-start justify-between gap-1">
@@ -126,7 +126,9 @@ export function TrackingSection() {
             </p>
           </div>
 
-          <div className={cn(CARD, "flex items-center gap-5 md:col-span-3")}>
+          <div
+            className={cn(CARD, "flex items-center gap-5 md:flex-col md:items-start md:col-span-3")}
+          >
             <Ring pct={56} size={140} stroke={18} color={VIOLET}>
               <span className="text-3xl type-display" style={{ color: VIOLET }}>
                 56%
@@ -141,7 +143,9 @@ export function TrackingSection() {
             </div>
           </div>
 
-          <div className={cn(CARD, "flex items-center gap-5 md:col-span-2")}>
+          <div
+            className={cn(CARD, "flex items-center gap-5 md:flex-col md:items-start md:col-span-3")}
+          >
             <div className="shrink-0 text-center">
               <p className="text-2xl type-display">1,450 ml</p>
               <p className="text-xs" style={{ color: BLUE }}>
@@ -164,7 +168,7 @@ export function TrackingSection() {
             </div>
           </div>
 
-          <div className={cn(CARD, "md:col-span-2")}>
+          <div className={cn(CARD, "md:col-span-3")}>
             <p className={LABEL}>Fri</p>
             <p className="text-3xl type-body">Oct 10</p>
             <p className="mt-1 text-[10px] uppercase tracking-wider text-accent">Next dose</p>
@@ -193,7 +197,9 @@ export function TrackingSection() {
             </p>
           </div>
 
-          <div className={cn(CARD, "flex items-center gap-5 md:col-span-2")}>
+          <div
+            className={cn(CARD, "flex items-center gap-5 md:flex-col md:items-start md:col-span-3")}
+          >
             <Ring pct={72} size={120} stroke={14} color="var(--color-accent)">
               <span className="text-3xl type-display">
                 72<span className="text-lg">%</span>
@@ -250,7 +256,7 @@ export function TrackingSection() {
             </p>
           </div>
 
-          <div className={cn(CARD, "md:col-span-2")}>
+          <div className={cn(CARD, "md:col-span-7")}>
             <p className={LABEL}>Calories by meal</p>
             <p className="mt-2 text-4xl type-display">
               1,194 <span className="text-xs type-meta text-text-neutral-500">kcal avg/day</span>
@@ -277,7 +283,7 @@ export function TrackingSection() {
             </ul>
           </div>
 
-          <div className={cn(CARD, "md:col-span-4")}>
+          <div className={cn(CARD, "md:col-span-5")}>
             <ul className="space-y-2">
               {LOGGED.map((m) => (
                 <li key={m.tag} className="rounded-2xl bg-navy-soft p-3.5">

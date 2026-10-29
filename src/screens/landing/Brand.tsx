@@ -1,16 +1,11 @@
-import { Icon } from "@/components/Icon";
 import { cn } from "@/lib/utils";
 
-/** Orange fork-and-spoon tile plus a light "ForkThis!" wordmark with an orange "!". */
+/** Orange ForkThis! mark (cropped from the design) plus a light wordmark with an orange "!". */
 export function Brand({ className }: { className?: string }) {
   return (
     <span className={cn("flex items-center gap-2.5", className)}>
-      <span
-        aria-hidden
-        className="flex size-9 items-center justify-center rounded-xl bg-accent text-on-accent"
-      >
-        <Icon name="forkSpoon" size={20} />
-      </span>
+      {/* eslint-disable-next-line @next/next/no-img-element -- small static brand asset */}
+      <img src="/img/landing/logo.webp" alt="" width={36} height={36} className="size-9" />
       <span className="text-xl type-body tracking-tight">
         ForkThis<span className="text-accent">!</span>
       </span>
