@@ -105,7 +105,7 @@ function BentoCard({ className, children }: { className?: string; children: Reac
 
 function Features() {
   return (
-    <section id="features" className={cn(WRAP, "py-12 md:py-24")}>
+    <section id="features" className={cn(WRAP, "px-6 py-12 md:px-8 md:py-24")}>
       <div className="md:text-center">
         <h2 className={cn(H2, "tracking-[-0.06em] md:text-[clamp(44px,5vw,72px)]")}>
           <span className="text-teal-500">ForkThis!</span>{" "}
@@ -127,23 +127,28 @@ function Features() {
             <h3 className="text-[2rem] font-medium tracking-[-0.05em] md:text-[2.75rem]">
               OrderThis!
             </h3>
-            <p className="mt-2 text-[13px] type-meta opacity-90 md:max-w-xs md:text-sm">
+            <p className="mt-2 text-[15px] type-meta opacity-90 md:max-w-xs md:text-sm">
               Track your way — keep an eye on your meals, protein, habits. Choose what habits
               matters to you!
             </p>
           </div>
         </BentoCard>
-        <BentoCard className="bg-[#fcf9f3] md:h-[26.5rem]">
+        <BentoCard className="aspect-[342/385] min-h-0 bg-[#fbf9f3] md:aspect-auto md:h-[26.5rem]">
+          <AppImage
+            src={`${IMG}/cook-m.webp`}
+            alt=""
+            className="absolute right-0 top-0 h-[82%] w-auto md:hidden"
+          />
           <AppImage
             src={`${IMG}/cook.webp`}
             alt=""
-            className="absolute right-0 top-0 h-[58%] w-auto md:h-full"
+            className="absolute right-0 top-0 hidden h-full w-auto md:block"
           />
-          <div className="absolute inset-x-0 bottom-0 p-7 md:max-w-[55%] md:p-8">
-            <h3 className="text-4xl type-display tracking-[-0.05em] text-[#0b2a63] md:text-[2.75rem]">
+          <div className="absolute inset-x-0 bottom-0 p-6 md:max-w-[55%] md:p-8">
+            <h3 className="text-[2.5rem] type-display tracking-[-0.05em] text-[#14193a] md:text-[2.75rem]">
               CookThis!
             </h3>
-            <p className="mt-2 max-w-sm text-sm type-meta text-[#0b2a63]">
+            <p className="mt-2 max-w-sm text-[15px] leading-[1.45] type-meta text-[#5a6180] md:text-sm md:text-[#0b2a63]">
               From meal-preps to family dinners, find low calorie, high protein recipes that work
               for your real life the nutrition you need
             </p>
@@ -151,44 +156,44 @@ function Features() {
         </BentoCard>
       </div>
       <div className="mt-4 grid gap-4 md:grid-cols-[889fr_363fr]">
-        <BentoCard className="min-h-[36rem] bg-[#7ccfd1] md:h-[21.25rem] md:min-h-0">
+        <BentoCard className="aspect-[342/424] min-h-0 bg-[#00a9ae] md:aspect-auto md:h-[21.25rem] md:bg-[#7ccfd1]">
+          {/* Mobile: the design's tall crop (table scene at the bottom). */}
+          <AppImage
+            src={`${IMG}/track-m.webp`}
+            alt=""
+            className="absolute inset-0 size-full object-cover md:hidden"
+          />
           {/* Desktop: the full photo from the design with the text painted out. */}
           <AppImage
             src={`${IMG}/track-bg.webp`}
             alt=""
             className="absolute inset-0 hidden size-full object-cover object-left md:block"
           />
-          {/* Mobile: photo anchored bottom-left, fading into the teal. */}
-          <AppImage
-            src={`${IMG}/track.webp`}
-            alt=""
-            className="absolute bottom-0 left-0 h-[50%] w-auto max-w-none [mask-image:linear-gradient(to_right,#000_70%,transparent)] md:hidden"
-          />
-          <div className="relative p-7 md:ml-[40%] md:p-0 md:pr-8 md:pt-7">
-            <h3 className="text-4xl type-display tracking-[-0.07em] text-[#101c3a] md:text-[3rem] md:leading-[1.05]">
+          <div className="relative px-6 pb-6 pt-3 md:ml-[40%] md:p-0 md:pr-8 md:pt-7">
+            <h3 className="text-[2.5rem] type-display tracking-[-0.07em] text-[#0a1a24] md:text-[3rem] md:leading-[1.05] md:text-[#101c3a]">
               TrackThis!
             </h3>
-            <p className="mt-3 max-w-md text-base type-meta text-[#2c4a5a] md:mt-2 md:max-w-[29rem] md:text-[18px] md:leading-[1.25] md:text-[#56717f]">
+            <p className="mt-2 max-w-md text-[15px] leading-[1.5] type-meta text-[#0a1a24] md:mt-2 md:max-w-[29rem] md:text-[18px] md:leading-[1.25] md:text-[#56717f]">
               ForkThis! allows you to customize your profile around your goals and allows you to
               move at your own pace by tracking meals, movement, and the habits that matter most to
               you!
             </p>
           </div>
         </BentoCard>
-        <BentoCard className="min-h-56 bg-text-primary text-white md:h-[21.25rem]">
+        <BentoCard className="h-[14rem] min-h-0 bg-text-primary text-white md:h-[21.25rem]">
           <div
             aria-hidden
-            className="absolute -right-12 -top-12 size-44 rounded-full bg-[#ffe4d4] md:-right-12 md:-top-12 md:size-64"
+            className="absolute -right-[9rem] -top-[8.4rem] size-[17.5rem] rounded-full bg-[#ffe9dd] md:-right-12 md:-top-12 md:size-64 md:bg-[#ffe4d4]"
           >
-            <div className="absolute inset-[10%] rounded-full bg-[#fdb68e]">
-              <div className="absolute inset-[12%] rounded-full bg-[#f6823e]">
-                <div className="absolute inset-[22%] rounded-full bg-[#c4570f]" />
+            <div className="absolute inset-[14.5%] rounded-full bg-[#fdb68e] md:inset-[10%]">
+              <div className="absolute inset-[10%] rounded-full bg-[#f6823e] md:inset-[12%]">
+                <div className="absolute inset-[11.5%] rounded-full bg-[#c4570f] md:inset-[22%]" />
               </div>
             </div>
           </div>
-          <div className="absolute inset-x-0 bottom-0 p-7 md:p-8">
-            <h3 className="text-3xl type-display tracking-tight md:text-4xl">Free</h3>
-            <p className="mt-2 max-w-60 text-sm type-meta opacity-80">
+          <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
+            <h3 className="text-[2rem] type-display tracking-tight md:text-4xl">Free</h3>
+            <p className="mt-2 max-w-[17rem] text-[15px] leading-[1.45] type-meta opacity-90 md:max-w-60 md:text-sm md:opacity-80">
               Free! make restaurant hacks* add no credit card required
             </p>
           </div>
@@ -203,6 +208,8 @@ function BrowseCard({
   wordClass,
   image,
   imageClass,
+  mobileImage,
+  mobileImageClass,
   cardClass,
   cardOffset,
   children,
@@ -211,12 +218,15 @@ function BrowseCard({
   wordClass: string;
   image: string;
   imageClass: string;
+  /** Separate photo crop for small screens (hidden from md up). */
+  mobileImage?: string;
+  mobileImageClass?: string;
   cardClass: string;
   cardOffset: string;
   children: ReactNode;
 }) {
   return (
-    <div className="relative">
+    <div className="relative min-w-0">
       <p
         aria-hidden
         className={cn(
@@ -226,14 +236,25 @@ function BrowseCard({
       >
         {word}
       </p>
+      {mobileImage && (
+        <AppImage
+          src={mobileImage}
+          alt=""
+          className={cn("relative z-10 mt-1 md:hidden", mobileImageClass)}
+        />
+      )}
       <AppImage
         src={image}
         alt=""
-        className={cn("relative z-10 -mt-3 md:-mt-[3.6rem]", imageClass)}
+        className={cn(
+          "relative z-10 mt-1 md:-mt-[3.6rem]",
+          mobileImage && "hidden md:block",
+          imageClass,
+        )}
       />
       <div
         className={cn(
-          "relative z-20 rounded-[1.75rem] border bg-white p-5 md:p-8",
+          "relative z-20 -mt-10 rounded-[1.75rem] border bg-white p-5 md:mt-0 md:p-8",
           cardOffset,
           cardClass,
         )}
@@ -258,8 +279,8 @@ function RecipesAndHacks() {
           word="Recipes"
           wordClass="text-[#8798b4] md:text-[#b0bacf]"
           image={`${IMG}/chili.webp`}
-          imageClass="-ml-24 w-[22rem] max-w-none md:ml-0 md:w-[98%]"
-          cardOffset="ml-8 mr-3 md:ml-[5%] md:mr-0"
+          imageClass="ml-3 w-[21rem] max-w-none md:ml-0 md:w-[98%]"
+          cardOffset="ml-3 mr-3 md:ml-[5%] md:mr-0"
           cardClass="border-brand-navy shadow-[-8px_8px_0_var(--color-brand-navy)] md:shadow-[-18px_17px_0_var(--color-brand-navy)]"
         >
           <h3 className="text-3xl type-body leading-[1.05] tracking-[-0.04em] text-text-primary md:text-[2.15rem]">
@@ -283,26 +304,28 @@ function RecipesAndHacks() {
           word="Hacks"
           wordClass="text-accent md:text-[#fbd0b8]"
           image={`${IMG}/hacks-box.webp`}
-          imageClass="-ml-20 w-[22rem] max-w-none md:-mt-20 md:ml-[2%] md:w-[84%]"
-          cardOffset="ml-14 mr-3 md:ml-[3%] md:mr-0"
+          mobileImage={`${IMG}/hacks-m.webp`}
+          mobileImageClass="-ml-[33px] -mt-9 w-[115vw] max-w-none"
+          imageClass="ml-3 w-[20rem] max-w-none md:-mt-20 md:ml-[2%] md:w-[84%]"
+          cardOffset="-mt-[60vw] ml-10 mr-0 md:ml-[3%] md:mr-0 md:mt-0"
           cardClass="border-accent-graphic shadow-[-8px_8px_0_#c54a00] md:shadow-[-18px_17px_0_#cc4c00]"
         >
-          <h3 className="text-3xl type-body leading-[1.05] tracking-[-0.04em] text-text-primary md:text-[2.25rem]">
+          <h3 className="text-[2rem] type-body leading-[1.02] tracking-[-0.05em] text-text-primary md:text-[2.25rem] md:leading-[1.05] md:tracking-[-0.04em]">
             Same cravings.
             <br className="md:hidden" /> <span className="text-accent-graphic">A better fit.</span>
           </h3>
-          <p className="mt-3 text-sm type-meta text-text-secondary">
+          <p className="mt-3 text-[14px] leading-[1.3] type-meta text-text-secondary md:text-sm md:leading-normal">
             ForkThis! has hundreds of fast-food and restaurant hacks with low calorie,
             protein-focused orders to help you stay on track.
           </p>
-          <p className="mt-5 flex items-center gap-2 border-b border-border-divider pb-3 text-[11px] uppercase tracking-[0.14em] text-text-secondary">
-            <Icon name="forkSpoon" size={14} className="text-accent" />
+          <p className="mt-4 flex items-center gap-2 border-b border-border-divider pb-2 text-[11px] uppercase tracking-[0.04em] text-text-primary md:mt-5 md:pb-3 md:tracking-[0.14em] md:text-text-secondary">
+            <Icon name="forkSpoon" size={14} className="hidden text-accent md:block" />
             OrderThis! at Chick-fil-A
           </p>
-          <ol className="divide-y divide-border-divider text-sm type-meta text-text-primary">
+          <ol className="divide-y divide-border-divider text-[12.5px] type-meta text-text-primary md:text-sm">
             {HACKS.map((hack, i) => (
-              <li key={hack} className="flex items-center gap-3 py-3">
-                <span className="text-2xl font-light text-accent">
+              <li key={hack} className="flex items-center gap-2.5 py-2.5 md:gap-3 md:py-3">
+                <span className="text-[22px] font-light text-accent md:text-2xl">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 {hack}
@@ -313,7 +336,7 @@ function RecipesAndHacks() {
             to="/fast-hacks"
             className={cn(
               CTA,
-              "mt-3 h-12 w-full bg-[#ff6200] pr-5 text-white hover:opacity-90 md:mt-5 md:h-16",
+              "mt-5 h-[52px] w-full bg-[#ff6200] pr-5 text-[15px] font-normal text-white hover:opacity-90 md:mt-5 md:h-16 md:text-base md:font-semibold",
             )}
           >
             Order This! <span aria-hidden>↗</span>
@@ -467,23 +490,38 @@ function Contact() {
 }
 
 function Footer() {
+  const muted = "text-[#8d96b3]";
   return (
     <footer className="px-3 pb-3 md:px-6 md:pb-6">
       <div className="mx-auto flex flex-col rounded-[1.75rem] bg-text-primary px-0 py-8 text-white md:min-h-[32rem] md:py-14">
-        <div className={cn(WRAP, "flex flex-1 flex-col justify-between gap-12 px-7 md:px-8")}>
+        <div
+          className={cn(WRAP, "flex flex-1 flex-col justify-between gap-10 px-6 md:gap-12 md:px-8")}
+        >
           <div>
             <Brand />
-            <p className="mt-8 max-w-[22rem] text-sm type-meta text-[#8d96b3]">
+            <p className={cn("mt-6 max-w-[22rem] text-base type-meta md:mt-8 md:text-sm", muted)}>
               ForkThis! makes healthy living easier with recipes, restaurant hacks, and simple food,
-              movement, and habit tracking — all free, all at your pace.
+              movement, and habit tracking, all free, all at your pace.
             </p>
           </div>
-          <div className="flex flex-wrap items-end justify-between gap-8">
-            <div className="flex flex-wrap items-center gap-x-12 gap-y-4">
-              <div className="flex gap-2.5">
+          <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+            <div className="order-1 md:order-2">
+              <h3 className="text-2xl type-body md:text-xl">Contact Us</h3>
+              <p className={cn("mt-3 text-sm type-meta md:mt-2 md:text-xs", muted)}>
+                +1 (999) 888-77-66
+              </p>
+              <a
+                href="mailto:hello@logoipsum.com"
+                className={cn("block text-sm type-meta hover:text-white md:text-xs", muted)}
+              >
+                hello@logoipsum.com
+              </a>
+            </div>
+            <div className="order-2 flex flex-col gap-8 md:order-1 md:flex-row md:items-center md:gap-12">
+              <div className="flex gap-3 md:gap-2.5">
                 {SOCIALS.map((s) => {
                   const cls =
-                    "flex size-10 items-center justify-center rounded-full bg-white text-text-primary";
+                    "flex size-12 items-center justify-center rounded-full bg-white text-text-primary md:size-10";
                   return s.href ? (
                     <a key={s.label} href={s.href} aria-label={s.label} className={cls}>
                       {s.icon}
@@ -495,19 +533,9 @@ function Footer() {
                   );
                 })}
               </div>
-              <p className="text-xs type-meta text-[#8d96b3]">
-                © {new Date().getFullYear()} ForkThis! All rights reserved.
+              <p className={cn("text-xs type-meta", muted)}>
+                © {new Date().getFullYear()} — Copyright All Rights reserved
               </p>
-            </div>
-            <div>
-              <h3 className="text-xl type-body">Contact Us</h3>
-              <p className="mt-2 text-xs type-meta text-[#8d96b3]">+1 (999) 888-77-66</p>
-              <a
-                href="mailto:hello@forkthis.app"
-                className="block text-xs type-meta text-[#8d96b3] hover:text-white"
-              >
-                hello@forkthis.app
-              </a>
             </div>
           </div>
         </div>

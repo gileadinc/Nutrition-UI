@@ -91,8 +91,8 @@ export function TrackingSection() {
       id="tracking"
       className="rounded-t-[3rem] bg-gradient-to-b from-[#1b3a6b] via-[#1d5a86] to-teal-500 pb-24 pt-14 text-white md:rounded-t-[4rem] md:pt-24"
     >
-      <div className="mx-auto w-full max-w-[1272px] px-4 md:px-8 xl:w-[84vw] xl:max-w-[2000px] xl:px-0">
-        <h2 className="mx-auto max-w-2xl text-center text-[34px] type-body leading-[1.15] tracking-tight md:text-[52px]">
+      <div className="mx-auto w-full max-w-[1272px] px-2 md:px-8 xl:w-[84vw] xl:max-w-[2000px] xl:px-0">
+        <h2 className="mx-auto max-w-2xl px-3 text-center text-[34px] md:px-0 type-body leading-[1.15] tracking-tight md:text-[52px]">
           <strong className="type-display">ForkThis!</strong> keeps you on track, all in one place.
         </h2>
         <div className="mt-10 grid gap-3 rounded-[2rem] bg-white/70 p-2 md:mt-14 md:grid-cols-12 md:p-3">
