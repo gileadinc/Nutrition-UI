@@ -1,0 +1,23 @@
+{
+  "title": {
+    "withFeature": "{feature} needs an account",
+    "generic": "This feature needs an account"
+  },
+  "fallbackDescription": "Tracking meals, saving favourites and personalised recommendations need somewhere to save to. Creating an account is free and takes about a minute — no credit card required.",
+  "fallbackCta": "Create free account",
+  "dismiss": "Continue browsing",
+  "perks": [
+    {
+      "icon": "shield",
+      "label": "Secure"
+    },
+    {
+      "icon": "lock",
+      "label": "No credit card"
+    },
+    {
+      "icon": "tick",
+      "label": "Free forever"
+    }
+  ]
+}

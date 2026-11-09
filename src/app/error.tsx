@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Container } from "@/components/Container";
-import { ErrorState } from "@/components/ErrorState";
-import { Button } from "@/components/ui/button";
-import { getErrorMessage } from "@/lib/api";
+import { RouteErrorPanel } from "@/components/Feedback";
 
 export default function Error({
   error,
@@ -16,18 +13,5 @@ export default function Error({
   useEffect(() => {
     console.error(error);
   }, [error]);
-
-  return (
-    <Container>
-      <ErrorState
-        title="Something went wrong"
-        description={getErrorMessage(error)}
-        action={
-          <Button type="button" variant="outline" onClick={reset}>
-            Try again
-          </Button>
-        }
-      />
-    </Container>
-  );
+  return <RouteErrorPanel error={error} reset={reset} />;
 }
