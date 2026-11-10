@@ -1,4 +1,4 @@
-export type GoalKey = "lose" | "gain" | "maintain" | "recomp";
+export type GoalKey = "eatOut" | "track" | "lose" | "recomp";
 export type ActivityKey =
   | "mostlyInactive"
   | "lightlyActive"
@@ -12,9 +12,9 @@ export type SurgicalContext =
   | "Prefer not to say";
 
 export const GOAL_LABEL: Record<GoalKey, string> = {
+  eatOut: "eat healthier while you're out",
+  track: "track your progress",
   lose: "lose weight",
-  gain: "build muscle",
-  maintain: "maintain weight",
   recomp: "recompose your body",
 };
 
@@ -46,7 +46,7 @@ const ACTIVITY_MULTIPLIER: Record<ActivityKey, number> = {
   veryActive: 1.725,
   extremelyActive: 1.9,
 };
-const GOAL_CALORIE_DELTA: Record<GoalKey, number> = { lose: -500, gain: 500, maintain: 0, recomp: -200 };
+const GOAL_CALORIE_DELTA: Record<GoalKey, number> = { eatOut: 0, track: 0, lose: -500, recomp: -200 };
 
 /** Mifflin-St Jeor with a neutral (-78) sex offset. */
 export function tdee(i: { weightKg: number; heightCm: number; age: number; activity: ActivityKey }) {

@@ -58,7 +58,7 @@ describe("QuizFlow", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /analyzing/ }));
     expect(screen.getByText("Plan ready")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Start using ForkThis!" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Start using ForkThis" })).toHaveAttribute(
       "href",
       "/dashboard",
     );

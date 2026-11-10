@@ -60,7 +60,7 @@
   }
 
   .quiz {
-    grid-template-columns: minmax(21rem, 0.72fr) minmax(38rem, 1.28fr);
+    grid-template-columns: 45fr 55fr;
   }
 
   .media,
@@ -123,5 +123,28 @@
 
   .inner {
     max-width: 32rem;
+  }
+}
+
+/* Quiz variant: photo is an inset rounded card with no logo/copy overlay. */
+@media (min-width: 64rem) {
+  .quiz .media {
+    margin: 0.75rem;
+    min-height: calc(100dvh - 1.5rem);
+    border-radius: 1.5rem;
+    background: transparent;
+  }
+
+  .quiz .copy {
+    display: none;
+  }
+
+  .quiz .content {
+    align-items: stretch;
+  }
+
+  .quiz .inner {
+    max-width: 34rem;
+    margin-inline: auto;
   }
 }

@@ -2,7 +2,7 @@
   height: 8rem;
   margin: -2rem -2rem 1.5rem;
   background-color: var(--surface-warm);
-  background-image: url("/img/onboarding/generated/quiz-private-profile-v2-640.webp");
+  background-image: url("/img/quiz/dob.webp");
   background-size: cover;
   background-position: center;
 }

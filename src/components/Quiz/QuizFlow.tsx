@@ -1,15 +1,31 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Check, Minus, Plus } from "lucide-react";
+import {
+  ArrowLeft,
+  Bike,
+  CalendarDays,
+  Check,
+  CircleCheck,
+  Footprints,
+  Leaf,
+  Minus,
+  PersonStanding,
+  Pill,
+  Plus,
+  Shield,
+  SquarePen,
+  Stethoscope,
+  User,
+  type LucideIcon,
+} from "lucide-react";
 import { AppImage } from "@/components/AppImage";
+import { Logo } from "@/components/Logo";
 import { SplitFrame } from "@/components/SplitFrame";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/constants";
 import {
-  ACTIVITY_HINT,
-  ACTIVITY_LABEL,
   GOAL_LABEL,
   IN_TO_CM,
   LB_TO_KG,
@@ -21,6 +37,7 @@ import {
 } from "@/lib/nutrition";
 import { cn } from "@/lib/utils";
 import {
+  ACTIVITY_COPY,
   ACTIVITY_ORDER,
   ANALYZING_IMAGE,
   EMPTY_ANSWERS,
@@ -36,6 +53,7 @@ import {
   START_IMAGE,
   STEPS,
   STEP_COPY,
+  type HealthKey,
   type QuizAnswers,
 } from "./quizData";
 import styles from "./QuizFlow.module.css";
@@ -93,8 +111,8 @@ export function QuizFlow() {
       <SplitFrame image={START_IMAGE} variant="quiz">
         <div className={styles.center}>
           <h1 className={styles.startTitle}>Start Your ForkThis! Quiz</h1>
-          <p className={styles.lead}>Take a short quiz to optimise ForkThis! to fit your goals.</p>
-          <Button className={styles.primary} onClick={() => setPosition("dob")}>
+          <p className={styles.lead}>Take a short quiz to optimize ForkThis! to fit your goals.</p>
+          <Button className={cn(styles.primary, styles.startButton)} onClick={() => setPosition("dob")}>
             Start Here
           </Button>
         </div>
@@ -113,7 +131,7 @@ export function QuizFlow() {
   if (position === "result") {
     return (
       <SplitFrame image={RESULT_IMAGE} variant="quiz">
-        <Result answers={answers} onReview={() => setPosition("dob")} />
+        <Result answers={answers} onBack={() => setPosition("health")} onReview={() => setPosition("dob")} />
       </SplitFrame>
     );
   }
@@ -139,15 +157,23 @@ export function QuizFlow() {
           >
             <span style={{ width: `${((idx + 1) / STEPS.length) * 100}%` }} />
           </div>
+          {idx > 0 && <Logo mark className={styles.mark} />}
         </header>
         <p className={styles.stepMeta}>
           Step {idx + 1} of {STEPS.length} · {copy.name}
         </p>
         <p className={styles.eyebrow}>{copy.eyebrow}</p>
         <h1 className={styles.title}>{copy.title}</h1>
-        <p className={styles.why}>
-          <strong>Why we ask:</strong> {copy.why}
-        </p>
+        {copy.intro?.map((line) => (
+          <p key={line} className={styles.why}>
+            {line}
+          </p>
+        ))}
+        {copy.why && (
+          <p className={styles.why}>
+            <strong>Why we ask:</strong> {copy.why}
+          </p>
+        )}
 
         <div className={styles.body}>
           {position === "dob" && <DobStep answers={answers} patch={patch} age={age} />}
@@ -178,14 +204,6 @@ export function QuizFlow() {
 interface StepProps {
   answers: QuizAnswers;
   patch: (p: Partial<QuizAnswers>) => void;
-}
-
-function Hint({ children }: { children: ReactNode }) {
-  return (
-    <p className={styles.hint}>
-      <Check size={14} aria-hidden="true" /> {children}
-    </p>
-  );
 }
 
 function DobStep({ answers, patch, age }: StepProps & { age: number | null }) {
@@ -225,9 +243,14 @@ function DobStep({ answers, patch, age }: StepProps & { age: number | null }) {
           />
         </label>
       </div>
+      {!filled && (
+        <p className={styles.hint}>
+          <SquarePen size={14} aria-hidden="true" /> Example — tap to enter yours
+        </p>
+      )}
       {age !== null && age >= 13 ? (
         <p className={styles.agePill} role="status">
-          {age} years old
+          <CircleCheck size={18} aria-hidden="true" /> {age} years old
         </p>
       ) : filled ? (
         <p className={styles.error} role="alert">
@@ -236,7 +259,10 @@ function DobStep({ answers, patch, age }: StepProps & { age: number | null }) {
             : "ForkThis! can’t be used by anyone under 13."}
         </p>
       ) : null}
-      <Hint>Private to you; your date of birth is never shown on your profile.</Hint>
+      <p className={styles.hint}>
+        <Shield size={14} aria-hidden="true" /> Private to you. Your date of birth is never shown on
+        your profile.
+      </p>
     </>
   );
 }
@@ -249,32 +275,22 @@ function GoalStep({ answers, patch }: StepProps) {
         : [...answers.goals, g],
     });
   return (
-    <>
-      <p className={styles.hintPlain}>Tap all that apply.</p>
-      <div className={styles.goals}>
-        {GOAL_OPTIONS.map((o) => {
-          const on = answers.goals.includes(o.value);
-          return (
-            <button
-              key={o.value}
-              type="button"
-              aria-pressed={on}
-              className={cn(styles.goal, on && styles.goalOn)}
-              onClick={() => toggle(o.value)}
-            >
-              <AppImage
-                src={o.image}
-                alt={o.alt}
-                sizes="(min-width: 1024px) 14rem, 45vw"
-                className={styles.goalImg}
-              />
-              <span className={styles.goalTitle}>{o.title}</span>
-              <span className={styles.goalSub}>{o.subtitle}</span>
-            </button>
-          );
-        })}
-      </div>
-    </>
+    <div className={styles.goals}>
+      {GOAL_OPTIONS.map((o) => {
+        const on = answers.goals.includes(o.value);
+        return (
+          <button
+            key={o.value}
+            type="button"
+            aria-pressed={on}
+            className={cn(styles.goal, on && styles.goalOn)}
+            onClick={() => toggle(o.value)}
+          >
+            <AppImage src={o.image} alt={o.label} className={styles.goalImg} />
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -299,7 +315,7 @@ function Stepper({
         disabled={value <= min}
         onClick={() => onChange(value - 1)}
       >
-        <Minus size={16} />
+        <Minus size={18} />
       </button>
       <button
         type="button"
@@ -307,7 +323,7 @@ function Stepper({
         disabled={value >= max}
         onClick={() => onChange(value + 1)}
       >
-        <Plus size={16} />
+        <Plus size={18} />
       </button>
     </div>
   );
@@ -332,6 +348,7 @@ function UnitToggle({
           className={cn(metric === m && styles.unitOn)}
           onClick={() => onChange(m)}
         >
+          {metric === m && <Check size={14} aria-hidden="true" />}
           {labels[m ? 1 : 0]}
         </button>
       ))}
@@ -339,14 +356,22 @@ function UnitToggle({
   );
 }
 
+function ExampleHint() {
+  return (
+    <p className={styles.hintCenter}>
+      <SquarePen size={14} aria-hidden="true" /> Example — tap to enter yours
+    </p>
+  );
+}
+
 function HeightStep({ answers, patch }: StepProps) {
   const touched = answers.heightIn !== null;
   const inches = answers.heightIn ?? EXAMPLE_HEIGHT_IN;
   return (
-    <>
+    <div className={styles.measure}>
       <UnitToggle
         metric={answers.heightMetric}
-        labels={["ft / in", "cm"]}
+        labels={["ft/in", "cm"]}
         onChange={(m) => patch({ heightMetric: m })}
       />
       <p className={cn(styles.value, !touched && styles.valueDim)} aria-live="polite">
@@ -367,9 +392,9 @@ function HeightStep({ answers, patch }: StepProps) {
         label="height"
         onChange={(v) => patch({ heightIn: v })}
       />
-      {!touched && <Hint>Example — tap to enter yours</Hint>}
-      <p className={styles.sub}>That&apos;s {Math.round(inches * IN_TO_CM)} cm.</p>
-    </>
+      {!touched && <ExampleHint />}
+      <p className={styles.subCenter}>That&apos;s {Math.round(inches * IN_TO_CM)} cm.</p>
+    </div>
   );
 }
 
@@ -377,7 +402,7 @@ function WeightStep({ answers, patch }: StepProps) {
   const touched = answers.weightLb !== null;
   const lb = answers.weightLb ?? EXAMPLE_WEIGHT_LB;
   return (
-    <>
+    <div className={styles.measure}>
       <UnitToggle
         metric={answers.weightMetric}
         labels={["lbs", "kg"]}
@@ -394,11 +419,28 @@ function WeightStep({ answers, patch }: StepProps) {
         label="weight"
         onChange={(v) => patch({ weightLb: v })}
       />
-      {!touched && <Hint>Example — tap to enter yours</Hint>}
-      <p className={styles.sub}>That&apos;s {Math.round(lb * LB_TO_KG)} kg.</p>
-    </>
+      {!touched && <ExampleHint />}
+      <p className={styles.subCenter}>That&apos;s {Math.round(lb * LB_TO_KG)} kg.</p>
+    </div>
   );
 }
+
+type ShownActivity = (typeof ACTIVITY_ORDER)[number];
+
+const ACTIVITY_ICON: Record<ShownActivity, LucideIcon> = {
+  mostlyInactive: User,
+  lightlyActive: PersonStanding,
+  moderatelyActive: Bike,
+  veryActive: Footprints,
+};
+
+const HEALTH_ICON: Record<HealthKey, LucideIcon> = {
+  none: Leaf,
+  plastic: CalendarDays,
+  bariatric: Stethoscope,
+  glp1: Shield,
+  peptide: Pill,
+};
 
 function ActivityStep({ answers, patch }: StepProps) {
   return (
@@ -407,8 +449,9 @@ function ActivityStep({ answers, patch }: StepProps) {
         <Option
           key={k}
           selected={answers.activity === k}
-          title={ACTIVITY_LABEL[k]}
-          subtitle={ACTIVITY_HINT[k]}
+          Icon={ACTIVITY_ICON[k]}
+          title={ACTIVITY_COPY[k].title}
+          subtitle={ACTIVITY_COPY[k].subtitle}
           onSelect={() => patch({ activity: k })}
         />
       ))}
@@ -424,27 +467,31 @@ function HealthStep({ answers, patch }: StepProps) {
           <Option
             key={o.value}
             selected={answers.health === o.value}
+            Icon={HEALTH_ICON[o.value]}
             title={o.title}
             subtitle={o.subtitle}
             onSelect={() => patch({ health: o.value })}
           />
         ))}
       </div>
-      <Hint>
-        Private to you, and you can change it later. Choose Prefer not to say and the app keeps
-        recommendations general.
-      </Hint>
+      <p className={styles.hint}>
+        <Shield size={14} aria-hidden="true" /> Private to you, and you can change it later. Choose
+        Prefer not to say and the app keeps recommendations general and hides surgery-specific
+        resources.
+      </p>
     </>
   );
 }
 
 function Option({
   selected,
+  Icon,
   title,
   subtitle,
   onSelect,
 }: {
   selected: boolean;
+  Icon: LucideIcon;
   title: string;
   subtitle: string;
   onSelect: () => void;
@@ -457,9 +504,12 @@ function Option({
       className={cn(styles.option, selected && styles.optionOn)}
       onClick={onSelect}
     >
+      <span className={styles.iconTile} aria-hidden="true">
+        <Icon size={18} />
+      </span>
       <span className={styles.optionText}>
         <span className={styles.optionTitle}>{title}</span>
-        <span className={styles.optionSub}>{subtitle}</span>
+        {subtitle && <span className={styles.optionSub}>{subtitle}</span>}
       </span>
       <span className={styles.radio} aria-hidden="true">
         {selected && <Check size={12} />}
@@ -479,28 +529,39 @@ function Analyzing({ onSkip }: { onSkip: () => void }) {
   useEffect(() => {
     const a = window.setTimeout(() => setDone(2), 1000);
     const b = window.setTimeout(() => setDone(3), 2000);
+    const onKey = () => onSkip();
+    window.addEventListener("keydown", onKey);
     return () => {
       window.clearTimeout(a);
       window.clearTimeout(b);
+      window.removeEventListener("keydown", onKey);
     };
-  }, []);
+  }, [onSkip]);
   return (
     <button type="button" className={styles.analyzing} onClick={onSkip}>
-      <h1 className={styles.analyzingTitle}>We&apos;re analyzing your answers!</h1>
+      <h1 className={styles.analyzingTitle}>We’re analyzing your answers!</h1>
       <ul className={styles.checks}>
         {ANALYZING_STEPS.map((s, i) => (
           <li key={s} className={cn(i < done && styles.checkOn)}>
-            <span aria-hidden="true">{i < done && <Check size={12} />}</span>
+            <span aria-hidden="true">{i < done && <Check size={14} />}</span>
             {s}
           </li>
         ))}
       </ul>
-      <span className={styles.tap}>Tap anywhere to skip</span>
+      <span className={styles.tap}>Tap anywhere or press any key to skip.</span>
     </button>
   );
 }
 
-function Result({ answers, onReview }: { answers: QuizAnswers; onReview: () => void }) {
+function Result({
+  answers,
+  onBack,
+  onReview,
+}: {
+  answers: QuizAnswers;
+  onBack: () => void;
+  onReview: () => void;
+}) {
   const result = useMemo(() => {
     const age = ageFromDob(+answers.month, +answers.day, +answers.year) ?? 30;
     const lb = answers.weightLb ?? EXAMPLE_WEIGHT_LB;
@@ -510,7 +571,7 @@ function Result({ answers, onReview }: { answers: QuizAnswers; onReview: () => v
       heightCm: (answers.heightIn ?? EXAMPLE_HEIGHT_IN) * IN_TO_CM,
       activity: (answers.activity ?? "moderatelyActive") as ActivityKey,
     };
-    const goal = answers.goals[0] ?? "maintain";
+    const goal = answers.goals[0] ?? "track";
     const kcal = calorieTarget({ ...base, goal }) ?? tdee(base) ?? 2000;
     return {
       kcal,
@@ -522,39 +583,53 @@ function Result({ answers, onReview }: { answers: QuizAnswers; onReview: () => v
 
   return (
     <section className={styles.result}>
-      <p className={styles.ready}>
-        <Check size={12} aria-hidden="true" /> Plan ready
-      </p>
-      <h1 className={styles.resultTitle}>
-        Based on the TDEE calculator, <span>you should start here</span>
-      </h1>
-      <p className={styles.sub}>Based on your answers, your starting calorie goal is</p>
-      <p className={styles.kcal}>
-        {result.kcal.toLocaleString("en-US")}{" "}
-        <small>kcal a day to {GOAL_LABEL[result.goal]}</small>
-      </p>
-      <dl className={styles.macros}>
-        <div>
-          <dt>Protein</dt>
-          <dd>
-            {result.protein} <small>g</small>
-          </dd>
-          <p>About 30% of your calories, to help keep muscle.</p>
-        </div>
-        <div>
-          <dt>Water</dt>
-          <dd>
-            {result.water} <small>oz</small>
-          </dd>
-          <p>A general guide. More on hot days.</p>
-        </div>
-      </dl>
+      <header className={styles.top}>
+        <button type="button" className={styles.back} onClick={onBack} aria-label="Back">
+          <ArrowLeft size={16} />
+        </button>
+        <span className={styles.spacer} />
+        <Logo mark className={styles.mark} />
+      </header>
+      <div className={styles.resultBody}>
+        <p className={styles.ready}>
+          <span aria-hidden="true">
+            <Check size={12} />
+          </span>
+          Plan ready
+        </p>
+        <h1 className={styles.resultTitle}>
+          Based on the TDEE calculator, <span>you should start here</span>
+        </h1>
+        <p className={styles.sub}>Based on your answers, your starting caloric goal is</p>
+        <p className={styles.kcal}>
+          {result.kcal.toLocaleString("en-US")}{" "}
+          <small>
+            kcal a day to <b>{GOAL_LABEL[result.goal]}</b>
+          </small>
+        </p>
+        <dl className={styles.macros}>
+          <div>
+            <dt>Protein</dt>
+            <dd>
+              {result.protein} <small>g</small>
+            </dd>
+            <p>About 30% of your calories, to help keep muscle.</p>
+          </div>
+          <div>
+            <dt>Water</dt>
+            <dd>
+              {result.water} <small>oz</small>
+            </dd>
+            <p>A general guide. More on hot days.</p>
+          </div>
+        </dl>
+      </div>
       <footer className={styles.footer}>
         <button type="button" className={styles.skip} onClick={onReview}>
           Review your answers
         </button>
         <Link href={ROUTES.dashboard} className={styles.primaryLink}>
-          Start using ForkThis!
+          Start using ForkThis
         </Link>
       </footer>
     </section>

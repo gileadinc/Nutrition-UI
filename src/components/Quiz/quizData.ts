@@ -3,125 +3,127 @@ import type { ActivityKey, GoalKey } from "@/lib/nutrition";
 export const STEPS = ["dob", "goal", "height", "weight", "activity", "health"] as const;
 export type StepKey = (typeof STEPS)[number];
 
-export const STEP_COPY: Record<
-  StepKey,
-  { name: string; eyebrow: string; title: string; why: string; image: string; optional: boolean }
-> = {
+export interface StepCopy {
+  name: string;
+  eyebrow: string;
+  title: string;
+  /** Shown after a bold "Why we ask:" lead-in. */
+  why?: string;
+  /** Plain sentence(s) shown without the lead-in. */
+  intro?: string[];
+  image: string;
+  optional: boolean;
+}
+
+export const STEP_COPY: Record<StepKey, StepCopy> = {
   dob: {
     name: "Date of birth",
     eyebrow: "About you",
     title: "How old are you?",
     why: "age shapes your energy needs, and ForkThis can’t be used by anyone under 13.",
-    image: "/img/onboarding/generated/quiz-private-profile-v2",
+    image: "/img/quiz/dob.webp",
     optional: false,
   },
   goal: {
     name: "Goal",
     eyebrow: "Your goal",
     title: "What's your main goal?",
-    why: "it decides whether your daily target leans toward a deficit, a surplus or maintenance.",
-    image: "/img/onboarding/tour-personalized-plan-v2",
+    intro: [
+      "It decides whether your daily target leans toward a deficit, a surplus or maintenance.",
+      "Click all that apply",
+    ],
+    image: "/img/quiz/goal.webp",
     optional: true,
   },
   height: {
     name: "Height",
     eyebrow: "Your starting point",
-    title: "What's your height?",
+    title: "What's your height and Weight?",
     why: "height and weight together give your baseline energy — what your body uses at rest.",
-    image: "/img/onboarding/generated/quiz-height-v2",
+    image: "/img/quiz/measure.webp",
     optional: true,
   },
   weight: {
     name: "Weight",
     eyebrow: "Your starting point",
-    title: "What's your weight?",
-    why: "it completes your baseline energy estimate, and shows your BMI for context.",
-    image: "/img/onboarding/generated/quiz-weight-v2",
+    title: "What's your height and Weight?",
+    why: "height and weight together give your baseline energy — what your body uses at rest.",
+    image: "/img/quiz/measure.webp",
     optional: true,
   },
   activity: {
     name: "Activity",
     eyebrow: "Your week",
     title: "How active are you right now?",
-    why: "activity multiplies your baseline. Pick a typical week, not your best one.",
-    image: "/img/onboarding/generated/quiz-activity-v2",
+    intro: ["Activity multiplies your baseline. Pick a typical week, not your best one."],
+    image: "/img/quiz/activity.webp",
     optional: true,
   },
   health: {
-    name: "Health",
+    name: "Surgery",
     eyebrow: "Your health",
-    title: "Anything else you'd like to tell us?",
+    title: "Anything else you’d like to tell us?",
     why: "it surfaces the right nutrition guidance before or after surgery, and stays private to you.",
-    image: "/img/onboarding/tour-clinical-support-v2",
+    image: "/img/quiz/activity.webp",
     optional: true,
   },
 };
 
-export const START_IMAGE = "/img/onboarding/welcome";
-export const ANALYZING_IMAGE = "/img/onboarding/generated/quiz-review-v2";
-export const RESULT_IMAGE = "/img/onboarding/generated/quiz-complete-v2";
+export const START_IMAGE = "/img/quiz/start-collage.webp";
+export const ANALYZING_IMAGE = "/img/quiz/analyzing.webp";
+export const RESULT_IMAGE = "/img/quiz/result.webp";
 
-export const GOAL_OPTIONS: {
-  value: GoalKey;
-  title: string;
-  subtitle: string;
-  image: string;
-  alt: string;
-}[] = [
+/** The goal cards are pre-composed artwork (text included), so the label is the accessible name. */
+export const GOAL_OPTIONS: { value: GoalKey; label: string; image: string }[] = [
+  {
+    value: "eatOut",
+    label: "Eat healthier while you're out! Low cal, high protein fast food and restaurant hacks",
+    image: "/img/quiz/goal-eat-out.webp",
+  },
+  {
+    value: "track",
+    label:
+      "Track your progress. Move at your own pace. Track meals, movement, and the habits that matter most to you",
+    image: "/img/quiz/goal-track.webp",
+  },
   {
     value: "lose",
-    title: "Lose weight",
-    subtitle: "Sustainable fat loss with muscle preservation",
-    image: "/img/onboarding/goals/goal-lose-v2",
-    alt: "Balanced chicken grain bowl beside walking shoes and a fitness watch",
-  },
-  {
-    value: "gain",
-    title: "Gain muscle",
-    subtitle: "Build physical strength and energetic support",
-    image: "/img/onboarding/goals/goal-gain-v2",
-    alt: "Athlete lifting a dumbbell beside a protein-rich meal",
-  },
-  {
-    value: "maintain",
-    title: "Maintain weight",
-    subtitle: "Focus on longevity, metabolism and vitality",
-    image: "/img/onboarding/goals/goal-maintain-v2",
-    alt: "Salmon grain bowl with vegetables and lemon water in warm sunlight",
+    label: "Lose weight. Looking for sustainable guidance toward fat loss",
+    image: "/img/quiz/goal-lose.webp",
   },
   {
     value: "recomp",
-    title: "Body recomposition",
-    subtitle: "Lose fat and build muscle at the same time",
-    image: "/img/onboarding/goals/goal-recomp-v2",
-    alt: "Athlete holding a resistance band beside a high-protein grain bowl",
+    label: "Body recomposition. Looking for healthier recipes to cook at home",
+    image: "/img/quiz/goal-recomp.webp",
   },
 ];
 
+export const ACTIVITY_ORDER = [
+  "mostlyInactive",
+  "lightlyActive",
+  "moderatelyActive",
+  "veryActive",
+] as const satisfies readonly ActivityKey[];
+
+export const ACTIVITY_COPY: Record<(typeof ACTIVITY_ORDER)[number], { title: string; subtitle: string }> = {
+  mostlyInactive: { title: "Sedentary", subtitle: "Little or no activity" },
+  lightlyActive: { title: "Lightly active", subtitle: "Exercise 1–3 days per week" },
+  moderatelyActive: { title: "Moderately active", subtitle: "Exercise 3–5 days per week" },
+  veryActive: { title: "Very active", subtitle: "Active 5–7 days per week" },
+};
+
 export const HEALTH_OPTIONS = [
-  { value: "none", title: "No surgery", subtitle: "None of these apply" },
+  { value: "none", title: "No surgery", subtitle: "No, none of these apply" },
   {
     value: "plastic",
     title: "Preparing for or recovering from plastic surgeries",
     subtitle: "Show pre-op nutrition context",
   },
-  {
-    value: "recovering",
-    title: "Recovering from surgery",
-    subtitle: "I've had bariatric surgery",
-  },
-  { value: "glp1", title: "I'm on a GLP-1", subtitle: "Keep protein and portion guidance in view" },
-  { value: "peptide", title: "I'm on a peptide", subtitle: "Keep recommendations specific" },
+  { value: "bariatric", title: "Recovering from surgery", subtitle: "I’ve had bariatric surgery" },
+  { value: "glp1", title: "I’m on a GLP-1", subtitle: "" },
+  { value: "peptide", title: "I’m on a peptide", subtitle: "" },
 ] as const;
 export type HealthKey = (typeof HEALTH_OPTIONS)[number]["value"];
-
-export const ACTIVITY_ORDER: ActivityKey[] = [
-  "mostlyInactive",
-  "lightlyActive",
-  "moderatelyActive",
-  "veryActive",
-  "extremelyActive",
-];
 
 export interface QuizAnswers {
   month: string;
