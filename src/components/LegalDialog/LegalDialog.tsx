@@ -28,7 +28,17 @@ export function LegalDialog({ doc, children }: LegalDialogProps) {
       <button type="button" className={styles.link} onClick={handleOpen}>
         {children}
       </button>
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+        open={open}
+        onOpenChange={(next, details) => {
+          // Only the X / Close buttons dismiss it — not an outside click or Esc.
+          if (!next && (details.reason === "outside-press" || details.reason === "escape-key")) {
+            details.cancel();
+            return;
+          }
+          setOpen(next);
+        }}
+      >
         <DialogContent className={styles.content}>
           <DialogTitle className={styles.title}>{content.title}</DialogTitle>
           <DialogDescription className={styles.intro}>{content.intro}</DialogDescription>

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import RegisterPage from "./page";
@@ -25,6 +25,11 @@ describe("Register page", () => {
     expect(checkbox).not.toBeChecked();
 
     await userEvent.keyboard("{Escape}");
+    expect(screen.getByRole("dialog", { name: "Terms of service" })).toBeInTheDocument();
+
+    // The dialog has both an X and a footer Close button; either dismisses it.
+    await userEvent.click(screen.getAllByRole("button", { name: "Close" })[0]);
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     await userEvent.click(screen.getByRole("button", { name: "Privacy Policy" }));
     expect(await screen.findByRole("dialog", { name: "Privacy policy" })).toBeInTheDocument();
     expect(checkbox).not.toBeChecked();
