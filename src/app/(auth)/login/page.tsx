@@ -37,8 +37,8 @@ export default function LoginPage() {
       <CardContent className={styles.cardContent}>
         <AuthHeader
           showBrand
-          heading="Welcome back"
-          subtext="Sign in to keep your ForkThis! journey, goals, and context in sync."
+          heading="We’re happy you’re back!"
+          subtext="Sign in to continue your personalized ForkThis! settings."
         />
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <TextField
@@ -67,10 +67,10 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <SocialAuthButtons dividerLabel="Or continue with" />
+        <SocialAuthButtons dividerLabel="Or sign in with" />
 
         <p className={styles.footer}>
-          New to ForkThis? <Link href={ROUTES.register}>Sign up</Link>
+          New to ForkThis? <Link href={ROUTES.register}>Sign Up</Link>
         </p>
       </CardContent>
     </Card>

@@ -46,6 +46,7 @@ export default function RegisterPage() {
     <Card className={styles.card}>
       <CardContent className={styles.cardContent}>
         <AuthHeader
+          showBrand
           heading="Create your account"
           subtext="Just enough to save your progress. Your goals and body context come next."
         />
@@ -105,7 +106,7 @@ export default function RegisterPage() {
           </Button>
         </form>
 
-        <SocialAuthButtons dividerLabel="Or use email" />
+        <SocialAuthButtons dividerLabel="Or sign up with" />
 
         <p className={styles.footer}>
           Already have an account? <Link href={ROUTES.login}>Sign in</Link>

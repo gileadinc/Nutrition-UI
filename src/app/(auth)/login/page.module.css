@@ -12,20 +12,8 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.75rem;
   margin-top: 2rem;
-}
-
-/* Auth forms use taller inputs and more label breathing room than the
-   compact default field. */
-.form :global(input) {
-  height: 2.75rem;
-  padding-left: 0.875rem;
-}
-
-.form :global(label) {
-  margin-bottom: 0.125rem;
-  font-size: 0.875rem;
 }
 
 .forgot {
@@ -33,11 +21,11 @@
   margin-top: -0.75rem;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--text-link);
+  color: var(--navy-500);
 }
 
 .forgot:hover {
-  color: var(--text-link-hover);
+  color: var(--navy-700);
   text-decoration: underline;
 }
 
@@ -56,8 +44,10 @@
 }
 
 .footer a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
   font-weight: 600;
-  color: var(--text-link);
+  color: var(--navy-500);
 }
 
 .footer a:hover {

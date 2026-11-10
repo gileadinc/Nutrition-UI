@@ -2,12 +2,13 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-block: 1.5rem;
+  margin-block: 1.25rem;
 }
 
 .appleButton,
 .googleButton {
-  min-height: 2.875rem;
+  min-height: 3rem;
+  border-radius: 0.75rem;
   font-size: 0.9375rem;
 }
 
@@ -34,7 +35,7 @@
 }
 
 .appleButton {
-  background: var(--button-dark-bg);
+  background: #141b34;
   color: var(--button-dark-text);
 }
 

@@ -5,6 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import styles from "@/components/TextField/Field.module.css";
 
 export interface PasswordFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
   label: string;
@@ -18,13 +19,15 @@ export function PasswordField({ label, error, id, className, ...rest }: Password
   const [visible, setVisible] = useState(false);
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={inputId}>{label}</Label>
+    <div className={styles.field}>
+      <Label htmlFor={inputId} className={styles.label}>
+        {label}
+      </Label>
       <div className="relative">
         <Input
           id={inputId}
           type={visible ? "text" : "password"}
-          className={cn("pr-9", className)}
+          className={cn(styles.input, "pr-11", className)}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
           {...rest}

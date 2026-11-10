@@ -21,8 +21,8 @@
   height: 4.5rem;
   margin-bottom: 1.5rem;
   border-radius: 999px;
-  background: var(--background-highlight);
-  color: var(--text-brand);
+  background: var(--teal-100);
+  color: var(--navy-500);
 }
 
 .iconBadge svg {
@@ -34,7 +34,7 @@
   font-size: 1.625rem;
   line-height: 1.2;
   font-weight: 700;
-  color: var(--text-brand);
+  color: var(--navy-500);
 }
 
 .message {
@@ -47,7 +47,7 @@
   margin-top: 0.5rem;
   padding: 0.625rem 1rem;
   border-radius: var(--radius-lg);
-  background: var(--background-highlight);
+  background: var(--teal-100);
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -71,7 +71,7 @@
 .resend {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-link);
+  color: var(--navy-500);
 }
 
 .resend:hover:not(:disabled) {
@@ -93,7 +93,7 @@
 .footerLink {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-link);
+  color: var(--navy-500);
 }
 
 .footerLink:hover {

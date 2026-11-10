@@ -12,8 +12,8 @@
   height: 3.25rem;
   margin: 0 auto 1rem;
   border-radius: 999px;
-  background: var(--background-highlight);
-  color: var(--text-brand);
+  background: var(--teal-100);
+  color: var(--navy-500);
 }
 
 .iconBadge svg {

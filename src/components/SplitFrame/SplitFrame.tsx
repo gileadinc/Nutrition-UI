@@ -5,32 +5,15 @@ import { cn } from "@/lib/utils";
 import styles from "./SplitFrame.module.css";
 
 export interface SplitFrameProps {
-  /** Local image base, e.g. `/img/auth/login-hero`. */
+  /** Photo: a responsive base path (no extension) or a full `.webp` path. */
   image: string;
-  /** Optional eyebrow / title / body copy laid over the photo (desktop). */
-  label?: string;
-  title?: string;
-  body?: string;
-  /** `ink` = dark text over a light photo. */
-  tone?: "light" | "ink";
-  imagePosition?: "center" | "top";
-  /** `quiz` gives the photo a narrower column and hides it on mobile. */
+  /** `quiz` hides the photo on mobile; `default` shows a short banner. */
   variant?: "default" | "quiz";
   children: ReactNode;
 }
 
-/** Photo on the left, content on the right; stacks with a short banner on mobile. */
-export function SplitFrame({
-  image,
-  label,
-  title,
-  body,
-  tone = "light",
-  imagePosition = "center",
-  variant = "default",
-  children,
-}: SplitFrameProps) {
-  const ink = tone === "ink";
+/** Inset rounded photo card on the left, content on the right; stacks on mobile. */
+export function SplitFrame({ image, variant = "default", children }: SplitFrameProps) {
   return (
     <div className={cn(styles.frame, variant === "quiz" && styles.quiz)}>
       <aside className={styles.media}>
@@ -38,18 +21,11 @@ export function SplitFrame({
           src={image}
           alt=""
           priority
-          sizes="(min-width: 1024px) 40vw, 100vw"
-          className={cn(styles.photo, imagePosition === "top" && styles.photoTop)}
+          sizes="(min-width: 1024px) 45vw, 100vw"
+          className={styles.photo}
         />
-        <div className={cn(styles.copy, ink && styles.ink)}>
-          <Logo light={!ink} />
-          {title ? (
-            <div className={styles.text}>
-              {label ? <p className={styles.label}>{label}</p> : null}
-              <p className={styles.title}>{title}</p>
-              {body ? <p className={styles.body}>{body}</p> : null}
-            </div>
-          ) : null}
+        <div className={styles.copy}>
+          <Logo light />
         </div>
       </aside>
       <main className={styles.content}>

@@ -9,7 +9,7 @@
   position: relative;
   height: 11rem;
   overflow: hidden;
-  background: var(--navy-500);
+  background: var(--navy-100);
 }
 
 .quiz .media {
@@ -24,22 +24,9 @@
   object-fit: cover;
 }
 
-.photoTop {
-  object-position: top;
-}
-
 .copy {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
   padding: 1rem 1.25rem;
-  color: #fff;
-}
-
-.text {
-  display: none;
 }
 
 .content {
@@ -56,64 +43,21 @@
 
 @media (min-width: 64rem) {
   .frame {
-    grid-template-columns: minmax(21rem, 0.9fr) minmax(30rem, 1.1fr);
-  }
-
-  .quiz {
     grid-template-columns: 45fr 55fr;
   }
 
+  /* Photo is an inset rounded card; the logo lives in the form column. */
   .media,
   .quiz .media {
     display: block;
     height: auto;
-    min-height: 100dvh;
+    margin: 0.75rem;
+    min-height: calc(100dvh - 1.5rem);
+    border-radius: 1.5rem;
   }
 
   .copy {
-    min-height: 100dvh;
-    padding: 2rem 3rem;
-  }
-
-  .text {
-    display: block;
-    max-width: 28rem;
-    padding-bottom: 0.5rem;
-  }
-
-  .label {
-    font-size: 0.8125rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--navy-100);
-  }
-
-  .ink .label {
-    color: var(--teal-800);
-  }
-
-  .title {
-    margin-top: 0.75rem;
-    font-size: 2rem;
-    line-height: 1.15;
-    font-weight: 800;
-    letter-spacing: -0.05rem;
-  }
-
-  .body {
-    margin-top: 0.75rem;
-    max-width: 24rem;
-    font-size: 1.0625rem;
-    line-height: 1.5;
-  }
-
-  .ink {
-    color: var(--navy-500);
-  }
-
-  .ink .body {
-    color: var(--text-primary);
+    display: none;
   }
 
   .content {
@@ -122,21 +66,7 @@
   }
 
   .inner {
-    max-width: 32rem;
-  }
-}
-
-/* Quiz variant: photo is an inset rounded card with no logo/copy overlay. */
-@media (min-width: 64rem) {
-  .quiz .media {
-    margin: 0.75rem;
-    min-height: calc(100dvh - 1.5rem);
-    border-radius: 1.5rem;
-    background: transparent;
-  }
-
-  .quiz .copy {
-    display: none;
+    max-width: 24rem;
   }
 
   .quiz .content {
