@@ -35,3 +35,11 @@
   font-weight: 800;
   letter-spacing: -0.03125rem;
 }
+
+.small .tile {
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.011rem;
+}

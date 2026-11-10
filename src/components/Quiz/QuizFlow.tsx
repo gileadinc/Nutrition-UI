@@ -23,7 +23,6 @@ import {
 import { AppImage } from "@/components/AppImage";
 import { Logo } from "@/components/Logo";
 import { SplitFrame } from "@/components/SplitFrame";
-import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/constants";
 import {
   GOAL_LABEL,
@@ -70,6 +69,18 @@ function load(): { answers: QuizAnswers; position: Position } | null {
   }
 }
 
+function BackButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button type="button" className={styles.back} onClick={onClick} aria-label="Back">
+      <ArrowLeft size={20} />
+    </button>
+  );
+}
+
+function Mark() {
+  return <Logo mark small />;
+}
+
 export function QuizFlow() {
   const [answers, setAnswers] = useState<QuizAnswers>(EMPTY_ANSWERS);
   const [position, setPosition] = useState<Position>("start");
@@ -82,6 +93,10 @@ export function QuizFlow() {
       setAnswers({ ...EMPTY_ANSWERS, ...saved.answers });
       setPosition(saved.position === "analyzing" ? "result" : saved.position);
     }
+    // Deep link: /onboarding?step=goal opens that screen (used for QA and sharing).
+    const step = new URLSearchParams(window.location.search).get("step");
+    const valid = ["start", ...STEPS, "analyzing", "result"];
+    if (step && valid.includes(step)) setPosition(step as Position);
     setHydrated(true);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
@@ -109,12 +124,12 @@ export function QuizFlow() {
   if (position === "start") {
     return (
       <SplitFrame image={START_IMAGE} variant="quiz">
-        <div className={styles.center}>
-          <h1 className={styles.startTitle}>Start Your ForkThis! Quiz</h1>
-          <p className={styles.lead}>Take a short quiz to optimize ForkThis! to fit your goals.</p>
-          <Button className={cn(styles.primary, styles.startButton)} onClick={() => setPosition("dob")}>
+        <div className={styles.intro}>
+          <h1 className={styles.introTitle}>Start Your ForkThis! Quiz</h1>
+          <p className={styles.introLead}>Take a short quiz to optimize ForkThis! to fit your goals.</p>
+          <button type="button" className={cn(styles.primary, styles.introButton)} onClick={() => setPosition("dob")}>
             Start Here
-          </Button>
+          </button>
         </div>
       </SplitFrame>
     );
@@ -139,49 +154,71 @@ export function QuizFlow() {
   const copy = STEP_COPY[position];
   const age = ageFromDob(+answers.month, +answers.day, +answers.year);
   const canContinue = position === "dob" ? age !== null && age >= 13 : true;
+  const first = idx === 0;
+  const progress = (
+    <div
+      className={styles.progress}
+      role="progressbar"
+      aria-valuemin={1}
+      aria-valuemax={STEPS.length}
+      aria-valuenow={idx + 1}
+      aria-label={`Step ${idx + 1} of ${STEPS.length}`}
+    >
+      <span style={{ width: `${((idx + 1) / STEPS.length) * 100}%` }} />
+    </div>
+  );
+  const stepLabel = (
+    <p className={cn(styles.stepMeta, first && styles.stepMetaRight)}>
+      Step {idx + 1} of {STEPS.length} · {copy.name}
+    </p>
+  );
 
   return (
     <SplitFrame image={copy.image} variant="quiz">
       <section className={styles.step}>
-        <header className={styles.top}>
-          <button type="button" className={styles.back} onClick={back} aria-label="Back">
-            <ArrowLeft size={16} />
-          </button>
-          <div
-            className={styles.progress}
-            role="progressbar"
-            aria-valuemin={1}
-            aria-valuemax={STEPS.length}
-            aria-valuenow={idx + 1}
-            aria-label={`Step ${idx + 1} of ${STEPS.length}`}
-          >
-            <span style={{ width: `${((idx + 1) / STEPS.length) * 100}%` }} />
-          </div>
-          {idx > 0 && <Logo mark className={styles.mark} />}
-        </header>
-        <p className={styles.stepMeta}>
-          Step {idx + 1} of {STEPS.length} · {copy.name}
-        </p>
-        <p className={styles.eyebrow}>{copy.eyebrow}</p>
-        <h1 className={styles.title}>{copy.title}</h1>
-        {copy.intro?.map((line) => (
-          <p key={line} className={styles.why}>
-            {line}
-          </p>
-        ))}
-        {copy.why && (
-          <p className={styles.why}>
-            <strong>Why we ask:</strong> {copy.why}
-          </p>
+        {first ? (
+          <header className={styles.headerInline}>
+            <BackButton onClick={back} />
+            <div className={styles.progressCol}>
+              {progress}
+              {stepLabel}
+            </div>
+          </header>
+        ) : (
+          <header className={styles.header}>
+            <div className={styles.headerRow}>
+              <BackButton onClick={back} />
+              <Mark />
+            </div>
+            <div className={styles.progressCol}>
+              {progress}
+              {stepLabel}
+            </div>
+          </header>
         )}
 
-        <div className={styles.body}>
-          {position === "dob" && <DobStep answers={answers} patch={patch} age={age} />}
-          {position === "goal" && <GoalStep answers={answers} patch={patch} />}
-          {position === "height" && <HeightStep answers={answers} patch={patch} />}
-          {position === "weight" && <WeightStep answers={answers} patch={patch} />}
-          {position === "activity" && <ActivityStep answers={answers} patch={patch} />}
-          {position === "health" && <HealthStep answers={answers} patch={patch} />}
+        <div className={styles.main}>
+          <p className={styles.eyebrow}>{copy.eyebrow}</p>
+          <h1 className={styles.title}>{copy.title}</h1>
+          {copy.intro?.map((line) => (
+            <p key={line} className={styles.copy}>
+              {line}
+            </p>
+          ))}
+          {copy.why && (
+            <p className={styles.copy}>
+              <strong>Why we ask:</strong> {copy.why}
+            </p>
+          )}
+
+          <div className={styles.body}>
+            {position === "dob" && <DobStep answers={answers} patch={patch} age={age} />}
+            {position === "goal" && <GoalStep answers={answers} patch={patch} />}
+            {position === "height" && <HeightStep answers={answers} patch={patch} />}
+            {position === "weight" && <WeightStep answers={answers} patch={patch} />}
+            {position === "activity" && <ActivityStep answers={answers} patch={patch} />}
+            {position === "health" && <HealthStep answers={answers} patch={patch} />}
+          </div>
         </div>
 
         <footer className={styles.footer}>
@@ -192,9 +229,9 @@ export function QuizFlow() {
           ) : (
             <span />
           )}
-          <Button className={styles.primary} onClick={next} disabled={!canContinue}>
+          <button type="button" className={styles.primary} onClick={next} disabled={!canContinue}>
             Continue
-          </Button>
+          </button>
         </footer>
       </section>
     </SplitFrame>
@@ -204,6 +241,14 @@ export function QuizFlow() {
 interface StepProps {
   answers: QuizAnswers;
   patch: (p: Partial<QuizAnswers>) => void;
+}
+
+function ExampleHint({ centered = false }: { centered?: boolean }) {
+  return (
+    <p className={cn(styles.exampleHint, centered && styles.exampleCentered)}>
+      <SquarePen size={16} aria-hidden="true" /> Example — tap to enter yours
+    </p>
+  );
 }
 
 function DobStep({ answers, patch, age }: StepProps & { age: number | null }) {
@@ -243,11 +288,7 @@ function DobStep({ answers, patch, age }: StepProps & { age: number | null }) {
           />
         </label>
       </div>
-      {!filled && (
-        <p className={styles.hint}>
-          <SquarePen size={14} aria-hidden="true" /> Example — tap to enter yours
-        </p>
-      )}
+      {!filled && <ExampleHint />}
       {age !== null && age >= 13 ? (
         <p className={styles.agePill} role="status">
           <CircleCheck size={18} aria-hidden="true" /> {age} years old
@@ -259,8 +300,8 @@ function DobStep({ answers, patch, age }: StepProps & { age: number | null }) {
             : "ForkThis! can’t be used by anyone under 13."}
         </p>
       ) : null}
-      <p className={styles.hint}>
-        <Shield size={14} aria-hidden="true" /> Private to you. Your date of birth is never shown on
+      <p className={styles.note}>
+        <Shield size={16} aria-hidden="true" /> Private to you. Your date of birth is never shown on
         your profile.
       </p>
     </>
@@ -286,7 +327,17 @@ function GoalStep({ answers, patch }: StepProps) {
             className={cn(styles.goal, on && styles.goalOn)}
             onClick={() => toggle(o.value)}
           >
-            <AppImage src={o.image} alt={o.label} className={styles.goalImg} />
+            <AppImage src={o.image} alt="" className={cn(styles.goalArt, o.value === "track" && styles.goalArtTrack)} />
+            <span className={styles.goalText}>
+              <span className={styles.goalTitle}>
+                {o.title.map((line) => (
+                  <span key={line}>{line}</span>
+                ))}
+              </span>
+              <span className={styles.goalSub} style={{ maxWidth: o.subtitleWidth }}>
+                {o.subtitle}
+              </span>
+            </span>
           </button>
         );
       })}
@@ -309,21 +360,11 @@ function Stepper({
 }) {
   return (
     <div className={styles.stepper}>
-      <button
-        type="button"
-        aria-label={`Decrease ${label}`}
-        disabled={value <= min}
-        onClick={() => onChange(value - 1)}
-      >
-        <Minus size={18} />
+      <button type="button" aria-label={`Decrease ${label}`} disabled={value <= min} onClick={() => onChange(value - 1)}>
+        <Minus size={24} />
       </button>
-      <button
-        type="button"
-        aria-label={`Increase ${label}`}
-        disabled={value >= max}
-        onClick={() => onChange(value + 1)}
-      >
-        <Plus size={18} />
+      <button type="button" aria-label={`Increase ${label}`} disabled={value >= max} onClick={() => onChange(value + 1)}>
+        <Plus size={24} />
       </button>
     </div>
   );
@@ -356,14 +397,6 @@ function UnitToggle({
   );
 }
 
-function ExampleHint() {
-  return (
-    <p className={styles.hintCenter}>
-      <SquarePen size={14} aria-hidden="true" /> Example — tap to enter yours
-    </p>
-  );
-}
-
 function HeightStep({ answers, patch }: StepProps) {
   const touched = answers.heightIn !== null;
   const inches = answers.heightIn ?? EXAMPLE_HEIGHT_IN;
@@ -376,13 +409,13 @@ function HeightStep({ answers, patch }: StepProps) {
       />
       <p className={cn(styles.value, !touched && styles.valueDim)} aria-live="polite">
         {answers.heightMetric ? (
-          <>
+          <span>
             {Math.round(inches * IN_TO_CM)} <small>cm</small>
-          </>
+          </span>
         ) : (
-          <>
+          <span>
             {Math.floor(inches / 12)} <small>ft</small> {inches % 12} <small>in</small>
-          </>
+          </span>
         )}
       </p>
       <Stepper
@@ -392,8 +425,10 @@ function HeightStep({ answers, patch }: StepProps) {
         label="height"
         onChange={(v) => patch({ heightIn: v })}
       />
-      {!touched && <ExampleHint />}
-      <p className={styles.subCenter}>That&apos;s {Math.round(inches * IN_TO_CM)} cm.</p>
+      <div className={styles.hintGroup}>
+        {!touched && <ExampleHint centered />}
+        <p className={styles.sub}>That&apos;s {Math.round(inches * IN_TO_CM)} cm.</p>
+      </div>
     </div>
   );
 }
@@ -401,6 +436,8 @@ function HeightStep({ answers, patch }: StepProps) {
 function WeightStep({ answers, patch }: StepProps) {
   const touched = answers.weightLb !== null;
   const lb = answers.weightLb ?? EXAMPLE_WEIGHT_LB;
+  const inches = answers.heightIn ?? EXAMPLE_HEIGHT_IN;
+  const bmi = (703 * lb) / (inches * inches);
   return (
     <div className={styles.measure}>
       <UnitToggle
@@ -409,8 +446,10 @@ function WeightStep({ answers, patch }: StepProps) {
         onChange={(m) => patch({ weightMetric: m })}
       />
       <p className={cn(styles.value, !touched && styles.valueDim)} aria-live="polite">
-        {answers.weightMetric ? Math.round(lb * LB_TO_KG) : lb}{" "}
-        <small>{answers.weightMetric ? "kg" : "lbs"}</small>
+        <span>
+          {answers.weightMetric ? Math.round(lb * LB_TO_KG) : lb}{" "}
+          <small>{answers.weightMetric ? "kg" : "lbs"}</small>
+        </span>
       </p>
       <Stepper
         value={lb}
@@ -419,8 +458,20 @@ function WeightStep({ answers, patch }: StepProps) {
         label="weight"
         onChange={(v) => patch({ weightLb: v })}
       />
-      {!touched && <ExampleHint />}
-      <p className={styles.subCenter}>That&apos;s {Math.round(lb * LB_TO_KG)} kg.</p>
+      <div className={styles.hintGroup}>
+        {!touched && <ExampleHint centered />}
+        <p className={styles.sub}>That&apos;s {Math.round(lb * LB_TO_KG)} kg.</p>
+      </div>
+      <div className={styles.bmi}>
+        <div>
+          <p className={styles.bmiLabel}>Your BMI</p>
+          <p className={styles.bmiValue}>{bmi.toFixed(1)}</p>
+        </div>
+        <p className={styles.bmiNote}>
+          At {Math.floor(inches / 12)}&apos;{inches % 12}&quot;. One signal among many, used for
+          context only.
+        </p>
+      </div>
     </div>
   );
 }
@@ -474,8 +525,8 @@ function HealthStep({ answers, patch }: StepProps) {
           />
         ))}
       </div>
-      <p className={styles.hint}>
-        <Shield size={14} aria-hidden="true" /> Private to you, and you can change it later. Choose
+      <p className={styles.note}>
+        <Shield size={16} aria-hidden="true" /> Private to you, and you can change it later. Choose
         Prefer not to say and the app keeps recommendations general and hides surgery-specific
         resources.
       </p>
@@ -505,14 +556,14 @@ function Option({
       onClick={onSelect}
     >
       <span className={styles.iconTile} aria-hidden="true">
-        <Icon size={18} />
+        <Icon size={24} />
       </span>
       <span className={styles.optionText}>
         <span className={styles.optionTitle}>{title}</span>
         {subtitle && <span className={styles.optionSub}>{subtitle}</span>}
       </span>
       <span className={styles.radio} aria-hidden="true">
-        {selected && <Check size={12} />}
+        {selected && <Check size={14} />}
       </span>
     </button>
   );
@@ -543,7 +594,7 @@ function Analyzing({ onSkip }: { onSkip: () => void }) {
       <ul className={styles.checks}>
         {ANALYZING_STEPS.map((s, i) => (
           <li key={s} className={cn(i < done && styles.checkOn)}>
-            <span aria-hidden="true">{i < done && <Check size={14} />}</span>
+            <span aria-hidden="true">{i < done && <Check size={16} />}</span>
             {s}
           </li>
         ))}
@@ -583,26 +634,23 @@ function Result({
 
   return (
     <section className={styles.result}>
-      <header className={styles.top}>
-        <button type="button" className={styles.back} onClick={onBack} aria-label="Back">
-          <ArrowLeft size={16} />
-        </button>
-        <span className={styles.spacer} />
-        <Logo mark className={styles.mark} />
-      </header>
+      <div className={styles.headerRow}>
+        <BackButton onClick={onBack} />
+        <Mark />
+      </div>
       <div className={styles.resultBody}>
         <p className={styles.ready}>
           <span aria-hidden="true">
-            <Check size={12} />
+            <Check size={14} />
           </span>
           Plan ready
         </p>
         <h1 className={styles.resultTitle}>
           Based on the TDEE calculator, <span>you should start here</span>
         </h1>
-        <p className={styles.sub}>Based on your answers, your starting caloric goal is</p>
+        <p className={styles.resultLead}>Based on your answers, your starting caloric goal is</p>
         <p className={styles.kcal}>
-          {result.kcal.toLocaleString("en-US")}{" "}
+          {result.kcal.toLocaleString("en-US")}
           <small>
             kcal a day to <b>{GOAL_LABEL[result.goal]}</b>
           </small>
@@ -628,7 +676,7 @@ function Result({
         <button type="button" className={styles.skip} onClick={onReview}>
           Review your answers
         </button>
-        <Link href={ROUTES.dashboard} className={styles.primaryLink}>
+        <Link href={ROUTES.dashboard} className={styles.primary}>
           Start using ForkThis
         </Link>
       </footer>

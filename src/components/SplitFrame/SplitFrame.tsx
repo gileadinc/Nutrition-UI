@@ -30,6 +30,7 @@ export function SplitFrame({ image, caption, variant = "default", children }: Sp
     <div className={cn(styles.frame, variant === "quiz" && styles.quiz)}>
       <aside className={styles.media}>
         <AppImage
+          key={image}
           src={image}
           alt=""
           priority

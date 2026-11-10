@@ -69,31 +69,47 @@ export const STEP_COPY: Record<StepKey, StepCopy> = {
   },
 };
 
-export const START_IMAGE = "/img/quiz/start-collage.webp";
+export const START_IMAGE = "/img/quiz/intro.webp";
 export const ANALYZING_IMAGE = "/img/quiz/analyzing.webp";
 export const RESULT_IMAGE = "/img/quiz/result.webp";
 
-/** The goal cards are pre-composed artwork (text included), so the label is the accessible name. */
-export const GOAL_OPTIONS: { value: GoalKey; label: string; image: string }[] = [
+export interface GoalOption {
+  value: GoalKey;
+  /** Title lines (the first card wraps over two lines in the design). */
+  title: string[];
+  subtitle: string;
+  /** Subtitle max width in px, as laid out in the design. */
+  subtitleWidth: number;
+  image: string;
+}
+
+export const GOAL_OPTIONS: GoalOption[] = [
   {
     value: "eatOut",
-    label: "Eat healthier while you're out! Low cal, high protein fast food and restaurant hacks",
+    title: ["Eat healthier", "while you’re out!"],
+    subtitle: "Low cal, high protein fast food and restaurant hacks",
+    subtitleWidth: 146,
     image: "/img/quiz/goal-eat-out.webp",
   },
   {
     value: "track",
-    label:
-      "Track your progress. Move at your own pace. Track meals, movement, and the habits that matter most to you",
+    title: ["Track your progress"],
+    subtitle: "Move at your own pace. Track meals, movement, and the habits that matter most to you",
+    subtitleWidth: 124,
     image: "/img/quiz/goal-track.webp",
   },
   {
     value: "lose",
-    label: "Lose weight. Looking for sustainable guidance toward fat loss",
+    title: ["Lose weight"],
+    subtitle: "Looking for sustainable guidance toward fat loss",
+    subtitleWidth: 160,
     image: "/img/quiz/goal-lose.webp",
   },
   {
     value: "recomp",
-    label: "Body recomposition. Looking for healthier recipes to cook at home",
+    title: ["Body recomposition"],
+    subtitle: "Looking for healthier recipes to cook at home!",
+    subtitleWidth: 122,
     image: "/img/quiz/goal-recomp.webp",
   },
 ];
