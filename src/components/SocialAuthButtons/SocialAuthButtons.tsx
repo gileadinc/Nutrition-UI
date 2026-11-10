@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Apple } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SocialAuthDialog, type SocialProvider } from "./SocialAuthDialog";
 import styles from "./SocialAuthButtons.module.css";
@@ -47,16 +46,6 @@ export function SocialAuthButtons({ dividerLabel = "Or continue with" }: SocialA
         <span className={styles.dividerLabel}>{dividerLabel}</span>
       </div>
       <div className={styles.buttons}>
-        <Button
-          type="button"
-          variant="outline"
-          className={styles.appleButton}
-          disabled
-          title="Apple sign-in is coming soon"
-        >
-          <Apple className="size-4" />
-          Apple
-        </Button>
         <Button
           type="button"
           variant="outline"

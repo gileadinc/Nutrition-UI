@@ -24,12 +24,10 @@
 
 .buttons {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  grid-template-columns: 1fr;
   padding-top: 1rem;
 }
 
-.appleButton,
 .googleButton {
   height: 3.25rem;
   gap: 0.75rem;
@@ -37,17 +35,6 @@
   font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: -0.011rem;
-}
-
-.appleButton {
-  border-color: #141b34;
-  background: #141b34;
-  color: #fff;
-}
-
-.appleButton:hover {
-  background: #0d1226;
-  color: #fff;
 }
 
 .googleButton {
