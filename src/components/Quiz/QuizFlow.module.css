@@ -32,7 +32,7 @@
   color: var(--text-secondary);
 }
 
-.introButton {
+.intro .introButton {
   flex: none;
   width: 100%;
   max-width: none;
@@ -256,7 +256,8 @@
 }
 
 .dob input::placeholder {
-  color: var(--navy-200);
+  color: var(--text-secondary);
+  opacity: 0.8;
 }
 
 .dob input:focus-visible {
@@ -537,7 +538,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  min-height: 4.25rem;
+  min-height: 6.8125rem;
   padding: 0.625rem 1rem;
   border-radius: 1rem;
   background: #fff;
@@ -836,4 +837,9 @@
 
 .stepFirst .footer {
   justify-content: flex-end;
+}
+
+/* Surgery step rows are shorter than the activity rows in the design. */
+.healthOptions .option {
+  min-height: 6.0625rem;
 }

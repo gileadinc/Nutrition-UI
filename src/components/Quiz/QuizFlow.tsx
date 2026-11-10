@@ -513,7 +513,7 @@ function ActivityStep({ answers, patch }: StepProps) {
 function HealthStep({ answers, patch }: StepProps) {
   return (
     <>
-      <div className={styles.options} role="radiogroup" aria-label="Health context">
+      <div className={cn(styles.options, styles.healthOptions)} role="radiogroup" aria-label="Health context">
         {HEALTH_OPTIONS.map((o) => (
           <Option
             key={o.value}

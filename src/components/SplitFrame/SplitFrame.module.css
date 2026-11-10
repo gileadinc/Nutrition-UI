@@ -122,6 +122,7 @@
 
   .quiz .content {
     align-items: stretch;
+    padding-inline: 1.25rem;
   }
 
   .quiz .inner {
