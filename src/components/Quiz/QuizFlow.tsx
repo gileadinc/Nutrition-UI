@@ -266,7 +266,14 @@ interface StepProps {
   patch: (p: Partial<QuizAnswers>) => void;
 }
 
-function ExampleHint({ centered = false }: { centered?: boolean }) {
+function ExampleHint({ centered = false, onPress }: { centered?: boolean; onPress?: () => void }) {
+  if (onPress) {
+    return (
+      <button type="button" className={styles.exampleButton} onClick={onPress}>
+        <SquarePen size={16} aria-hidden="true" /> Example — tap to enter yours
+      </button>
+    );
+  }
   return (
     <p className={cn(styles.exampleHint, centered && styles.exampleCentered)}>
       <SquarePen size={16} aria-hidden="true" /> Example — tap to enter yours
@@ -440,37 +447,149 @@ function UnitToggle({
   );
 }
 
+interface MeasureField {
+  id: string;
+  label: string;
+  unit: string;
+  maxLength: number;
+  value: string;
+  onChange: (digits: string) => void;
+}
+
+/** Editable value box: tap to type, focus ring while editing, dashed underline for the example. */
+function MeasureBox({
+  fields,
+  example,
+  invalid,
+  boxRef,
+}: {
+  fields: MeasureField[];
+  example: boolean;
+  invalid: boolean;
+  boxRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  return (
+    <div
+      ref={boxRef}
+      role="group"
+      className={cn(
+        styles.valueBox,
+        example && styles.valueBoxExample,
+        invalid && styles.valueBoxInvalid,
+      )}
+    >
+      {fields.map((f) => {
+        const shown = drafts[f.id] ?? f.value;
+        return (
+          <span key={f.id} className={styles.valueField}>
+            <input
+              aria-label={f.label}
+              inputMode="numeric"
+              autoComplete="off"
+              maxLength={f.maxLength}
+              value={shown}
+              aria-invalid={invalid || undefined}
+              className={cn(example && styles.valueInputDim)}
+              style={{ width: `${Math.max(1, shown.length) + 0.2}ch` }}
+              onFocus={(e) => e.currentTarget.select()}
+              onBlur={() =>
+                setDrafts((d) => {
+                  const rest = { ...d };
+                  delete rest[f.id];
+                  return rest;
+                })
+              }
+              onChange={(e) => {
+                const v = e.target.value.replace(/[^0-9]/g, "").slice(0, f.maxLength);
+                setDrafts((d) => ({ ...d, [f.id]: v }));
+                f.onChange(v);
+              }}
+            />
+            <span aria-hidden="true">{f.unit}</span>
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+const CM_MIN = Math.ceil(MIN_IN * IN_TO_CM);
+const CM_MAX = Math.floor(MAX_IN * IN_TO_CM);
+const KG_MIN = Math.ceil(MIN_LB * LB_TO_KG);
+const KG_MAX = Math.floor(MAX_LB * LB_TO_KG);
+
 function HeightStep({ answers, patch }: StepProps) {
   const touched = answers.heightIn !== null;
   const inches = answers.heightIn ?? EXAMPLE_HEIGHT_IN;
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [invalid, setInvalid] = useState(false);
+  const commit = (total: number | null) => {
+    const ok = total !== null && total >= MIN_IN && total <= MAX_IN;
+    setInvalid(!ok);
+    if (ok) patch({ heightIn: total });
+  };
+  const fields: MeasureField[] = answers.heightMetric
+    ? [
+        {
+          id: "cm",
+          label: "Height, centimetres",
+          unit: "cm",
+          maxLength: 3,
+          value: String(Math.round(inches * IN_TO_CM)),
+          onChange: (v) => commit(v ? Math.round(+v / IN_TO_CM) : null),
+        },
+      ]
+    : [
+        {
+          id: "ft",
+          label: "Height, feet",
+          unit: "ft",
+          maxLength: 1,
+          value: String(Math.floor(inches / 12)),
+          onChange: (v) => commit(v ? +v * 12 + (inches % 12) : null),
+        },
+        {
+          id: "in",
+          label: "Height, inches",
+          unit: "in",
+          maxLength: 2,
+          value: String(inches % 12),
+          onChange: (v) => commit(v && +v <= 11 ? Math.floor(inches / 12) * 12 + +v : null),
+        },
+      ];
   return (
     <div className={styles.measure}>
       <UnitToggle
         metric={answers.heightMetric}
         labels={["ft/in", "cm"]}
-        onChange={(m) => patch({ heightMetric: m })}
+        onChange={(m) => {
+          setInvalid(false);
+          patch({ heightMetric: m });
+        }}
       />
-      <p className={cn(styles.value, !touched && styles.valueDim)} aria-live="polite">
-        {answers.heightMetric ? (
-          <span>
-            {Math.round(inches * IN_TO_CM)} <small>cm</small>
-          </span>
-        ) : (
-          <span>
-            {Math.floor(inches / 12)} <small>ft</small> {inches % 12} <small>in</small>
-          </span>
-        )}
-      </p>
+      <MeasureBox fields={fields} example={!touched} invalid={invalid} boxRef={boxRef} />
       <Stepper
         value={inches}
         min={MIN_IN}
         max={MAX_IN}
         label="height"
-        onChange={(v) => patch({ heightIn: v })}
+        onChange={(v) => {
+          setInvalid(false);
+          patch({ heightIn: v });
+        }}
       />
       <div className={styles.hintGroup}>
-        {!touched && <ExampleHint centered />}
-        <p className={styles.sub}>That&apos;s {Math.round(inches * IN_TO_CM)} cm.</p>
+        {!touched && (
+          <ExampleHint centered onPress={() => boxRef.current?.querySelector("input")?.focus()} />
+        )}
+        <p className={cn(styles.sub, invalid && styles.subError)} aria-live="polite">
+          {invalid
+            ? answers.heightMetric
+              ? `Enter a height between ${CM_MIN} and ${CM_MAX} cm.`
+              : "Enter a height between 3 ft and 8 ft, with 0–11 inches."
+            : `That’s ${Math.round(inches * IN_TO_CM)} cm.`}
+        </p>
       </div>
     </div>
   );
@@ -481,29 +600,56 @@ function WeightStep({ answers, patch }: StepProps) {
   const lb = answers.weightLb ?? EXAMPLE_WEIGHT_LB;
   const inches = answers.heightIn ?? EXAMPLE_HEIGHT_IN;
   const bmi = (703 * lb) / (inches * inches);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [invalid, setInvalid] = useState(false);
+  const metric = answers.weightMetric;
+  const fields: MeasureField[] = [
+    {
+      id: "weight",
+      label: metric ? "Weight, kilograms" : "Weight, pounds",
+      unit: metric ? "kg" : "lbs",
+      maxLength: 3,
+      value: String(metric ? Math.round(lb * LB_TO_KG) : lb),
+      onChange: (v) => {
+        const pounds = v ? (metric ? Math.round(+v / LB_TO_KG) : +v) : null;
+        const ok = pounds !== null && pounds >= MIN_LB && pounds <= MAX_LB;
+        setInvalid(!ok);
+        if (ok) patch({ weightLb: pounds });
+      },
+    },
+  ];
   return (
     <div className={styles.measure}>
       <UnitToggle
-        metric={answers.weightMetric}
+        metric={metric}
         labels={["lbs", "kg"]}
-        onChange={(m) => patch({ weightMetric: m })}
+        onChange={(m) => {
+          setInvalid(false);
+          patch({ weightMetric: m });
+        }}
       />
-      <p className={cn(styles.value, !touched && styles.valueDim)} aria-live="polite">
-        <span>
-          {answers.weightMetric ? Math.round(lb * LB_TO_KG) : lb}{" "}
-          <small>{answers.weightMetric ? "kg" : "lbs"}</small>
-        </span>
-      </p>
+      <MeasureBox fields={fields} example={!touched} invalid={invalid} boxRef={boxRef} />
       <Stepper
         value={lb}
         min={MIN_LB}
         max={MAX_LB}
         label="weight"
-        onChange={(v) => patch({ weightLb: v })}
+        onChange={(v) => {
+          setInvalid(false);
+          patch({ weightLb: v });
+        }}
       />
       <div className={styles.hintGroup}>
-        {!touched && <ExampleHint centered />}
-        <p className={styles.sub}>That&apos;s {Math.round(lb * LB_TO_KG)} kg.</p>
+        {!touched && (
+          <ExampleHint centered onPress={() => boxRef.current?.querySelector("input")?.focus()} />
+        )}
+        <p className={cn(styles.sub, invalid && styles.subError)} aria-live="polite">
+          {invalid
+            ? metric
+              ? `Enter a weight between ${KG_MIN} and ${KG_MAX} kg.`
+              : `Enter a weight between ${MIN_LB} and ${MAX_LB} lbs.`
+            : `That’s ${Math.round(lb * LB_TO_KG)} kg.`}
+        </p>
       </div>
       <div className={styles.bmi}>
         <div>
