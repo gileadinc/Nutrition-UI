@@ -196,3 +196,56 @@
   --progress-fill: var(--background-accent);
   --progress-track: var(--background-accent-subtle);
 }
+
+/* ---------------------------------------------------------------------------
+   NEW DESIGN PALETTE — navy primary, teal selection/progress, orange accent.
+   Overrides the semantic + component tokens above; primitives are additive.
+   --------------------------------------------------------------------------- */
+:root {
+  --navy-50: #f4f5f8;
+  --navy-100: #e8ebf0;
+  --navy-200: #c6ceda;
+  --navy-300: #98a6bc;
+  --navy-400: #5f7597;
+  --navy-500: #1b3a6b;
+  --navy-600: #18335f;
+  --navy-700: #142c52;
+  --teal-100: #e7f8f8;
+  --teal-200: #c2eeed;
+  --teal-500: #0abab5;
+  --teal-600: #089e9a;
+  --teal-800: #056664;
+  --accent-orange: #f2762e;
+  --accent-orange-ink: #be4d0c;
+
+  --text-primary: #141b34;
+  --text-secondary: #5a6180;
+  --text-tertiary: #6b7280;
+  --text-link: var(--navy-500);
+  --text-link-hover: var(--navy-700);
+  --text-brand: var(--teal-800);
+
+  --background-base: #fbfbfb;
+  --background-brand: var(--navy-500);
+  --background-brand-hover: var(--navy-600);
+  --background-accent: var(--teal-600);
+  --background-accent-subtle: var(--teal-100);
+
+  --border-default: #dbdee6;
+  --border-subtle: #ececec;
+  --border-active: var(--teal-500);
+  --border-focus: var(--navy-500);
+
+  --action-primary-default: var(--navy-500);
+  --action-primary-hover: var(--navy-600);
+  --action-primary-pressed: var(--navy-700);
+  --action-primary-disabled: var(--navy-200);
+  --action-secondary-hover: var(--navy-50);
+
+  --text-on-secondary: var(--navy-500);
+  --nav-active: var(--navy-500);
+  --tab-active: var(--navy-500);
+  --progress-fill: var(--teal-600);
+  --progress-track: var(--teal-100);
+  --ai-accent: var(--teal-600);
+}

@@ -1,4 +1,4 @@
-import { UtensilsCrossed } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import styles from "./AuthHeader.module.css";
 
 export interface AuthHeaderProps {
@@ -19,16 +19,7 @@ export function AuthHeader({
   return (
     <div>
       {showMedia ? <div className={styles.media} role="presentation" /> : null}
-      {showBrand ? (
-        <p className={styles.brand}>
-          <span className={styles.brandIcon}>
-            <UtensilsCrossed className="size-4" />
-          </span>
-          <span>
-            Fork<span className={styles.brandAccent}>This!</span>
-          </span>
-        </p>
-      ) : null}
+      {showBrand ? <Logo className={styles.brand} /> : null}
       <h1 className={styles.heading}>{heading}</h1>
       {subtext ? <p className={styles.subtext}>{subtext}</p> : null}
     </div>

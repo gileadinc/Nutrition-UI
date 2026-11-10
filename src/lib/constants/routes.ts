@@ -11,13 +11,17 @@ export const ROUTES = {
   forgotPasswordSent: "/forgot-password/sent",
   resetPassword: "/reset-password",
   resetPasswordDone: "/reset-password/done",
-  onboarding: {
-    welcome: "/onboarding/welcome",
-    goals: "/onboarding/goals",
-    basics: "/onboarding/basics",
-    health: "/onboarding/health",
-  },
+  onboarding: "/onboarding",
 } as const;
 
 /** Route prefixes that render without the site chrome (header/footer). */
-export const BARE_ROUTE_PREFIXES = ["/onboarding"] as const;
+export const BARE_ROUTE_PREFIXES = [
+  "/onboarding",
+  "/login",
+  "/register",
+  "/verify-email",
+  "/account-ready",
+  "/email-verified",
+  "/forgot-password",
+  "/reset-password",
+] as const;

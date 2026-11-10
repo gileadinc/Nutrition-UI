@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="ForkThis">
+  <rect width="64" height="64" rx="16" fill="#B9470C" />
+  <text
+    x="32"
+    y="45"
+    text-anchor="middle"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="34"
+    font-weight="800"
+    fill="#FFFFFF"
+  >F!</text>
+</svg>

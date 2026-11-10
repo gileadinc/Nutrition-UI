@@ -20,7 +20,7 @@ export default function EmailVerifiedPage() {
           tone="success"
           heading="You're all set!"
           actions={
-            <Link href={ROUTES.onboarding.welcome} className={styles.primaryLink}>
+            <Link href={ROUTES.onboarding} className={styles.primaryLink}>
               <Button className={authStatusActionClasses.primary}>Get started</Button>
             </Link>
           }

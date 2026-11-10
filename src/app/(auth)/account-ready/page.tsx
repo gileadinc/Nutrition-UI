@@ -12,14 +12,13 @@ export const metadata: Metadata = {
 export default function AccountReadyPage() {
   return (
     <Card className={styles.card}>
-      <div className={styles.media} role="presentation" />
       <CardContent className={styles.cardContent}>
         <h1 className={styles.heading}>Welcome to ForkThis!</h1>
         <p className={styles.body}>
           Your personalized healthy culinary companion is ready. Let&apos;s customize your fitness
           goals and start cooking smarter today.
         </p>
-        <Link href={ROUTES.onboarding.welcome} className={styles.cta}>
+        <Link href={ROUTES.onboarding} className={styles.cta}>
           <Button className={styles.ctaButton}>Get started</Button>
         </Link>
       </CardContent>

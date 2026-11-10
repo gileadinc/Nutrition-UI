@@ -1,20 +1,12 @@
 .card {
-  padding-block: 0 2.5rem;
+  padding-block: 0;
   border: none;
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-}
-
-.media {
-  height: 14rem;
-  background-color: var(--surface-warm);
-  background-image: url("/onboarding/photo-health.svg");
-  background-size: cover;
-  background-position: center;
+  background: transparent;
+  box-shadow: none;
 }
 
 .cardContent {
-  padding-inline: 2.25rem;
+  padding-inline: 0;
   padding-top: 1.75rem;
   text-align: center;
 }

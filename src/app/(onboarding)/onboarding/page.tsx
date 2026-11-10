@@ -1,6 +1,10 @@
-import { redirect } from "next/navigation";
-import { ROUTES } from "@/lib/constants";
+import type { Metadata } from "next";
+import { QuizFlow } from "@/components/Quiz";
 
-export default function OnboardingIndexPage() {
-  redirect(ROUTES.onboarding.welcome);
+export const metadata: Metadata = {
+  title: "Start your quiz — ForkThis!",
+};
+
+export default function OnboardingPage() {
+  return <QuizFlow />;
 }
