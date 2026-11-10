@@ -59,7 +59,7 @@
 /* The quiz block starts a fixed distance from the top of the page. */
 .quiz .content {
   align-items: flex-start;
-  padding-block: 6.5rem 2rem;
+  padding-block: 10rem 2rem;
 }
 
 /* Desktop: 10px page padding, 653px photo card (20px radius), form column. */
