@@ -150,6 +150,17 @@ img {
   body {
     @apply bg-background text-foreground;
   }
+  /* Even line lengths for headings, no orphaned last words in copy. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p,
+  li,
+  dd {
+    text-wrap: pretty;
+  }
   html {
     @apply font-sans;
   }

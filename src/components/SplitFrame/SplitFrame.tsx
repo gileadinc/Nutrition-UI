@@ -38,7 +38,7 @@ export function SplitFrame({ image, caption, variant = "default", children }: Sp
           className={styles.photo}
         />
         <div className={styles.banner}>
-          <Logo light />
+          <Logo light mark />
         </div>
         {caption ? (
           <div className={styles.caption}>
