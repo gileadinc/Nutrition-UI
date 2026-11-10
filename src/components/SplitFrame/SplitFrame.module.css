@@ -62,6 +62,13 @@
   padding-block: 10rem 2rem;
 }
 
+/* The review is the tallest step: it starts higher than the other steps so the
+   whole summary fits without scrolling, but keeps some room above it. */
+.quizTall .content {
+  /* Roomy on tall screens, collapsing before the summary would need a scroll. */
+  padding-block: clamp(1.5rem, calc(50vh - 28rem), 5rem) 2rem;
+}
+
 /* Desktop: 10px page padding, 653px photo card (20px radius), form column. */
 @media (min-width: 64rem) {
   .frame {

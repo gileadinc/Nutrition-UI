@@ -20,14 +20,14 @@ export interface SplitFrameProps {
   /** Text laid over the bottom of the photo (desktop only). */
   caption?: SplitFrameCaption;
   /** `quiz` hides the photo on mobile; `default` shows a short banner. */
-  variant?: "default" | "quiz";
+  variant?: "default" | "quiz" | "quizTall";
   children: ReactNode;
 }
 
 /** Inset rounded photo card on the left, content on the right; stacks on mobile. */
 export function SplitFrame({ image, caption, variant = "default", children }: SplitFrameProps) {
   return (
-    <div className={cn(styles.frame, variant === "quiz" && styles.quiz)}>
+    <div className={cn(styles.frame, variant !== "default" && styles.quiz, variant === "quizTall" && styles.quizTall)}>
       <aside className={styles.media}>
         <AppImage
           key={image}

@@ -8,12 +8,15 @@ import {
   CalendarDays,
   Check,
   CircleCheck,
+  Droplet,
+  Dumbbell,
+  Flame,
   Footprints,
   Leaf,
   Minus,
   PersonStanding,
-  Share2,
   Plus,
+  Share2,
   Shield,
   SquarePen,
   Syringe,
@@ -57,10 +60,11 @@ import {
   STEP_COPY,
   type HealthKey,
   type QuizAnswers,
+  type StepKey,
 } from "./quizData";
 import styles from "./QuizFlow.module.css";
 
-type Position = "start" | (typeof STEPS)[number] | "analyzing" | "result" | "save";
+type Position = "start" | (typeof STEPS)[number] | "analyzing" | "result" | "save" | "review";
 const STORAGE_KEY = "forkthis.quiz";
 
 function load(): { answers: QuizAnswers; position: Position } | null {
@@ -88,6 +92,8 @@ export function QuizFlow() {
   const [answers, setAnswers] = useState<QuizAnswers>(EMPTY_ANSWERS);
   const [position, setPosition] = useState<Position>("start");
   const [hydrated, setHydrated] = useState(false);
+  /** True while editing one answer from the review page, so Continue returns there. */
+  const [fromReview, setFromReview] = useState(false);
 
   useEffect(() => {
     const saved = load();
@@ -98,7 +104,7 @@ export function QuizFlow() {
     }
     // Deep link: /onboarding?step=goal opens that screen (used for QA and sharing).
     const step = new URLSearchParams(window.location.search).get("step");
-    const valid = ["start", ...STEPS, "analyzing", "result", "save"];
+    const valid = ["start", ...STEPS, "analyzing", "result", "save", "review"];
     if (step && valid.includes(step)) setPosition(step as Position);
     setHydrated(true);
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -121,7 +127,14 @@ export function QuizFlow() {
 
   const patch = (p: Partial<QuizAnswers>) => setAnswers((a) => ({ ...a, ...p }));
   const idx = STEPS.indexOf(position as (typeof STEPS)[number]);
-  const next = () => setPosition(idx === STEPS.length - 1 ? "analyzing" : STEPS[idx + 1]);
+  const next = () => {
+    if (fromReview) {
+      setFromReview(false);
+      setPosition("review");
+      return;
+    }
+    setPosition(idx === STEPS.length - 1 ? "analyzing" : STEPS[idx + 1]);
+  };
   const back = () => setPosition(idx <= 0 ? "start" : STEPS[idx - 1]);
 
   if (position === "start") {
@@ -152,8 +165,23 @@ export function QuizFlow() {
         <Result
           answers={answers}
           onBack={() => setPosition("health")}
-          onReview={() => setPosition("dob")}
+          onReview={() => setPosition("review")}
           onSave={() => setPosition("save")}
+        />
+      </SplitFrame>
+    );
+  }
+
+  if (position === "review") {
+    return (
+      <SplitFrame image={RESULT_IMAGE} variant="quizTall">
+        <Review
+          answers={answers}
+          onBack={() => setPosition("result")}
+          onEdit={(step) => {
+            setFromReview(true);
+            setPosition(step);
+          }}
         />
       </SplitFrame>
     );
@@ -255,7 +283,7 @@ export function QuizFlow() {
             <span />
           )}
           <button type="button" className={styles.primary} onClick={next} disabled={!canContinue}>
-            Continue
+            {fromReview ? "Back to review" : "Continue"}
           </button>
         </footer>
       </section>
@@ -805,6 +833,207 @@ function Analyzing({ onSkip }: { onSkip: () => void }) {
   );
 }
 
+/** The plan figures shown on both the result and review screens. */
+function planFrom(answers: QuizAnswers) {
+  const age = ageFromDob(+answers.month, +answers.day, +answers.year) ?? 30;
+  const lb = answers.weightLb ?? EXAMPLE_WEIGHT_LB;
+  const inches = answers.heightIn ?? EXAMPLE_HEIGHT_IN;
+  const base = {
+    age,
+    weightKg: lb * LB_TO_KG,
+    heightCm: inches * IN_TO_CM,
+    activity: (answers.activity ?? "moderatelyActive") as ActivityKey,
+  };
+  const goal = answers.goals[0] ?? "track";
+  const kcal = calorieTarget({ ...base, goal }) ?? tdee(base) ?? 2000;
+  return {
+    kcal,
+    goal,
+    protein: macroGrams(kcal).protein,
+    water: Math.min(120, Math.max(48, Math.round(lb * 0.5))),
+    tdee: tdee(base),
+    bmi: (703 * lb) / (inches * inches),
+  };
+}
+
+
+const HEALTH_LABEL: Record<HealthKey, string> = {
+  none: "No surgery",
+  plastic: "Preparing for or recovering from plastic surgeries",
+  bariatric: "Recovering from surgery",
+  glp1: "I’m on a GLP-1",
+  peptide: "I’m on a peptide",
+};
+
+function formatHeight(inches: number | null, metric: boolean) {
+  if (inches === null) return "Not set";
+  return metric ? `${Math.round(inches * IN_TO_CM)} cm` : `${Math.floor(inches / 12)}'${inches % 12}"`;
+}
+
+function formatWeight(lb: number | null, metric: boolean) {
+  if (lb === null) return "Not set";
+  return metric ? `${Math.round(lb * LB_TO_KG)} kg` : `${lb} lbs`;
+}
+
+/** Every answer in one place, with an Edit link per row that returns here. */
+function Review({
+  answers,
+  onBack,
+  onEdit,
+}: {
+  answers: QuizAnswers;
+  onBack: () => void;
+  onEdit: (step: StepKey) => void;
+}) {
+  const plan = useMemo(() => planFrom(answers), [answers]);
+  const age = ageFromDob(+answers.month, +answers.day, +answers.year);
+  const dob =
+    answers.month && answers.day && answers.year
+      ? `${answers.month}/${answers.day}/${answers.year}${age === null ? "" : ` (${age})`}`
+      : "Not set";
+
+  const sections: { title: string; rows: { label: string; value: string; step: StepKey }[] }[] = [
+    {
+      title: "About you",
+      rows: [
+        { label: "Date of birth", value: dob, step: "dob" },
+        { label: "Height", value: formatHeight(answers.heightIn, answers.heightMetric), step: "height" },
+        { label: "Weight", value: formatWeight(answers.weightLb, answers.weightMetric), step: "weight" },
+      ],
+    },
+    {
+      title: "Your plan inputs",
+      rows: [
+        {
+          label: "Goal",
+          // GOAL_LABEL reads mid-sentence ("…to lose weight"), so lift the first letter here.
+          value: answers.goals.length
+            ? answers.goals
+                .map((g) => GOAL_LABEL[g].charAt(0).toUpperCase() + GOAL_LABEL[g].slice(1))
+                .join(", ")
+            : "Not set",
+          step: "goal",
+        },
+        {
+          label: "Activity",
+          value: answers.activity ? ACTIVITY_COPY[answers.activity as ShownActivity].title : "Not set",
+          step: "activity",
+        },
+        {
+          label: "Surgery",
+          value: answers.health ? HEALTH_LABEL[answers.health] : "Not set",
+          step: "health",
+        },
+      ],
+    },
+  ];
+
+  return (
+    <section className={cn(styles.result, styles.review)}>
+      <header className={styles.header}>
+        <div className={styles.headerRow}>
+          <BackButton onClick={onBack} />
+          <Mark />
+        </div>
+        <div
+          className={styles.progress}
+          role="progressbar"
+          aria-valuemin={1}
+          aria-valuemax={STEPS.length}
+          aria-valuenow={STEPS.length}
+          aria-label="All steps complete"
+        >
+          <span style={{ width: "100%" }} />
+        </div>
+        <p className={styles.stepMeta}>All {STEPS.length} steps · Review</p>
+      </header>
+
+      <div className={styles.resultBody}>
+        <h1 className={styles.reviewTitle}>Your answers</h1>
+        <p className={styles.resultLead}>
+          Check anything that’s off. Each edit brings you straight back here, and your plan
+          updates to match.
+        </p>
+
+        <section className={styles.planCard} aria-label="Your starting plan">
+          <h2 className={styles.planCardTitle}>Your starting plan</h2>
+          <dl className={styles.planFigures}>
+            <div>
+              <span className={styles.planIcon} aria-hidden="true">
+                <Flame size={16} />
+              </span>
+              <dt>Calories</dt>
+              <dd>
+                {plan.kcal.toLocaleString("en-US")} <small>kcal</small>
+              </dd>
+            </div>
+            <div>
+              <span className={styles.planIcon} aria-hidden="true">
+                <Dumbbell size={16} />
+              </span>
+              <dt>Protein</dt>
+              <dd>
+                {plan.protein} <small>g</small>
+              </dd>
+            </div>
+            <div>
+              <span className={styles.planIcon} aria-hidden="true">
+                <Droplet size={16} />
+              </span>
+              <dt>Water</dt>
+              <dd>
+                {plan.water} <small>oz</small>
+              </dd>
+            </div>
+          </dl>
+          <p className={styles.planNote}>
+            Water is a general guide — drink more on hot days and when you train.
+          </p>
+          <dl className={styles.planTotals}>
+            <div>
+              <dt>TDEE</dt>
+              <dd>{plan.tdee === null ? "Not enough info" : `${plan.tdee.toLocaleString("en-US")} kcal/day`}</dd>
+            </div>
+            <div>
+              <dt>BMI</dt>
+              <dd>{plan.bmi.toFixed(1)}</dd>
+            </div>
+          </dl>
+        </section>
+
+        {sections.map((s) => (
+          <section key={s.title} className={styles.reviewSection}>
+            <h2 className={styles.reviewEyebrow}>{s.title}</h2>
+            <div className={styles.reviewRows}>
+              {s.rows.map((r) => (
+                <div key={r.label} className={styles.reviewRow}>
+                  <div>
+                    <p className={styles.reviewLabel}>{r.label}</p>
+                    <p className={styles.reviewValue}>{r.value}</p>
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.reviewEdit}
+                    onClick={() => onEdit(r.step)}
+                  >
+                    Edit<span className={styles.srOnly}> {r.label}</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+
+      <footer className={styles.footer}>
+        <button type="button" className={cn(styles.primary, styles.reviewPrimary)} onClick={onBack}>
+          Back to your plan
+        </button>
+      </footer>
+    </section>
+  );
+}
+
 function Result({
   answers,
   onBack,
@@ -816,24 +1045,7 @@ function Result({
   onReview: () => void;
   onSave: () => void;
 }) {
-  const result = useMemo(() => {
-    const age = ageFromDob(+answers.month, +answers.day, +answers.year) ?? 30;
-    const lb = answers.weightLb ?? EXAMPLE_WEIGHT_LB;
-    const base = {
-      age,
-      weightKg: lb * LB_TO_KG,
-      heightCm: (answers.heightIn ?? EXAMPLE_HEIGHT_IN) * IN_TO_CM,
-      activity: (answers.activity ?? "moderatelyActive") as ActivityKey,
-    };
-    const goal = answers.goals[0] ?? "track";
-    const kcal = calorieTarget({ ...base, goal }) ?? tdee(base) ?? 2000;
-    return {
-      kcal,
-      goal,
-      protein: macroGrams(kcal).protein,
-      water: Math.min(120, Math.max(48, Math.round(lb * 0.5))),
-    };
-  }, [answers]);
+  const result = useMemo(() => planFrom(answers), [answers]);
   const shownKcal = useCountUp(result.kcal);
 
   return (

@@ -951,3 +951,211 @@
   white-space: nowrap;
   border: 0;
 }
+
+/* ---- review ---- */
+.reviewTitle {
+  padding-top: 1.25rem;
+  font-size: 2rem;
+  line-height: 2.3rem;
+  font-weight: 700;
+  letter-spacing: -0.05rem;
+  color: var(--navy-500);
+}
+
+.planCard {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: var(--navy-50);
+}
+
+.planCardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.011rem;
+  color: var(--navy-500);
+}
+
+.planFigures {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.planFigures dt {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.planFigures dd {
+  margin-top: 0.125rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02rem;
+  color: var(--text-primary);
+}
+
+.planFigures dd small {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.planNote {
+  margin-top: 1rem;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  color: var(--text-secondary);
+}
+
+.planTotals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-default);
+}
+
+.planTotals dt {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.planTotals dd {
+  margin-top: 0.125rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.reviewSection {
+  margin-top: 1.5rem;
+}
+
+.reviewEyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--eyebrow, #0f766e);
+}
+
+.reviewRows {
+  margin-top: 0.625rem;
+  padding-inline: 1rem;
+  border: 1px solid var(--border-default);
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.reviewRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.875rem;
+}
+
+.reviewRow + .reviewRow {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.reviewLabel {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.reviewValue {
+  margin-top: 0.125rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.reviewEdit {
+  flex-shrink: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--navy-500);
+}
+
+.reviewEdit:hover {
+  text-decoration: underline;
+}
+
+.reviewPrimary {
+  flex: 1;
+  width: 100%;
+}
+
+/* Review header: the progress bar needs air under the back button, but the
+   meta line sits tight beneath the bar. */
+.review .header {
+  gap: 0.5rem;
+}
+
+.review .header .stepMeta {
+  margin-top: -0.125rem;
+}
+
+/* The review fits without scrolling: the figures and rows run tighter than
+   elsewhere in the quiz. */
+.review .resultBody {
+  flex: 1;
+}
+
+.review .reviewTitle {
+  padding-top: 0.75rem;
+}
+
+.review .planCard {
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+}
+
+.review .planFigures {
+  margin-top: 0.75rem;
+}
+
+.review .planNote,
+.review .planTotals {
+  margin-top: 0.75rem;
+}
+
+.review .planTotals {
+  padding-top: 0.75rem;
+}
+
+.review .reviewSection {
+  margin-top: 1rem;
+}
+
+.review .reviewRow {
+  padding-block: 0.625rem;
+}
+
+.review .footer {
+  padding-top: 1rem;
+}
+
+.planIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-bottom: 0.5rem;
+  border-radius: 999px;
+  background: #e6f7f5;
+  color: #0f766e;
+}
+
+/* The review sizes to its content rather than the fixed step height, so the
+   whole summary fits on short screens. */
+.review {
+  min-height: 0;
+  padding-block: 0 1.5rem;
+}
