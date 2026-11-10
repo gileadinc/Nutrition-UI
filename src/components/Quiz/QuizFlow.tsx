@@ -23,6 +23,7 @@ import {
 import { AppImage } from "@/components/AppImage";
 import { Logo } from "@/components/Logo";
 import { SplitFrame } from "@/components/SplitFrame";
+import { SocialAuthDialog, type SocialProvider } from "@/components/SocialAuthButtons/SocialAuthDialog";
 import { ROUTES } from "@/lib/constants";
 import {
   GOAL_LABEL,
@@ -57,7 +58,7 @@ import {
 } from "./quizData";
 import styles from "./QuizFlow.module.css";
 
-type Position = "start" | (typeof STEPS)[number] | "analyzing" | "result";
+type Position = "start" | (typeof STEPS)[number] | "analyzing" | "result" | "save";
 const STORAGE_KEY = "forkthis.quiz";
 
 function load(): { answers: QuizAnswers; position: Position } | null {
@@ -95,7 +96,7 @@ export function QuizFlow() {
     }
     // Deep link: /onboarding?step=goal opens that screen (used for QA and sharing).
     const step = new URLSearchParams(window.location.search).get("step");
-    const valid = ["start", ...STEPS, "analyzing", "result"];
+    const valid = ["start", ...STEPS, "analyzing", "result", "save"];
     if (step && valid.includes(step)) setPosition(step as Position);
     setHydrated(true);
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -146,7 +147,20 @@ export function QuizFlow() {
   if (position === "result") {
     return (
       <SplitFrame image={RESULT_IMAGE} variant="quiz">
-        <Result answers={answers} onBack={() => setPosition("health")} onReview={() => setPosition("dob")} />
+        <Result
+          answers={answers}
+          onBack={() => setPosition("health")}
+          onReview={() => setPosition("dob")}
+          onSave={() => setPosition("save")}
+        />
+      </SplitFrame>
+    );
+  }
+
+  if (position === "save") {
+    return (
+      <SplitFrame image={RESULT_IMAGE} variant="quiz">
+        <SavePlan onBack={() => setPosition("result")} />
       </SplitFrame>
     );
   }
@@ -608,10 +622,12 @@ function Result({
   answers,
   onBack,
   onReview,
+  onSave,
 }: {
   answers: QuizAnswers;
   onBack: () => void;
   onReview: () => void;
+  onSave: () => void;
 }) {
   const result = useMemo(() => {
     const age = ageFromDob(+answers.month, +answers.day, +answers.year) ?? 30;
@@ -676,10 +692,46 @@ function Result({
         <button type="button" className={styles.skip} onClick={onReview}>
           Review your answers
         </button>
-        <Link href={ROUTES.dashboard} className={styles.primary}>
-          Start using ForkThis
-        </Link>
+        <button type="button" className={styles.primary} onClick={onSave}>
+          Save your plan
+        </button>
       </footer>
+    </section>
+  );
+}
+
+/** Production's last step: keep the plan with an account, or carry on as a guest. */
+function SavePlan({ onBack }: { onBack: () => void }) {
+  const [provider, setProvider] = useState<SocialProvider | null>(null);
+  return (
+    <section className={styles.result}>
+      <div className={styles.headerRow}>
+        <BackButton onClick={onBack} />
+        <Mark />
+      </div>
+      <div className={styles.resultBody}>
+        <h1 className={styles.resultTitle}>Save your plan</h1>
+        <p className={styles.resultLead}>
+          Create an account to keep your plan and progress on every device you use.
+        </p>
+        <div className={styles.saveOptions}>
+          <button type="button" className={styles.saveOption} onClick={() => setProvider("google")}>
+            Continue with Google
+          </button>
+          <Link href={ROUTES.register} className={styles.saveOption}>
+            Continue with email
+          </Link>
+          <Link href={ROUTES.dashboard} className={styles.saveGuest}>
+            Continue without an account
+          </Link>
+        </div>
+      </div>
+      <SocialAuthDialog
+        provider={provider}
+        onOpenChange={(open) => {
+          if (!open) setProvider(null);
+        }}
+      />
     </section>
   );
 }

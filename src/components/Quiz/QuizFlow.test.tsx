@@ -58,7 +58,13 @@ describe("QuizFlow", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /analyzing/ }));
     expect(screen.getByText("Plan ready")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Start using ForkThis" })).toHaveAttribute(
+    await userEvent.click(screen.getByRole("button", { name: "Save your plan" }));
+    expect(screen.getByRole("heading", { name: "Save your plan" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Continue with email" })).toHaveAttribute(
+      "href",
+      "/register",
+    );
+    expect(screen.getByRole("link", { name: "Continue without an account" })).toHaveAttribute(
       "href",
       "/dashboard",
     );

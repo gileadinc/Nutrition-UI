@@ -19,7 +19,7 @@ export default function WelcomePage() {
         so you can spend less time figuring it out and more time making progress.
       </p>
       <div className={styles.welcomeActions}>
-        <Link href={ROUTES.register} className={styles.primaryLink}>
+        <Link href={ROUTES.onboarding} className={styles.primaryLink}>
           Create a free account
         </Link>
         <Link href={ROUTES.login} className={styles.outlineLink}>

@@ -18,7 +18,7 @@ export default function AccountReadyPage() {
           Your personalized healthy culinary companion is ready. Let&apos;s customize your fitness
           goals and start cooking smarter today.
         </p>
-        <Link href={ROUTES.onboarding} className={styles.cta}>
+        <Link href={ROUTES.dashboard} className={styles.cta}>
           <Button className={styles.ctaButton}>Get started</Button>
         </Link>
       </CardContent>
