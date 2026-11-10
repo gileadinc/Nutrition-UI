@@ -54,13 +54,12 @@
 .quiz .inner {
   max-width: 34rem;
   margin-inline: auto;
-  margin-top: 2rem;
 }
 
-/* Centre the quiz block vertically on tall screens, as in the design. */
+/* The quiz block starts a fixed distance from the top of the page. */
 .quiz .content {
-  align-items: center;
-  padding-block: 3.3rem 1.7rem;
+  align-items: flex-start;
+  padding-block: 6.5rem 2rem;
 }
 
 /* Desktop: 10px page padding, 653px photo card (20px radius), form column. */
