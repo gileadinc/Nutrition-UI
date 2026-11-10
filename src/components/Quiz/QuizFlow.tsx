@@ -588,7 +588,9 @@ function HeightStep({ answers, patch }: StepProps) {
             ? answers.heightMetric
               ? `Enter a height between ${CM_MIN} and ${CM_MAX} cm.`
               : "Enter a height between 3 ft and 8 ft, with 0–11 inches."
-            : `That’s ${Math.round(inches * IN_TO_CM)} cm.`}
+            : answers.heightMetric
+              ? `That’s ${Math.floor(inches / 12)}'${inches % 12}".`
+              : `That’s ${Math.round(inches * IN_TO_CM)} cm.`}
         </p>
       </div>
     </div>
@@ -648,7 +650,9 @@ function WeightStep({ answers, patch }: StepProps) {
             ? metric
               ? `Enter a weight between ${KG_MIN} and ${KG_MAX} kg.`
               : `Enter a weight between ${MIN_LB} and ${MAX_LB} lbs.`
-            : `That’s ${Math.round(lb * LB_TO_KG)} kg.`}
+            : metric
+              ? `That’s ${lb} lbs.`
+              : `That’s ${Math.round(lb * LB_TO_KG)} kg.`}
         </p>
       </div>
       <div className={styles.bmi}>
