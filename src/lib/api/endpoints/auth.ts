@@ -1,4 +1,5 @@
 import { apiClient } from "../client";
+import { setTokens } from "../tokenStore";
 
 /**
  * Demo mode: when no API base URL is configured, the auth endpoints resolve
@@ -18,8 +19,10 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  userId: string;
-  email: string;
+  userId: string | null;
+  email: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
 }
 
 export function login(payload: LoginRequest): Promise<LoginResponse> {
@@ -27,13 +30,19 @@ export function login(payload: LoginRequest): Promise<LoginResponse> {
     return demoDelay({
       userId: "demo-user",
       email: payload.email || "demo@forkthis.app",
+      accessToken: null,
+      refreshToken: null,
     });
   }
-  return apiClient.post<LoginResponse>("/auth/login", payload);
+  return apiClient.post<LoginResponse>("/auth/signin", payload).then((data) => {
+    setTokens(data);
+    return data;
+  });
 }
 
 export interface RegisterRequest {
-  name: string;
+  givenName: string;
+  familyName?: string;
   email: string;
   password: string;
 }
@@ -50,7 +59,9 @@ export function register(payload: RegisterRequest): Promise<RegisterResponse> {
       email: payload.email || "demo@forkthis.app",
     });
   }
-  return apiClient.post<RegisterResponse>("/auth/register", payload);
+  return apiClient
+    .post<{ userId: string }>("/auth/signup", payload)
+    .then((data) => ({ userId: data.userId, email: payload.email }));
 }
 
 export interface RequestPasswordResetRequest {
@@ -67,7 +78,7 @@ export function requestPasswordReset(
   if (DEMO_MODE) {
     return demoDelay({ email: payload.email || "demo@forkthis.app" });
   }
-  return apiClient.post<RequestPasswordResetResponse>("/auth/password/reset-request", payload);
+  return apiClient.post("/auth/forgot-password", payload).then(() => ({ email: payload.email }));
 }
 
 export interface ResetPasswordRequest {

@@ -36,11 +36,11 @@ export default function RegisterPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // Demo mode: no blocking client-side validation — the flow always proceeds.
-    const name = [firstName, middleName, lastName]
+    const givenName = [firstName, middleName]
       .map((p) => p.trim())
       .filter(Boolean)
       .join(" ");
-    const result = await execute({ name, email, password });
+    const result = await execute({ givenName, familyName: lastName.trim(), email, password });
     if (result) {
       toast.success("Account created. Check your email to verify it.");
       router.push(`${ROUTES.verifyEmail}?email=${encodeURIComponent(result.email)}`);

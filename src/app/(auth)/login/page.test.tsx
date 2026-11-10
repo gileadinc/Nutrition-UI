@@ -34,7 +34,12 @@ describe("Login page", () => {
   });
 
   it("submits credentials and shows a success toast on success", async () => {
-    vi.mocked(authApi.login).mockResolvedValue({ userId: "1", email: "jane@example.com" });
+    vi.mocked(authApi.login).mockResolvedValue({
+      userId: "1",
+      email: "jane@example.com",
+      accessToken: null,
+      refreshToken: null,
+    });
     renderLoginPage();
 
     await userEvent.type(screen.getByLabelText("Email"), "jane@example.com");
