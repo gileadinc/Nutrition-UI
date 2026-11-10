@@ -51,7 +51,8 @@ export function SocialAuthButtons({ dividerLabel = "Or continue with" }: SocialA
           type="button"
           variant="outline"
           className={styles.appleButton}
-          onClick={() => setProvider("apple")}
+          disabled
+          title="Apple sign-in is coming soon"
         >
           <Apple className="size-4" />
           Apple
