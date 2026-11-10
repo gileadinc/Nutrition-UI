@@ -508,6 +508,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: none;
   width: 3.5rem;
   height: 3.5rem;
   border: 1px solid #dbdee6;
@@ -695,6 +696,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* Never shrink: a flex item with a width alone squashes into an oval when the
+     label wraps onto a second line. */
+  flex: none;
   width: 2rem;
   height: 2rem;
   border: 1px solid #dbdee6;
@@ -739,6 +743,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: none;
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 999px;
@@ -880,6 +885,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.625rem;
   height: 3.5rem;
   width: 100%;
   border: 1px solid var(--border);
@@ -1145,6 +1151,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: none;
   width: 1.75rem;
   height: 1.75rem;
   margin-bottom: 0.5rem;
@@ -1158,4 +1165,47 @@
 .review {
   min-height: 0;
   padding-block: 0 1.5rem;
+}
+
+.saveGlyph {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Mobile: the quiz sections sit closer together so more fits on screen. */
+@media (max-width: 48rem) {
+  .review .planCard,
+  .review .reviewSection {
+    margin-top: 0.75rem;
+  }
+
+  .review .reviewTitle {
+    padding-top: 0.5rem;
+  }
+
+  .saveOptions {
+    padding-top: 1.5rem;
+  }
+}
+
+/* Back button at the left, logo centred in the column (the save/review design),
+   rather than pushed to the far right as on the question steps. */
+.headerRow.headerCentered {
+  justify-content: flex-start;
+}
+
+.headerRow.headerCentered > :last-child {
+  margin-inline: auto;
+}
+
+/* Save your plan: the block (header + content) sits centred in the viewport. */
+.save {
+  justify-content: center;
+  min-height: calc(100dvh - 4rem);
+}
+
+.save .resultBody {
+  flex: none;
+  justify-content: flex-start;
+  padding-top: 1.5rem;
 }

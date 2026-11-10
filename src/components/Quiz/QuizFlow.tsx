@@ -13,6 +13,7 @@ import {
   Flame,
   Footprints,
   Leaf,
+  Mail,
   Minus,
   PersonStanding,
   Plus,
@@ -28,6 +29,7 @@ import { Logo } from "@/components/Logo";
 import { SplitFrame } from "@/components/SplitFrame";
 import { SyringeCheck } from "./SyringeCheck";
 import { useCountUp } from "./useCountUp";
+import { GoogleGlyph } from "@/components/SocialAuthButtons/GoogleGlyph";
 import { SocialAuthDialog, type SocialProvider } from "@/components/SocialAuthButtons/SocialAuthDialog";
 import { ROUTES } from "@/lib/constants";
 import {
@@ -189,7 +191,7 @@ export function QuizFlow() {
 
   if (position === "save") {
     return (
-      <SplitFrame image={RESULT_IMAGE} variant="quiz">
+      <SplitFrame image={RESULT_IMAGE} variant="quizCentered">
         <SavePlan onBack={() => setPosition("result")} />
       </SplitFrame>
     );
@@ -1106,8 +1108,8 @@ function Result({
 function SavePlan({ onBack }: { onBack: () => void }) {
   const [provider, setProvider] = useState<SocialProvider | null>(null);
   return (
-    <section className={styles.result}>
-      <div className={styles.headerRow}>
+    <section className={cn(styles.result, styles.save)}>
+      <div className={cn(styles.headerRow, styles.headerCentered)}>
         <BackButton onClick={onBack} />
         <Mark />
       </div>
@@ -1118,9 +1120,11 @@ function SavePlan({ onBack }: { onBack: () => void }) {
         </p>
         <div className={styles.saveOptions}>
           <button type="button" className={styles.saveOption} onClick={() => setProvider("google")}>
+            <GoogleGlyph className={styles.saveGlyph} />
             Continue with Google
           </button>
           <Link href={ROUTES.register} className={styles.saveOption}>
+            <Mail size={20} aria-hidden="true" />
             Continue with email
           </Link>
           <Link href={ROUTES.dashboard} className={styles.saveGuest}>

@@ -69,6 +69,20 @@
   padding-block: clamp(1.5rem, calc(50vh - 28rem), 5rem) 2rem;
 }
 
+/* Centred steps (save your plan) fill the column and centre their own content,
+   so they take no top offset. */
+.quizCentered .content {
+  align-items: stretch;
+  padding-block: 2rem;
+}
+
+/* Mobile has no room to spare, so the gap above each step is much smaller. */
+@media (max-width: 48rem) {
+  .quiz .content {
+    padding-block: 2rem;
+  }
+}
+
 /* Desktop: 10px page padding, 653px photo card (20px radius), form column. */
 @media (min-width: 64rem) {
   .frame {
