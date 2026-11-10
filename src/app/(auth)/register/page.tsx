@@ -10,6 +10,7 @@ import { TextField } from "@/components/TextField";
 import { PasswordField } from "@/components/PasswordField";
 import { AuthHeader } from "@/components/AuthHeader";
 import { SocialAuthButtons } from "@/components/SocialAuthButtons";
+import { LegalDialog } from "@/components/LegalDialog";
 import { FormErrorMessage } from "@/components/FormErrorMessage";
 import { toast } from "sonner";
 import { useAsync } from "@/lib/hooks";
@@ -112,8 +113,8 @@ export default function RegisterPage() {
             onCheckedChange={(checked) => setAgreed(Boolean(checked))}
           />
           <Label htmlFor={termsId} className={styles.termsLabel}>
-            I agree to the <Link href={ROUTES.about}>Terms</Link> and{" "}
-            <Link href={ROUTES.about}>Privacy Policy</Link>.
+            I agree to the <LegalDialog doc="terms">Terms</LegalDialog> and{" "}
+            <LegalDialog doc="privacy">Privacy Policy</LegalDialog>.
           </Label>
         </div>
 

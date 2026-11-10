@@ -103,7 +103,8 @@
   color: var(--text-secondary);
 }
 
-.termsLabel a {
+.termsLabel a,
+.termsLabel button {
   font-weight: 600;
   text-decoration: underline;
   color: var(--navy-500);

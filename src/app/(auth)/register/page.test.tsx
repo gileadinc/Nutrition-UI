@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import RegisterPage from "./page";
 
@@ -13,5 +14,19 @@ describe("Register page", () => {
     expect(screen.getByLabelText("Confirm password")).toBeInTheDocument();
     expect(screen.getByRole("checkbox")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Register" })).toBeInTheDocument();
+  });
+
+  it("opens Terms and Privacy in a modal without ticking the checkbox", async () => {
+    render(<RegisterPage />);
+    const checkbox = screen.getByRole("checkbox");
+
+    await userEvent.click(screen.getByRole("button", { name: "Terms" }));
+    expect(await screen.findByRole("dialog", { name: "Terms of service" })).toBeInTheDocument();
+    expect(checkbox).not.toBeChecked();
+
+    await userEvent.keyboard("{Escape}");
+    await userEvent.click(screen.getByRole("button", { name: "Privacy Policy" }));
+    expect(await screen.findByRole("dialog", { name: "Privacy policy" })).toBeInTheDocument();
+    expect(checkbox).not.toBeChecked();
   });
 });
