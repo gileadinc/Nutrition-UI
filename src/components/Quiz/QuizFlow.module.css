@@ -824,3 +824,16 @@
     padding-inline: 0.5rem;
   }
 }
+
+/* First step (date of birth): content + Continue sit together, centred like the design. */
+.stepFirst {
+  justify-content: center;
+}
+
+.stepFirst .main {
+  flex: none;
+}
+
+.stepFirst .footer {
+  justify-content: flex-end;
+}

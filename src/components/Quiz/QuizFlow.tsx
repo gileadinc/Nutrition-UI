@@ -175,7 +175,7 @@ export function QuizFlow() {
 
   return (
     <SplitFrame image={copy.image} variant="quiz">
-      <section className={styles.step}>
+      <section className={cn(styles.step, first && styles.stepFirst)}>
         {first ? (
           <header className={styles.headerInline}>
             <BackButton onClick={back} />
@@ -262,7 +262,7 @@ function DobStep({ answers, patch, age }: StepProps & { age: number | null }) {
           <input
             inputMode="numeric"
             maxLength={2}
-            placeholder="MM"
+            placeholder="03"
             value={answers.month}
             onChange={(e) => patch({ month: digits(e.target.value) })}
           />
@@ -272,7 +272,7 @@ function DobStep({ answers, patch, age }: StepProps & { age: number | null }) {
           <input
             inputMode="numeric"
             maxLength={2}
-            placeholder="DD"
+            placeholder="15"
             value={answers.day}
             onChange={(e) => patch({ day: digits(e.target.value) })}
           />
@@ -282,7 +282,7 @@ function DobStep({ answers, patch, age }: StepProps & { age: number | null }) {
           <input
             inputMode="numeric"
             maxLength={4}
-            placeholder="YYYY"
+            placeholder="1993"
             value={answers.year}
             onChange={(e) => patch({ year: digits(e.target.value) })}
           />

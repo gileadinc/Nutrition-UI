@@ -46,8 +46,8 @@ export const STEP_COPY: Record<StepKey, StepCopy> = {
   weight: {
     name: "Weight",
     eyebrow: "Your starting point",
-    title: "What's your height and Weight?",
-    why: "height and weight together give your baseline energy — what your body uses at rest.",
+    title: "What's your weight?",
+    why: "it completes your baseline energy estimate, and shows your BMI for context.",
     image: "/img/quiz/measure.webp",
     optional: true,
   },
