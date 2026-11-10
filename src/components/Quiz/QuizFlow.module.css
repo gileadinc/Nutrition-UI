@@ -63,7 +63,8 @@
 }
 
 .primary:disabled {
-  opacity: 0.5;
+  background: #e9ecf1;
+  color: #5b6478;
   pointer-events: none;
 }
 
@@ -796,8 +797,8 @@
   color: var(--text-secondary);
 }
 
-/* Narrow screens: keep goal artwork in the lower-right so it never covers the text. */
-@media (max-width: 40rem) {
+/* Very narrow phones: keep goal artwork in the lower-right so it never covers the text. */
+@media (max-width: 28rem) {
   .goalArt,
   .goalArtTrack {
     inset: auto 0 0 auto;

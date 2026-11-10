@@ -60,11 +60,17 @@ describe("QuizFlow", () => {
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
     await userEvent.click(screen.getByRole("button", { name: /Lose weight/ }));
-    for (let i = 0; i < 4; i++) {
-      await userEvent.click(screen.getByRole("button", { name: "Continue" }));
+    for (let i = 0; i < 2; i++) {
+      await userEvent.click(screen.getByRole("button", { name: "Continue" })); // goal -> height -> weight
     }
+    await userEvent.click(screen.getByRole("button", { name: "Continue" })); // weight -> activity
+    expect(screen.getByRole("button", { name: "Continue" })).toBeDisabled();
+    await userEvent.click(screen.getByRole("radio", { name: /Moderately active/ }));
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     // health is the last step
     expect(screen.getByRole("heading", { name: /Anything else/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Continue" })).toBeDisabled();
+    await userEvent.click(screen.getByRole("radio", { name: /No surgery/ }));
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(screen.getByRole("heading", { name: /analyzing/ })).toBeInTheDocument();
 

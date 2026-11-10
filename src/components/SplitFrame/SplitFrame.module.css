@@ -50,6 +50,12 @@
   max-width: 28rem;
 }
 
+/* The quiz uses a wider column at every size (544px in the design). */
+.quiz .inner {
+  max-width: 34rem;
+  margin-inline: auto;
+}
+
 /* Desktop: 10px page padding, 653px photo card (20px radius), form column. */
 @media (min-width: 64rem) {
   .frame {

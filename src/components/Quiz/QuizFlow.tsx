@@ -167,7 +167,16 @@ export function QuizFlow() {
 
   const copy = STEP_COPY[position];
   const age = ageFromDob(+answers.month, +answers.day, +answers.year);
-  const canContinue = position === "dob" ? age !== null && age >= 13 : true;
+  const canContinue =
+    position === "dob"
+      ? age !== null && age >= 13
+      : position === "goal"
+        ? answers.goals.length > 0
+        : position === "activity"
+          ? answers.activity !== null
+          : position === "health"
+            ? answers.health !== null
+            : true;
   const first = idx === 0;
   const progress = (
     <div

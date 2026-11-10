@@ -29,8 +29,7 @@ export const STEP_COPY: Record<StepKey, StepCopy> = {
     eyebrow: "Your goal",
     title: "What's your main goal?",
     intro: [
-      "It decides whether your daily target leans toward a deficit, a surplus or maintenance.",
-      "Click all that apply",
+      "It decides whether your daily target leans toward a deficit, a surplus or maintenance. Click all that apply",
     ],
     image: "/img/quiz/goal.webp",
     optional: true,
