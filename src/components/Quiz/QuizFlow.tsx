@@ -719,9 +719,12 @@ function HealthStep({ answers, patch }: StepProps) {
         ))}
       </div>
       <p className={styles.note}>
-        <Shield size={16} aria-hidden="true" /> Private to you, and you can change it later. Choose
-        Prefer not to say and the app keeps recommendations general and hides surgery-specific
-        resources.
+        <Shield size={16} aria-hidden="true" />
+        <span>
+          Private to you, and you can change it later. Choose{" "}
+          <em className={styles.noteOption}>No surgery</em> and the app keeps recommendations
+          general and hides surgery-specific resources.
+        </span>
       </p>
     </>
   );

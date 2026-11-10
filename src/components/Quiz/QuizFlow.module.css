@@ -931,3 +931,10 @@
 .subError {
   color: #dc2626;
 }
+
+/* Names a button on this step, so it reads as a label rather than prose. */
+.noteOption {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--navy-500);
+}
