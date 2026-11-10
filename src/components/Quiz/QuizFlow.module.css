@@ -334,6 +334,8 @@
 
 .goal {
   position: relative;
+  display: flex;
+  align-items: flex-start;
   height: 12.4375rem;
   overflow: hidden;
   border: 1px solid #cfcfcf;
@@ -795,24 +797,6 @@
   font-weight: 300;
   letter-spacing: -0.011rem;
   color: var(--text-secondary);
-}
-
-/* Very narrow phones: keep goal artwork in the lower-right so it never covers the text. */
-@media (max-width: 28rem) {
-  .goalArt,
-  .goalArtTrack {
-    inset: auto 0 0 auto;
-    left: auto;
-    top: auto;
-    width: 62%;
-    height: 62%;
-    object-fit: contain;
-    object-position: right bottom;
-  }
-
-  .goal {
-    height: 14rem;
-  }
 }
 
 @media (max-width: 40rem) {
