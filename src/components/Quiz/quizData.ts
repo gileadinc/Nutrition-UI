@@ -108,7 +108,7 @@ export const GOAL_OPTIONS: GoalOption[] = [
     value: "recomp",
     title: ["Body recomposition"],
     subtitle: "Looking for healthier recipes to cook at home!",
-    subtitleWidth: 122,
+    subtitleWidth: 132,
     image: "/img/quiz/goal-recomp.webp",
   },
 ];
