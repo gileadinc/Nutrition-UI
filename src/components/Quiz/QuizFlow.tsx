@@ -12,17 +12,18 @@ import {
   Leaf,
   Minus,
   PersonStanding,
-  Pill,
+  Share2,
   Plus,
   Shield,
   SquarePen,
-  Stethoscope,
+  Syringe,
   User,
   type LucideIcon,
 } from "lucide-react";
 import { AppImage } from "@/components/AppImage";
 import { Logo } from "@/components/Logo";
 import { SplitFrame } from "@/components/SplitFrame";
+import { SyringeCheck } from "./SyringeCheck";
 import { SocialAuthDialog, type SocialProvider } from "@/components/SocialAuthButtons/SocialAuthDialog";
 import { ROUTES } from "@/lib/constants";
 import {
@@ -678,12 +679,15 @@ const ACTIVITY_ICON: Record<ShownActivity, LucideIcon> = {
   veryActive: Footprints,
 };
 
-const HEALTH_ICON: Record<HealthKey, LucideIcon> = {
+/** A lucide icon, or a local one drawn to the same grid (e.g. SyringeCheck). */
+type OptionIcon = LucideIcon | typeof SyringeCheck;
+
+const HEALTH_ICON: Record<HealthKey, OptionIcon> = {
   none: Leaf,
   plastic: CalendarDays,
-  bariatric: Stethoscope,
-  glp1: Shield,
-  peptide: Pill,
+  bariatric: SyringeCheck,
+  glp1: Syringe,
+  peptide: Share2,
 };
 
 function ActivityStep({ answers, patch }: StepProps) {
@@ -738,7 +742,7 @@ function Option({
   onSelect,
 }: {
   selected: boolean;
-  Icon: LucideIcon;
+  Icon: OptionIcon;
   title: string;
   subtitle: string;
   onSelect: () => void;
