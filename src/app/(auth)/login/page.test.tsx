@@ -30,16 +30,21 @@ describe("Login page", () => {
     renderLoginPage();
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Log in" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
   });
 
   it("submits credentials and shows a success toast on success", async () => {
-    vi.mocked(authApi.login).mockResolvedValue({ userId: "1", email: "jane@example.com" });
+    vi.mocked(authApi.login).mockResolvedValue({
+      userId: "1",
+      email: "jane@example.com",
+      accessToken: null,
+      refreshToken: null,
+    });
     renderLoginPage();
 
     await userEvent.type(screen.getByLabelText("Email"), "jane@example.com");
     await userEvent.type(screen.getByLabelText("Password"), "hunter2");
-    await userEvent.click(screen.getByRole("button", { name: "Log in" }));
+    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
 
     await waitFor(() =>
       expect(authApi.login).toHaveBeenCalledWith({
@@ -47,7 +52,7 @@ describe("Login page", () => {
         password: "hunter2",
       }),
     );
-    expect(await screen.findByText("Logged in successfully.")).toBeInTheDocument();
+    expect(await screen.findByText("Welcome back!")).toBeInTheDocument();
   });
 
   it("shows the error message inline when login fails", async () => {
@@ -58,7 +63,7 @@ describe("Login page", () => {
 
     await userEvent.type(screen.getByLabelText("Email"), "jane@example.com");
     await userEvent.type(screen.getByLabelText("Password"), "wrong");
-    await userEvent.click(screen.getByRole("button", { name: "Log in" }));
+    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Invalid email or password");
   });

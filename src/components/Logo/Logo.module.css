@@ -1,0 +1,45 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--navy-500);
+}
+
+.light {
+  color: #fff;
+}
+
+.tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  background: var(--navy-500);
+  color: #fff;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.011rem;
+}
+
+.light .tile {
+  background: #fff;
+  color: var(--navy-500);
+}
+
+.word {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.03125rem;
+}
+
+.small .tile {
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.011rem;
+}

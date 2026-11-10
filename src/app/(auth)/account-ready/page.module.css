@@ -1,0 +1,37 @@
+.card {
+  padding-block: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.cardContent {
+  padding-inline: 0;
+  padding-top: 1.75rem;
+  text-align: center;
+}
+
+.heading {
+  font-size: 1.75rem;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--navy-500);
+}
+
+.body {
+  margin-top: 0.75rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.cta {
+  display: block;
+  margin-top: 1.75rem;
+}
+
+.ctaButton {
+  width: 100%;
+  min-height: 2.875rem;
+  font-size: 0.9375rem;
+}

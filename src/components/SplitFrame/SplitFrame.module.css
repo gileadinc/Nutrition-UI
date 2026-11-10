@@ -1,0 +1,170 @@
+.frame {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 100dvh;
+  background: #fafafa;
+}
+
+.media {
+  position: relative;
+  height: 11rem;
+  overflow: hidden;
+  background: var(--navy-100);
+}
+
+.quiz .media {
+  display: none;
+}
+
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.banner {
+  position: relative;
+  padding: 1rem 1.25rem;
+}
+
+.caption {
+  display: none;
+}
+
+.content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1.5rem 1.25rem 2.5rem;
+}
+
+.content {
+  min-width: 0;
+}
+
+.inner {
+  min-width: 0;
+  width: 100%;
+  max-width: 28rem;
+}
+
+/* The quiz uses a wider column at every size (544px in the design). */
+.quiz .inner {
+  max-width: 34rem;
+  margin-inline: auto;
+}
+
+/* The quiz block starts a fixed distance from the top of the page. */
+.quiz .content {
+  align-items: flex-start;
+  /* Small top offset that scales a little with viewport height. */
+  padding-block: clamp(0.5rem, 1.5vh, 1rem) 2rem;
+}
+
+/* The review is the tallest step: it starts higher than the other steps so the
+   whole summary fits without scrolling, but keeps some room above it. */
+.quizTall .content {
+  /* Roomy on tall screens, collapsing before the summary would need a scroll. */
+  padding-block: clamp(1.5rem, calc(50vh - 28rem), 5rem) 2rem;
+}
+
+/* Centred steps (save your plan) fill the column and centre their own content,
+   so they take no top offset. */
+.quizCentered .content {
+  align-items: stretch;
+  padding-block: 2rem;
+}
+
+/* Mobile has no room to spare, so the gap above each step is much smaller. */
+@media (max-width: 48rem) {
+  .quiz .content {
+    padding-block: 2rem;
+  }
+}
+
+/* Desktop: 10px page padding, 653px photo card (20px radius), form column. */
+@media (min-width: 64rem) {
+  .frame {
+    grid-template-columns: 653fr 741fr;
+    gap: 0.625rem;
+    padding: 0.625rem;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .media,
+  .quiz .media {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: calc(100dvh - 1.25rem);
+    min-height: 0;
+    padding: 1.25rem;
+    border-radius: 1.25rem;
+  }
+
+  .banner {
+    display: none;
+  }
+
+  .caption {
+    position: relative;
+    display: block;
+    padding: 0.625rem 0.625rem 0.5rem;
+    color: #141b34;
+  }
+
+  .label {
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    letter-spacing: -0.011rem;
+    text-transform: uppercase;
+    color: var(--navy-500);
+  }
+
+  .title {
+    text-wrap: balance;
+    padding-top: 0.75rem;
+    font-size: 2rem;
+    line-height: 2.3rem;
+    font-weight: 700;
+    letter-spacing: -0.05rem;
+    color: var(--navy-500);
+  }
+
+  .titleMd {
+    font-size: 1.875rem;
+    font-weight: 400;
+  }
+
+  .body {
+    padding-top: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 300;
+    letter-spacing: -0.011rem;
+  }
+
+  .content {
+    align-items: safe center;
+    height: calc(100dvh - 1.25rem);
+    overflow-y: auto;
+    padding: 2.5rem clamp(2rem, 8.6vw, 7.75rem);
+  }
+
+  .inner {
+    max-width: 28rem;
+  }
+
+  .quiz .content {
+    align-items: stretch;
+    padding-inline: 1.25rem;
+  }
+
+  .quiz .inner {
+    max-width: 34rem;
+    margin-inline: auto;
+  }
+}

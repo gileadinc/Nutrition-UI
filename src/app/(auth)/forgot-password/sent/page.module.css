@@ -1,0 +1,10 @@
+.card {
+  padding-block: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.cardContent {
+  padding-inline: 0;
+}

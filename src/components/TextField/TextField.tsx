@@ -2,6 +2,7 @@ import { InputHTMLAttributes, forwardRef, useId } from "react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import styles from "@/components/TextField/Field.module.css";
 
 export interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -15,12 +16,14 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     const errorId = `${inputId}-error`;
 
     return (
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor={inputId}>{label}</Label>
+      <div className={styles.field}>
+        <Label htmlFor={inputId} className={styles.label}>
+          {label}
+        </Label>
         <Input
           ref={ref}
           id={inputId}
-          className={cn(className)}
+          className={cn(styles.input, className)}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
           {...rest}

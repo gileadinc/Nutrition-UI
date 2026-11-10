@@ -1,0 +1,98 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.iconBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 999px;
+  background: var(--teal-100);
+  color: var(--navy-500);
+}
+
+.iconBadge svg {
+  width: 1.875rem;
+  height: 1.875rem;
+}
+
+.iconBadgeSuccess {
+  background: var(--semantic-success-subtle);
+  color: var(--semantic-success);
+}
+
+.heading {
+  font-size: 1.625rem;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--navy-500);
+}
+
+.message {
+  margin-top: 0.625rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 34ch;
+}
+
+.message strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.highlight {
+  display: block;
+  margin-top: 1.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-lg);
+  background: var(--teal-100);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  margin-top: 1.5rem;
+}
+
+.actions :global(a),
+.actions :global(button) {
+  width: 100%;
+}
+
+.primaryAction {
+  min-height: 2.875rem;
+  font-size: 0.9375rem;
+}
+
+.linkAction {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-link);
+}
+
+.linkAction:hover {
+  text-decoration: underline;
+}
+
+.mutedLink {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-decoration: underline;
+}
+
+.mutedLink:hover {
+  color: var(--text-primary);
+}

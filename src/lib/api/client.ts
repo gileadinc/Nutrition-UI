@@ -1,5 +1,6 @@
 import { ApiError } from "./ApiError";
-import type { ApiEnvelope } from "./types";
+import type { ApiEnvelope, ApiErrorEnvelope } from "./types";
+import { getAccessToken } from "./tokenStore";
 
 const DEFAULT_TIMEOUT_MS = 15000;
 
@@ -18,6 +19,17 @@ function buildUrl(path: string): string {
   return `${base}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
+/** Reads both `{ error: { message } }` and the backend's flat `{ message, statusCode, details }` shapes. */
+function readError(payload: ApiErrorEnvelope | { message?: string; statusCode?: number; details?: unknown }) {
+  if ("error" in payload && payload.error) return payload.error;
+  const flat = payload as { message?: string; statusCode?: number; details?: unknown };
+  return {
+    code: flat.statusCode ? String(flat.statusCode) : undefined,
+    message: flat.message ?? "Something went wrong. Please try again.",
+    details: flat.details,
+  };
+}
+
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { body, timeoutMs = DEFAULT_TIMEOUT_MS, headers, ...rest } = options;
 
@@ -30,6 +42,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       ...rest,
       headers: {
         "Content-Type": "application/json",
+        ...(getAccessToken() ? { Authorization: `Bearer ${getAccessToken()}` } : {}),
         ...headers,
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -69,7 +82,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   }
 
   if (!response.ok) {
-    const errorBody = payload && !payload.success ? payload.error : undefined;
+    const errorBody = payload && !payload.success ? readError(payload) : undefined;
     throw new ApiError(errorBody?.message ?? `Request failed with status ${response.status}.`, {
       kind: "api",
       status: response.status,
@@ -79,11 +92,12 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   }
 
   if (payload && payload.success === false) {
-    throw new ApiError(payload.error.message, {
+    const errorBody = readError(payload);
+    throw new ApiError(errorBody.message, {
       kind: "api",
       status: response.status,
-      code: payload.error.code,
-      details: payload.error.details,
+      code: errorBody.code,
+      details: errorBody.details,
     });
   }
 

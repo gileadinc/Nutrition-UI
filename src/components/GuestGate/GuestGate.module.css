@@ -1,0 +1,78 @@
+.content {
+  max-width: 24rem;
+  padding: 1.75rem 1.5rem 1.5rem;
+  text-align: center;
+}
+
+.iconBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin: 0 auto 1rem;
+  border-radius: 999px;
+  background: var(--teal-100);
+  color: var(--navy-500);
+}
+
+.iconBadge svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.body {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.benefits {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-top: 1rem;
+  list-style: none;
+}
+
+.benefit {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.benefit svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--semantic-success);
+}
+
+.primary {
+  width: 100%;
+  min-height: 2.875rem;
+  margin-top: 1.5rem;
+  font-size: 0.9375rem;
+}
+
+.dismiss {
+  display: inline-block;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-link);
+}
+
+.dismiss:hover {
+  text-decoration: underline;
+}

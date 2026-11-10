@@ -1,0 +1,32 @@
+.brand {
+  margin-bottom: 0;
+}
+
+.heading {
+  padding-top: 1rem;
+  font-size: 2.25rem;
+  line-height: 2.375rem;
+  font-weight: 700;
+  letter-spacing: -0.101rem;
+  color: var(--navy-500);
+}
+
+.headingNoBrand {
+  padding-top: 2rem;
+}
+
+.strong {
+  font-weight: 800;
+}
+
+.subtext {
+  padding-top: 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.011rem;
+  color: var(--text-secondary);
+}
+
+.subtextTight {
+  padding-top: 0.25rem;
+}
