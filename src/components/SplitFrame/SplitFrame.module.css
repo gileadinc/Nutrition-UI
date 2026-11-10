@@ -54,6 +54,7 @@
 .quiz .inner {
   max-width: 34rem;
   margin-inline: auto;
+  margin-top: 2rem;
 }
 
 /* Centre the quiz block vertically on tall screens, as in the design. */
