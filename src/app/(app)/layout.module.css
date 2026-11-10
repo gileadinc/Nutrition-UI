@@ -5,7 +5,7 @@
 }
 
 .sidebar {
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid var(--border-default);
   padding: 1.25rem 1rem;
 }
 
@@ -33,11 +33,12 @@
   padding: 0.5rem 0.625rem;
   border-radius: 4px;
   font-size: 0.9375rem;
+  color: var(--nav-inactive);
 }
 
 .navLink:hover {
-  background: #000;
-  color: #fff;
+  background: var(--background-brand);
+  color: var(--text-on-primary);
 }
 
 .content {
@@ -54,7 +55,7 @@
     width: 240px;
     flex-shrink: 0;
     border-bottom: none;
-    border-right: 1px solid #000;
+    border-right: 1px solid var(--border-default);
   }
 
   .content {

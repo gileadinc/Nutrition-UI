@@ -1,0 +1,9 @@
+.card {
+  padding-block: 2.75rem;
+  border: none;
+  box-shadow: var(--shadow-md);
+}
+
+.cardContent {
+  padding-inline: 2.25rem;
+}

@@ -1,0 +1,106 @@
+.card {
+  padding-block: 2.75rem;
+  border: none;
+  box-shadow: var(--shadow-md);
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-inline: 2.25rem;
+  text-align: center;
+}
+
+.iconBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 999px;
+  background: var(--background-highlight);
+  color: var(--text-brand);
+}
+
+.iconBadge svg {
+  width: 1.875rem;
+  height: 1.875rem;
+}
+
+.heading {
+  font-size: 1.625rem;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--text-brand);
+}
+
+.message {
+  margin-top: 0.625rem;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+
+.email {
+  margin-top: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: var(--radius-lg);
+  background: var(--background-highlight);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.hint {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-tertiary);
+  max-width: 34ch;
+}
+
+.resendPrompt {
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+}
+
+.resend {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-link);
+}
+
+.resend:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.resend:disabled {
+  color: var(--text-disabled);
+  cursor: default;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-top: 1.5rem;
+}
+
+.footerLink {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-link);
+}
+
+.footerLink:hover {
+  text-decoration: underline;
+}
+
+.footerDivider {
+  width: 1px;
+  height: 0.875rem;
+  background: var(--border-default);
+}

@@ -1,7 +1,10 @@
+"use client";
+
 import { ReactNode } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Container } from "../Container";
-import { ROUTES } from "@/lib/constants";
+import { ROUTES, BARE_ROUTE_PREFIXES } from "@/lib/constants";
 import type { NavLink } from "@/lib/types";
 import styles from "./AppShell.module.css";
 
@@ -17,12 +20,21 @@ export interface AppShellProps {
 }
 
 export function AppShell({ children }: AppShellProps) {
+  const pathname = usePathname();
+  const isBare = BARE_ROUTE_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+
+  if (isBare) {
+    return <>{children}</>;
+  }
+
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
         <Container className={styles.headerInner}>
           <Link href="/" className={styles.logo}>
-            Nutrition (placeholder name)
+            Fork<span className={styles.logoAccent}>This!</span>
           </Link>
           <nav aria-label="Primary">
             <ul className={styles.navList}>
@@ -42,7 +54,7 @@ export function AppShell({ children }: AppShellProps) {
 
       <footer className={styles.footer}>
         <Container className={styles.footerInner}>
-          <p>&copy; {new Date().getFullYear()} Nutrition (placeholder name). Placeholder footer.</p>
+          <p>&copy; {new Date().getFullYear()} ForkThis!</p>
         </Container>
       </footer>
     </div>

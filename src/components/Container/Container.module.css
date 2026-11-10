@@ -1,12 +1,12 @@
 .container {
   width: 100%;
-  max-width: 1120px;
+  max-width: 1720px;
   margin-inline: auto;
-  padding-inline: 1rem;
+  padding-inline: 0.75rem;
 }
 
 @media (min-width: 768px) {
   .container {
-    padding-inline: 1.5rem;
+    padding-inline: 1rem;
   }
 }

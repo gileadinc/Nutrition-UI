@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import { AppShell } from "@/components/AppShell";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
 export const metadata: Metadata = {
-  title: "Nutrition (placeholder)",
-  description: "Placeholder shell — final branding and copy pending UX direction.",
+  title: "ForkThis!",
+  description:
+    "Choose what to order or cook when real life puts your healthier habits on the spot.",
 };
 
 export default function RootLayout({
@@ -14,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <body>
         <AppShell>{children}</AppShell>
         <Toaster />
