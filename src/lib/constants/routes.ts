@@ -26,4 +26,5 @@ export const BARE_ROUTE_PREFIXES = [
   "/email-verified",
   "/forgot-password",
   "/reset-password",
+  "/auth/callback",
 ] as const;

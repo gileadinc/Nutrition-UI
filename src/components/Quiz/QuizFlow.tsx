@@ -27,6 +27,7 @@ import {
 import { AppImage } from "@/components/AppImage";
 import { Logo } from "@/components/Logo";
 import { SplitFrame } from "@/components/SplitFrame";
+import { StartCollage } from "./StartCollage";
 import { SyringeCheck } from "./SyringeCheck";
 import { useCountUp } from "./useCountUp";
 import { GoogleGlyph } from "@/components/SocialAuthButtons/GoogleGlyph";
@@ -141,7 +142,7 @@ export function QuizFlow() {
 
   if (position === "start") {
     return (
-      <SplitFrame image={START_IMAGE} variant="quiz">
+      <SplitFrame image={START_IMAGE} variant="quiz" collage={<StartCollage />}>
         <div className={styles.intro}>
           <h1 className={styles.introTitle}>Start Your ForkThis! Quiz</h1>
           <p className={styles.introLead}>Take a short quiz to optimize ForkThis! to fit your goals.</p>
@@ -548,8 +549,6 @@ function MeasureBox({
 
 const CM_MIN = Math.ceil(MIN_IN * IN_TO_CM);
 const CM_MAX = Math.floor(MAX_IN * IN_TO_CM);
-const KG_MIN = Math.ceil(MIN_LB * LB_TO_KG);
-const KG_MAX = Math.floor(MAX_LB * LB_TO_KG);
 
 function HeightStep({ answers, patch }: StepProps) {
   const touched = answers.heightIn !== null;
@@ -635,7 +634,6 @@ function WeightStep({ answers, patch }: StepProps) {
   const inches = answers.heightIn ?? EXAMPLE_HEIGHT_IN;
   const bmi = (703 * lb) / (inches * inches);
   const boxRef = useRef<HTMLDivElement>(null);
-  const [invalid, setInvalid] = useState(false);
   const metric = answers.weightMetric;
   const fields: MeasureField[] = [
     {
@@ -646,9 +644,7 @@ function WeightStep({ answers, patch }: StepProps) {
       value: String(metric ? Math.round(lb * LB_TO_KG) : lb),
       onChange: (v) => {
         const pounds = v ? (metric ? Math.round(+v / LB_TO_KG) : +v) : null;
-        const ok = pounds !== null && pounds >= MIN_LB && pounds <= MAX_LB;
-        setInvalid(!ok);
-        if (ok) patch({ weightLb: pounds });
+        if (pounds !== null) patch({ weightLb: pounds });
       },
     },
   ];
@@ -657,34 +653,22 @@ function WeightStep({ answers, patch }: StepProps) {
       <UnitToggle
         metric={metric}
         labels={["lbs", "kg"]}
-        onChange={(m) => {
-          setInvalid(false);
-          patch({ weightMetric: m });
-        }}
+        onChange={(m) => patch({ weightMetric: m })}
       />
-      <MeasureBox fields={fields} example={!touched} invalid={invalid} boxRef={boxRef} />
+      <MeasureBox fields={fields} example={!touched} invalid={false} boxRef={boxRef} />
       <Stepper
         value={lb}
         min={MIN_LB}
         max={MAX_LB}
         label="weight"
-        onChange={(v) => {
-          setInvalid(false);
-          patch({ weightLb: v });
-        }}
+        onChange={(v) => patch({ weightLb: v })}
       />
       <div className={styles.hintGroup}>
         {!touched && (
           <ExampleHint centered onPress={() => boxRef.current?.querySelector("input")?.focus()} />
         )}
-        <p className={cn(styles.sub, invalid && styles.subError)} aria-live="polite">
-          {invalid
-            ? metric
-              ? `Enter a weight between ${KG_MIN} and ${KG_MAX} kg.`
-              : `Enter a weight between ${MIN_LB} and ${MAX_LB} lbs.`
-            : metric
-              ? `That’s ${lb} lbs.`
-              : `That’s ${Math.round(lb * LB_TO_KG)} kg.`}
+        <p className={styles.sub} aria-live="polite">
+          {metric ? `That’s ${lb} lbs.` : `That’s ${Math.round(lb * LB_TO_KG)} kg.`}
         </p>
       </div>
       <div className={styles.bmi}>

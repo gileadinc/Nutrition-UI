@@ -1,5 +1,6 @@
 const ACCESS_KEY = "forkthis.accessToken";
 const REFRESH_KEY = "forkthis.refreshToken";
+const CHANGE_EVENT = "forkthis:auth-change";
 
 function read(key: string): string | null {
   try {
@@ -7,6 +8,20 @@ function read(key: string): string | null {
   } catch {
     return null;
   }
+}
+
+function notify() {
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(CHANGE_EVENT));
+}
+
+/** Subscribes to token changes from this tab (custom event) and other tabs (`storage`). */
+export function subscribeToTokens(onChange: () => void): () => void {
+  window.addEventListener(CHANGE_EVENT, onChange);
+  window.addEventListener("storage", onChange);
+  return () => {
+    window.removeEventListener(CHANGE_EVENT, onChange);
+    window.removeEventListener("storage", onChange);
+  };
 }
 
 export function getAccessToken(): string | null {
@@ -24,6 +39,7 @@ export function setTokens(tokens: { accessToken?: string | null; refreshToken?: 
   } catch {
     // Storage unavailable (private mode) — the session just won't persist.
   }
+  notify();
 }
 
 export function clearTokens() {
@@ -33,4 +49,5 @@ export function clearTokens() {
   } catch {
     // ignore
   }
+  notify();
 }

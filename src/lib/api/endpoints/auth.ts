@@ -96,3 +96,30 @@ export function resetPassword(payload: ResetPasswordRequest): Promise<ResetPassw
   }
   return apiClient.post<ResetPasswordResponse>("/auth/password/reset", payload);
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Social / hosted-UI OAuth                                                   */
+/* -------------------------------------------------------------------------- */
+
+export interface SocialAuthUrlResponse {
+  provider: string;
+  authorizeUrl: string;
+}
+
+export function googleAuthUrl(state: string): Promise<SocialAuthUrlResponse> {
+  return apiClient.get<SocialAuthUrlResponse>(
+    `/api/auth/oauth/google/url?state=${encodeURIComponent(state)}`,
+  );
+}
+
+export interface OAuthExchangeRequest {
+  code: string;
+  redirectUri?: string;
+}
+
+export function exchangeOAuthCode(payload: OAuthExchangeRequest): Promise<LoginResponse> {
+  return apiClient.post<LoginResponse>("/api/auth/oauth/exchange", payload).then((data) => {
+    setTokens(data);
+    return data;
+  });
+}
