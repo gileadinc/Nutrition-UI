@@ -56,6 +56,12 @@
   margin-inline: auto;
 }
 
+/* Centre the quiz block vertically on tall screens, as in the design. */
+.quiz .content {
+  align-items: center;
+  padding-block: 3.3rem 1.7rem;
+}
+
 /* Desktop: 10px page padding, 653px photo card (20px radius), form column. */
 @media (min-width: 64rem) {
   .frame {

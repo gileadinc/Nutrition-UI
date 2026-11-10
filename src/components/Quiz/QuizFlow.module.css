@@ -89,7 +89,7 @@
 .result {
   display: flex;
   flex-direction: column;
-  min-height: calc(100dvh - 5rem);
+  min-height: min(60.375rem, calc(100dvh - 2.5rem)); /* design: a ~966px block, centred on tall screens */
   padding-block: 1.5rem;
 }
 
