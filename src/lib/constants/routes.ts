@@ -1,6 +1,7 @@
 export const ROUTES = {
   home: "/",
   about: "/about",
+  welcome: "/welcome",
   login: "/login",
   register: "/register",
   verifyEmail: "/verify-email",
@@ -17,6 +18,7 @@ export const ROUTES = {
 /** Route prefixes that render without the site chrome (header/footer). */
 export const BARE_ROUTE_PREFIXES = [
   "/onboarding",
+  "/welcome",
   "/login",
   "/register",
   "/verify-email",

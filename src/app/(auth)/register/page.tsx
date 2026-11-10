@@ -3,7 +3,6 @@
 import { FormEvent, useId, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -16,13 +15,16 @@ import { toast } from "sonner";
 import { useAsync } from "@/lib/hooks";
 import { authApi } from "@/lib/api";
 import { ROUTES } from "@/lib/constants";
-import styles from "./page.module.css";
+import { cn } from "@/lib/utils";
+import styles from "../auth.module.css";
 
 export default function RegisterPage() {
   const router = useRouter();
   const termsId = useId();
 
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -33,85 +35,100 @@ export default function RegisterPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // Demo mode: no blocking client-side validation — the flow always proceeds.
+    const name = [firstName, middleName, lastName]
+      .map((p) => p.trim())
+      .filter(Boolean)
+      .join(" ");
     const result = await execute({ name, email, password });
     if (result) {
       toast.success("Account created. Check your email to verify it.");
-      router.push(
-        `${ROUTES.verifyEmail}?email=${encodeURIComponent(result.email)}`,
-      );
+      router.push(`${ROUTES.verifyEmail}?email=${encodeURIComponent(result.email)}`);
     }
   }
 
   return (
-    <Card className={styles.card}>
-      <CardContent className={styles.cardContent}>
-        <AuthHeader
-          showBrand
-          heading="Create your account"
-          subtext="Just enough to save your progress. Your goals and body context come next."
+    <>
+      <AuthHeader
+        strong
+        heading="Create your account"
+        subtext="Your free account opens all that ForkThis! has to offer."
+      />
+      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+        <TextField
+          label="First name"
+          type="text"
+          name="firstName"
+          autoComplete="given-name"
+          value={firstName}
+          onChange={(event) => setFirstName(event.target.value)}
         />
-        <form className={styles.form} onSubmit={handleSubmit} noValidate>
+        <div className={styles.row}>
           <TextField
-            label="Full name"
+            label="Middle name or initials"
             type="text"
-            name="name"
-            autoComplete="name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
+            name="middleName"
+            autoComplete="additional-name"
+            value={middleName}
+            onChange={(event) => setMiddleName(event.target.value)}
           />
           <TextField
-            label="Email"
-            type="email"
-            name="email"
-            autoComplete="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            label="Last name"
+            type="text"
+            name="lastName"
+            autoComplete="family-name"
+            value={lastName}
+            onChange={(event) => setLastName(event.target.value)}
           />
-          <PasswordField
-            label="New password"
-            name="password"
-            autoComplete="new-password"
-            placeholder="Enter new password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
+        </div>
+        <TextField
+          label="Email"
+          type="email"
+          name="email"
+          autoComplete="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+        />
+        <PasswordField
+          label="New password"
+          name="password"
+          autoComplete="new-password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+        <PasswordField
+          label="Confirm password"
+          name="confirmPassword"
+          autoComplete="new-password"
+          value={confirmPassword}
+          onChange={(event) => setConfirmPassword(event.target.value)}
+        />
+
+        <div className={styles.terms}>
+          <Checkbox
+            id={termsId}
+            name="agree"
+            className={styles.termsCheckbox}
+            checked={agreed}
+            onCheckedChange={(checked) => setAgreed(Boolean(checked))}
           />
-          <PasswordField
-            label="Confirm password"
-            name="confirmPassword"
-            autoComplete="new-password"
-            placeholder="Repeat new password"
-            value={confirmPassword}
-            onChange={(event) => setConfirmPassword(event.target.value)}
-          />
+          <Label htmlFor={termsId} className={styles.termsLabel}>
+            I agree to the <Link href={ROUTES.about}>Terms</Link> and{" "}
+            <Link href={ROUTES.about}>Privacy Policy</Link>.
+          </Label>
+        </div>
 
-          <div className={styles.terms}>
-            <Checkbox
-              id={termsId}
-              name="agree"
-              className={styles.termsCheckbox}
-              checked={agreed}
-              onCheckedChange={(checked) => setAgreed(Boolean(checked))}
-            />
-            <Label htmlFor={termsId} className={styles.termsLabel}>
-              By creating an account you agree to our{" "}
-              <Link href={ROUTES.about}>Terms</Link> and{" "}
-              <Link href={ROUTES.about}>Privacy&nbsp;Policy</Link>.
-            </Label>
-          </div>
+        {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
 
-          {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
+        <Button type="submit" className={cn(styles.submit, styles.submitGap)} disabled={isLoading}>
+          {isLoading ? "Creating account..." : "Register"}
+        </Button>
+      </form>
 
-          <Button type="submit" className={styles.submit} disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Register"}
-          </Button>
-        </form>
+      <SocialAuthButtons dividerLabel="Or sign up with" />
 
-        <SocialAuthButtons dividerLabel="Or sign up with" />
-
-        <p className={styles.footer}>
-          Already have an account? <Link href={ROUTES.login}>Sign in</Link>
-        </p>
-      </CardContent>
-    </Card>
+      <p className={cn(styles.footer, styles.footerRegister)}>
+        Already have an account? <Link href={ROUTES.login}>Sign In</Link>
+      </p>
+    </>
   );
 }

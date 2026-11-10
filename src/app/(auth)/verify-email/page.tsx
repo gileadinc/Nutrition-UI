@@ -4,10 +4,9 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { MailCheck } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ROUTES } from "@/lib/constants";
-import styles from "./page.module.css";
+import styles from "../auth.module.css";
 
 const RESEND_COOLDOWN_SECONDS = 30;
 
@@ -34,48 +33,33 @@ function VerifyEmailContent() {
   }
 
   return (
-    <Card className={styles.card}>
-      <CardContent className={styles.cardContent}>
-        <span className={styles.iconBadge} aria-hidden="true">
-          <MailCheck />
+    <div className={styles.verify}>
+      <div className={styles.verifyTop}>
+        <span className={styles.verifyIcon} aria-hidden="true">
+          <MailCheck size={67} strokeWidth={1.5} />
         </span>
-        <h1 className={styles.heading}>Verify your email</h1>
-        <p className={styles.message}>
-          We&apos;ve sent a verification link to
+        <h1 className={styles.verifyTitle}>Check your inbox</h1>
+        <p className={styles.verifyBody}>
+          We sent a verification link to <strong>{email ?? "your email address"}</strong>. Tap it
+          to activate your account.
         </p>
-        <span className={styles.email}>{email ?? "your email address"}</span>
-        <p className={styles.hint}>
-          Open it and tap the link to finish setting up your ForkThis! account.
-          The link expires in 30 minutes.
-        </p>
+      </div>
 
-        <p className={styles.resendPrompt}>
-          Didn&apos;t get it?{" "}
-          <button
-            type="button"
-            className={styles.resend}
-            onClick={handleResend}
-            disabled={resending || cooldown > 0}
-          >
-            {resending
-              ? "Sending…"
-              : cooldown > 0
-                ? `Resend in ${cooldown}s`
-                : "Resend email"}
-          </button>
-        </p>
-
-        <div className={styles.footer}>
-          <Link href={ROUTES.register} className={styles.footerLink}>
-            Wrong address?
-          </Link>
-          <span className={styles.footerDivider} aria-hidden="true" />
-          <Link href={ROUTES.login} className={styles.footerLink}>
-            Back to sign in
-          </Link>
-        </div>
-      </CardContent>
-    </Card>
+      <div>
+        <p className={styles.resendPrompt}>Didn&apos;t receive the email?</p>
+        <button
+          type="button"
+          className={styles.resend}
+          onClick={handleResend}
+          disabled={resending || cooldown > 0}
+        >
+          {resending ? "Sending…" : cooldown > 0 ? `Resend in ${cooldown}s` : "Resend email"}
+        </button>
+        <Link href={ROUTES.login} className={styles.verifyBack}>
+          Back to sign in
+        </Link>
+      </div>
+    </div>
   );
 }
 

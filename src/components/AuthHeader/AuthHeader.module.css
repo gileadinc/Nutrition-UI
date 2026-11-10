@@ -1,26 +1,32 @@
-.media {
-  height: 8rem;
-  margin: -2rem -2rem 1.5rem;
-  background-color: var(--surface-warm);
-  background-image: url("/img/quiz/dob.webp");
-  background-size: cover;
-  background-position: center;
-}
-
 .brand {
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 }
 
 .heading {
-  font-size: 1.625rem;
-  line-height: 1.2;
+  padding-top: 1rem;
+  font-size: 2.25rem;
+  line-height: 2.375rem;
   font-weight: 700;
+  letter-spacing: -0.101rem;
   color: var(--navy-500);
 }
 
+.headingNoBrand {
+  padding-top: 2rem;
+}
+
+.strong {
+  font-weight: 800;
+}
+
 .subtext {
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
-  line-height: 1.55;
+  padding-top: 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.011rem;
   color: var(--text-secondary);
+}
+
+.subtextTight {
+  padding-top: 0.25rem;
 }

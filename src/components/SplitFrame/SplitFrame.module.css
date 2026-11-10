@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: 1fr;
   min-height: 100dvh;
-  background: var(--background-base);
+  background: #fafafa;
 }
 
 .media {
@@ -24,9 +24,13 @@
   object-fit: cover;
 }
 
-.copy {
+.banner {
   position: relative;
   padding: 1rem 1.25rem;
+}
+
+.caption {
+  display: none;
 }
 
 .content {
@@ -41,32 +45,73 @@
   max-width: 28rem;
 }
 
+/* Desktop: 10px page padding, 653px photo card (20px radius), form column. */
 @media (min-width: 64rem) {
   .frame {
-    grid-template-columns: 45fr 55fr;
+    grid-template-columns: 653fr 741fr;
+    gap: 0.625rem;
+    padding: 0.625rem;
   }
 
-  /* Photo is an inset rounded card; the logo lives in the form column. */
   .media,
   .quiz .media {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
     height: auto;
-    margin: 0.75rem;
-    min-height: calc(100dvh - 1.5rem);
-    border-radius: 1.5rem;
+    min-height: calc(100dvh - 1.25rem);
+    padding: 1.25rem;
+    border-radius: 1.25rem;
   }
 
-  .copy {
+  .banner {
     display: none;
+  }
+
+  .caption {
+    position: relative;
+    display: block;
+    padding: 0.625rem 0.625rem 0.5rem;
+    color: #141b34;
+  }
+
+  .label {
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    letter-spacing: -0.011rem;
+    text-transform: uppercase;
+    color: var(--navy-500);
+  }
+
+  .title {
+    padding-top: 0.75rem;
+    font-size: 2rem;
+    line-height: 2.3rem;
+    font-weight: 700;
+    letter-spacing: -0.05rem;
+    color: var(--navy-500);
+  }
+
+  .titleMd {
+    font-size: 1.875rem;
+    font-weight: 400;
+  }
+
+  .body {
+    padding-top: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 300;
+    letter-spacing: -0.011rem;
   }
 
   .content {
     align-items: center;
-    padding: 2.5rem 3rem;
+    padding: 2.5rem clamp(2rem, 8.6vw, 7.75rem);
   }
 
   .inner {
-    max-width: 24rem;
+    max-width: 28rem;
   }
 
   .quiz .content {

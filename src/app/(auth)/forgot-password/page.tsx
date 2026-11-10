@@ -3,7 +3,6 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/TextField";
 import { AuthHeader } from "@/components/AuthHeader";
@@ -11,7 +10,7 @@ import { FormErrorMessage } from "@/components/FormErrorMessage";
 import { useAsync } from "@/lib/hooks";
 import { authApi } from "@/lib/api";
 import { ROUTES } from "@/lib/constants";
-import styles from "./page.module.css";
+import styles from "../auth.module.css";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -22,37 +21,36 @@ export default function ForgotPasswordPage() {
     event.preventDefault();
     const result = await execute({ email });
     if (result) {
-      router.push(
-        `${ROUTES.forgotPasswordSent}?email=${encodeURIComponent(result.email)}`,
-      );
+      router.push(`${ROUTES.forgotPasswordSent}?email=${encodeURIComponent(result.email)}`);
     }
   }
 
   return (
-    <Card className={styles.card}>
-      <CardContent className={styles.cardContent}>
-        <AuthHeader
-          heading="Reset your password"
-          subtext="Enter the email on your account and we'll send a link to reset your password."
+    <>
+      <AuthHeader heading="Reset your password." />
+      <p className={styles.resetDesc}>
+        Enter the email on your account and we&apos;ll send a link to reset your password.
+      </p>
+      <form className={styles.resetForm} onSubmit={handleSubmit} noValidate>
+        <TextField
+          label="Email"
+          type="email"
+          name="email"
+          autoComplete="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
         />
-        <form className={styles.form} onSubmit={handleSubmit} noValidate>
-          <TextField
-            label="Email"
-            type="email"
-            name="email"
-            autoComplete="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-          {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
-          <Button type="submit" className={styles.submit} disabled={isLoading}>
-            {isLoading ? "Sending..." : "Send reset link"}
-          </Button>
-        </form>
-        <p className={styles.footer}>
-          Remember it? <Link href={ROUTES.login}>Back to sign in</Link>
-        </p>
-      </CardContent>
-    </Card>
+        {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
+        <Button type="submit" className={styles.submit} disabled={isLoading}>
+          {isLoading ? "Sending..." : "Send reset link"}
+        </Button>
+      </form>
+      <Link href={ROUTES.dashboard} className={styles.softLink}>
+        Skip sign-in and explore the app
+      </Link>
+      <Link href={ROUTES.login} className={styles.darkLink} style={{ paddingTop: "1rem" }}>
+        Back to sign in
+      </Link>
+    </>
   );
 }

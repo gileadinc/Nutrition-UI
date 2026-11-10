@@ -27,7 +27,7 @@ export function PasswordField({ label, error, id, className, ...rest }: Password
         <Input
           id={inputId}
           type={visible ? "text" : "password"}
-          className={cn(styles.input, "pr-11", className)}
+          className={cn(styles.input, className)}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
           {...rest}
@@ -35,12 +35,12 @@ export function PasswordField({ label, error, id, className, ...rest }: Password
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
-          className="absolute inset-y-0 right-0 flex w-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+          className={styles.toggle}
           aria-label={visible ? "Hide password" : "Show password"}
           aria-pressed={visible}
           tabIndex={-1}
         >
-          {visible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          {visible ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
         </button>
       </div>
       {error ? (
