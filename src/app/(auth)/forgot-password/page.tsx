@@ -27,7 +27,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
-      <AuthHeader heading="Reset your password." />
+      <AuthHeader showBrand heading="Reset your password." />
       <p className={styles.resetDesc}>
         Enter the email on your account and we&apos;ll send a link to reset your password.
       </p>

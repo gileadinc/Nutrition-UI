@@ -5,10 +5,16 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { MailCheck } from "lucide-react";
 import { toast } from "sonner";
+import { Logo } from "@/components/Logo";
 import { ROUTES } from "@/lib/constants";
 import styles from "../auth.module.css";
 
 const RESEND_COOLDOWN_SECONDS = 30;
+const STEPS = [
+  "Open the email from ForkThis!",
+  "Tap “Verify email” inside it",
+  "You land back here, ready to set up your plan",
+];
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -33,31 +39,44 @@ function VerifyEmailContent() {
   }
 
   return (
-    <div className={styles.verify}>
-      <div className={styles.verifyTop}>
-        <span className={styles.verifyIcon} aria-hidden="true">
-          <MailCheck size={67} strokeWidth={1.5} />
-        </span>
-        <h1 className={styles.verifyTitle}>Check your inbox</h1>
-        <p className={styles.verifyBody}>
-          We sent a verification link to <strong>{email ?? "your email address"}</strong>. Tap it
-          to activate your account.
-        </p>
-      </div>
+    <div className={styles.verifyPage}>
+      <Logo />
+      <span className={styles.verifyBadge} aria-hidden="true">
+        <MailCheck size={26} strokeWidth={1.75} />
+        <i />
+      </span>
+      <h1 className={styles.verifyHeading}>Check your inbox</h1>
+      <p className={styles.verifyBody}>
+        We sent a verification link to <strong>{email ?? "your email"}</strong>. Tap it to activate
+        your account.
+      </p>
 
-      <div>
-        <p className={styles.resendPrompt}>Didn&apos;t receive the email?</p>
-        <button
-          type="button"
-          className={styles.resend}
-          onClick={handleResend}
-          disabled={resending || cooldown > 0}
-        >
-          {resending ? "Sending…" : cooldown > 0 ? `Resend in ${cooldown}s` : "Resend email"}
-        </button>
-        <Link href={ROUTES.login} className={styles.verifyBack}>
-          Back to sign in
-        </Link>
+      <ol className={styles.verifySteps}>
+        {STEPS.map((step, i) => (
+          <li key={step}>
+            <span>{i + 1}</span>
+            {step}
+          </li>
+        ))}
+      </ol>
+
+      <a href="mailto:" className={styles.primaryLink}>
+        Open email app
+      </a>
+
+      <p className={styles.verifyHelp}>Nothing yet? Check spam or promotions, or resend.</p>
+      <button
+        type="button"
+        className={styles.resend}
+        onClick={handleResend}
+        disabled={resending || cooldown > 0}
+      >
+        {resending ? "Sending…" : cooldown > 0 ? `Resend in ${cooldown}s` : "Resend email"}
+      </button>
+
+      <div className={styles.verifyLinks}>
+        <Link href={ROUTES.register}>Wrong email?</Link>
+        <Link href={ROUTES.login}>Back to sign in</Link>
       </div>
     </div>
   );

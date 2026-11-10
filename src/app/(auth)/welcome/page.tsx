@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CircleCheck, Lock, ShieldCheck } from "lucide-react";
+import { ListChecks, Lock, Shield } from "lucide-react";
 import { ROUTES } from "@/lib/constants";
 import styles from "../auth.module.css";
 
@@ -31,13 +31,13 @@ export default function WelcomePage() {
       </div>
       <div className={styles.trust}>
         <span>
-          <ShieldCheck size={24} aria-hidden="true" /> Secure
+          <Shield size={24} aria-hidden="true" /> Secure
         </span>
         <span>
           <Lock size={24} aria-hidden="true" /> No credit card
         </span>
         <span>
-          <CircleCheck size={24} aria-hidden="true" /> 2 min setup
+          <ListChecks size={24} aria-hidden="true" /> 2 min setup
         </span>
       </div>
     </>

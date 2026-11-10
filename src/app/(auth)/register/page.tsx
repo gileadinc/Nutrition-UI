@@ -50,6 +50,7 @@ export default function RegisterPage() {
   return (
     <>
       <AuthHeader
+        showBrand
         strong
         heading="Create your account"
         subtext="Your free account opens all that ForkThis! has to offer."
