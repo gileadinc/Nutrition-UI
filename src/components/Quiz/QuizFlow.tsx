@@ -24,6 +24,7 @@ import { AppImage } from "@/components/AppImage";
 import { Logo } from "@/components/Logo";
 import { SplitFrame } from "@/components/SplitFrame";
 import { SyringeCheck } from "./SyringeCheck";
+import { useCountUp } from "./useCountUp";
 import { SocialAuthDialog, type SocialProvider } from "@/components/SocialAuthButtons/SocialAuthDialog";
 import { ROUTES } from "@/lib/constants";
 import {
@@ -833,6 +834,7 @@ function Result({
       water: Math.min(120, Math.max(48, Math.round(lb * 0.5))),
     };
   }, [answers]);
+  const shownKcal = useCountUp(result.kcal);
 
   return (
     <section className={styles.result}>
@@ -852,7 +854,9 @@ function Result({
         </h1>
         <p className={styles.resultLead}>Based on your answers, your starting caloric goal is</p>
         <p className={styles.kcal}>
-          {result.kcal.toLocaleString("en-US")}
+          <span aria-hidden="true">{(shownKcal ?? result.kcal).toLocaleString("en-US")}</span>
+          {/* Screen readers get the final number, not every frame of the count-up. */}
+          <span className={styles.srOnly}>{result.kcal.toLocaleString("en-US")}</span>
           <small>
             kcal a day to <b>{GOAL_LABEL[result.goal]}</b>
           </small>
