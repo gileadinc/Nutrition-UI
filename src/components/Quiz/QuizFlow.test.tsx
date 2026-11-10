@@ -26,6 +26,18 @@ describe("QuizFlow", () => {
     expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "1");
   });
 
+  it("rejects impossible months and moves to the next field when one is complete", async () => {
+    render(<QuizFlow />);
+    await userEvent.click(screen.getByRole("button", { name: "Start Here" }));
+    const month = screen.getByLabelText("Month");
+
+    await userEvent.type(month, "22");
+    expect(month).toHaveValue("02"); // "2" -> 02, the second "2" is on the day field
+    expect(screen.getByLabelText("Day")).toHaveFocus();
+    expect(screen.getByLabelText("Day")).toHaveValue("2");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
   it("requires a valid adult date of birth before continuing", async () => {
     render(<QuizFlow />);
     await userEvent.click(screen.getByRole("button", { name: "Start Here" }));

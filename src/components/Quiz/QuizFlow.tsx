@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -267,7 +267,25 @@ function ExampleHint({ centered = false }: { centered?: boolean }) {
 
 function DobStep({ answers, patch, age }: StepProps & { age: number | null }) {
   const filled = answers.month && answers.day && answers.year.length === 4;
+  const dayRef = useRef<HTMLInputElement>(null);
+  const yearRef = useRef<HTMLInputElement>(null);
   const digits = (v: string) => v.replace(/\D/g, "");
+
+  // Reject values that can never be valid, and move on as soon as a part is complete.
+  function onMonth(raw: string) {
+    let v = digits(raw);
+    if (v.length === 1 && +v > 1) v = `0${v}`; // "3" can only mean March
+    if (v.length === 2 && (+v < 1 || +v > 12)) return;
+    patch({ month: v });
+    if (v.length === 2) dayRef.current?.focus();
+  }
+  function onDay(raw: string) {
+    let v = digits(raw);
+    if (v.length === 1 && +v > 3) v = `0${v}`; // "5" can only mean the 5th
+    if (v.length === 2 && (+v < 1 || +v > 31)) return;
+    patch({ day: v });
+    if (v.length === 2) yearRef.current?.focus();
+  }
   return (
     <>
       <div className={styles.dob}>
@@ -278,7 +296,7 @@ function DobStep({ answers, patch, age }: StepProps & { age: number | null }) {
             maxLength={2}
             placeholder="03"
             value={answers.month}
-            onChange={(e) => patch({ month: digits(e.target.value) })}
+            onChange={(e) => onMonth(e.target.value)}
           />
         </label>
         <label>
@@ -288,7 +306,8 @@ function DobStep({ answers, patch, age }: StepProps & { age: number | null }) {
             maxLength={2}
             placeholder="15"
             value={answers.day}
-            onChange={(e) => patch({ day: digits(e.target.value) })}
+            ref={dayRef}
+            onChange={(e) => onDay(e.target.value)}
           />
         </label>
         <label>
@@ -298,6 +317,7 @@ function DobStep({ answers, patch, age }: StepProps & { age: number | null }) {
             maxLength={4}
             placeholder="1993"
             value={answers.year}
+            ref={yearRef}
             onChange={(e) => patch({ year: digits(e.target.value) })}
           />
         </label>
