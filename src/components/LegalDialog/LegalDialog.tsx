@@ -2,7 +2,7 @@
 
 import { useState, type MouseEvent, type ReactNode } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { LEGAL_DOCS, LEGAL_UPDATED, type LegalDocKey } from "./legal";
+import { LEGAL_DOCS, type LegalDocKey } from "./legal";
 import styles from "./LegalDialog.module.css";
 
 export interface LegalDialogProps {
@@ -41,17 +41,45 @@ export function LegalDialog({ doc, children }: LegalDialogProps) {
       >
         <DialogContent className={styles.content}>
           <DialogTitle className={styles.title}>{content.title}</DialogTitle>
-          <DialogDescription className={styles.intro}>{content.intro}</DialogDescription>
+          <DialogDescription className={styles.intro}>Last updated {content.updated}</DialogDescription>
           <div className={styles.scroll}>
-            {content.sections.map((section) => (
-              <section key={section.heading} className={styles.section}>
-                <h3>{section.heading}</h3>
-                {section.body.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
-              </section>
-            ))}
-            <p className={styles.updated}>Last updated {LEGAL_UPDATED}</p>
+            {content.blocks.map((block, index) => {
+              switch (block.kind) {
+                case "h":
+                  return <h3 key={index} className={styles.heading}>{block.text}</h3>;
+                case "sub":
+                  return <h4 key={index} className={styles.sub}>{block.text}</h4>;
+                case "ul":
+                  return (
+                    <ul key={index} className={styles.list}>
+                      {block.items.map((item) => <li key={item}>{item}</li>)}
+                    </ul>
+                  );
+                case "table":
+                  return (
+                    <div key={index} className={styles.tableWrap}>
+                      <table className={styles.table}>
+                        <thead>
+                          <tr>{block.head.map((cell) => <th key={cell}>{cell}</th>)}</tr>
+                        </thead>
+                        <tbody>
+                          {block.rows.map((row) => (
+                            <tr key={row[0]}>
+                              {row.map((cell, i) => <td key={i}>{cell}</td>)}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                default:
+                  return (
+                    <p key={index} className={block.strong ? styles.strong : undefined}>
+                      {block.text}
+                    </p>
+                  );
+              }
+            })}
           </div>
           <button type="button" className={styles.close} onClick={() => setOpen(false)}>
             Close

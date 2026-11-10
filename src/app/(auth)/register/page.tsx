@@ -115,7 +115,9 @@ export default function RegisterPage() {
           />
           <Label htmlFor={termsId} className={styles.termsLabel}>
             I agree to the <LegalDialog doc="terms">Terms</LegalDialog> and{" "}
-            <LegalDialog doc="privacy">Privacy Policy</LegalDialog>.
+            <LegalDialog doc="privacy">Privacy Policy</LegalDialog>. See also the{" "}
+            <LegalDialog doc="disclaimer">Disclaimer</LegalDialog> and{" "}
+            <LegalDialog doc="data">Data Collection Notice</LegalDialog>.
           </Label>
         </div>
 
