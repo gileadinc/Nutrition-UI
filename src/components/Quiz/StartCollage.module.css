@@ -1,0 +1,48 @@
+.collage {
+  position: absolute;
+  inset: 0;
+  padding: 0.625rem;
+}
+
+.top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* Roughly the artwork's proportions, with a little more room for the Track card's text. */
+  grid-template-rows: minmax(0, 1000fr) minmax(0, 800fr) auto;
+  gap: 0.5rem;
+  height: 100%;
+}
+
+.top img {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  border-radius: 0.75rem;
+}
+
+/* Order / Cook fill the leftover height; their text sits at the bottom, so anchor there. */
+.tall {
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+  object-position: bottom;
+}
+
+.wide {
+  grid-column: 1 / -1;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+  object-position: left bottom;
+}
+
+/* Free: shown whole (it is short already), so its text is never clipped. */
+.free {
+  height: auto;
+  object-fit: contain;
+}
+
+/* TrackThis: its headline sits in the upper part of the card, so keep the top in view. */
+.track {
+  object-position: left 30%;
+}

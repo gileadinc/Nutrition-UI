@@ -21,26 +21,30 @@ export interface SplitFrameProps {
   caption?: SplitFrameCaption;
   /** `quiz` hides the photo on mobile; `default` shows a short banner. */
   variant?: "default" | "quiz" | "quizTall" | "quizCentered";
+  /** Replaces the photo (e.g. a card collage that must stay uncropped). */
+  collage?: ReactNode;
   children: ReactNode;
 }
 
 /** Inset rounded photo card on the left, content on the right; stacks on mobile. */
-export function SplitFrame({ image, caption, variant = "default", children }: SplitFrameProps) {
+export function SplitFrame({ image, caption, variant = "default", collage, children }: SplitFrameProps) {
   return (
     <div className={cn(
         styles.frame,
         variant !== "default" && styles.quiz, variant === "quizTall" && styles.quizTall,
         variant === "quizCentered" && styles.quizCentered,
       )}>
-      <aside className={styles.media}>
-        <AppImage
-          key={image}
-          src={image}
-          alt=""
-          priority
-          sizes="(min-width: 1024px) 46vw, 100vw"
-          className={styles.photo}
-        />
+      <aside className={cn(styles.media, collage && styles.collageMedia)}>
+        {collage ?? (
+          <AppImage
+            key={image}
+            src={image}
+            alt=""
+            priority
+            sizes="(min-width: 1024px) 46vw, 100vw"
+            className={styles.photo}
+          />
+        )}
         <div className={styles.banner}>
           <Logo light mark />
         </div>

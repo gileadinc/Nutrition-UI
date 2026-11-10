@@ -47,7 +47,8 @@ function configFor(pathname: string): FrameConfig {
   if (
     pathname.startsWith("/verify-email") ||
     pathname.startsWith("/email-verified") ||
-    pathname.startsWith("/account-ready")
+    pathname.startsWith("/account-ready") ||
+    pathname.startsWith("/auth/callback")
   ) {
     return CONFIGS.verify;
   }

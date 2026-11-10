@@ -24,6 +24,11 @@
   object-fit: cover;
 }
 
+/* The start screen builds its photo from separate cards so they can fill the panel. */
+.collageMedia {
+  background: #fafafa;
+}
+
 .banner {
   position: relative;
   padding: 1rem 1.25rem;
