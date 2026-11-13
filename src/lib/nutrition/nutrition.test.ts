@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ageFromDob, calorieTarget, macroGrams, tdee } from "./index";
+import { ageFromDob, calorieTarget, macroGrams, tdee } from "./onboarding";
 
 const base = { weightKg: 75, heightCm: 170, age: 33, activity: "lightlyActive" as const };
 

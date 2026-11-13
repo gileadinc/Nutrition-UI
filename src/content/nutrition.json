@@ -1,0 +1,22 @@
+{
+  "goalLabel": {
+    "lose": "Lose weight",
+    "gain": "Build muscle",
+    "maintain": "Maintain",
+    "recomp": "Body recomposition"
+  },
+  "activityLabel": {
+    "mostlyInactive": "Sedentary",
+    "lightlyActive": "Lightly active",
+    "moderatelyActive": "Moderately active",
+    "veryActive": "Very active",
+    "extremelyActive": "Extremely active"
+  },
+  "activityHint": {
+    "mostlyInactive": "Little or no activity",
+    "lightlyActive": "Exercise 1–3 days per week",
+    "moderatelyActive": "Exercise 3–5 days per week",
+    "veryActive": "Exercise 5–7 days per week",
+    "extremelyActive": "Physical job plus hard training"
+  }
+}

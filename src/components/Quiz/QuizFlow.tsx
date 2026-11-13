@@ -42,7 +42,7 @@ import {
   macroGrams,
   tdee,
   type ActivityKey,
-} from "@/lib/nutrition";
+} from "@/lib/nutrition/onboarding";
 import { cn } from "@/lib/utils";
 import {
   ACTIVITY_COPY,

@@ -1,0 +1,24 @@
+{
+  "faq": [
+    {
+      "q": "How is my calorie target calculated?",
+      "a": "We estimate what your body burns at rest from your height, weight and age (the Mifflin-St Jeor formula), multiply it by your activity level to get your TDEE, then adjust for your goal: −500 kcal to lose weight, +500 to build muscle, −200 for body recomposition, and no change to maintain."
+    },
+    {
+      "q": "What do BMI and TDEE mean?",
+      "a": "BMI (body mass index) compares weight to height; 18.5–24.9 is the standard healthy range, though it ignores muscle and frame. TDEE (total daily energy expenditure) is an estimate of the calories you burn in a day, including activity."
+    },
+    {
+      "q": "Can I rely on the allergy flags?",
+      "a": "No — treat them as a prompt to check, not a guarantee. We flag dishes whose ingredient names match something you avoid, but we can't see allergen declarations or cross-contamination. Always check packaging and ask the restaurant."
+    },
+    {
+      "q": "Where is my data stored?",
+      "a": "Your profile, saved items and logs are stored against your account so they follow you across devices. You can export or delete them below."
+    },
+    {
+      "q": "Is this medical advice?",
+      "a": "No. The numbers here are general estimates. Talk to a qualified clinician before changing your diet, especially around surgery or a medical condition."
+    }
+  ]
+}

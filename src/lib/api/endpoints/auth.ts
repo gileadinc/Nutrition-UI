@@ -123,3 +123,56 @@ export function exchangeOAuthCode(payload: OAuthExchangeRequest): Promise<LoginR
     return data;
   });
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Guest sessions + sign-out (used by the app screens' session store)         */
+/* -------------------------------------------------------------------------- */
+
+export interface SignInResponse {
+  challengeName: string | null;
+  accessToken: string | null;
+  idToken: string | null;
+  refreshToken: string | null;
+  expiresIn: number | null;
+  tokenType: string | null;
+  userId: string | null;
+  email: string | null;
+  userProvisioned: boolean | null;
+}
+
+export interface SignOutRequest {
+  accessToken?: string;
+  refreshToken?: string;
+}
+
+export function signOut(payload: SignOutRequest = {}): Promise<null> {
+  return apiClient.post<null>("/api/auth/signout", payload);
+}
+
+export interface GuestSessionResponse {
+  sessionId: string;
+  createdAt: string;
+  expiresAt: string | null;
+  mode: string;
+}
+
+export function createGuestSession(): Promise<GuestSessionResponse> {
+  return apiClient.post<GuestSessionResponse>("/api/auth/guest/session");
+}
+
+export interface GuestMigrateRequest {
+  sessionId: string;
+}
+
+export interface GuestMigrateResponse {
+  sessionId: string;
+  userId: string;
+  migratedOnboarding: boolean;
+  migratedTrackingEntries: number;
+  migratedAgeGate: boolean;
+}
+
+/** Requires a bearer token — merges the guest session's data into the account. */
+export function migrateGuest(payload: GuestMigrateRequest): Promise<GuestMigrateResponse> {
+  return apiClient.post<GuestMigrateResponse>("/api/auth/guest/migrate", payload);
+}

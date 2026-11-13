@@ -27,4 +27,9 @@ export const BARE_ROUTE_PREFIXES = [
   "/forgot-password",
   "/reset-password",
   "/auth/callback",
+  "/track",
+  "/recipes",
+  "/fast-hacks",
+  "/hack",
+  "/you",
 ] as const;

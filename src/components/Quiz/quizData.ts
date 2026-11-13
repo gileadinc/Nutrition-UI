@@ -1,4 +1,4 @@
-import type { ActivityKey, GoalKey } from "@/lib/nutrition";
+import type { ActivityKey, GoalKey } from "@/lib/nutrition/onboarding";
 
 export const STEPS = ["dob", "goal", "height", "weight", "activity", "health"] as const;
 export type StepKey = (typeof STEPS)[number];
