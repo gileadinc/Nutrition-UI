@@ -27,14 +27,14 @@ export const PILL =
 /** Page H1 (24px mobile, 28px md+). */
 export const PAGE_TITLE =
   "type-display text-brand-navy text-[28px] leading-[1.15] tracking-[-1.08px] md:text-[32px] md:tracking-[-1.26px]";
-export const META_TEXT = "type-meta text-[17px] tracking-[-0.3px] text-text-secondary";
+export const META_TEXT = "type-meta text-[13px] tracking-[-0.3px] text-text-secondary";
 export const SECTION_TITLE =
   "type-section-title text-[22px] leading-6 tracking-[-0.81px] text-brand-navy";
 /** Outline for secondary actions that would otherwise be bare text. */
 export const GHOST_OUTLINE =
   "rounded-full border border-border-default bg-white px-3.5 hover:border-text-neutral-400";
 export const LINK_ACTION =
-  "tap-24 tap-44 relative shrink-0 gap-0.5 rounded-full border border-border-default bg-white px-3 py-1 type-button text-[17px] tracking-[-0.4px] text-primary hover:underline underline-offset-2";
+  "tap-24 tap-44 relative shrink-0 gap-0.5 rounded-full border border-border-default bg-white px-3 py-1 type-button text-[14px] tracking-[-0.4px] text-primary hover:underline underline-offset-2";
 
 /** Onboarding typography scale (from the deployed `type` chunk). */
 export const ONB_TYPE = {

@@ -13,15 +13,18 @@
 import { useMemo } from "react";
 import { trackingApi, type NutritionEntry } from "@/lib/api";
 import type { EntryInput } from "@/lib/api/endpoints/tracking";
+import type { IconName } from "@/components/Icon";
 import {
   budgetFromSummary,
   isoDate,
+  macroGrams,
   mealApi,
   mealLabel,
   mlToOz,
   type MealLabel,
 } from "@/lib/nutrition";
-import { useAppSession, useCached, useDailySummary } from "@/lib/store";
+import { ACTIVE_MINUTES_GOAL, useActivity, useAppSession, useCached, useDailySummary } from "@/lib/store";
+import type { ActivityEntry } from "@/lib/store";
 
 export interface TrackMeal {
   id: string;
@@ -49,12 +52,20 @@ export interface TrackDay {
   hydration: TrackWater[];
   calorieGoal: number;
   proteinGoal: number;
+  /** Default 40% / 30% macro split of the calorie goal (the API only targets calories / protein / water). */
+  carbsGoal: number;
+  fatGoal: number;
   waterGoalOz: number;
+  /** Active minutes logged that day (activity is stored per device, see `useActivity`). */
+  activeMinutes: number;
+  activeGoal: number;
 }
 
 export interface TrackGoals {
   calorieGoal: number;
   proteinGoal: number;
+  carbsGoal: number;
+  fatGoal: number;
   waterGoalOz: number;
 }
 
@@ -98,9 +109,12 @@ export function useTrackGoals(): TrackGoals {
   const { data } = useDailySummary();
   return useMemo(() => {
     const b = budgetFromSummary(data);
+    const macros = macroGrams(b.calories.goal);
     return {
       calorieGoal: b.calories.goal,
       proteinGoal: b.protein.goal,
+      carbsGoal: macros.find((m) => m.key === "carbs")?.grams ?? 0,
+      fatGoal: macros.find((m) => m.key === "fat")?.grams ?? 0,
       waterGoalOz: b.water.goal,
     };
   }, [data]);
@@ -141,16 +155,29 @@ export function groupEntries(entries: NutritionEntry[]) {
   return { meals, water };
 }
 
+/** Active minutes per local day from the device's activity log. */
+export function activeMinutesByDay(entries: ActivityEntry[]) {
+  const out = new Map<string, number>();
+  for (const e of entries) {
+    const d = isoDate(new Date(e.loggedAt));
+    out.set(d, (out.get(d) ?? 0) + e.minutes);
+  }
+  return out;
+}
+
 export function dayFrom(
   date: string,
   grouped: ReturnType<typeof groupEntries>,
   goals: TrackGoals,
+  active: Map<string, number> = new Map(),
 ): TrackDay {
   return {
     date,
     meals: grouped.meals.get(date) ?? [],
     hydration: grouped.water.get(date) ?? [],
     ...goals,
+    activeMinutes: active.get(date) ?? 0,
+    activeGoal: ACTIVE_MINUTES_GOAL,
   };
 }
 
@@ -165,14 +192,16 @@ export function shiftDate(from: Date, n: number) {
 export function useTrackDays(count: number, end?: Date) {
   const entries = useAllEntries();
   const goals = useTrackGoals();
+  const activity = useActivity();
   const endKey = end ? isoDate(end) : isoDate(new Date());
   const days = useMemo(() => {
     const grouped = groupEntries(entries.data ?? []);
+    const active = activeMinutesByDay(activity.entries);
     const anchor = new Date(`${endKey}T12:00:00`);
     return Array.from({ length: count }, (_, i) =>
-      dayFrom(isoDate(shiftDate(anchor, i - (count - 1))), grouped, goals),
+      dayFrom(isoDate(shiftDate(anchor, i - (count - 1))), grouped, goals, active),
     );
-  }, [entries.data, goals, count, endKey]);
+  }, [entries.data, activity.entries, goals, count, endKey]);
   return { days, isLoading: entries.isLoading, error: entries.error, refresh: entries.refresh };
 }
 
@@ -180,20 +209,22 @@ export function useTrackDays(count: number, end?: Date) {
 
 export const dayCalories = (d: TrackDay) => d.meals.reduce((s, m) => s + m.calories, 0);
 export const dayProtein = (d: TrackDay) => d.meals.reduce((s, m) => s + m.protein, 0);
+export const dayCarbs = (d: TrackDay) => d.meals.reduce((s, m) => s + m.carbs, 0);
+export const dayFat = (d: TrackDay) => d.meals.reduce((s, m) => s + m.fat, 0);
 export const dayWaterOz = (d: TrackDay) => d.hydration.reduce((s, w) => s + w.ounces, 0);
 export const dayLogged = (d: TrackDay) => d.meals.length > 0 || d.hydration.length > 0;
 
 /* -------------------------------------------------------------- metrics */
 
 export interface TrackMetric {
-  label: "Calories" | "Protein" | "Water";
+  label: "Calories" | "Protein" | "Carbs" | "Fat" | "Water" | "Active minutes";
   moreIsBetter: boolean;
   unit: string;
   accent: string;
   chart: "ringsByDay" | "columnsWithGoal";
   valueOf: (d: TrackDay) => number;
   goalOf: (d: TrackDay | null) => number;
-  icon: "fire" | "dumbbell" | "droplet";
+  icon: IconName;
 }
 
 /** Metrics shown in Insights (activity / medication have no endpoint). */
@@ -219,6 +250,26 @@ export const TRACK_METRICS: TrackMetric[] = [
     icon: "dumbbell",
   },
   {
+    label: "Carbs",
+    moreIsBetter: false,
+    unit: "g",
+    accent: "var(--color-navy-300)",
+    chart: "columnsWithGoal",
+    valueOf: dayCarbs,
+    goalOf: (d) => d?.carbsGoal ?? 210,
+    icon: "apple",
+  },
+  {
+    label: "Fat",
+    moreIsBetter: false,
+    unit: "g",
+    accent: "var(--color-orange-400)",
+    chart: "columnsWithGoal",
+    valueOf: dayFat,
+    goalOf: (d) => d?.fatGoal ?? 70,
+    icon: "leaf",
+  },
+  {
     label: "Water",
     moreIsBetter: true,
     unit: "oz",
@@ -227,6 +278,16 @@ export const TRACK_METRICS: TrackMetric[] = [
     valueOf: dayWaterOz,
     goalOf: (d) => d?.waterGoalOz ?? 64,
     icon: "droplet",
+  },
+  {
+    label: "Active minutes",
+    moreIsBetter: true,
+    unit: "min",
+    accent: "var(--color-graphic)",
+    chart: "ringsByDay",
+    valueOf: (d) => d.activeMinutes,
+    goalOf: (d) => d?.activeGoal ?? ACTIVE_MINUTES_GOAL,
+    icon: "activity",
   },
 ];
 

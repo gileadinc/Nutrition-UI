@@ -54,7 +54,7 @@ export function DetailFrame({
         >
           <Icon name="close" size={16} color="var(--color-text-primary)" />
         </button>
-        <p className="min-w-0 flex-1 truncate text-[17px] type-item-title tracking-[-0.3px] text-text-primary">
+        <p className="min-w-0 flex-1 truncate text-[14px] type-item-title tracking-[-0.3px] text-text-primary">
           {title}
         </p>
         {(prev || next) && (
@@ -67,14 +67,14 @@ export function DetailFrame({
       <div className="relative h-40 shrink-0 md:h-56">
         <AppImage src={image} alt="" priority sizes="100vw" className="size-full object-cover" />
         {badge && (
-          <span className="absolute bottom-3 left-4 rounded-full bg-teal-action px-3 py-1 text-[17px] type-meta uppercase tracking-[0.02em] text-on-selected">
+          <span className="absolute bottom-3 left-4 rounded-full bg-teal-action px-3 py-1 text-[13px] type-meta uppercase tracking-[0.02em] text-on-selected">
             {badge}
           </span>
         )}
       </div>
       <div className="mx-auto w-full max-w-3xl flex-1 px-5 pb-8 pt-4 md:px-8 md:pt-6 lg:px-10">
         <div className="flex min-h-6 items-center justify-between gap-3">
-          <p className="min-w-0 truncate text-[17px] type-meta leading-5 text-primary">{subtitle}</p>
+          <p className="min-w-0 truncate text-[13px] type-meta leading-5 text-primary">{subtitle}</p>
           {fit && <FitsBadge fit={fit} />}
         </div>
         <h1 className="text-2xl type-display leading-8 tracking-[-1.08px] text-brand-navy">
@@ -122,7 +122,7 @@ function FitsBadge({ fit }: { fit: Fit }) {
   return fit.kind !== "over" ? (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[17px] type-meta",
+        "inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[13px] type-meta",
         POSITIVE,
       )}
     >
@@ -320,7 +320,7 @@ export function MedicalNote() {
 
 export function CheckBullet({ children }: { children: ReactNode }) {
   return (
-    <p className="flex items-start gap-2.5 text-[17px] leading-5 type-meta text-text-primary">
+    <p className="flex items-start gap-2.5 text-[13px] leading-5 type-meta text-text-primary">
       <span className="mt-0.5 shrink-0">
         <Icon name="checkCircle" size={16} color="var(--color-brand-navy)" />
       </span>
@@ -331,7 +331,7 @@ export function CheckBullet({ children }: { children: ReactNode }) {
 
 export function DotBullet({ children }: { children: ReactNode }) {
   return (
-    <p className="flex items-start gap-2.5 text-[17px] leading-5 type-meta text-text-primary">
+    <p className="flex items-start gap-2.5 text-[13px] leading-5 type-meta text-text-primary">
       <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
       {children}
     </p>
@@ -345,8 +345,8 @@ export function ProTip({ children }: { children: ReactNode }) {
         <Icon name="bulb" size={18} color="var(--color-brand-navy)" />
       </span>
       <div>
-        <h2 className="text-[17px] type-section-title text-text-primary">Pro tip</h2>
-        <p className="mt-1 text-[17px] leading-5 type-meta text-text-primary">{children}</p>
+        <h2 className="text-[14px] type-section-title text-text-primary">Pro tip</h2>
+        <p className="mt-1 text-[13px] leading-5 type-meta text-text-primary">{children}</p>
       </div>
     </section>
   );
@@ -407,7 +407,7 @@ export function RestaurantNote() {
       <span className="shrink-0">
         <Icon name="alert" size={18} color="var(--color-status-over)" />
       </span>
-      <p className="text-[17px] leading-5 type-meta text-text-primary">
+      <p className="text-[13px] leading-5 type-meta text-text-primary">
         Preparation varies by location. Confirm allergens and cooking methods with the restaurant
         before ordering.
       </p>
@@ -440,7 +440,7 @@ export function AllergenWarning({
       </span>
       <div>
         <p className="text-onb-body type-section-title text-text-primary">Contains {text}</p>
-        <p className="mt-1 text-[17px] leading-5 type-meta text-text-secondary">
+        <p className="mt-1 text-[13px] leading-5 type-meta text-text-secondary">
           Flagged from your profile. Ingredient lists can change — check the packaging.
         </p>
       </div>
@@ -493,7 +493,7 @@ export function TwoPaneDetail({
         aria-label={listLabel}
         className="sticky top-0 h-[var(--pane-h,100dvh)] w-80 shrink-0 self-start overflow-y-auto border-r border-border-divider bg-white p-4"
       >
-        <h2 className="px-1 text-[17px] type-section-title text-text-neutral-600">{listTitle}</h2>
+        <h2 className="px-1 text-[13px] type-section-title text-text-neutral-600">{listTitle}</h2>
         <ul className="mt-3 flex flex-col gap-1.5">
           {items.map((it) => {
             const on = it.id === activeId;
@@ -516,7 +516,7 @@ export function TwoPaneDetail({
                   <span className="min-w-0 flex-1">
                     <span
                       className={cn(
-                        "block truncate text-[17px] type-item-title",
+                        "block truncate text-[14px] type-item-title",
                         on ? "text-primary" : "text-text-primary",
                       )}
                     >

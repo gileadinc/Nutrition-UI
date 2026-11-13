@@ -132,7 +132,7 @@ export function VoiceSettings() {
                 onClick={() => meloActions.setVoiceReplies(!on)}
                 className="flex min-h-11 w-full items-center gap-3 rounded-[12px] px-2.5 py-2 text-left transition-colors hover:bg-icon-well focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
               >
-                <span className="min-w-0 flex-1 text-[18px] type-item-title leading-5 text-text-primary">
+                <span className="min-w-0 flex-1 text-[13px] type-item-title leading-5 text-text-primary">
                   Read answers aloud after voice questions
                 </span>
                 <span

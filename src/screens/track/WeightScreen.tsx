@@ -118,7 +118,7 @@ function WeightForm() {
           save();
         }}
       >
-        <p className="text-[17px] type-meta text-text-secondary">
+        <p className="text-[13px] type-meta text-text-secondary">
           {todayReading ? `Today: ${todayReading.pounds.toFixed(1)} lb` : "Nothing recorded today"}
         </p>
         <div className="mt-4 flex w-full max-w-sm items-end gap-3">
@@ -159,7 +159,7 @@ function WeightForm() {
             {error}
           </p>
         )}
-        <p className="mt-3 min-h-5 text-[17px] type-meta text-text-secondary" aria-live="polite">
+        <p className="mt-3 min-h-5 text-[13px] type-meta text-text-secondary" aria-live="polite">
           {previous
             ? delta === null
               ? `Last reading ${previous.pounds.toFixed(1)} lb on ${shortDay(previous.date)}`

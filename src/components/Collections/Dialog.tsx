@@ -106,7 +106,7 @@ export function Dialog({
               {title}
             </h2>
             {description && (
-              <p className="mt-1.5 type-meta text-[17px] leading-5 text-text-secondary">
+              <p className="mt-1.5 type-meta text-[13px] leading-5 text-text-secondary">
                 {description}
               </p>
             )}

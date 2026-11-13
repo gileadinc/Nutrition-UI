@@ -28,6 +28,7 @@ import { ICON_WELL } from "@/components/styles";
 import { LINK_CLS, META } from "@/components/Track/ProfileParts";
 
 const R = "text-[26px] type-row-figure leading-7 tabular-nums tracking-[-0.8px] text-text-primary";
+const TEXT_LINK = "tap-44 relative inline-flex items-center text-[14px] type-button text-brand-navy hover:underline underline-offset-2";
 const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
 const feetIn = (inches: number) => {
   const t = Math.round(inches);
@@ -58,19 +59,19 @@ function Identity({
           {name || "You"}
         </h1>
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-navy-soft px-2.5 py-1 text-[17px] type-meta text-brand-navy">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-navy-soft px-2.5 py-1 text-[13px] type-meta text-brand-navy">
             <Icon name="target" size={13} color="var(--color-brand-navy)" />
             {goal}
           </span>
           {!name && (
-            <Link to="/you/personal-details" className={LINK_CLS}>
+            <Link to="/you/personal-details" className={TEXT_LINK}>
               Add your name
             </Link>
           )}
           {email ? (
-            <span className="min-w-0 max-w-full truncate type-meta text-[17px] text-text-secondary">{email}</span>
+            <span className="min-w-0 max-w-full truncate type-meta text-[13px] text-text-secondary">{email}</span>
           ) : (
-            <Link to="/you/personal-details" className={LINK_CLS}>
+            <Link to="/you/personal-details" className={TEXT_LINK}>
               Add email
             </Link>
           )}
@@ -79,7 +80,7 @@ function Identity({
       <Link
         to="/you/personal-details"
         aria-label="Edit personal details"
-        className="inline-flex size-11 shrink-0 items-center justify-center gap-1.5 rounded-full border border-border-default bg-white text-[17px] type-button text-brand-navy transition-colors hover:border-text-neutral-400 sm:w-auto sm:px-4"
+        className="inline-flex size-11 shrink-0 items-center justify-center gap-1.5 rounded-full border border-border-default bg-white text-[14px] type-button text-brand-navy transition-colors hover:border-text-neutral-400 sm:w-auto sm:px-4"
       >
         <Icon name="pencilEdit" size={16} color="var(--color-brand-navy)" />
         <span aria-hidden="true" className="hidden sm:inline">
@@ -115,7 +116,7 @@ function GuestCard() {
         <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
           <Link
             to="/signup"
-            className="inline-flex h-11 items-center rounded-full bg-primary px-5 text-[17px] type-button text-text-on-dark transition-colors hover:bg-primary-hover"
+            className="inline-flex h-11 items-center rounded-full bg-primary px-5 text-[14px] type-button text-text-on-dark transition-colors hover:bg-primary-hover"
           >
             Create an account
           </Link>
@@ -155,7 +156,7 @@ function PlanRings({ readings }: { readings: { key: "calories" | "protein" | "wa
               aria-label={`${spoken} Open ${r.key === "water" ? "water" : "Track"}`}
               className="flex min-w-0 flex-col items-center rounded-2xl px-1 pb-2 pt-1 text-center transition-colors hover:bg-navy-soft"
             >
-              <span className="text-[17px] type-item-title text-text-secondary">{r.label}</span>
+              <span className="text-[13px] type-item-title text-text-secondary">{r.label}</span>
               <span className="mt-2 w-full max-w-[136px]">
                 <MiniRing value={r.eaten} goal={r.goal} size={136} stroke={11} color={colors[r.key]} overlap fluid label={spoken}>
                   <Icon name={icons[r.key]} size={26} color={colors[r.key]} />
@@ -196,7 +197,7 @@ function Figure({
       aria-label={`${label}: ${accessible ?? "needs your details"}. Open calculator`}
       className="group flex min-h-11 min-w-0 flex-col px-2.5 py-1 transition-colors first:pl-0 last:pr-0 hover:bg-navy-soft/60 sm:px-3"
     >
-      <span className="flex items-center gap-1 text-[17px] type-item-title text-text-secondary">
+      <span className="flex items-center gap-1 text-[13px] type-item-title text-text-secondary">
         <span className="truncate">{label}</span>
         <Icon name="chevronRight" size={13} color="var(--color-text-neutral-400)" className="shrink-0" />
       </span>
@@ -218,7 +219,7 @@ function Figure({
       </span>
       <span
         className={cn(
-          "text-[17px] leading-5",
+          "text-[14px] leading-5",
           value === null ? "type-button text-primary" : "type-meta truncate text-text-secondary",
         )}
       >
@@ -232,7 +233,7 @@ function SettingsGroup({ title, children }: { title: string; children: ReactNode
   const id = `settings-${title.toLowerCase().replace(/\W+/g, "-")}`;
   return (
     <section aria-labelledby={id} className="mt-7 first:mt-0">
-      <h2 id={id} className="mb-2 text-[17px] type-section-title text-text-secondary">
+      <h2 id={id} className="mb-2 text-[13px] type-section-title text-text-secondary">
         {title}
       </h2>
       <ul className="divide-y divide-border-divider overflow-hidden rounded-2xl border border-border-divider bg-surface-card">
@@ -266,10 +267,10 @@ function SettingsRow({
         </span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm type-item-title text-text-primary">{label}</span>
-          {sub && <span className="block truncate type-meta text-[17px] leading-5 text-text-secondary">{sub}</span>}
+          {sub && <span className="block truncate type-meta text-[13px] leading-5 text-text-secondary">{sub}</span>}
         </span>
         {badge !== undefined && badge > 0 && (
-          <span className="flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-[17px] type-meta tabular-nums text-text-on-dark">
+          <span className="flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-[13px] type-meta tabular-nums text-text-on-dark">
             {badge}
             <span className="sr-only"> unread</span>
           </span>
@@ -412,19 +413,19 @@ export function ProfileScreen() {
               icon="target"
               label="Goal"
               sub={sub(goalLabel)}
-              to={`/questionnaire?step=goal&returnTo=${encodeURIComponent("/you")}`}
+              to="/you/goal"
             />
             <SettingsRow
               icon="activity"
               label="Activity level"
               sub={sub(ACTIVITY_LABEL[activity])}
-              to={`/questionnaire?step=activity&returnTo=${encodeURIComponent("/you")}`}
+              to="/you/activity"
             />
             <SettingsRow
               icon="medication"
               label="Surgery context"
               sub={sub(profile?.surgicalContext ?? "Not set")}
-              to={`/questionnaire?step=surgery&returnTo=${encodeURIComponent("/you")}`}
+              to="/you/surgery"
             />
             <SettingsRow icon="leaf" label="Food preferences" sub={sub(foodSub)} to="/you/dietary-preferences" />
           </SettingsGroup>

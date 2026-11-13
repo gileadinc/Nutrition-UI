@@ -95,12 +95,12 @@ export function GuestFeatureGate({
           >
             {feature ? fill(GUEST_GATE.title.withFeature, { feature }) : GUEST_GATE.title.generic}
           </h1>
-          <p className="mt-4 text-[19px] text-text-secondary">{copy.description}</p>
+          <p className="mt-4 text-[14px] text-text-secondary">{copy.description}</p>
           <ul className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2.5">
             {PERKS.map((p) => (
               <li key={p.label} className="flex items-center gap-1.5">
                 <Icon name={p.icon} size={16} color="var(--color-brand-navy)" />
-                <span className="text-[17px] type-meta text-text-secondary">{p.label}</span>
+                <span className="text-[13px] type-meta text-text-secondary">{p.label}</span>
               </li>
             ))}
           </ul>

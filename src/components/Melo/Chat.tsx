@@ -35,10 +35,10 @@ function Today({ onNavigate }: { onNavigate: () => void }) {
         <Icon name="fire" size={16} color="var(--color-accent-ink)" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-[15px] type-meta leading-4 text-text-secondary">
+        <span className="block text-[13px] type-meta leading-4 text-text-secondary">
           Today so far{budget.personalised ? "" : " · default goals"}
         </span>
-        <span className="block text-[17px] type-row-figure leading-5 text-text-primary">
+        <span className="block text-[14px] type-row-figure leading-5 text-text-primary">
           <span className="text-accent-ink">{cal}</span>
           <span aria-hidden="true" className="px-1.5 text-text-neutral-400">
             ·
@@ -64,7 +64,7 @@ function RecentChats({ size, onNavigate }: { size: ChatSize; onNavigate: () => v
         <Link
           to="/assistant/history"
           onClick={onNavigate}
-          className="flex min-h-9 items-center gap-0.5 rounded-full border border-border-default bg-white px-3 text-[17px] type-button text-primary"
+          className="flex min-h-9 items-center gap-0.5 rounded-full border border-border-default bg-white px-3 text-[14px] type-button text-primary"
         >
           See all
           <Icon name="chevronRight" size={14} color="var(--color-primary)" />
@@ -79,8 +79,8 @@ function RecentChats({ size, onNavigate }: { size: ChatSize; onNavigate: () => v
               className="flex min-h-12 w-full items-center gap-3 px-1 text-left transition-colors hover:bg-icon-well focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
             >
               <Icon name="history" size={16} color="var(--color-text-neutral-500)" />
-              <span className="min-w-0 flex-1 truncate text-[18px] type-item-title text-text-primary">{c.title}</span>
-              <span className="shrink-0 text-[15px] type-meta text-text-neutral-500">
+              <span className="min-w-0 flex-1 truncate text-[13px] type-item-title text-text-primary">{c.title}</span>
+              <span className="shrink-0 text-[13px] type-meta text-text-neutral-500">
                 {relativeTime(c.updatedAt, now)}
               </span>
             </button>
@@ -181,7 +181,7 @@ export function MeloChat({
                           </span>
                           <span className="text-xs type-meta text-text-secondary">{s.intent}</span>
                         </span>
-                        <span className="text-[18px] type-item-title leading-[23px] text-text-primary">{s.text}</span>
+                        <span className="text-[13px] type-item-title leading-[23px] text-text-primary">{s.text}</span>
                       </button>
                     </li>
                   ))}
@@ -197,7 +197,7 @@ export function MeloChat({
                       <button
                         type="button"
                         onClick={() => send(p)}
-                        className="flex min-h-11 items-center rounded-full border border-border-default bg-white px-4 text-[17px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                        className="flex min-h-11 items-center rounded-full border border-border-default bg-white px-4 text-[14px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                       >
                         {p}
                       </button>
@@ -245,7 +245,7 @@ export function MeloChat({
               setPinned(true);
               scrollEnd();
             }}
-            className="absolute bottom-3 left-1/2 flex min-h-11 -translate-x-1/2 items-center gap-1.5 rounded-full border border-border-default bg-white pl-3 pr-4 text-[17px] type-button-secondary text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus motion-safe:animate-[melo-rise_180ms_ease-out_backwards]"
+            className="absolute bottom-3 left-1/2 flex min-h-11 -translate-x-1/2 items-center gap-1.5 rounded-full border border-border-default bg-white pl-3 pr-4 text-[14px] type-button-secondary text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus motion-safe:animate-[melo-rise_180ms_ease-out_backwards]"
           >
             <Icon name="arrowDownSmall" size={16} color="var(--color-primary)" />
             Latest

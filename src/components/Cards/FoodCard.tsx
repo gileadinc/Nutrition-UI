@@ -87,12 +87,12 @@ export function FoodCard({
         </ProductCardImage>
         <ProductCardContent className="border-t border-border-default/70 px-[14px] pb-[10px] pt-[11px]">
           <ProductCardTitle
-            className={cn("text-[19px] leading-[1.1] tracking-[-0.675px]", onSave && "pr-7")}
+            className={cn("text-[14px] leading-[1.1] tracking-[-0.675px]", onSave && "pr-7")}
           >
             {title}
           </ProductCardTitle>
           {subtitle && (
-            <ProductCardSubtitle className="mt-1 text-[15px] tracking-[-0.495px]">
+            <ProductCardSubtitle className="mt-1 text-[13px] tracking-[-0.495px]">
               {subtitle}
             </ProductCardSubtitle>
           )}
@@ -102,11 +102,11 @@ export function FoodCard({
                 <BrandMark restaurant={brand} initialFallback />
               </span>
             )}
-            <ProductCardMetric className="flex-1 text-[15px] leading-[1.1] tracking-[-0.5175px]">
+            <ProductCardMetric className="flex-1 text-[13px] leading-[1.1] tracking-[-0.5175px]">
               {meta}
             </ProductCardMetric>
             {pill && (
-              <span className="ml-[7px] flex h-[22px] shrink-0 items-center rounded-full border border-primary/[0.08] bg-navy-50 px-2 text-[15px] type-meta leading-none tracking-[-0.495px] text-primary">
+              <span className="ml-[7px] flex h-[22px] shrink-0 items-center rounded-full border border-primary/[0.08] bg-navy-50 px-2 text-[13px] type-meta leading-none tracking-[-0.495px] text-primary">
                 {pill}
               </span>
             )}

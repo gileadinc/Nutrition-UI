@@ -42,7 +42,7 @@ export function CategoryChips({
             aria-pressed={on}
             onClick={() => onSelect(c.category)}
             className={cn(
-              "tap-44 relative flex h-9 shrink-0 items-center gap-1.5 rounded-full border text-[17px] transition-colors duration-200",
+              "tap-44 relative flex h-9 shrink-0 items-center gap-1.5 rounded-full border text-[14px] transition-colors duration-200",
               variant === "pills" ? "px-4 tracking-[-0.63px]" : "pl-2.5 pr-3.5 tracking-[-0.585px]",
               on
                 ? SELECTED_CHIP

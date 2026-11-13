@@ -17,7 +17,7 @@ import {
 } from "@/lib/track";
 import { META_TEXT, PAGE_TITLE, SELECTED_CHIP } from "@/components/styles";
 
-export const EYEBROW = "text-[17px] type-eyebrow uppercase tracking-[0.06em]";
+export const EYEBROW = "text-[14px] type-eyebrow uppercase tracking-[0.06em]";
 const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
 const timeOf = (iso: string) =>
   new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
@@ -41,7 +41,7 @@ export function TrackSwitch({ current }: { current: "today" | "insights" }) {
             key={v.id}
             aria-current="page"
             className={cn(
-              "flex h-11 items-center gap-1.5 rounded-full px-4 text-[17px] type-button",
+              "flex h-11 items-center gap-1.5 rounded-full px-4 text-[14px] type-button",
               SELECTED_CHIP,
             )}
           >
@@ -52,7 +52,7 @@ export function TrackSwitch({ current }: { current: "today" | "insights" }) {
           <Link
             key={v.id}
             to={v.to}
-            className="flex h-11 items-center rounded-full px-4 text-[17px] type-button-secondary text-text-secondary hover:text-text-primary"
+            className="flex h-11 items-center rounded-full px-4 text-[13px] type-button-secondary text-text-secondary hover:text-text-primary"
           >
             {v.label}
           </Link>
@@ -195,7 +195,7 @@ function RingCard({
         >
           {fmt(reading.eaten)}
         </span>
-        <span data-slot="ring-goal" className="mt-1.5 text-[18px] type-unit text-text-secondary">
+        <span data-slot="ring-goal" className="mt-1.5 text-[13px] type-unit text-text-secondary">
           of {fmt(reading.goal)} {unit}
         </span>
       </SegmentedRing>
@@ -266,12 +266,12 @@ export function TodayRings({
               className="flex min-h-11 items-center gap-2 px-1 transition-colors hover:bg-navy-soft"
             >
               <MealKey color={m.color} logged={m.logged} />
-              <span className="min-w-0 flex-1 truncate text-[17px] type-meta text-text-secondary">
+              <span className="min-w-0 flex-1 truncate text-[13px] type-meta text-text-secondary">
                 {m.meal}
               </span>
               <span
                 className={cn(
-                  "shrink-0 text-[17px] tabular-nums",
+                  "shrink-0 text-[14px] tabular-nums",
                   m.logged
                     ? "type-row-figure text-text-primary"
                     : "type-meta text-text-neutral-500",
@@ -286,7 +286,7 @@ export function TodayRings({
       {none && (
         <Link
           to="/track/log-meal"
-          className="inline-flex min-h-11 items-center gap-1 self-start text-[17px] type-button text-brand-navy underline-offset-2 hover:underline"
+          className="inline-flex min-h-11 items-center gap-1 self-start text-[14px] type-button text-brand-navy underline-offset-2 hover:underline"
         >
           Log a meal to start today’s ring
           <Icon name="chevronRight" size={13} color="currentColor" />
@@ -418,7 +418,7 @@ export function WeekChart({
                 aria-pressed={on}
                 onClick={() => setMetric(m.id)}
                 className={cn(
-                  "flex h-11 items-center gap-1.5 rounded-full px-3 text-[17px] transition-colors",
+                  "flex h-11 items-center gap-1.5 rounded-full px-3 text-[14px] transition-colors",
                   on
                     ? cn("type-button", SELECTED_CHIP)
                     : "type-button-secondary text-text-secondary hover:text-text-primary",
@@ -433,7 +433,7 @@ export function WeekChart({
       </div>
       <div
         aria-hidden="true"
-        className="mt-3 flex items-center justify-between gap-3 text-[17px] type-meta"
+        className="mt-3 flex items-center justify-between gap-3 text-[13px] type-meta"
       >
         <span data-slot="week-readout" className="min-w-0 truncate text-text-secondary">
           <span className="type-item-title text-text-primary">{cur.isToday ? "Today" : cur.long}</span>
@@ -509,7 +509,7 @@ export function WeekChart({
               </span>
               <span
                 className={cn(
-                  "py-1.5 text-[17px] leading-5",
+                  "py-1.5 text-[14px] leading-5",
                   d.isToday
                     ? "type-item-title text-text-primary"
                     : d.logged
@@ -524,12 +524,12 @@ export function WeekChart({
         </div>
       </div>
       <div className="mt-1 flex flex-wrap items-center justify-between gap-x-3">
-        <p data-slot="week-caption" className="text-[17px] type-meta text-text-secondary">
+        <p data-slot="week-caption" className="text-[13px] type-meta text-text-secondary">
           {caption}
         </p>
         <Link
           to={href}
-          className="inline-flex min-h-11 items-center gap-1 text-[17px] type-button text-brand-navy underline-offset-2 hover:underline"
+          className="inline-flex min-h-11 items-center gap-1 text-[14px] type-button text-brand-navy underline-offset-2 hover:underline"
         >
           See insights
           <Icon name="chevronRight" size={13} color="currentColor" />
@@ -581,15 +581,15 @@ export function AlsoToday({ metrics }: { metrics: SecondaryMetric[] }) {
               <span className="col-start-1 flex max-[359px]:hidden">
                 <Icon name={m.icon} size={16} color="var(--color-brand-navy)" />
               </span>
-              <span className="col-start-2 min-w-0 truncate text-[17px] type-item-title text-text-primary">
+              <span className="col-start-2 min-w-0 truncate text-[14px] type-item-title text-text-primary">
                 {m.label}
               </span>
               <span className="col-start-3 flex items-baseline gap-1 justify-self-end whitespace-nowrap">
                 <span className="text-[21px] type-row-figure leading-6 tracking-[-0.2px] tabular-nums text-text-primary">
                   {m.value}
                 </span>
-                <span className="text-[17px] type-meta text-text-primary">{m.unit}</span>
-                <span className="text-[17px] type-meta tabular-nums text-text-neutral-500">{m.goal}</span>
+                <span className="text-[13px] type-meta text-text-primary">{m.unit}</span>
+                <span className="text-[13px] type-meta tabular-nums text-text-neutral-500">{m.goal}</span>
               </span>
               {!m.onQuick && (
                 <span className="col-start-4 row-span-2 flex items-center justify-self-end">
@@ -615,7 +615,7 @@ export function AlsoToday({ metrics }: { metrics: SecondaryMetric[] }) {
                   type="button"
                   aria-label={m.quickLabel}
                   onClick={m.onQuick}
-                  className="tap-44 relative inline-flex h-8 items-center justify-center whitespace-nowrap rounded-full bg-brand-teal-soft px-3 text-[17px] type-button text-brand-navy transition-colors hover:bg-teal-100"
+                  className="tap-44 relative inline-flex h-8 items-center justify-center whitespace-nowrap rounded-full bg-brand-teal-soft px-3 text-[14px] type-button text-brand-navy transition-colors hover:bg-teal-100"
                 >
                   {m.quickText ?? "+8 oz"}
                 </button>
@@ -636,7 +636,7 @@ const focusAfter = (k: string) =>
     (document.getElementById(ADD_ID(k)) ?? document.getElementById("today-log-heading"))?.focus();
   });
 const LINK_BTN =
-  "tap-44 relative inline-flex min-h-6 items-center gap-1 text-[17px] type-button text-brand-navy underline-offset-2 hover:underline";
+  "tap-44 relative inline-flex min-h-6 items-center gap-1 text-[14px] type-button text-brand-navy underline-offset-2 hover:underline";
 
 function LogGroup({
   keyName,
@@ -667,7 +667,7 @@ function LogGroup({
           className="size-2 shrink-0 rounded-full"
           style={{ backgroundColor: dot }}
         />
-        <h3 data-slot="group-title" className="min-w-0 flex-1 truncate text-[17px] type-section-title text-text-secondary">
+        <h3 data-slot="group-title" className="min-w-0 flex-1 truncate text-[13px] type-section-title text-text-secondary">
           {title === "Snack" ? "Snacks" : title}
           <span className="sr-only">
             : {fmt(kcal)} kcal, {prot} g protein
@@ -677,7 +677,7 @@ function LogGroup({
           <span
             aria-hidden="true"
             data-slot="group-subtotal"
-            className="shrink-0 text-[17px] type-meta tabular-nums text-text-secondary"
+            className="shrink-0 text-[13px] type-meta tabular-nums text-text-secondary"
           >
             {fmt(kcal)} kcal
           </span>
@@ -706,13 +706,13 @@ function LogGroup({
                 className="flex min-h-11 w-full items-center gap-2 py-2 text-left transition-colors hover:bg-navy-soft"
               >
                 <span className="flex min-w-0 flex-1 items-baseline gap-1.5">
-                  <span data-slot="entry-title" className="truncate text-[17px] type-item-title text-text-primary">
+                  <span data-slot="entry-title" className="truncate text-[14px] type-item-title text-text-primary">
                     {m.title}
                   </span>
                 </span>
                 <span
                   data-slot="entry-figure"
-                  className="shrink-0 text-[17px] type-row-figure tabular-nums text-text-primary"
+                  className="shrink-0 text-[14px] type-row-figure tabular-nums text-text-primary"
                 >
                   {fmt(m.calories)} kcal
                 </span>
@@ -727,14 +727,14 @@ function LogGroup({
               </button>
               {open && (
                 <div id={detailId} data-slot="entry-details" className="flex min-h-11 items-center gap-3 pb-2">
-                  <span className="min-w-0 flex-1 text-[17px] type-meta tabular-nums text-text-secondary">
+                  <span className="min-w-0 flex-1 text-[13px] type-meta tabular-nums text-text-secondary">
                     {timeOf(m.loggedAt)} · {m.protein} g protein
                   </span>
                   <button
                     type="button"
                     aria-label={`Remove ${m.title}, ${timeOf(m.loggedAt)}`}
                     onClick={() => onRemove(m)}
-                    className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full px-3 text-[17px] type-button-secondary text-text-secondary transition-colors hover:bg-brand-warm-gray hover:text-text-primary"
+                    className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full px-3 text-[13px] type-button-secondary text-text-secondary transition-colors hover:bg-brand-warm-gray hover:text-text-primary"
                   >
                     <Icon name="trash" size={14} color="currentColor" />
                     Remove
@@ -787,7 +787,7 @@ export function TodayLog({
         {history && (
           <Link
             to={history.to}
-            className="inline-flex min-h-9 shrink-0 items-center gap-0.5 rounded-full border border-border-default bg-white px-3 text-[17px] type-button text-primary hover:border-text-neutral-400"
+            className="inline-flex min-h-9 shrink-0 items-center gap-0.5 rounded-full border border-border-default bg-white px-3 text-[14px] type-button text-primary hover:border-text-neutral-400"
           >
             {history.label}
             <Icon name="chevronRight" size={14} color="var(--color-primary)" />
@@ -796,7 +796,7 @@ export function TodayLog({
       </div>
       {logged.length === 0 ? (
         <div data-slot="log-empty" className="flex flex-col items-start gap-2 pt-1">
-          <p className="text-[17px] type-meta text-text-secondary">Nothing logged yet today.</p>
+          <p className="text-[13px] type-meta text-text-secondary">Nothing logged yet today.</p>
           <Link
             id={ADD_ID(suggested.toLowerCase())}
             to={`/track/log-meal?meal=${suggested.toLowerCase()}`}

@@ -110,7 +110,7 @@ function validateName(name: string): string | undefined {
 function EmojiChoices({ value, onChange }: { value: string; onChange: (e: string) => void }) {
   return (
     <fieldset className="mt-4">
-      <legend className="text-[16px] type-section-title text-text-secondary">Icon (optional)</legend>
+      <legend className="text-[14px] type-section-title text-text-secondary">Icon (optional)</legend>
       <div className="mt-2 flex flex-wrap gap-2">
         {EMOJI_CHOICES.map((e) => {
           const on = value === e;
@@ -231,13 +231,13 @@ export function CollectionPicker({ item, onClose }: { item: SavedItem; onClose: 
   return (
     <Dialog title="Add to collection" description={item.title} onClose={onClose}>
       {isLoading ? (
-        <p className="py-4 text-[17px] type-meta text-text-secondary">Loading your collections…</p>
+        <p className="py-4 text-[13px] type-meta text-text-secondary">Loading your collections…</p>
       ) : error && collections.length === 0 ? (
-        <p role="alert" className="py-4 text-[17px] type-meta text-error-red">
+        <p role="alert" className="py-4 text-[13px] type-meta text-error-red">
           Couldn&apos;t load your collections. {error}
         </p>
       ) : collections.length === 0 ? (
-        <p className="pb-2 text-[17px] type-meta text-text-secondary">
+        <p className="pb-2 text-[13px] type-meta text-text-secondary">
           You don&apos;t have any collections yet. Name your first one below.
         </p>
       ) : (

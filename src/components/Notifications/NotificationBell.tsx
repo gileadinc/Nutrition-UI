@@ -101,7 +101,7 @@ export function NotificationBell() {
           <Link
             to="/you/notifications"
             onClick={() => setOpen(false)}
-            className="block border-t border-border-divider px-4 py-3 text-center text-[17px] type-button text-primary"
+            className="block border-t border-border-divider px-4 py-3 text-center text-[14px] type-button text-primary"
           >
             View notification center
           </Link>

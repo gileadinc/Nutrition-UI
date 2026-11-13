@@ -22,7 +22,7 @@ export function MomentumCard({ momentum }: { momentum: Momentum }) {
         <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-teal-soft">
           <Icon name="fire" size={18} color="var(--color-brand-navy)" />
         </span>
-        <p className="min-w-0 text-[17px] leading-5 type-meta text-text-secondary">
+        <p className="min-w-0 text-[13px] leading-5 type-meta text-text-secondary">
           {momentum.currentStreak > 0
             ? `You've logged ${plural(momentum.daysLogged, "day", "days")} so far. Keep it going.`
             : "Log a meal or water today to start a streak."}
@@ -56,7 +56,7 @@ export function RecommendedMeals({
   if (items.length === 0) return null;
   return (
     <div>
-      <p className="mb-2 text-[17px] type-meta text-text-secondary">
+      <p className="mb-2 text-[13px] type-meta text-text-secondary">
         {Math.round(remainingCalories).toLocaleString("en-US")} kcal left today. These fit best.
       </p>
       <ul className="flex flex-col gap-2">
@@ -115,13 +115,13 @@ export function GettingStarted({
         <Icon name="bulb" size={18} color="var(--color-brand-navy)" />
       </span>
       <div className="min-w-0 flex-1">
-        <h2 className="text-[17px] type-section-title text-text-primary">Start your tracking</h2>
-        <p className="mt-1 text-[17px] leading-5 type-meta text-text-primary">
+        <h2 className="text-[14px] type-section-title text-text-primary">Start your tracking</h2>
+        <p className="mt-1 text-[13px] leading-5 type-meta text-text-primary">
           Three quick steps to get your numbers moving.
         </p>
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
           {actions.map((a) => (
-            <Link key={a.key} to={a.to} className="tap-24 text-[17px] type-button text-primary">
+            <Link key={a.key} to={a.to} className="tap-24 text-[14px] type-button text-primary">
               {a.label}
             </Link>
           ))}

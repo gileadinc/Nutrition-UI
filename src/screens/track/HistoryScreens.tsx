@@ -5,18 +5,13 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
-import { CheckMark, PageContainer, TwoColumn } from "@/components/Layout";
+import { CheckMark, PageContainer } from "@/components/Layout";
 import { PrimaryButton } from "@/components/Button";
 import { AdvancedFilters, FacetGroup } from "@/components/Filters";
 import { MacroDonut, MiniRing } from "@/components/Charts";
 import { TrackSwitch } from "@/components/Track/Dashboard";
-import {
-  BigNumber,
-  DeltaPill,
-  MetricCard,
-  MetricChart,
-  shortDate,
-} from "@/components/Track/MetricCharts";
+import { BigNumber, DeltaPill, MetricChart, shortDate } from "@/components/Track/MetricCharts";
+import { INSIGHT_CATEGORIES, InsightsGrid, type InsightCategory } from "@/components/Track/InsightsGrid";
 import { Link, useBack, useNavigate, useSearchParams } from "@/lib/nav";
 import { useFilterParams } from "@/lib/hooks";
 import { isoDate } from "@/lib/nutrition";
@@ -35,8 +30,8 @@ import {
   type TrackMetric,
 } from "@/lib/track";
 import { MEAL_TYPES } from "@/lib/nutrition";
-import { doseStatus, useMedications, type Medication } from "@/lib/store";
-import { META_TEXT, PAGE_TITLE, SECTION_TITLE, SELECTED_CHIP } from "@/components/styles";
+import { doseStatus, useMedications, useWeight, type Medication } from "@/lib/store";
+import { META_TEXT, PAGE_TITLE, SECTION_TITLE, SELECTED_CHIP, SWITCH_ON } from "@/components/styles";
 
 const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
 const timeOf = (iso: string) =>
@@ -83,19 +78,19 @@ function CategoryBar({
       data-slot="category-bar"
       className="flex h-full min-w-0 flex-col rounded-[18px] border border-border-default bg-white p-4 shadow-card"
     >
-      <h3 className="text-[17px] type-item-title tracking-[-0.585px] text-text-neutral-500">{title}</h3>
+      <h3 className="text-[13px] type-item-title tracking-[-0.585px] text-text-neutral-500">{title}</h3>
       <p className="mt-2 flex flex-wrap items-baseline gap-x-1.5">
         <span className="text-[30px] type-numeral leading-none tabular-nums tracking-[-1.1px] text-text-primary">
           {fmt(total)}
         </span>
         <span className="text-xs type-meta text-text-secondary">{unit}</span>
-        {caption && <span className="text-[15px] type-meta text-text-neutral-500">{caption}</span>}
+        {caption && <span className="text-[13px] type-meta text-text-neutral-500">{caption}</span>}
       </p>
       {sum === 0 ? (
-        <p className="mt-4 text-[17px] type-meta text-text-secondary">Nothing logged in this range.</p>
+        <p className="mt-4 text-[13px] type-meta text-text-secondary">Nothing logged in this range.</p>
       ) : (
         <>
-          <p aria-hidden="true" className="mt-4 h-4 truncate text-[15px] type-meta text-text-secondary">
+          <p aria-hidden="true" className="mt-4 h-4 truncate text-[13px] type-meta text-text-secondary">
             {active && (
               <>
                 {active.label} ·{" "}
@@ -138,10 +133,10 @@ function CategoryBar({
                   className="size-2.5 shrink-0 rounded-[3px]"
                   style={{ backgroundColor: s.color }}
                 />
-                <span className="min-w-0 flex-1 truncate text-[15px] type-meta text-text-secondary">
+                <span className="min-w-0 flex-1 truncate text-[13px] type-meta text-text-secondary">
                   {s.label}
                 </span>
-                <span className="text-[15px] type-meta tabular-nums text-text-primary">
+                <span className="text-[13px] type-meta tabular-nums text-text-primary">
                   {fmt(s.value)} · {share(s.value)}%
                 </span>
               </li>
@@ -163,51 +158,45 @@ interface Insight {
   action?: { label: string; to: string };
 }
 
-function InsightsPanel({ insights, title }: { insights: Insight[]; title: string }) {
-  if (insights.length === 0)
-    return (
-      <section aria-label={title} className="panel px-4 pb-4 pt-4">
-        <h2 className="eyebrow">{title}</h2>
-        <p className="mt-2 text-[17px] type-meta leading-5 text-text-secondary">
-          Nothing to read into yet. Log a meal or some water and what stands out will show up here.
-        </p>
-      </section>
-    );
-  const watch = insights.filter((i) => i.tone === "watch").length;
+function InsightsPanel({ insights }: { insights: Insight[] }) {
   return (
-    <section aria-label={title} className="panel px-4 pb-2 pt-4">
-      <div className="flex items-baseline gap-2">
-        <h2 className="eyebrow flex-1">{title}</h2>
-        <span className="text-[15px] type-meta text-text-secondary">
-          {watch === 0 ? "All on track" : `${watch} to look at`}
-        </span>
-      </div>
-      <ul className="mt-1 divide-y divide-border-divider">
-        {insights.map((i) => (
-          <li key={i.id} className="flex gap-3 py-3">
-            <span
-              aria-hidden="true"
-              className={cn(
-                "mt-[7px] size-2 shrink-0 rounded-full",
-                i.tone === "good" ? "bg-graphic" : i.tone === "note" ? "bg-border-default" : "bg-primary",
-              )}
-            />
-            <div className="min-w-0 flex-1">
-              <p className="text-[17px] type-item-title leading-5 text-text-primary">{i.title}</p>
-              <p className="mt-0.5 text-[16px] type-meta leading-[22px] text-text-secondary">{i.detail}</p>
-              {i.action && (
-                <Link
-                  to={i.action.to}
-                  className="tap-24 tap-44 relative mt-0.5 gap-0.5 text-[16px] type-button text-primary"
-                >
-                  {i.action.label}
-                  <Icon name="chevronRight" size={12} color="var(--color-primary)" />
-                </Link>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
+    <section aria-labelledby="worth-a-look">
+      <h2 id="worth-a-look" className={SECTION_TITLE}>
+        Worth a look
+      </h2>
+      <p className={cn(META_TEXT, "mt-1")}>What stands out in this period, with the evidence beside it.</p>
+      {insights.length === 0 ? (
+        <p className="mt-3 rounded-2xl border border-border-default bg-white px-4 py-3 text-[14px] type-meta text-text-neutral-500">
+          Nothing stands out yet. A few more days of entries and patterns will show up here.
+        </p>
+      ) : (
+        <ul className="mt-3 divide-y divide-border-divider rounded-2xl border border-border-default bg-white px-4">
+          {insights.map((i) => (
+            <li key={i.id} className="flex gap-3 py-3">
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "mt-[7px] size-2 shrink-0 rounded-full",
+                  i.tone === "good" ? "bg-graphic" : i.tone === "note" ? "bg-border-default" : "bg-primary",
+                )}
+              />
+              <div className="min-w-0 flex-1">
+                <p className="text-[14px] type-item-title leading-5 text-text-primary">{i.title}</p>
+                <p className="mt-0.5 text-[13px] type-meta leading-[20px] text-text-secondary">{i.detail}</p>
+                {i.action && (
+                  <Link
+                    to={i.action.to}
+                    className="tap-24 tap-44 relative mt-0.5 gap-0.5 text-[13px] type-button text-primary"
+                  >
+                    {i.action.label}
+                    <Icon name="chevronRight" size={12} color="var(--color-primary)" />
+                  </Link>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }
@@ -362,7 +351,7 @@ function DateRangePicker({
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="tap-44 relative flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default bg-white pl-3 pr-2.5 text-[17px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400 sm:gap-2 sm:pl-3.5 sm:pr-3"
+        className="tap-44 relative flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default bg-white pl-3 pr-2.5 text-[14px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400 sm:gap-2 sm:pl-3.5 sm:pr-3"
       >
         <span className="hidden sm:inline-flex">
           <Icon name="calendar" size={15} color="var(--color-text-secondary)" />
@@ -409,7 +398,7 @@ function DateRangePicker({
               }
             }}
           >
-            <p className="flex items-center gap-2 text-[16px] type-section-title text-text-secondary">
+            <p className="flex items-center gap-2 text-[14px] type-section-title text-text-secondary">
               Custom range
               {value.kind === "custom" && <Icon name="tick" size={14} color="var(--color-primary)" />}
             </p>
@@ -420,25 +409,25 @@ function DateRangePicker({
                   ["To", end, setEnd],
                 ] as const
               ).map(([label, val, set]) => (
-                <label key={label} className="text-[15px] type-item-title text-text-neutral-500">
+                <label key={label} className="text-[13px] type-item-title text-text-neutral-500">
                   {label}
                   <input
                     type="date"
                     value={val}
                     max={today}
                     onChange={(e) => set(e.target.value)}
-                    className="mt-1 block h-11 w-full rounded-lg border border-border-default bg-white px-2 text-[17px] text-text-primary"
+                    className="mt-1 block h-11 w-full rounded-lg border border-border-default bg-white px-2 text-[14px] text-text-primary"
                   />
                 </label>
               ))}
             </div>
-            <p className={cn("mt-2 text-[15px] type-meta", error ? "text-text-secondary" : "text-text-neutral-500")}>
+            <p className={cn("mt-2 text-[13px] type-meta", error ? "text-text-secondary" : "text-text-neutral-500")}>
               {error ?? `${n} ${n === 1 ? "day" : "days"}`}
             </p>
             <button
               type="submit"
               disabled={!!error}
-              className="mt-2.5 h-11 w-full rounded-full bg-primary text-[17px] type-button text-white disabled:cursor-not-allowed disabled:bg-primary-soft disabled:text-text-secondary"
+              className="mt-2.5 h-11 w-full rounded-full bg-primary text-[13px] type-button text-white disabled:cursor-not-allowed disabled:bg-primary-soft disabled:text-text-secondary"
             >
               Apply range
             </button>
@@ -462,7 +451,6 @@ const deltaOf = (m: TrackMetric, cur: TrackDay[], prev: TrackDay[]) => {
     ? null
     : ((avgOf(m, cur) - prevAvg) / prevAvg) * 100;
 };
-const fmtValue = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `${Math.round(n)}`);
 
 function MetricDetail({
   metric,
@@ -560,7 +548,7 @@ function MetricDetail({
             <h2 className="truncate text-xl type-section-title leading-7 tracking-[-0.9px] text-brand-navy md:text-2xl">
               {metric.label} details
             </h2>
-            <p className="text-[17px] type-meta text-text-secondary">{periodLabel}</p>
+            <p className="text-[13px] type-meta text-text-secondary">{periodLabel}</p>
           </div>
           <button
             type="button"
@@ -576,11 +564,11 @@ function MetricDetail({
             <section aria-label={`${metric.label} this ${periodNoun}`} className="min-w-0">
               <div className="flex items-end gap-3">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[16px] type-meta text-text-secondary">
-                    {days.length > 1 ? "Daily average" : "Today"}
+                  <p className="text-[14px] type-meta text-text-secondary">
+                    {days.length > 1 ? "Average on logged days" : "Today"}
                   </p>
                   <BigNumber value={fmt(avg)} unit={metric.unit} size={40} />
-                  <p className="mt-1 text-[17px] type-meta text-text-secondary">
+                  <p className="mt-1 text-[13px] type-meta text-text-secondary">
                     Goal {withUnit(goal)}
                     {days.length > 1 && loggedCount > 0 && (
                       <>
@@ -596,7 +584,7 @@ function MetricDetail({
                 {delta !== null && (
                   <div className="shrink-0 pb-1 text-right">
                     <DeltaPill delta={delta} moreIsBetter={metric.moreIsBetter} label={metric.label} />
-                    <p className="mt-1 text-[15px] type-meta text-text-secondary">vs previous {periodNoun}</p>
+                    <p className="mt-1 text-[13px] type-meta text-text-secondary">vs previous {periodNoun}</p>
                   </div>
                 )}
               </div>
@@ -615,7 +603,7 @@ function MetricDetail({
                   </span>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="text-[16px] type-meta text-text-secondary">
+                  <p className="text-[14px] type-meta text-text-secondary">
                     {shortDate(cur.date)}
                     {sel === days.length - 1 && days.length > 1 ? " · latest" : ""}
                   </p>
@@ -623,8 +611,30 @@ function MetricDetail({
                 </div>
                 <p className="shrink-0 text-right">
                   <span className="block text-base type-row-figure text-text-primary">{curPct}%</span>
-                  <span className="block text-[15px] type-meta text-text-secondary">of goal</span>
+                  <span className="block text-[13px] type-meta text-text-secondary">of goal</span>
                 </p>
+              </div>
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  disabled={sel <= 0}
+                  onClick={() => setSel((i) => Math.max(0, i - 1))}
+                  className="tap-44 relative inline-flex items-center gap-1.5 text-[14px] type-button text-brand-navy disabled:cursor-not-allowed disabled:text-text-neutral-400"
+                >
+                  <Icon name="arrowBack" size={14} color="currentColor" />
+                  Previous day
+                </button>
+                <button
+                  type="button"
+                  disabled={sel >= days.length - 1}
+                  onClick={() => setSel((i) => Math.min(days.length - 1, i + 1))}
+                  className="tap-44 relative inline-flex h-11 items-center gap-1.5 rounded-full bg-brand-warm-gray px-4 text-[14px] type-button text-brand-navy disabled:cursor-not-allowed disabled:text-text-neutral-400"
+                >
+                  Next day
+                  <span aria-hidden="true" className="inline-flex rotate-180">
+                    <Icon name="arrowBack" size={14} color="currentColor" />
+                  </span>
+                </button>
               </div>
               <div
                 className={cn(
@@ -634,13 +644,13 @@ function MetricDetail({
               >
                 <MetricChart metric={metric} days={days} labels={labels} selected={sel} onSelect={setSel} />
               </div>
-              <p className="mt-2 text-center text-[15px] type-meta text-text-secondary">
+              <p className="mt-2 text-center text-[13px] type-meta text-text-secondary">
                 Tap or hover a day to see its reading.
               </p>
             </section>
             <div className="min-w-0">
               <section aria-labelledby="period-summary-heading">
-                <h3 id="period-summary-heading" className="eyebrow text-[17px]">
+                <h3 id="period-summary-heading" className="eyebrow text-[14px]">
                   Period summary
                 </h3>
                 <dl className="mt-2.5 grid grid-cols-2 overflow-hidden rounded-2xl border border-border-default">
@@ -658,15 +668,15 @@ function MetricDetail({
                         i > 1 && "border-t border-border-divider",
                       )}
                     >
-                      <dt className="text-[15px] type-meta text-text-secondary">{k}</dt>
-                      <dd className="mt-0.5 text-[19px] type-row-figure tabular-nums text-text-primary">{v}</dd>
+                      <dt className="text-[13px] type-meta text-text-secondary">{k}</dt>
+                      <dd className="mt-0.5 text-[16px] type-row-figure tabular-nums text-text-primary">{v}</dd>
                     </div>
                   ))}
                 </dl>
               </section>
               <section className="mt-6" aria-labelledby="period-readings-heading">
                 <div className="flex items-baseline gap-3">
-                  <h3 id="period-readings-heading" className="eyebrow min-w-0 flex-1 text-[17px]">
+                  <h3 id="period-readings-heading" className="eyebrow min-w-0 flex-1 text-[14px]">
                     Period readings
                   </h3>
                   <span className="text-xs type-meta text-text-secondary">{days.length} days</span>
@@ -674,7 +684,7 @@ function MetricDetail({
                 <div className="mt-2.5 overflow-hidden rounded-2xl border border-border-default">
                   <table className="w-full border-collapse text-left text-sm">
                     <caption className="sr-only">{metric.label} by day, newest first</caption>
-                    <thead className="bg-brand-warm-gray text-[15px] text-text-secondary">
+                    <thead className="bg-brand-warm-gray text-[13px] text-text-secondary">
                       <tr>
                         <th scope="col" className="px-4 py-2 type-meta">
                           Day
@@ -744,7 +754,7 @@ function MetricDetail({
                   </table>
                 </div>
               </section>
-              <p className="mt-4 text-[15px] type-meta leading-4 text-text-neutral-500">
+              <p className="mt-4 text-[13px] type-meta leading-4 text-text-neutral-500">
                 These describe what you logged. They are not medical advice.
               </p>
             </div>
@@ -792,8 +802,8 @@ function Breakdown({ days, periodNoun }: { days: TrackDay[]; periodNoun: string 
             aria-label="Macro split"
             className="flex min-w-0 flex-col rounded-[18px] border border-border-default bg-white p-4 shadow-card"
           >
-            <h3 className="text-[17px] type-item-title tracking-[-0.585px] text-text-neutral-500">Macro split</h3>
-            <p className="mt-1 text-[15px] type-meta text-text-neutral-500">
+            <h3 className="text-[13px] type-item-title tracking-[-0.585px] text-text-neutral-500">Macro split</h3>
+            <p className="mt-1 text-[13px] type-meta text-text-neutral-500">
               Share of calories{perDay ? ", per logged day" : ""}
             </p>
             <MacroDonut
@@ -893,7 +903,7 @@ function ActivityLog({ days, todayKey }: { days: TrackDay[]; todayKey: string })
         <h2 id="activity-log-heading" className={cn(SECTION_TITLE, "min-w-0 flex-1")}>
           Logged activity
         </h2>
-        <span className="shrink-0 text-[17px] type-meta text-text-secondary">
+        <span className="shrink-0 text-[13px] type-meta text-text-secondary">
           {counts.all} {counts.all === 1 ? "entry" : "entries"}
         </span>
       </div>
@@ -914,7 +924,7 @@ function ActivityLog({ days, todayKey }: { days: TrackDay[]; todayKey: string })
             >
               <span
                 className={cn(
-                  "flex h-8 items-center gap-1.5 rounded-full border px-3 text-[17px] transition-colors",
+                  "flex h-8 items-center gap-1.5 rounded-full border px-3 text-[14px] transition-colors",
                   on
                     ? cn(SELECTED_CHIP, "type-button")
                     : "type-button-secondary border-border-default bg-white text-text-secondary group-hover:border-text-neutral-400",
@@ -932,7 +942,7 @@ function ActivityLog({ days, todayKey }: { days: TrackDay[]; todayKey: string })
         })}
       </div>
       {visible.length === 0 ? (
-        <p className="panel mt-2 p-4 text-[17px] type-meta text-text-secondary">
+        <p className="panel mt-2 p-4 text-[13px] type-meta text-text-secondary">
           {days.length === 1 ? "Nothing logged yet today." : "Nothing logged in this range yet."}
         </p>
       ) : (
@@ -940,17 +950,17 @@ function ActivityLog({ days, todayKey }: { days: TrackDay[]; todayKey: string })
           {visible.map((g) => (
             <div key={g.date}>
               <div className="flex items-baseline gap-2 px-1">
-                <h3 className="flex-1 text-[17px] type-section-title text-text-primary">
+                <h3 className="flex-1 text-[14px] type-section-title text-text-primary">
                   {dayHeading(g.date, todayKey)}
                 </h3>
-                <span className="text-[17px] type-meta tabular-nums text-text-secondary">
+                <span className="text-[13px] type-meta tabular-nums text-text-secondary">
                   {g.totals.join(" · ")}
                 </span>
               </div>
               <ul className="panel mt-1.5 divide-y divide-border-divider px-4">
                 {g.rows.map((r) => (
                   <li key={r.id} className="flex min-h-11 items-center gap-3 py-2 sm:py-0">
-                    <span className="w-[58px] shrink-0 text-[17px] type-meta tabular-nums text-text-neutral-500">
+                    <span className="w-[58px] shrink-0 text-[13px] type-meta tabular-nums text-text-neutral-500">
                       {timeOf(r.at)}
                     </span>
                     <Icon
@@ -959,10 +969,10 @@ function ActivityLog({ days, todayKey }: { days: TrackDay[]; todayKey: string })
                       color={r.kind === "meals" ? "var(--color-accent-ink)" : "var(--color-brand-navy)"}
                     />
                     <span className="flex min-w-0 flex-1 flex-col sm:flex-row sm:items-center sm:gap-3">
-                      <span className="min-w-0 truncate text-[17px] type-item-title text-text-primary sm:flex-1">
+                      <span className="min-w-0 truncate text-[14px] type-item-title text-text-primary sm:flex-1">
                         {r.title}
                       </span>
-                      <span className="truncate text-[17px] type-meta tabular-nums text-text-secondary sm:shrink-0">
+                      <span className="truncate text-[13px] type-meta tabular-nums text-text-secondary sm:shrink-0">
                         {r.meta}
                       </span>
                     </span>
@@ -977,7 +987,7 @@ function ActivityLog({ days, todayKey }: { days: TrackDay[]; todayKey: string })
         <button
           type="button"
           onClick={() => setShown((s) => s + 4)}
-          className="mt-1 flex min-h-11 w-full items-center justify-center rounded-2xl border border-border-default bg-white text-[17px] type-button text-primary"
+          className="mt-1 flex min-h-11 w-full items-center justify-center rounded-2xl border border-border-default bg-white text-[14px] type-button text-primary"
         >
           Show earlier days ({more})
         </button>
@@ -1008,7 +1018,10 @@ export function TrackInsightsScreen() {
     base.setDate(base.getDate() + offset * count);
     return base;
   })();
-  const { history: medHistory } = useMedications({ history: true });
+  const { history: medHistory, meds } = useMedications({ history: true });
+  const weight = useWeight();
+  const [category, setCategory] = useState<InsightCategory | null>(null);
+  const [compare, setCompare] = useState(true);
   const { days, isLoading } = useTrackDays(count, end);
   const { days: previous } = useTrackDays(count, shiftDate(end, -count));
   const canNext = isoDate(end) < today;
@@ -1016,7 +1029,7 @@ export function TrackInsightsScreen() {
   const periodLabel =
     days.length === 1 ? mdOf(days[0].date) : `${mdOf(days[0].date)} – ${mdOf(days[days.length - 1].date)}`;
   const noun = count === 1 ? "day" : count === 7 ? "week" : count === 30 ? "month" : "period";
-  const heading = offset === 0 && range.kind !== "custom" ? rangeLabel(range) : periodLabel;
+  const loggedDays = days.filter(dayLogged).length;
   const last = days[days.length - 1];
 
   return (
@@ -1025,7 +1038,7 @@ export function TrackInsightsScreen() {
         <header className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between lg:justify-start lg:gap-6">
           <div className="min-w-0">
             <h1 className={PAGE_TITLE}>History &amp; insights</h1>
-            <p className={cn(META_TEXT, "mt-1")}>Every logged health signal, by range.</p>
+            <p className={cn(META_TEXT, "mt-1")}>What your entries say, and every metric in detail.</p>
           </div>
           <TrackSwitch current="insights" />
         </header>
@@ -1041,7 +1054,7 @@ export function TrackInsightsScreen() {
             </button>
             <p
               aria-live="polite"
-              className="min-w-0 flex-1 whitespace-nowrap text-center text-[16px] type-item-title tabular-nums text-text-primary sm:text-[17px] lg:min-w-[9.5rem]"
+              className="min-w-0 flex-1 whitespace-nowrap text-center text-[14px] type-item-title tabular-nums text-text-primary sm:text-[14px] lg:min-w-[9.5rem]"
             >
               {periodLabel}
             </p>
@@ -1067,80 +1080,93 @@ export function TrackInsightsScreen() {
             <button
               type="button"
               onClick={() => setOffset(0)}
-              className="tap-24 tap-44 relative shrink-0 px-1 text-[17px] type-button text-primary"
+              className="tap-24 tap-44 relative shrink-0 px-1 text-[14px] type-button text-primary"
             >
               Latest
             </button>
           )}
         </div>
       </div>
-      <div
-        role="group"
-        aria-label="Metric"
-        className="rail-scroll -mx-5 mt-4 flex gap-2 overflow-x-auto px-5 pb-1 pt-1 md:mx-0 md:px-0"
-      >
-        {["All", ...TRACK_METRICS.map((m) => m.label)].map((label) => {
-          const on = label === "All" ? selected === null : selected === label;
-          return (
-            <button
-              key={label}
-              type="button"
-              aria-pressed={on}
-              onClick={() => setMetric(label === "All" ? null : label)}
-              className={cn(
-                "tap-44 relative flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[17px] tracking-[-0.585px]",
-                on
-                  ? cn(SELECTED_CHIP, "type-button")
-                  : "type-button-secondary border-border-default bg-white text-text-secondary",
-              )}
-            >
-              {on && <CheckMark />}
-              {label}
-            </button>
-          );
-        })}
-      </div>
-      <div className="mt-6">
-        <TwoColumn
-          sidebarLabel="What this period says"
-          mobileSidebar="before"
-          sidebar={<InsightsPanel insights={buildInsights(days, medHistory)} title={heading} />}
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <p className={cn(META_TEXT, "min-w-0 flex-1")}>
+          {periodLabel} · {loggedDays} {loggedDays === 1 ? "day" : "days"} with entries
+        </p>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={compare}
+          onClick={() => setCompare((c) => !c)}
+          className="tap-44 relative flex items-center gap-2.5 text-[14px] type-button text-brand-navy"
         >
-          <h2 className="text-[22px] type-section-title leading-6 tracking-[-0.81px] text-brand-navy">
-            Recent Activity
-          </h2>
-          {isLoading && days.every((d) => !dayLogged(d)) ? (
-            <p className="panel mt-3 p-4 text-[17px] type-meta text-text-secondary">Loading…</p>
-          ) : (
-            <div
+          <span
+            aria-hidden="true"
+            className={cn(
+              "flex h-6 w-10 shrink-0 items-center rounded-full p-0.5 transition-colors",
+              compare ? SWITCH_ON : "bg-border-default",
+            )}
+          >
+            <span
               className={cn(
-                "mt-3 grid gap-3",
-                days.length > 7
-                  ? "grid-cols-1 sm:grid-cols-2"
-                  : "grid-cols-[repeat(auto-fill,minmax(min(100%,10rem),1fr))]",
+                "size-5 rounded-full bg-white shadow-card transition-transform",
+                compare && "translate-x-4",
               )}
-            >
-              {TRACK_METRICS.map((m) => (
-                <MetricCard
-                  key={m.label}
-                  metric={m}
-                  icon={m.icon}
-                  days={days}
-                  labels={labels}
-                  latest={fmtValue(avgOf(m, days))}
-                  caption={days.length > 1 ? "avg/day" : "today"}
-                  delta={deltaOf(m, days, previous)}
-                  onSelect={() => setMetric(m.label)}
-                />
-              ))}
-            </div>
+            />
+          </span>
+          Compare with the period before
+        </button>
+      </div>
+      <div className="mt-6 flex flex-col gap-8">
+        <InsightsPanel insights={buildInsights(days, medHistory)} />
+        <section aria-labelledby="every-metric">
+          <h2 id="every-metric" className={SECTION_TITLE}>
+            Every metric
+          </h2>
+          <p className={cn(META_TEXT, "mt-1")}>Tap any for its full detail.</p>
+          <div
+            role="group"
+            aria-label="Metric category"
+            className="rail-scroll -mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-1 pt-1 md:mx-0 md:px-0"
+          >
+            {(["All", ...INSIGHT_CATEGORIES] as const).map((label) => {
+              const on = label === "All" ? category === null : category === label;
+              return (
+                <button
+                  key={label}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => setCategory(label === "All" ? null : label)}
+                  className={cn(
+                    "tap-44 relative flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[14px] tracking-[-0.3px]",
+                    on
+                      ? cn(SELECTED_CHIP, "type-button")
+                      : "type-button-secondary border-border-default bg-white text-text-secondary",
+                  )}
+                >
+                  {on && <CheckMark />}
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+          {isLoading && days.every((d) => !dayLogged(d)) ? (
+            <p className="panel mt-4 p-4 text-[14px] type-meta text-text-secondary">Loading…</p>
+          ) : (
+            <InsightsGrid
+              days={days}
+              previous={previous}
+              compare={compare}
+              category={category}
+              weight={weight.readings}
+              meds={meds}
+              onSelect={setMetric}
+            />
           )}
-          <Breakdown days={days} periodNoun={noun} />
-          <ActivityLog days={days} todayKey={today} />
-          <p className="mt-4 text-xs type-meta italic text-text-secondary">
-            These are descriptions of what you logged, not medical advice.
-          </p>
-        </TwoColumn>
+        </section>
+        <Breakdown days={days} periodNoun={noun} />
+        <ActivityLog days={days} todayKey={today} />
+        <p className="text-xs type-meta italic text-text-secondary">
+          These are descriptions of what you logged, not medical advice.
+        </p>
       </div>
       <p className="sr-only">
         Showing {last.date} against a {last.calorieGoal} kcal goal.
@@ -1250,7 +1276,7 @@ export function TrackEntryHistoryScreen({ kind }: { kind: "meals" | "water" }) {
           />
         </AdvancedFilters>
       </div>
-      <p className="mt-4 text-[17px] type-meta text-text-secondary">
+      <p className="mt-4 text-[13px] type-meta text-text-secondary">
         <span className="type-row-figure text-text-primary">{shown.length}</span>
         {shown.length === 1 ? " entry" : " entries"}
         {shown.length !== all.length && ` of ${all.length}`}

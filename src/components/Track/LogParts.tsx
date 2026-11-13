@@ -54,7 +54,7 @@ export function TrackLogLayout({
           <h1 className="truncate text-[26px] type-display leading-7 tracking-[-1px] text-brand-navy md:text-2xl">
             {title}
           </h1>
-          {subtitle && <p className="truncate text-[17px] type-meta text-text-secondary">{subtitle}</p>}
+          {subtitle && <p className="truncate text-[13px] type-meta text-text-secondary">{subtitle}</p>}
         </div>
       </header>
       <div className="mt-5 md:mt-6">
@@ -101,20 +101,20 @@ export function ProgressCard({
   return (
     <section aria-label={`${label} today`} className="panel px-4 py-3.5">
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-        <span className="text-[16px] type-meta text-text-secondary">{label}</span>
-        <span className="text-[19px] type-row-figure tabular-nums tracking-[-0.5px] text-text-primary">
+        <span className="text-[14px] type-meta text-text-secondary">{label}</span>
+        <span className="text-[14px] type-row-figure tabular-nums tracking-[-0.5px] text-text-primary">
           {f(value)}
           <span className="type-unit text-text-secondary">
             {" "}
             / {f(goal)} {unit}
           </span>
         </span>
-        <span className="ml-auto text-[16px] type-meta text-text-secondary">{text}</span>
+        <span className="ml-auto text-[14px] type-meta text-text-secondary">{text}</span>
       </div>
       <div aria-hidden="true" className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-brand-warm-gray">
         <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
       </div>
-      {extra && <p className="mt-2 text-[16px] type-meta text-text-secondary">{extra}</p>}
+      {extra && <p className="mt-2 text-[14px] type-meta text-text-secondary">{extra}</p>}
     </section>
   );
 }
@@ -130,7 +130,7 @@ export function LogSectionTitle({
 }) {
   return (
     <div className={cn("mb-2 flex items-baseline gap-2", className)}>
-      <h2 className="eyebrow flex-1 text-[16px]">{children}</h2>
+      <h2 className="eyebrow flex-1 text-[14px]">{children}</h2>
       {action}
     </div>
   );
@@ -206,20 +206,20 @@ export function TodayPanel({
   return (
     <section aria-label={title} className="panel px-4 pb-2 pt-3.5">
       <div className="flex items-baseline gap-2">
-        <h2 className="eyebrow flex-1 text-[16px]">{title}</h2>
+        <h2 className="eyebrow flex-1 text-[14px]">{title}</h2>
         {total && (
-          <span className="text-[16px] type-row-figure tabular-nums text-text-primary">{total}</span>
+          <span className="text-[14px] type-row-figure tabular-nums text-text-primary">{total}</span>
         )}
       </div>
       {rows.length === 0 ? (
-        <p className="py-3 text-[17px] type-meta text-text-secondary">{empty}</p>
+        <p className="py-3 text-[13px] type-meta text-text-secondary">{empty}</p>
       ) : (
         <ul className="mt-1 divide-y divide-border-divider">
           {rows.map((r) => (
             <li key={r.id} className="flex min-h-12 items-center gap-2 py-2">
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[17px] type-item-title text-text-primary">{r.title}</span>
-                <span className="block truncate text-[16px] type-meta tabular-nums text-text-secondary">
+                <span className="block truncate text-[14px] type-item-title text-text-primary">{r.title}</span>
+                <span className="block truncate text-[14px] type-meta tabular-nums text-text-secondary">
                   {r.at ? `${timeOf(r.at)} · ` : ""}
                   {r.meta}
                 </span>
@@ -272,7 +272,7 @@ export function ChipRow<T extends string | number>({
             aria-pressed={value === o}
             onClick={() => onChange(o)}
             className={cn(
-              "tap-44 relative flex h-9 min-w-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-1 text-[16px] transition-colors sm:px-3.5 sm:text-[17px]",
+              "tap-44 relative flex h-9 min-w-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-1 text-[14px] transition-colors sm:px-3.5 sm:text-[14px]",
               value === o
                 ? cn(SELECTED_CHIP, "type-button")
                 : "type-button-secondary border-border-default bg-white text-text-secondary hover:border-text-neutral-400",
@@ -390,11 +390,11 @@ function PortionSheet({
         <span aria-hidden="true" className="mx-auto mt-3 block h-1 w-9 rounded-full bg-border-default md:hidden" />
         <header className="flex items-start gap-3 pt-3 md:pt-7">
           <div className="min-w-0 flex-1">
-            <p className="text-[17px] type-meta text-text-secondary">How much did you have?</p>
+            <p className="text-[13px] type-meta text-text-secondary">How much did you have?</p>
             <h2 id={titleId} className="mt-1 text-xl type-section-title leading-7 tracking-[-0.9px] text-brand-navy">
               {item.title}
             </h2>
-            <p className="mt-0.5 truncate text-[17px] type-meta text-text-secondary">{item.subtitle}</p>
+            <p className="mt-0.5 truncate text-[13px] type-meta text-text-secondary">{item.subtitle}</p>
           </div>
           <button
             type="button"
@@ -406,7 +406,7 @@ function PortionSheet({
           </button>
         </header>
         {surgery && (
-          <p className="mt-4 flex items-start gap-2.5 rounded-2xl bg-brand-teal-soft px-4 py-3 text-[17px] leading-5 text-text-primary type-meta">
+          <p className="mt-4 flex items-start gap-2.5 rounded-2xl bg-brand-teal-soft px-4 py-3 text-[13px] leading-5 text-text-primary type-meta">
             <span className="mt-0.5 shrink-0">
               <Icon name="info" size={16} color="var(--color-brand-navy)" />
             </span>
@@ -449,9 +449,9 @@ function PortionSheet({
           data-testid="portion-readout"
         >
           {scaled === null ? (
-            <p className="text-[17px] type-meta text-text-secondary">Choose a portion to see what it adds.</p>
+            <p className="text-[13px] type-meta text-text-secondary">Choose a portion to see what it adds.</p>
           ) : (
-            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[17px] type-meta text-text-secondary">
+            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[13px] type-meta text-text-secondary">
               <Figure value={scaled.calories} unit="kcal" className="text-accent-ink" />
               <Figure value={scaled.protein} unit="g protein" className="text-text-primary" />
             </p>

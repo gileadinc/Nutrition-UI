@@ -6,19 +6,20 @@ import { ConfirmDialog } from "@/components/Collections";
 import { GettingStarted, MomentumCard, RecommendedMeals } from "@/components/Track/TrackExtras";
 import { profileApi } from "@/lib/api";
 import {
-  AlsoToday,
   TodayLog,
-  TodayRings,
   TrackHeader,
   TrackSection,
   WeekChart,
-  mealTotals,
   toWeek,
   EYEBROW,
 } from "@/components/Track/Dashboard";
+import { TrackOverview } from "@/components/Track/Overview";
 import { useNow } from "@/lib/hooks";
 import { GOAL_LABEL, isoDate, ozToMl } from "@/lib/nutrition";
 import {
+  doseStatus,
+  timeToMinutes,
+  useMedications,
   firstNameOf,
   invalidate,
   toast,
@@ -26,19 +27,12 @@ import {
   useMomentum,
   useTrackingRecommendations,
   useProfile,
-  useActivity,
   useRequireAccount,
   useTrackingActions,
   useWeight,
 } from "@/lib/store";
-import {
-  dayCalories,
-  dayProtein,
-  dayWaterOz,
-  mealToInput,
-  useTrackDays,
-  type TrackMeal,
-} from "@/lib/track";
+import { mealToInput, useTrackDays, type TrackMeal } from "@/lib/track";
+import type { OverviewData } from "@/components/Track/Overview";
 import { SECTION_TITLE } from "@/components/styles";
 import { cn } from "@/lib/utils";
 
@@ -51,12 +45,12 @@ export function TrackDashboardScreen() {
   const { profile } = useProfile();
   const { log, remove, addWater } = useTrackingActions();
   const { days } = useTrackDays(7);
-  const activity = useActivity();
   const momentum = useMomentum();
   const recs = useTrackingRecommendations(undefined, 3);
   const firstTime = useFirstTimeState();
   const [mealToRemove, setMealToRemove] = useState<TrackMeal | null>(null);
   const weight = useWeight();
+  const { meds } = useMedications();
   const latestWeight = weight.todayReading ?? weight.previous;
   const todayKey = isoDate(now);
   const today = days[days.length - 1];
@@ -92,8 +86,24 @@ export function TrackDashboardScreen() {
       .catch(() => toast.error("Couldn't save that. Try again."));
   };
 
-  const waterOz = dayWaterOz(today);
-  const waterGoal = Math.round(today.waterGoalOz);
+  const nextDose = [...meds]
+    .filter((m) => !m.taken)
+    .sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time))[0];
+  const overview: OverviewData = {
+    day: today,
+    weightLb: latestWeight ? latestWeight.pounds : null,
+    weightNote: weight.todayReading ? "today" : latestWeight ? "last reading" : "Not recorded",
+    medication:
+      meds.length === 0
+        ? null
+        : nextDose
+          ? {
+              value: doseStatus(nextDose) === "Missed" ? "Due now" : nextDose.time,
+              note: `${nextDose.name} · ${meds.filter((m) => m.taken).length} of ${meds.length} taken today`,
+            }
+          : { value: "All taken", note: `${meds.length} of ${meds.length} taken today` },
+    onAddWater: () => void addOz(8),
+  };
 
   return (
     <PageContainer className="max-w-[1680px]">
@@ -109,17 +119,9 @@ export function TrackDashboardScreen() {
           goalLabel={profile?.goal ? GOAL_LABEL[profile.goal] : null}
         />
         {firstTime.data && <GettingStarted state={firstTime.data} onDismiss={dismissGettingStarted} />}
+        <TrackOverview data={overview} />
         <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] xl:gap-x-10">
           <div className="flex flex-col gap-6">
-            <TrackSection id="track-today" title="Today">
-              <div className="mt-2">
-                <TodayRings
-                  calories={{ eaten: dayCalories(today), goal: today.calorieGoal }}
-                  protein={{ eaten: dayProtein(today), goal: today.proteinGoal }}
-                  meals={mealTotals(today)}
-                />
-              </div>
-            </TrackSection>
             <WeekChart week={toWeek(days, todayKey)} title="Last 7 days" headingId="track-week" />
             {momentum.data && (
               <TrackSection id="track-streak" title="Your streak">
@@ -130,49 +132,6 @@ export function TrackDashboardScreen() {
             )}
           </div>
           <div className="flex flex-col gap-6">
-            <TrackSection id="track-also-today" title="Also today">
-              <div className="mt-3">
-                <AlsoToday
-                  metrics={[
-                    {
-                      key: "water",
-                      label: "Water",
-                      icon: "droplet",
-                      value: Math.round(waterOz).toLocaleString("en-US"),
-                      unit: "oz",
-                      goal: `of ${waterGoal}`,
-                      spoken: `Water: ${waterOz} of ${waterGoal} oz`,
-                      to: "/track/water",
-                      progress: { value: waterOz, goal: waterGoal },
-                      onQuick: () => void addOz(8),
-                      quickLabel: "Add 8 oz of water",
-                    },
-                    {
-                      key: "activity",
-                      label: "Active minutes",
-                      icon: "activity",
-                      value: String(activity.todayMinutes),
-                      unit: "min",
-                      goal: `of ${activity.goalMinutes}`,
-                      spoken: `Active minutes: ${activity.todayMinutes} of ${activity.goalMinutes}`,
-                      to: "/track/activity",
-                      progress: { value: activity.todayMinutes, goal: activity.goalMinutes },
-                    },
-                    {
-                      key: "weight",
-                      label: "Weight",
-                      icon: "weightScale",
-                      value: latestWeight ? latestWeight.pounds.toFixed(1) : "--",
-                      unit: "lb",
-                      goal: weight.todayReading ? "today" : latestWeight ? "last reading" : "not recorded",
-                      spoken: latestWeight ? `Weight: ${latestWeight.pounds.toFixed(1)} lb` : "Weight: not recorded",
-                      to: "/track/weight",
-                      progress: { value: 0, goal: 0 },
-                    },
-                  ]}
-                />
-              </div>
-            </TrackSection>
             {recs.data && recs.data.items.length > 0 && (
               <TrackSection id="track-recommended" title="Fits your day">
                 <div className="mt-3">

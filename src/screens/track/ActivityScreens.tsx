@@ -96,7 +96,7 @@ function TodayActivityPanel() {
         },
       }))}
       footer={
-        <Link to="/track/activity/history" className="tap-24 text-[17px] type-button text-primary">
+        <Link to="/track/activity/history" className="tap-24 text-[14px] type-button text-primary">
           Activity history
         </Link>
       }
@@ -148,7 +148,7 @@ export function LogActivityPickerScreen() {
         />
         <Link
           to="/track/activity/custom"
-          className="mt-3 flex h-12 items-center justify-center gap-2 rounded-full border border-dashed border-border-default bg-white text-[17px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400"
+          className="mt-3 flex h-12 items-center justify-center gap-2 rounded-full border border-dashed border-border-default bg-white text-[14px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400"
         >
           <Icon name="pencilEdit" size={15} color="var(--color-text-primary)" />
           Something else? Enter it yourself
@@ -202,7 +202,7 @@ export function LogActivityScreen() {
         <AppTextField label="What did you do?" value={name} error={errors.title} onChange={setName} />
         <div>
           <div className="flex items-baseline justify-between gap-3">
-            <p className="text-[17px] type-item-title text-text-primary">Duration</p>
+            <p className="text-[14px] type-item-title text-text-primary">Duration</p>
             <span className="flex items-baseline gap-1">
               <span className="text-[32px] leading-none type-numeral tabular-nums tracking-[-1px] text-brand-navy">
                 {mins ?? 0}
@@ -222,7 +222,7 @@ export function LogActivityScreen() {
           />
           <div
             aria-hidden="true"
-            className="mt-1.5 flex justify-between text-[15px] type-meta tabular-nums text-text-secondary"
+            className="mt-1.5 flex justify-between text-[13px] type-meta tabular-nums text-text-secondary"
           >
             <span>{MIN} min</span>
             <span>{MAX} min</span>
@@ -236,7 +236,7 @@ export function LogActivityScreen() {
           <button
             type="button"
             onClick={() => setCalories(String(estimate))}
-            className="tap-24 -mt-2 self-start text-[17px] type-button text-primary"
+            className="tap-24 -mt-2 self-start text-[14px] type-button text-primary"
           >
             Use an estimate: about {estimate} kcal
           </button>
@@ -322,7 +322,7 @@ export function ActivityHistoryScreen() {
           />
         </AdvancedFilters>
       </div>
-      <p className="mt-4 text-[17px] type-meta text-text-secondary">
+      <p className="mt-4 text-[13px] type-meta text-text-secondary">
         <span className="type-row-figure text-text-primary">{shown.length}</span>
         {shown.length === 1 ? " entry" : " entries"}
         {shown.length !== all.length && ` of ${all.length}`}

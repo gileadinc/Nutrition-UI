@@ -20,12 +20,13 @@ export const MAIN_TABS: { label: string; icon: IconName; path: string }[] = [
   { label: "You", icon: "tabYou", path: "/you" },
 ];
 
-const QUICK_LOG: { label: string; icon: IconName; to: string }[] = [
-  { label: "Medication", icon: "medication", to: "/track/medication" },
-  { label: "Activity", icon: "activity", to: "/track/activity" },
-  { label: "Meal", icon: "forkSpoon", to: "/track/log-meal" },
-  { label: "Water", icon: "droplet", to: "/track/water" },
-  { label: "Weight", icon: "weightScale", to: "/track/weight" },
+const QUICK_LOG: { label: string; icon: IconName; to: string; color: string }[] = [
+  { label: "Meal", icon: "forkSpoon", to: "/track/log-meal", color: "var(--color-accent-graphic)" },
+  { label: "Macros", icon: "analytics", to: "/track/log-meal/custom", color: "var(--color-accent-graphic)" },
+  { label: "Weight", icon: "weightScale", to: "/track/weight", color: "var(--color-primary)" },
+  { label: "Activity", icon: "activity", to: "/track/activity", color: "var(--color-primary)" },
+  { label: "Water", icon: "droplet", to: "/track/water", color: "var(--color-graphic)" },
+  { label: "Medication", icon: "medication", to: "/track/medication", color: "var(--color-graphic)" },
 ];
 
 const ACTIVE = "var(--color-accent)";
@@ -66,7 +67,7 @@ function TopBar() {
           <span className="shrink-0">
             <Icon name="search" size={16} color="var(--color-text-secondary)" />
           </span>
-          <span className="min-w-0 flex-1 truncate text-[17px] type-meta text-text-neutral-400">
+          <span className="min-w-0 flex-1 truncate text-[13px] type-meta text-text-neutral-400">
             Search food, recipes and hacks
           </span>
         </button>
@@ -81,7 +82,7 @@ function TopBar() {
               <Icon name="userCircle" size={16} color="var(--color-primary)" />
             </span>
             {desktop && (
-              <span className="max-w-[8rem] truncate text-[17px] type-button-secondary text-text-primary">
+              <span className="max-w-[8rem] truncate text-[14px] type-button-secondary text-text-primary">
                 {name ?? (session.isGuest ? "Guest" : "Account")}
               </span>
             )}
@@ -143,18 +144,18 @@ function SideRail({ pathname, onCollapse }: { pathname: string; onCollapse?: () 
         ))}
       </div>
       <div className={inTrack ? "hidden" : "mt-auto hidden lg:block"}>
-        <p className="eyebrow px-3 pb-2">Quick log</p>
+        <p className="px-1 pb-2 text-[11px] font-semibold uppercase tracking-wide text-text-primary">Quick log</p>
         <div className="grid grid-cols-2 gap-2">
           {QUICK_LOG.map((q, i) => (
             <Link
               key={q.label}
               to={q.to}
               className={cn(
-                "flex min-h-20 flex-col justify-between rounded-xl bg-brand-warm-gray p-3 text-xs type-button-secondary text-text-primary transition-colors hover:bg-primary-soft",
+                "flex min-h-20 flex-col justify-between rounded-xl border border-border-default bg-white p-3 text-xs type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400 hover:bg-brand-warm-gray",
                 i === QUICK_LOG.length - 1 && QUICK_LOG.length % 2 === 1 && "col-span-2",
               )}
             >
-              <Icon name={q.icon} size={18} color="var(--color-primary)" />
+              <Icon name={q.icon} size={18} color={q.color} />
               {q.label}
             </Link>
           ))}
@@ -228,7 +229,7 @@ function TabBar() {
                   </span>
                   <span
                     className={cn(
-                      "mt-[3px] text-[15px] leading-none",
+                      "mt-[3px] text-[13px] leading-none",
                       isActive
                         ? "type-button text-accent-ink"
                         : "type-button-secondary text-text-secondary",

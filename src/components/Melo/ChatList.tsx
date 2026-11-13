@@ -79,7 +79,7 @@ export function MeloChatList({
         onChange={setQ}
         placeholder="Search your chats"
         size="lg"
-        inputClassName="text-base md:text-[19px]"
+        inputClassName="text-base md:text-[14px]"
         inputRef={search}
         autoFocus={autoFocusSearch}
       />
@@ -122,15 +122,15 @@ export function MeloChatList({
                     >
                       <span className="min-w-0 flex-1">
                         <span className="flex items-baseline gap-2">
-                          <span className="min-w-0 flex-1 truncate text-[18px] type-item-title text-text-primary">
+                          <span className="min-w-0 flex-1 truncate text-[13px] type-item-title text-text-primary">
                             {c.title}
                           </span>
-                          <span className="shrink-0 text-[15px] type-meta text-text-neutral-500">
+                          <span className="shrink-0 text-[13px] type-meta text-text-neutral-500">
                             {relativeTime(c.updatedAt, now)}
                           </span>
                         </span>
                         {sub && (
-                          <span className="mt-0.5 block truncate text-[17px] type-meta leading-5 text-text-secondary">
+                          <span className="mt-0.5 block truncate text-[13px] type-meta leading-5 text-text-secondary">
                             {sub}
                           </span>
                         )}

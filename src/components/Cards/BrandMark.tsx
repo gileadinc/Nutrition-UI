@@ -47,7 +47,7 @@ export function BrandMark({
       <span
         title={restaurant}
         data-testid={`restaurant-brand-mark-${restaurant}`}
-        className={`${TILE} text-[15px] type-meta leading-none text-text-secondary`}
+        className={`${TILE} text-[13px] type-meta leading-none text-text-secondary`}
       >
         {letter}
       </span>
