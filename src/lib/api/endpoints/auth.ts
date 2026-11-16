@@ -45,6 +45,8 @@ export interface RegisterRequest {
   familyName?: string;
   email: string;
   password: string;
+  /** Optional, for account recovery when email is unavailable. */
+  phone?: string;
 }
 
 export interface RegisterResponse {
@@ -64,21 +66,48 @@ export function register(payload: RegisterRequest): Promise<RegisterResponse> {
     .then((data) => ({ userId: data.userId, email: payload.email }));
 }
 
+/** Where a reset link or code is sent. */
+export type ResetChannel = "email" | "phone";
+
 export interface RequestPasswordResetRequest {
-  email: string;
+  channel: ResetChannel;
+  /** The email or phone number, depending on `channel`. */
+  destination: string;
 }
 
 export interface RequestPasswordResetResponse {
-  email: string;
+  channel: ResetChannel;
+  destination: string;
 }
 
 export function requestPasswordReset(
   payload: RequestPasswordResetRequest,
 ): Promise<RequestPasswordResetResponse> {
+  const destination =
+    payload.destination || (payload.channel === "phone" ? "+1 (555) 010-0000" : "demo@forkthis.app");
   if (DEMO_MODE) {
-    return demoDelay({ email: payload.email || "demo@forkthis.app" });
+    return demoDelay({ channel: payload.channel, destination });
   }
-  return apiClient.post("/auth/forgot-password", payload).then(() => ({ email: payload.email }));
+  return apiClient
+    .post("/auth/forgot-password", payload)
+    .then(() => ({ channel: payload.channel, destination }));
+}
+
+export interface RecoveryOptions {
+  email: string | null;
+  /** Masked for display, e.g. "+1 (•••) •••-4821". Null when none is on file. */
+  phone: string | null;
+}
+
+/**
+ * What the account can be recovered through. The reset screen shows only the
+ * channels that are actually on the profile.
+ */
+export function getRecoveryOptions(): Promise<RecoveryOptions> {
+  if (DEMO_MODE) {
+    return demoDelay({ email: "demo@forkthis.app", phone: "+1 (•••) •••-4821" });
+  }
+  return apiClient.get<RecoveryOptions>("/auth/recovery-options");
 }
 
 export interface ResetPasswordRequest {

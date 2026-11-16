@@ -418,3 +418,65 @@
 .verifyLinks a {
   text-decoration: underline;
 }
+
+/* Sign-in is centre-justified throughout. */
+.forgotRowCentered {
+  justify-content: center;
+}
+
+/* ---- password reset: pick email or text message ---- */
+.channelChoice {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  padding-top: 1rem;
+}
+
+.channelOption {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid #dbdee6;
+  border-radius: 1rem;
+  background: #fff;
+  text-align: left;
+  color: var(--navy-500);
+}
+
+.channelOption > span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.channelOption strong {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.011rem;
+}
+
+.channelOption small {
+  overflow: hidden;
+  font-size: 0.75rem;
+  line-height: 1.125rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-secondary);
+}
+
+.channelOption svg {
+  flex: none;
+}
+
+.channelOptionOn {
+  border-color: var(--navy-500);
+  box-shadow: inset 0 0 0 1px var(--navy-500);
+}
+
+@media (max-width: 26rem) {
+  .channelChoice {
+    grid-template-columns: 1fr;
+  }
+}

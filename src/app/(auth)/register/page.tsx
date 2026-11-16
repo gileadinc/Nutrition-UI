@@ -10,7 +10,7 @@ import { TextField } from "@/components/TextField";
 import { PasswordField } from "@/components/PasswordField";
 import { AuthHeader } from "@/components/AuthHeader";
 import { SocialAuthButtons } from "@/components/SocialAuthButtons";
-import { LegalDialog } from "@/components/LegalDialog";
+import { LegalDialog, DisclaimerDialog } from "@/components/LegalDialog";
 import { FormErrorMessage } from "@/components/FormErrorMessage";
 import { toast } from "sonner";
 import { useAsync } from "@/lib/hooks";
@@ -27,20 +27,34 @@ export default function RegisterPage() {
   const [middleName, setMiddleName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreed, setAgreed] = useState(false);
+  const [disclaimerOpen, setDisclaimerOpen] = useState(false);
 
   const { execute, isLoading, error } = useAsync(authApi.register);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  // Register opens the disclaimer first; the account is created once it's accepted.
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setDisclaimerOpen(true);
+  }
+
+  async function createAccount() {
+    setDisclaimerOpen(false);
     // Demo mode: no blocking client-side validation — the flow always proceeds.
     const givenName = [firstName, middleName]
       .map((p) => p.trim())
       .filter(Boolean)
       .join(" ");
-    const result = await execute({ givenName, familyName: lastName.trim(), email, password });
+    const result = await execute({
+      givenName,
+      familyName: lastName.trim(),
+      email,
+      password,
+      phone: phone.trim() || undefined,
+    });
     if (result) {
       toast.success("Account created. Check your email to verify it.");
       router.push(`${ROUTES.verifyEmail}?email=${encodeURIComponent(result.email)}`);
@@ -90,6 +104,15 @@ export default function RegisterPage() {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
         />
+        <TextField
+          label="Phone number (optional)"
+          hint="Used to recover your account if you lose access to your email."
+          type="tel"
+          name="phone"
+          autoComplete="tel"
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+        />
         <PasswordField
           label="New password"
           name="password"
@@ -131,6 +154,12 @@ export default function RegisterPage() {
       <p className={cn(styles.footer, styles.footerRegister)}>
         Already have an account? <Link href={ROUTES.login}>Sign In</Link>
       </p>
+
+      <DisclaimerDialog
+        open={disclaimerOpen}
+        onOpenChange={setDisclaimerOpen}
+        onAccept={createAccount}
+      />
     </>
   );
 }

@@ -18,6 +18,7 @@
   line-height: 2.3rem;
   font-weight: 700;
   letter-spacing: -0.05rem;
+  text-align: center;
   color: var(--navy-500);
 }
 
@@ -25,6 +26,7 @@
   width: 100%;
   padding-top: 0.75rem;
   padding-bottom: 1.5rem;
+  text-align: center;
   font-size: 1rem;
   line-height: 1.5rem;
   font-weight: 300;
@@ -1208,4 +1210,196 @@
   flex: none;
   justify-content: flex-start;
   padding-top: 1.5rem;
+}
+
+/* ---- centred action bar (review notes: centre-justify the CTA bars) ---- */
+.footerStacked {
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.footerStacked .primary {
+  /* .primary is `flex: 0 1 15rem`, which in a column stretches it vertically. */
+  flex: none;
+  width: 100%;
+}
+
+.footerStacked .skip {
+  width: 100%;
+  text-align: center;
+}
+
+/* The first step centres its own footer too, overriding .stepFirst. */
+.stepFirst .footerStacked {
+  justify-content: center;
+}
+
+/* ---- height + weight, side by side on one step ---- */
+.measurePair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.measureCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.measureHeading {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.011rem;
+  color: var(--text-secondary);
+}
+
+/* Steppers are the widest part of each column — shrink them so two fit. */
+.measurePair .stepper {
+  gap: 0.75rem;
+}
+
+.measurePair .stepper button {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.measurePair .units button {
+  min-width: 0;
+  padding-inline: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.measurePair .valueField input {
+  font-size: 1.625rem;
+  line-height: 2rem;
+}
+
+@media (max-width: 30rem) {
+  .measurePair {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+/* ---- BMI slide ---- */
+.bmiStep {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.bmiHero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: #f4f5f8;
+}
+
+.bmiHeroValue {
+  font-size: 3rem;
+  line-height: 3.25rem;
+  font-weight: 800;
+  letter-spacing: -0.075rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--navy-500);
+}
+
+.bmiHeroMeta {
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.011rem;
+  color: var(--text-secondary);
+}
+
+.bmiBands {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bmiBand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #dbdee6;
+  border-radius: 0.75rem;
+  background: #fff;
+}
+
+.bmiBandOn {
+  border-color: #0abab5;
+  background: rgba(10, 186, 181, 0.08);
+}
+
+.bmiBandLabel {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.011rem;
+  color: var(--navy-500);
+}
+
+.bmiBandRange {
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+.bmiBandYou {
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  background: #0abab5;
+  font-size: 0.75rem;
+  line-height: 1.125rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.bmiFootnote {
+  font-size: 0.75rem;
+  line-height: 1.125rem;
+  letter-spacing: -0.011rem;
+  color: var(--text-secondary);
+}
+
+/* ---- review: multi-select answers as a tick list ---- */
+.reviewChecklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 0.125rem;
+}
+
+.reviewChecklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.011rem;
+  color: var(--navy-500);
+}
+
+.reviewChecklist svg {
+  flex: none;
+  margin-top: 0.3125rem;
+  color: #0abab5;
+}
+
+/* Multi-select rows get a square box, so "click all that apply" reads as such. */
+.checkbox {
+  border-radius: 0.5rem;
 }

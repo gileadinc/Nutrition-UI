@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
-  Bike,
   CalendarDays,
   Check,
   CircleCheck,
@@ -12,22 +11,22 @@ import {
   Dumbbell,
   Flame,
   Footprints,
+  Laptop,
   Leaf,
   Mail,
   Minus,
-  PersonStanding,
   Plus,
   Share2,
   Shield,
   SquarePen,
   Syringe,
-  User,
   type LucideIcon,
 } from "lucide-react";
 import { AppImage } from "@/components/AppImage";
 import { Logo } from "@/components/Logo";
 import { SplitFrame } from "@/components/SplitFrame";
 import { SyringeCheck } from "./SyringeCheck";
+import { RunnerIcon } from "./RunnerIcon";
 import { useCountUp } from "./useCountUp";
 import { GoogleGlyph } from "@/components/SocialAuthButtons/GoogleGlyph";
 import { SocialAuthDialog, type SocialProvider } from "@/components/SocialAuthButtons/SocialAuthDialog";
@@ -47,6 +46,8 @@ import {
   ACTIVITY_COPY,
   ACTIVITY_ORDER,
   ANALYZING_IMAGE,
+  BMI_BANDS,
+  BMI_FOOTNOTE,
   EMPTY_ANSWERS,
   EXAMPLE_HEIGHT_IN,
   EXAMPLE_WEIGHT_LB,
@@ -60,6 +61,7 @@ import {
   START_IMAGE,
   STEPS,
   STEP_COPY,
+  bmiBand,
   type HealthKey,
   type QuizAnswers,
   type StepKey,
@@ -207,7 +209,7 @@ export function QuizFlow() {
         : position === "activity"
           ? answers.activity !== null
           : position === "health"
-            ? answers.health !== null
+            ? answers.health.length > 0
             : true;
   const first = idx === 0;
   const progress = (
@@ -260,32 +262,23 @@ export function QuizFlow() {
               {line}
             </p>
           ))}
-          {copy.why && (
-            <p className={styles.copy}>
-              <strong>Why we ask:</strong> {copy.why}
-            </p>
-          )}
 
           <div className={styles.body}>
             {position === "dob" && <DobStep answers={answers} patch={patch} age={age} />}
             {position === "goal" && <GoalStep answers={answers} patch={patch} />}
-            {position === "height" && <HeightStep answers={answers} patch={patch} />}
-            {position === "weight" && <WeightStep answers={answers} patch={patch} />}
+            {position === "measure" && <MeasureStep answers={answers} patch={patch} />}
+            {position === "bmi" && <BmiStep answers={answers} />}
             {position === "activity" && <ActivityStep answers={answers} patch={patch} />}
             {position === "health" && <HealthStep answers={answers} patch={patch} />}
           </div>
         </div>
 
-        <footer className={styles.footer}>
-          {copy.optional ? (
-            <button type="button" className={styles.skip} onClick={next}>
-              Skip for now
-            </button>
-          ) : (
-            <span />
-          )}
+        <footer className={cn(styles.footer, styles.footerStacked)}>
           <button type="button" className={styles.primary} onClick={next} disabled={!canContinue}>
             {fromReview ? "Back to review" : "Continue"}
+          </button>
+          <button type="button" className={styles.skip} onClick={back}>
+            Back
           </button>
         </footer>
       </section>
@@ -551,6 +544,62 @@ const CM_MAX = Math.floor(MAX_IN * IN_TO_CM);
 const KG_MIN = Math.ceil(MIN_LB * LB_TO_KG);
 const KG_MAX = Math.floor(MAX_LB * LB_TO_KG);
 
+/** Height and weight side by side — one step, as the review notes asked. */
+function MeasureStep({ answers, patch }: StepProps) {
+  return (
+    <div className={styles.measurePair}>
+      <div className={styles.measureCol}>
+        <h2 className={styles.measureHeading}>Height</h2>
+        <HeightStep answers={answers} patch={patch} />
+      </div>
+      <div className={styles.measureCol}>
+        <h2 className={styles.measureHeading}>Weight</h2>
+        <WeightStep answers={answers} patch={patch} />
+      </div>
+    </div>
+  );
+}
+
+/** BMI on its own slide, with the bands shown so people place themselves. */
+function BmiStep({ answers }: { answers: QuizAnswers }) {
+  const lb = answers.weightLb ?? EXAMPLE_WEIGHT_LB;
+  const inches = answers.heightIn ?? EXAMPLE_HEIGHT_IN;
+  const bmi = (703 * lb) / (inches * inches);
+  const band = bmiBand(bmi);
+
+  return (
+    <div className={styles.bmiStep}>
+      <div className={styles.bmiHero}>
+        <p className={styles.bmiHeroValue}>{bmi.toFixed(1)}</p>
+        <p className={styles.bmiHeroMeta}>
+          At {formatHeight(inches, answers.heightMetric)} and {formatWeight(lb, answers.weightMetric)}
+        </p>
+      </div>
+
+      <ul className={styles.bmiBands} aria-label="BMI categories">
+        {BMI_BANDS.map((b) => {
+          const on = b.label === band.label;
+          return (
+            <li key={b.label} className={cn(styles.bmiBand, on && styles.bmiBandOn)}>
+              <span className={styles.bmiBandLabel}>{b.label}</span>
+              <span className={styles.bmiBandRange}>{b.range}</span>
+              {on && (
+                <span className={styles.bmiBandYou} aria-hidden="true">
+                  You
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+
+      <p className={styles.bmiFootnote}>
+        <span aria-hidden="true">*</span> {BMI_FOOTNOTE}
+      </p>
+    </div>
+  );
+}
+
 function HeightStep({ answers, patch }: StepProps) {
   const touched = answers.heightIn !== null;
   const inches = answers.heightIn ?? EXAMPLE_HEIGHT_IN;
@@ -632,8 +681,6 @@ function HeightStep({ answers, patch }: StepProps) {
 function WeightStep({ answers, patch }: StepProps) {
   const touched = answers.weightLb !== null;
   const lb = answers.weightLb ?? EXAMPLE_WEIGHT_LB;
-  const inches = answers.heightIn ?? EXAMPLE_HEIGHT_IN;
-  const bmi = (703 * lb) / (inches * inches);
   const boxRef = useRef<HTMLDivElement>(null);
   const [invalid, setInvalid] = useState(false);
   const metric = answers.weightMetric;
@@ -687,38 +734,28 @@ function WeightStep({ answers, patch }: StepProps) {
               : `That’s ${Math.round(lb * LB_TO_KG)} kg.`}
         </p>
       </div>
-      <div className={styles.bmi}>
-        <div>
-          <p className={styles.bmiLabel}>Your BMI</p>
-          <p className={styles.bmiValue}>{bmi.toFixed(1)}</p>
-        </div>
-        <p className={styles.bmiNote}>
-          At {Math.floor(inches / 12)}&apos;{inches % 12}&quot;. One signal among many, used for
-          context only.
-        </p>
-      </div>
     </div>
   );
 }
 
 type ShownActivity = (typeof ACTIVITY_ORDER)[number];
 
-const ACTIVITY_ICON: Record<ShownActivity, LucideIcon> = {
-  mostlyInactive: User,
-  lightlyActive: PersonStanding,
-  moderatelyActive: Bike,
-  veryActive: Footprints,
-};
-
 /** A lucide icon, or a local one drawn to the same grid (e.g. SyringeCheck). */
 type OptionIcon = LucideIcon | typeof SyringeCheck;
 
+const ACTIVITY_ICON: Record<ShownActivity, OptionIcon> = {
+  veryActive: RunnerIcon,
+  moderatelyActive: Dumbbell,
+  lightlyActive: Footprints,
+  mostlyInactive: Laptop,
+};
+
 const HEALTH_ICON: Record<HealthKey, OptionIcon> = {
-  none: Leaf,
   plastic: CalendarDays,
   bariatric: SyringeCheck,
   glp1: Syringe,
   peptide: Share2,
+  none: Leaf,
 };
 
 function ActivityStep({ answers, patch }: StepProps) {
@@ -739,17 +776,31 @@ function ActivityStep({ answers, patch }: StepProps) {
 }
 
 function HealthStep({ answers, patch }: StepProps) {
+  // "None of the above" is exclusive: picking it clears the rest, and picking
+  // anything else clears it.
+  const toggle = (v: HealthKey) => {
+    if (v === "none") {
+      patch({ health: answers.health.includes("none") ? [] : ["none"] });
+      return;
+    }
+    const without = answers.health.filter((h) => h !== "none");
+    patch({
+      health: without.includes(v) ? without.filter((h) => h !== v) : [...without, v],
+    });
+  };
+
   return (
     <>
-      <div className={cn(styles.options, styles.healthOptions)} role="radiogroup" aria-label="Health context">
+      <div className={cn(styles.options, styles.healthOptions)} role="group" aria-label="Health context">
         {HEALTH_OPTIONS.map((o) => (
           <Option
             key={o.value}
-            selected={answers.health === o.value}
+            multi
+            selected={answers.health.includes(o.value)}
             Icon={HEALTH_ICON[o.value]}
             title={o.title}
             subtitle={o.subtitle}
-            onSelect={() => patch({ health: o.value })}
+            onSelect={() => toggle(o.value)}
           />
         ))}
       </div>
@@ -757,8 +808,8 @@ function HealthStep({ answers, patch }: StepProps) {
         <Shield size={16} aria-hidden="true" />
         <span>
           Private to you, and you can change it later. Choose{" "}
-          <em className={styles.noteOption}>No surgery</em> and the app keeps recommendations
-          general and hides surgery-specific resources.
+          <em className={styles.noteOption}>None of the above</em> and the app keeps
+          recommendations general and hides surgery-specific resources.
         </span>
       </p>
     </>
@@ -771,17 +822,20 @@ function Option({
   title,
   subtitle,
   onSelect,
+  multi = false,
 }: {
   selected: boolean;
   Icon: OptionIcon;
   title: string;
   subtitle: string;
   onSelect: () => void;
+  /** Checkbox semantics instead of radio, for "click all that apply" steps. */
+  multi?: boolean;
 }) {
   return (
     <button
       type="button"
-      role="radio"
+      role={multi ? "checkbox" : "radio"}
       aria-checked={selected}
       className={cn(styles.option, selected && styles.optionOn)}
       onClick={onSelect}
@@ -793,7 +847,7 @@ function Option({
         <span className={styles.optionTitle}>{title}</span>
         {subtitle && <span className={styles.optionSub}>{subtitle}</span>}
       </span>
-      <span className={styles.radio} aria-hidden="true">
+      <span className={cn(styles.radio, multi && styles.checkbox)} aria-hidden="true">
         {selected && <Check size={14} />}
       </span>
     </button>
@@ -860,11 +914,11 @@ function planFrom(answers: QuizAnswers) {
 
 
 const HEALTH_LABEL: Record<HealthKey, string> = {
-  none: "No surgery",
-  plastic: "Preparing for or recovering from plastic surgeries",
-  bariatric: "Recovering from surgery",
-  glp1: "I’m on a GLP-1",
-  peptide: "I’m on a peptide",
+  plastic: "Preparing for or recovering from plastic surgery",
+  bariatric: "History of bariatric surgery",
+  glp1: "I’m on a GLP-1 agonist",
+  peptide: "Peptides are part of my routine",
+  none: "None of the above",
 };
 
 function formatHeight(inches: number | null, metric: boolean) {
@@ -894,13 +948,21 @@ function Review({
       ? `${answers.month}/${answers.day}/${answers.year}${age === null ? "" : ` (${age})`}`
       : "Not set";
 
-  const sections: { title: string; rows: { label: string; value: string; step: StepKey }[] }[] = [
+  interface ReviewRow {
+    label: string;
+    value: string;
+    step: StepKey;
+    /** Rendered as a tick list rather than one line, for multi-select answers. */
+    items?: string[];
+  }
+
+  const sections: { title: string; rows: ReviewRow[] }[] = [
     {
       title: "About you",
       rows: [
-        { label: "Date of birth", value: dob, step: "dob" },
-        { label: "Height", value: formatHeight(answers.heightIn, answers.heightMetric), step: "height" },
-        { label: "Weight", value: formatWeight(answers.weightLb, answers.weightMetric), step: "weight" },
+        { label: "Age", value: dob, step: "dob" },
+        { label: "Height", value: formatHeight(answers.heightIn, answers.heightMetric), step: "measure" },
+        { label: "Weight", value: formatWeight(answers.weightLb, answers.weightMetric), step: "measure" },
       ],
     },
     {
@@ -923,7 +985,8 @@ function Review({
         },
         {
           label: "Surgery",
-          value: answers.health ? HEALTH_LABEL[answers.health] : "Not set",
+          value: answers.health.length ? "" : "Not set",
+          items: answers.health.map((h) => HEALTH_LABEL[h]),
           step: "health",
         },
       ],
@@ -953,8 +1016,7 @@ function Review({
       <div className={styles.resultBody}>
         <h1 className={styles.reviewTitle}>Your answers</h1>
         <p className={styles.resultLead}>
-          Check anything that’s off. Each edit brings you straight back here, and your plan
-          updates to match.
+          Please check your responses for accuracy so we can optimize your ForkThis! experience.
         </p>
 
         <section className={styles.planCard} aria-label="Your starting plan">
@@ -1011,7 +1073,18 @@ function Review({
                 <div key={r.label} className={styles.reviewRow}>
                   <div>
                     <p className={styles.reviewLabel}>{r.label}</p>
-                    <p className={styles.reviewValue}>{r.value}</p>
+                    {r.items?.length ? (
+                      <ul className={styles.reviewChecklist}>
+                        {r.items.map((item) => (
+                          <li key={item}>
+                            <Check size={14} aria-hidden="true" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className={styles.reviewValue}>{r.value}</p>
+                    )}
                   </div>
                   <button
                     type="button"
@@ -1064,40 +1137,39 @@ function Result({
           Plan ready
         </p>
         <h1 className={styles.resultTitle}>
-          Based on the TDEE calculator, <span>you should start here</span>
+          Based on the TDEE calculator, <span>your starting caloric goal is:</span>
         </h1>
-        <p className={styles.resultLead}>Based on your answers, your starting caloric goal is</p>
         <p className={styles.kcal}>
           <span aria-hidden="true">{(shownKcal ?? result.kcal).toLocaleString("en-US")}</span>
           {/* Screen readers get the final number, not every frame of the count-up. */}
           <span className={styles.srOnly}>{result.kcal.toLocaleString("en-US")}</span>
           <small>
-            kcal a day to <b>{GOAL_LABEL[result.goal]}</b>
+            kcal a day to <b>hit your goal</b>
           </small>
         </p>
         <dl className={styles.macros}>
           <div>
-            <dt>Protein</dt>
+            <dt>Daily protein</dt>
             <dd>
               {result.protein} <small>g</small>
             </dd>
-            <p>About 30% of your calories, to help keep muscle.</p>
+            <p>Protein should be about 30% of your calories to help maintain muscle mass.</p>
           </div>
           <div>
-            <dt>Water</dt>
+            <dt>Daily water</dt>
             <dd>
               {result.water} <small>oz</small>
             </dd>
-            <p>A general guide. More on hot days.</p>
+            <p>This is a general recommendation to keep you hydrated.</p>
           </div>
         </dl>
       </div>
-      <footer className={styles.footer}>
-        <button type="button" className={styles.skip} onClick={onReview}>
-          Review your answers
-        </button>
+      <footer className={cn(styles.footer, styles.footerStacked)}>
         <button type="button" className={styles.primary} onClick={onSave}>
           Save your plan
+        </button>
+        <button type="button" className={styles.skip} onClick={onReview}>
+          Review your answers
         </button>
       </footer>
     </section>

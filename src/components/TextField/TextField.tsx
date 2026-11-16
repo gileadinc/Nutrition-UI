@@ -7,13 +7,16 @@ import styles from "@/components/TextField/Field.module.css";
 export interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
+  /** Short explanatory line under the input (e.g. why an optional field is useful). */
+  hint?: string;
 }
 
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
-  ({ label, error, id, className, ...rest }, ref) => {
+  ({ label, error, hint, id, className, ...rest }, ref) => {
     const generatedId = useId();
     const inputId = id ?? generatedId;
     const errorId = `${inputId}-error`;
+    const hintId = `${inputId}-hint`;
 
     return (
       <div className={styles.field}>
@@ -25,9 +28,14 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           id={inputId}
           className={cn(styles.input, className)}
           aria-invalid={Boolean(error)}
-          aria-describedby={error ? errorId : undefined}
+          aria-describedby={error ? errorId : hint ? hintId : undefined}
           {...rest}
         />
+        {hint && !error ? (
+          <p id={hintId} className={styles.hint}>
+            {hint}
+          </p>
+        ) : null}
         {error ? (
           <p id={errorId} className="text-sm text-destructive" role="alert">
             {error}

@@ -30,3 +30,12 @@
 .subtextTight {
   padding-top: 0.25rem;
 }
+
+/* Sign-in centres its header; the logo lockup is inline-flex so it needs the
+   flex centring rather than text-align alone. */
+.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}

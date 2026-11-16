@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { GoogleGlyph } from "./GoogleGlyph";
+import { AppleGlyph } from "./AppleGlyph";
 import { SocialAuthDialog, type SocialProvider } from "./SocialAuthDialog";
 import styles from "./SocialAuthButtons.module.css";
 
@@ -28,6 +29,15 @@ export function SocialAuthButtons({ dividerLabel = "Or continue with" }: SocialA
         >
           <GoogleGlyph />
           Google
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className={styles.appleButton}
+          onClick={() => setProvider("apple")}
+        >
+          <AppleGlyph />
+          Apple
         </Button>
       </div>
 

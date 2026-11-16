@@ -50,3 +50,10 @@
   border-radius: 999px;
   color: var(--text-secondary);
 }
+
+.hint {
+  font-size: 0.75rem;
+  line-height: 1.125rem;
+  letter-spacing: -0.011rem;
+  color: var(--text-secondary);
+}

@@ -18,7 +18,7 @@ const CONFIGS: Record<string, FrameConfig> = {
   register: {
     image: "/img/auth/create.webp",
     caption: {
-      label: "Created your free ForkThis! account",
+      label: "You’ve created your free ForkThis! account",
       size: "md",
       title: (
         <>

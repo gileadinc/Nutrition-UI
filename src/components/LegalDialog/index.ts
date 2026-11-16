@@ -1,2 +1,3 @@
 export { LegalDialog } from "./LegalDialog";
-export { LEGAL_DOCS } from "./legal";
+export { DisclaimerDialog } from "./DisclaimerDialog";
+export { LEGAL_DOCS, DISCLAIMER } from "./legal";

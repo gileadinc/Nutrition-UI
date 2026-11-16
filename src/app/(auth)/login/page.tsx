@@ -36,6 +36,7 @@ export default function LoginPage() {
     <>
       <AuthHeader
         showBrand
+        centered
         heading="We’re happy you’re back!"
         subtext="Sign in to continue your personalized ForkThis! settings."
       />
@@ -57,7 +58,7 @@ export default function LoginPage() {
           onChange={(event) => setPassword(event.target.value)}
           required
         />
-        <div className={styles.forgotRow}>
+        <div className={cn(styles.forgotRow, styles.forgotRowCentered)}>
           <Link href={ROUTES.forgotPassword} className={styles.forgot}>
             Forgot password?
           </Link>

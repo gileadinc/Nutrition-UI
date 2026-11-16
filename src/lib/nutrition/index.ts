@@ -15,7 +15,7 @@ export const GOAL_LABEL: Record<GoalKey, string> = {
   eatOut: "eat healthier while you're out",
   track: "track your progress",
   lose: "lose weight",
-  recomp: "recompose your body",
+  recomp: "find fresh ideas",
 };
 
 export const ACTIVITY_KEYS: ActivityKey[] = [

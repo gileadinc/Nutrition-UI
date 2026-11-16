@@ -9,11 +9,19 @@ export interface AuthHeaderProps {
   showBrand?: boolean;
   /** Extra-bold heading weight (used on the create-account screen). */
   strong?: boolean;
+  /** Centre the brand, heading and subtext (the sign-in screen). */
+  centered?: boolean;
 }
 
-export function AuthHeader({ heading, subtext, showBrand = false, strong = false }: AuthHeaderProps) {
+export function AuthHeader({
+  heading,
+  subtext,
+  showBrand = false,
+  strong = false,
+  centered = false,
+}: AuthHeaderProps) {
   return (
-    <div>
+    <div className={cn(centered && styles.centered)}>
       {showBrand ? <Logo className={styles.brand} /> : null}
       <h1 className={cn(styles.heading, !showBrand && styles.headingNoBrand, strong && styles.strong)}>
         {heading}
