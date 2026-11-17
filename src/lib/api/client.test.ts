@@ -49,6 +49,17 @@ describe("apiClient", () => {
     });
   });
 
+  it("reads the backend's flat error shape on a non-2xx response", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      jsonResponse({ success: false, message: "Incorrect username or password.", statusCode: 401 }, 401),
+    );
+
+    await expect(apiClient.post("/auth/signin", {})).rejects.toMatchObject({
+      message: "Incorrect username or password.",
+      status: 401,
+    });
+  });
+
   it("throws an ApiError on a non-2xx status without an envelope", async () => {
     vi.mocked(fetch).mockResolvedValue(new Response("Internal Server Error", { status: 500 }));
 

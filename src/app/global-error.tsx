@@ -25,10 +25,10 @@ export default function GlobalError({
             style={{
               marginTop: "1rem",
               padding: "0.625rem 1.25rem",
-              border: "1px solid #000",
-              borderRadius: "4px",
-              background: "#000",
-              color: "#fff",
+              border: "1px solid transparent",
+              borderRadius: "8px",
+              background: "#12a9a0",
+              color: "#ffffff",
               cursor: "pointer",
             }}
           >
