@@ -259,8 +259,10 @@
 }
 
 .dob input::placeholder {
-  color: var(--text-secondary);
-  opacity: 0.8;
+  /* Clearly an example, not a typed value: the user must enter their own date. */
+  color: #b4b9c4;
+  font-weight: 600;
+  opacity: 1;
 }
 
 .dob input:focus-visible {
@@ -490,7 +492,10 @@
 }
 
 .valueField input.valueInputDim {
-  color: var(--text-secondary);
+  /* Untouched example value: must read as a placeholder, not a typed answer.
+     Matches the DOB step's ::placeholder treatment. */
+  color: #b4b9c4;
+  font-weight: 600;
 }
 
 .valueField > span {
@@ -890,7 +895,7 @@
   gap: 0.625rem;
   height: 3.5rem;
   width: 100%;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-default);
   border-radius: 1rem;
   background: #fff;
   color: var(--navy-500);
