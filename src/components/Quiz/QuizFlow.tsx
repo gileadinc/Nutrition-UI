@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
-  Bike,
   CalendarDays,
   Check,
   CircleCheck,
@@ -15,28 +14,28 @@ import {
   Leaf,
   Mail,
   Minus,
-  PersonStanding,
   Plus,
   Share2,
   Shield,
   SquarePen,
   Syringe,
-  User,
   type LucideIcon,
 } from "lucide-react";
 import { AppImage } from "@/components/AppImage";
 import { Logo } from "@/components/Logo";
 import { SplitFrame } from "@/components/SplitFrame";
-import { StartCollage } from "./StartCollage";
 import { SyringeCheck } from "./SyringeCheck";
+import { DeskIcon } from "./DeskIcon";
+import { RunnerIcon } from "./RunnerIcon";
 import { useCountUp } from "./useCountUp";
 import { GoogleGlyph } from "@/components/SocialAuthButtons/GoogleGlyph";
-import { SocialAuthDialog, type SocialProvider } from "@/components/SocialAuthButtons/SocialAuthDialog";
+import { useSocialSignIn } from "@/screens/public/useSocialSignIn";
+import { getErrorMessage } from "@/lib/api";
+import { saveDraft, submitQuestionnaire, toast } from "@/lib/store";
+import { isQuestionStep } from "@/lib/store";
+import { draftFromAnswers, STEP_FOR_QUESTION } from "./draftBridge";
 import { ROUTES } from "@/lib/constants";
 import {
-  GOAL_LABEL,
-  IN_TO_CM,
-  LB_TO_KG,
   ageFromDob,
   calorieTarget,
   macroGrams,
@@ -48,6 +47,8 @@ import {
   ACTIVITY_COPY,
   ACTIVITY_ORDER,
   ANALYZING_IMAGE,
+  BMI_BANDS,
+  BMI_FOOTNOTE,
   EMPTY_ANSWERS,
   EXAMPLE_HEIGHT_IN,
   EXAMPLE_WEIGHT_LB,
@@ -61,11 +62,22 @@ import {
   START_IMAGE,
   STEPS,
   STEP_COPY,
+  bmiBand,
+  goalKeyFor,
+  type GoalCardId,
   type HealthKey,
   type QuizAnswers,
   type StepKey,
 } from "./quizData";
 import styles from "./QuizFlow.module.css";
+
+/** `ageFromDob` wants a zero-padded MM/DD/YYYY string. */
+const dobString = (a: Pick<QuizAnswers, "month" | "day" | "year">) =>
+  `${a.month.padStart(2, "0")}/${a.day.padStart(2, "0")}/${a.year}`;
+
+/** Conversion factors (match `inchesToCm` / `lbToKg` in `@/lib/nutrition`). */
+const IN_TO_CM = 2.54;
+const LB_TO_KG = 0.453592;
 
 type Position = "start" | (typeof STEPS)[number] | "analyzing" | "result" | "save" | "review";
 const STORAGE_KEY = "forkthis.quiz";
@@ -98,6 +110,9 @@ export function QuizFlow() {
   /** True while editing one answer from the review page, so Continue returns there. */
   const [fromReview, setFromReview] = useState(false);
 
+  /** Set by `?returnTo=`: edit one answer, then go back where we came from. */
+  const [returnTo, setReturnTo] = useState<string | null>(null);
+
   useEffect(() => {
     const saved = load();
     /* eslint-disable react-hooks/set-state-in-effect -- restore a client-only draft after mount */
@@ -105,13 +120,29 @@ export function QuizFlow() {
       setAnswers({ ...EMPTY_ANSWERS, ...saved.answers });
       setPosition(saved.position === "analyzing" ? "result" : saved.position);
     }
-    // Deep link: /onboarding?step=goal opens that screen (used for QA and sharing).
-    const step = new URLSearchParams(window.location.search).get("step");
+    const params = new URLSearchParams(window.location.search);
+    // Only same-origin relative targets, so `returnTo` can't be used to redirect off-site.
+    const back = params.get("returnTo");
+    if (back && back.startsWith("/") && !back.startsWith("//")) setReturnTo(back);
+    // Deep link: `?step=goal` opens that screen. Accepts the quiz's own step names
+    // and the questionnaire's (`height`/`weight`/`surgery`), which /you and /track link to.
+    const step = params.get("step");
     const valid = ["start", ...STEPS, "analyzing", "result", "save", "review"];
     if (step && valid.includes(step)) setPosition(step as Position);
+    else if (isQuestionStep(step)) {
+      const mapped = STEP_FOR_QUESTION[step];
+      if (mapped) setPosition(mapped);
+    }
     setHydrated(true);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
+
+  // Mirror answers into the shared questionnaire draft, so the profile and the
+  // rest of the app see them the same way the old questionnaire wrote them.
+  useEffect(() => {
+    if (!hydrated) return;
+    saveDraft(draftFromAnswers(answers));
+  }, [answers, hydrated]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -128,9 +159,47 @@ export function QuizFlow() {
     return () => window.clearTimeout(t);
   }, [position]);
 
+  // Persist to the backend session (and the profile, when signed in) as soon as
+  // the plan is revealed, so `hasCompletedOnboarding()` is true from here on.
+  const submitted = useRef(false);
+  useEffect(() => {
+    if (position !== "result" || submitted.current) return;
+    submitted.current = true;
+    void (async () => {
+      try {
+        await submitQuestionnaire(draftFromAnswers(answers));
+      } catch (e) {
+        submitted.current = false;
+        toast.error(getErrorMessage(e));
+      }
+    })();
+  }, [position, answers]);
+
+  // An edit arriving from /you or /track returns there once the answer changes.
+  const done = () => {
+    if (returnTo) {
+      window.location.assign(returnTo);
+      return true;
+    }
+    return false;
+  };
+
   const patch = (p: Partial<QuizAnswers>) => setAnswers((a) => ({ ...a, ...p }));
   const idx = STEPS.indexOf(position as (typeof STEPS)[number]);
   const next = () => {
+    // Editing one answer from /you or /track: save and go straight back.
+    if (returnTo) {
+      void (async () => {
+        try {
+          await submitQuestionnaire(draftFromAnswers(answers));
+        } catch (e) {
+          toast.error(getErrorMessage(e));
+          return;
+        }
+        done();
+      })();
+      return;
+    }
     if (fromReview) {
       setFromReview(false);
       setPosition("review");
@@ -142,7 +211,7 @@ export function QuizFlow() {
 
   if (position === "start") {
     return (
-      <SplitFrame image={START_IMAGE} variant="quiz" collage={<StartCollage />}>
+      <SplitFrame image={START_IMAGE} variant="quiz">
         <div className={styles.intro}>
           <h1 className={styles.introTitle}>Start Your ForkThis! Quiz</h1>
           <p className={styles.introLead}>Take a short quiz to optimize ForkThis! to fit your goals.</p>
@@ -199,7 +268,7 @@ export function QuizFlow() {
   }
 
   const copy = STEP_COPY[position];
-  const age = ageFromDob(+answers.month, +answers.day, +answers.year);
+  const age = ageFromDob(dobString(answers));
   const canContinue =
     position === "dob"
       ? age !== null && age >= 13
@@ -208,7 +277,7 @@ export function QuizFlow() {
         : position === "activity"
           ? answers.activity !== null
           : position === "health"
-            ? answers.health !== null
+            ? answers.health.length > 0
             : true;
   const first = idx === 0;
   const progress = (
@@ -261,32 +330,23 @@ export function QuizFlow() {
               {line}
             </p>
           ))}
-          {copy.why && (
-            <p className={styles.copy}>
-              <strong>Why we ask:</strong> {copy.why}
-            </p>
-          )}
 
           <div className={styles.body}>
             {position === "dob" && <DobStep answers={answers} patch={patch} age={age} />}
             {position === "goal" && <GoalStep answers={answers} patch={patch} />}
-            {position === "height" && <HeightStep answers={answers} patch={patch} />}
-            {position === "weight" && <WeightStep answers={answers} patch={patch} />}
+            {position === "measure" && <MeasureStep answers={answers} patch={patch} />}
+            {position === "bmi" && <BmiStep answers={answers} />}
             {position === "activity" && <ActivityStep answers={answers} patch={patch} />}
             {position === "health" && <HealthStep answers={answers} patch={patch} />}
           </div>
         </div>
 
-        <footer className={styles.footer}>
-          {copy.optional ? (
-            <button type="button" className={styles.skip} onClick={next}>
-              Skip for now
-            </button>
-          ) : (
-            <span />
-          )}
+        <footer className={cn(styles.footer, styles.footerStacked)}>
           <button type="button" className={styles.primary} onClick={next} disabled={!canContinue}>
             {fromReview ? "Back to review" : "Continue"}
+          </button>
+          <button type="button" className={styles.skip} onClick={back}>
+            Back
           </button>
         </footer>
       </section>
@@ -392,7 +452,7 @@ function DobStep({ answers, patch, age }: StepProps & { age: number | null }) {
 }
 
 function GoalStep({ answers, patch }: StepProps) {
-  const toggle = (g: (typeof GOAL_OPTIONS)[number]["value"]) =>
+  const toggle = (g: GoalCardId) =>
     patch({
       goals: answers.goals.includes(g)
         ? answers.goals.filter((x) => x !== g)
@@ -401,16 +461,16 @@ function GoalStep({ answers, patch }: StepProps) {
   return (
     <div className={styles.goals}>
       {GOAL_OPTIONS.map((o) => {
-        const on = answers.goals.includes(o.value);
+        const on = answers.goals.includes(o.id);
         return (
           <button
-            key={o.value}
+            key={o.id}
             type="button"
             aria-pressed={on}
             className={cn(styles.goal, on && styles.goalOn)}
-            onClick={() => toggle(o.value)}
+            onClick={() => toggle(o.id)}
           >
-            <AppImage src={o.image} alt="" className={cn(styles.goalArt, o.value === "track" && styles.goalArtTrack)} />
+            <AppImage src={o.image} alt="" className={cn(styles.goalArt, o.id === "track" && styles.goalArtTrack)} />
             <span className={styles.goalText}>
               <span className={styles.goalTitle}>
                 {o.title.map((line) => (
@@ -549,6 +609,64 @@ function MeasureBox({
 
 const CM_MIN = Math.ceil(MIN_IN * IN_TO_CM);
 const CM_MAX = Math.floor(MAX_IN * IN_TO_CM);
+const KG_MIN = Math.ceil(MIN_LB * LB_TO_KG);
+const KG_MAX = Math.floor(MAX_LB * LB_TO_KG);
+
+/** Height and weight side by side — one step, as the review notes asked. */
+function MeasureStep({ answers, patch }: StepProps) {
+  return (
+    <div className={styles.measurePair}>
+      <div className={styles.measureCol}>
+        <h2 className={styles.measureHeading}>Height</h2>
+        <HeightStep answers={answers} patch={patch} />
+      </div>
+      <div className={styles.measureCol}>
+        <h2 className={styles.measureHeading}>Weight</h2>
+        <WeightStep answers={answers} patch={patch} />
+      </div>
+    </div>
+  );
+}
+
+/** BMI on its own slide, with the bands shown so people place themselves. */
+function BmiStep({ answers }: { answers: QuizAnswers }) {
+  const lb = answers.weightLb ?? EXAMPLE_WEIGHT_LB;
+  const inches = answers.heightIn ?? EXAMPLE_HEIGHT_IN;
+  const bmi = (703 * lb) / (inches * inches);
+  const band = bmiBand(bmi);
+
+  return (
+    <div className={styles.bmiStep}>
+      <div className={styles.bmiHero}>
+        <p className={styles.bmiHeroValue}>{bmi.toFixed(1)}</p>
+        <p className={styles.bmiHeroMeta}>
+          At {formatHeight(inches, answers.heightMetric)} and {formatWeight(lb, answers.weightMetric)}
+        </p>
+      </div>
+
+      <ul className={styles.bmiBands} aria-label="BMI categories">
+        {BMI_BANDS.map((b) => {
+          const on = b.label === band.label;
+          return (
+            <li key={b.label} className={cn(styles.bmiBand, on && styles.bmiBandOn)}>
+              <span className={styles.bmiBandLabel}>{b.label}</span>
+              <span className={styles.bmiBandRange}>{b.range}</span>
+              {on && (
+                <span className={styles.bmiBandYou} aria-hidden="true">
+                  You
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+
+      <p className={styles.bmiFootnote}>
+        <span aria-hidden="true">*</span> {BMI_FOOTNOTE}
+      </p>
+    </div>
+  );
+}
 
 function HeightStep({ answers, patch }: StepProps) {
   const touched = answers.heightIn !== null;
@@ -631,9 +749,8 @@ function HeightStep({ answers, patch }: StepProps) {
 function WeightStep({ answers, patch }: StepProps) {
   const touched = answers.weightLb !== null;
   const lb = answers.weightLb ?? EXAMPLE_WEIGHT_LB;
-  const inches = answers.heightIn ?? EXAMPLE_HEIGHT_IN;
-  const bmi = (703 * lb) / (inches * inches);
   const boxRef = useRef<HTMLDivElement>(null);
+  const [invalid, setInvalid] = useState(false);
   const metric = answers.weightMetric;
   const fields: MeasureField[] = [
     {
@@ -644,7 +761,9 @@ function WeightStep({ answers, patch }: StepProps) {
       value: String(metric ? Math.round(lb * LB_TO_KG) : lb),
       onChange: (v) => {
         const pounds = v ? (metric ? Math.round(+v / LB_TO_KG) : +v) : null;
-        if (pounds !== null) patch({ weightLb: pounds });
+        const ok = pounds !== null && pounds >= MIN_LB && pounds <= MAX_LB;
+        setInvalid(!ok);
+        if (ok) patch({ weightLb: pounds });
       },
     },
   ];
@@ -653,32 +772,34 @@ function WeightStep({ answers, patch }: StepProps) {
       <UnitToggle
         metric={metric}
         labels={["lbs", "kg"]}
-        onChange={(m) => patch({ weightMetric: m })}
+        onChange={(m) => {
+          setInvalid(false);
+          patch({ weightMetric: m });
+        }}
       />
-      <MeasureBox fields={fields} example={!touched} invalid={false} boxRef={boxRef} />
+      <MeasureBox fields={fields} example={!touched} invalid={invalid} boxRef={boxRef} />
       <Stepper
         value={lb}
         min={MIN_LB}
         max={MAX_LB}
         label="weight"
-        onChange={(v) => patch({ weightLb: v })}
+        onChange={(v) => {
+          setInvalid(false);
+          patch({ weightLb: v });
+        }}
       />
       <div className={styles.hintGroup}>
         {!touched && (
           <ExampleHint centered onPress={() => boxRef.current?.querySelector("input")?.focus()} />
         )}
-        <p className={styles.sub} aria-live="polite">
-          {metric ? `That’s ${lb} lbs.` : `That’s ${Math.round(lb * LB_TO_KG)} kg.`}
-        </p>
-      </div>
-      <div className={styles.bmi}>
-        <div>
-          <p className={styles.bmiLabel}>Your BMI</p>
-          <p className={styles.bmiValue}>{bmi.toFixed(1)}</p>
-        </div>
-        <p className={styles.bmiNote}>
-          At {Math.floor(inches / 12)}&apos;{inches % 12}&quot;. One signal among many, used for
-          context only.
+        <p className={cn(styles.sub, invalid && styles.subError)} aria-live="polite">
+          {invalid
+            ? metric
+              ? `Enter a weight between ${KG_MIN} and ${KG_MAX} kg.`
+              : `Enter a weight between ${MIN_LB} and ${MAX_LB} lbs.`
+            : metric
+              ? `That’s ${lb} lbs.`
+              : `That’s ${Math.round(lb * LB_TO_KG)} kg.`}
         </p>
       </div>
     </div>
@@ -687,22 +808,22 @@ function WeightStep({ answers, patch }: StepProps) {
 
 type ShownActivity = (typeof ACTIVITY_ORDER)[number];
 
-const ACTIVITY_ICON: Record<ShownActivity, LucideIcon> = {
-  mostlyInactive: User,
-  lightlyActive: PersonStanding,
-  moderatelyActive: Bike,
-  veryActive: Footprints,
-};
-
 /** A lucide icon, or a local one drawn to the same grid (e.g. SyringeCheck). */
 type OptionIcon = LucideIcon | typeof SyringeCheck;
 
+const ACTIVITY_ICON: Record<ShownActivity, OptionIcon> = {
+  veryActive: RunnerIcon,
+  moderatelyActive: Dumbbell,
+  lightlyActive: Footprints,
+  mostlyInactive: DeskIcon,
+};
+
 const HEALTH_ICON: Record<HealthKey, OptionIcon> = {
-  none: Leaf,
   plastic: CalendarDays,
   bariatric: SyringeCheck,
   glp1: Syringe,
   peptide: Share2,
+  none: Leaf,
 };
 
 function ActivityStep({ answers, patch }: StepProps) {
@@ -723,17 +844,31 @@ function ActivityStep({ answers, patch }: StepProps) {
 }
 
 function HealthStep({ answers, patch }: StepProps) {
+  // "None of the above" is exclusive: picking it clears the rest, and picking
+  // anything else clears it.
+  const toggle = (v: HealthKey) => {
+    if (v === "none") {
+      patch({ health: answers.health.includes("none") ? [] : ["none"] });
+      return;
+    }
+    const without = answers.health.filter((h) => h !== "none");
+    patch({
+      health: without.includes(v) ? without.filter((h) => h !== v) : [...without, v],
+    });
+  };
+
   return (
     <>
-      <div className={cn(styles.options, styles.healthOptions)} role="radiogroup" aria-label="Health context">
+      <div className={cn(styles.options, styles.healthOptions)} role="group" aria-label="Health context">
         {HEALTH_OPTIONS.map((o) => (
           <Option
             key={o.value}
-            selected={answers.health === o.value}
+            multi
+            selected={answers.health.includes(o.value)}
             Icon={HEALTH_ICON[o.value]}
             title={o.title}
             subtitle={o.subtitle}
-            onSelect={() => patch({ health: o.value })}
+            onSelect={() => toggle(o.value)}
           />
         ))}
       </div>
@@ -741,8 +876,8 @@ function HealthStep({ answers, patch }: StepProps) {
         <Shield size={16} aria-hidden="true" />
         <span>
           Private to you, and you can change it later. Choose{" "}
-          <em className={styles.noteOption}>No surgery</em> and the app keeps recommendations
-          general and hides surgery-specific resources.
+          <em className={styles.noteOption}>None of the above</em> and the app keeps
+          recommendations general and hides surgery-specific resources.
         </span>
       </p>
     </>
@@ -755,17 +890,20 @@ function Option({
   title,
   subtitle,
   onSelect,
+  multi = false,
 }: {
   selected: boolean;
   Icon: OptionIcon;
   title: string;
   subtitle: string;
   onSelect: () => void;
+  /** Checkbox semantics instead of radio, for "click all that apply" steps. */
+  multi?: boolean;
 }) {
   return (
     <button
       type="button"
-      role="radio"
+      role={multi ? "checkbox" : "radio"}
       aria-checked={selected}
       className={cn(styles.option, selected && styles.optionOn)}
       onClick={onSelect}
@@ -777,7 +915,7 @@ function Option({
         <span className={styles.optionTitle}>{title}</span>
         {subtitle && <span className={styles.optionSub}>{subtitle}</span>}
       </span>
-      <span className={styles.radio} aria-hidden="true">
+      <span className={cn(styles.radio, multi && styles.checkbox)} aria-hidden="true">
         {selected && <Check size={14} />}
       </span>
     </button>
@@ -821,21 +959,21 @@ function Analyzing({ onSkip }: { onSkip: () => void }) {
 
 /** The plan figures shown on both the result and review screens. */
 function planFrom(answers: QuizAnswers) {
-  const age = ageFromDob(+answers.month, +answers.day, +answers.year) ?? 30;
+  const age = ageFromDob(dobString(answers)) ?? 30;
   const lb = answers.weightLb ?? EXAMPLE_WEIGHT_LB;
   const inches = answers.heightIn ?? EXAMPLE_HEIGHT_IN;
   const base = {
     age,
     weightKg: lb * LB_TO_KG,
     heightCm: inches * IN_TO_CM,
-    activity: (answers.activity ?? "moderatelyActive") as ActivityKey,
+    activityLevel: (answers.activity ?? "moderatelyActive") as ActivityKey,
   };
-  const goal = answers.goals[0] ?? "track";
+  const goal = goalKeyFor(answers.goals);
   const kcal = calorieTarget({ ...base, goal }) ?? tdee(base) ?? 2000;
   return {
     kcal,
     goal,
-    protein: macroGrams(kcal).protein,
+    protein: macroGrams(kcal).find((m) => m.key === "protein")?.grams ?? 0,
     water: Math.min(120, Math.max(48, Math.round(lb * 0.5))),
     tdee: tdee(base),
     bmi: (703 * lb) / (inches * inches),
@@ -844,11 +982,11 @@ function planFrom(answers: QuizAnswers) {
 
 
 const HEALTH_LABEL: Record<HealthKey, string> = {
-  none: "No surgery",
-  plastic: "Preparing for or recovering from plastic surgeries",
-  bariatric: "Recovering from surgery",
-  glp1: "I’m on a GLP-1",
-  peptide: "I’m on a peptide",
+  plastic: "Preparing for or recovering from plastic surgery",
+  bariatric: "History of bariatric surgery",
+  glp1: "I’m on a GLP-1 agonist",
+  peptide: "Peptides are part of my routine",
+  none: "None of the above",
 };
 
 function formatHeight(inches: number | null, metric: boolean) {
@@ -872,19 +1010,27 @@ function Review({
   onEdit: (step: StepKey) => void;
 }) {
   const plan = useMemo(() => planFrom(answers), [answers]);
-  const age = ageFromDob(+answers.month, +answers.day, +answers.year);
+  const age = ageFromDob(dobString(answers));
   const dob =
     answers.month && answers.day && answers.year
       ? `${answers.month}/${answers.day}/${answers.year}${age === null ? "" : ` (${age})`}`
       : "Not set";
 
-  const sections: { title: string; rows: { label: string; value: string; step: StepKey }[] }[] = [
+  interface ReviewRow {
+    label: string;
+    value: string;
+    step: StepKey;
+    /** Rendered as a tick list rather than one line, for multi-select answers. */
+    items?: string[];
+  }
+
+  const sections: { title: string; rows: ReviewRow[] }[] = [
     {
       title: "About you",
       rows: [
-        { label: "Date of birth", value: dob, step: "dob" },
-        { label: "Height", value: formatHeight(answers.heightIn, answers.heightMetric), step: "height" },
-        { label: "Weight", value: formatWeight(answers.weightLb, answers.weightMetric), step: "weight" },
+        { label: "Age", value: dob, step: "dob" },
+        { label: "Height", value: formatHeight(answers.heightIn, answers.heightMetric), step: "measure" },
+        { label: "Weight", value: formatWeight(answers.weightLb, answers.weightMetric), step: "measure" },
       ],
     },
     {
@@ -892,10 +1038,11 @@ function Review({
       rows: [
         {
           label: "Goal",
-          // GOAL_LABEL reads mid-sentence ("…to lose weight"), so lift the first letter here.
+          // Name the card the user picked, not the GoalKey it maps onto
+          // (two cards share "maintain").
           value: answers.goals.length
             ? answers.goals
-                .map((g) => GOAL_LABEL[g].charAt(0).toUpperCase() + GOAL_LABEL[g].slice(1))
+                .map((g) => GOAL_OPTIONS.find((o) => o.id === g)?.title.join(" ") ?? g)
                 .join(", ")
             : "Not set",
           step: "goal",
@@ -907,7 +1054,8 @@ function Review({
         },
         {
           label: "Surgery",
-          value: answers.health ? HEALTH_LABEL[answers.health] : "Not set",
+          value: answers.health.length ? "" : "Not set",
+          items: answers.health.map((h) => HEALTH_LABEL[h]),
           step: "health",
         },
       ],
@@ -937,8 +1085,7 @@ function Review({
       <div className={styles.resultBody}>
         <h1 className={styles.reviewTitle}>Your answers</h1>
         <p className={styles.resultLead}>
-          Check anything that’s off. Each edit brings you straight back here, and your plan
-          updates to match.
+          Please check your responses for accuracy so we can optimize your ForkThis! experience.
         </p>
 
         <section className={styles.planCard} aria-label="Your starting plan">
@@ -995,7 +1142,18 @@ function Review({
                 <div key={r.label} className={styles.reviewRow}>
                   <div>
                     <p className={styles.reviewLabel}>{r.label}</p>
-                    <p className={styles.reviewValue}>{r.value}</p>
+                    {r.items?.length ? (
+                      <ul className={styles.reviewChecklist}>
+                        {r.items.map((item) => (
+                          <li key={item}>
+                            <Check size={14} aria-hidden="true" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className={styles.reviewValue}>{r.value}</p>
+                    )}
                   </div>
                   <button
                     type="button"
@@ -1048,40 +1206,39 @@ function Result({
           Plan ready
         </p>
         <h1 className={styles.resultTitle}>
-          Based on the TDEE calculator, <span>you should start here</span>
+          Based on the TDEE calculator, <span>your starting caloric goal is:</span>
         </h1>
-        <p className={styles.resultLead}>Based on your answers, your starting caloric goal is</p>
         <p className={styles.kcal}>
           <span aria-hidden="true">{(shownKcal ?? result.kcal).toLocaleString("en-US")}</span>
           {/* Screen readers get the final number, not every frame of the count-up. */}
           <span className={styles.srOnly}>{result.kcal.toLocaleString("en-US")}</span>
           <small>
-            kcal a day to <b>{GOAL_LABEL[result.goal]}</b>
+            kcal a day to <b>hit your goal</b>
           </small>
         </p>
         <dl className={styles.macros}>
           <div>
-            <dt>Protein</dt>
+            <dt>Daily protein</dt>
             <dd>
               {result.protein} <small>g</small>
             </dd>
-            <p>About 30% of your calories, to help keep muscle.</p>
+            <p>Protein should be about 30% of your calories to help maintain muscle mass.</p>
           </div>
           <div>
-            <dt>Water</dt>
+            <dt>Daily water</dt>
             <dd>
               {result.water} <small>oz</small>
             </dd>
-            <p>A general guide. More on hot days.</p>
+            <p>This is a general recommendation to keep you hydrated.</p>
           </div>
         </dl>
       </div>
-      <footer className={styles.footer}>
-        <button type="button" className={styles.skip} onClick={onReview}>
-          Review your answers
-        </button>
+      <footer className={cn(styles.footer, styles.footerStacked)}>
         <button type="button" className={styles.primary} onClick={onSave}>
           Save your plan
+        </button>
+        <button type="button" className={styles.skip} onClick={onReview}>
+          Review your answers
         </button>
       </footer>
     </section>
@@ -1090,7 +1247,7 @@ function Result({
 
 /** Production's last step: keep the plan with an account, or carry on as a guest. */
 function SavePlan({ onBack }: { onBack: () => void }) {
-  const [provider, setProvider] = useState<SocialProvider | null>(null);
+  const { start, busy, error } = useSocialSignIn(ROUTES.home);
   return (
     <section className={cn(styles.result, styles.save)}>
       <div className={cn(styles.headerRow, styles.headerCentered)}>
@@ -1103,25 +1260,25 @@ function SavePlan({ onBack }: { onBack: () => void }) {
           Create an account to keep your plan and progress on every device you use.
         </p>
         <div className={styles.saveOptions}>
-          <button type="button" className={styles.saveOption} onClick={() => setProvider("google")}>
+          <button
+            type="button"
+            className={styles.saveOption}
+            onClick={() => void start("google")}
+            disabled={busy !== null}
+          >
             <GoogleGlyph className={styles.saveGlyph} />
-            Continue with Google
+            {busy === "google" ? "Connecting…" : "Continue with Google"}
           </button>
-          <Link href={ROUTES.register} className={styles.saveOption}>
+          <Link href={ROUTES.signup} className={styles.saveOption}>
             <Mail size={20} aria-hidden="true" />
             Continue with email
           </Link>
-          <Link href={ROUTES.dashboard} className={styles.saveGuest}>
+          <Link href={ROUTES.home} className={styles.saveGuest}>
             Continue without an account
           </Link>
         </div>
+        {error ? <p role="alert" className={styles.saveError}>{error}</p> : null}
       </div>
-      <SocialAuthDialog
-        provider={provider}
-        onOpenChange={(open) => {
-          if (!open) setProvider(null);
-        }}
-      />
     </section>
   );
 }

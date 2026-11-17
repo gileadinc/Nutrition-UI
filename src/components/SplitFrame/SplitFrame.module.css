@@ -24,11 +24,6 @@
   object-fit: cover;
 }
 
-/* The start screen builds its photo from separate cards so they can fill the panel. */
-.collageMedia {
-  background: #fafafa;
-}
-
 .banner {
   position: relative;
   padding: 1rem 1.25rem;
@@ -64,8 +59,7 @@
 /* The quiz block starts a fixed distance from the top of the page. */
 .quiz .content {
   align-items: flex-start;
-  /* Small top offset that scales a little with viewport height. */
-  padding-block: clamp(0.5rem, 1.5vh, 1rem) 2rem;
+  padding-block: 10rem 2rem;
 }
 
 /* The review is the tallest step: it starts higher than the other steps so the
@@ -95,8 +89,6 @@
     grid-template-columns: 653fr 741fr;
     gap: 0.625rem;
     padding: 0.625rem;
-    height: 100dvh;
-    overflow: hidden;
   }
 
   .media,
@@ -104,8 +96,8 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    height: calc(100dvh - 1.25rem);
-    min-height: 0;
+    height: auto;
+    min-height: calc(100dvh - 1.25rem);
     padding: 1.25rem;
     border-radius: 1.25rem;
   }
@@ -153,9 +145,7 @@
   }
 
   .content {
-    align-items: safe center;
-    height: calc(100dvh - 1.25rem);
-    overflow-y: auto;
+    align-items: center;
     padding: 2.5rem clamp(2rem, 8.6vw, 7.75rem);
   }
 

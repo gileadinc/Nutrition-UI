@@ -1,23 +1,15 @@
-import Link from "next/link";
-import { Container } from "@/components/Container";
-import { ErrorState } from "@/components/ErrorState";
-import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/lib/constants";
+import { CenteredShell, StatePanel } from "@/components/Feedback";
 
 export default function NotFound() {
   return (
-    <Container>
-      <ErrorState
-        title="Page not found"
-        description="The page you're looking for doesn't exist or may have moved."
-        action={
-          <Link href={ROUTES.home}>
-            <Button type="button" variant="outline">
-              Back to home
-            </Button>
-          </Link>
-        }
+    <CenteredShell>
+      <StatePanel
+        icon="search"
+        title="That page doesn't exist"
+        body="The link may be out of date, or the address may have a typo. Everything else is still where you left it."
+        primary={{ label: "Go to Home", to: "/home" }}
+        secondary={{ label: "Browse Fast Hacks", to: "/fast-hacks" }}
       />
-    </Container>
+    </CenteredShell>
   );
 }

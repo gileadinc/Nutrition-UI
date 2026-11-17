@@ -1,6 +1,6 @@
+import { clearSession } from "@/lib/auth/session";
 import { ApiError } from "./ApiError";
-import type { ApiEnvelope, ApiErrorEnvelope } from "./types";
-import { getAccessToken } from "./tokenStore";
+import type { ApiEnvelope } from "./types";
 
 const DEFAULT_TIMEOUT_MS = 15000;
 
@@ -13,21 +13,50 @@ function getBaseUrl(): string {
   return process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 }
 
+/**
+ * Joins the configured base URL with an endpoint path.
+ *
+ * Endpoint paths in this module are written with their full `/api/...` prefix.
+ * The base URL is allowed to be configured either way — with or without a
+ * trailing `/api` — because both forms are in circulation across environments:
+ *
+ *   base ".../dev"      + "/api/auth/signin" -> ".../dev/api/auth/signin"
+ *   base ".../dev/api"  + "/api/auth/signin" -> ".../dev/api/auth/signin"
+ *
+ * Without this normalisation the second form produces a doubled `/api/api/...`
+ * and every request 404s. Trailing slashes on the base are trimmed too.
+ */
 function buildUrl(path: string): string {
   if (/^https?:\/\//.test(path)) return path;
-  const base = getBaseUrl();
-  return `${base}${path.startsWith("/") ? path : `/${path}`}`;
+  const base = getBaseUrl().replace(/\/+$/, "");
+  const suffix = path.startsWith("/") ? path : `/${path}`;
+  if (suffix.startsWith("/api/") && /\/api$/.test(base)) {
+    return `${base}${suffix.slice("/api".length)}`;
+  }
+  return `${base}${suffix}`;
 }
 
-/** Reads both `{ error: { message } }` and the backend's flat `{ message, statusCode, details }` shapes. */
-function readError(payload: ApiErrorEnvelope | { message?: string; statusCode?: number; details?: unknown }) {
-  if ("error" in payload && payload.error) return payload.error;
-  const flat = payload as { message?: string; statusCode?: number; details?: unknown };
-  return {
-    code: flat.statusCode ? String(flat.statusCode) : undefined,
-    message: flat.message ?? "Something went wrong. Please try again.",
-    details: flat.details,
-  };
+let redirectingToLogin = false;
+
+/**
+ * A 401 on a request that carried a bearer token means the session is dead (expired / revoked):
+ * clear it and send the user to the login page, keeping where they were as `next`. Requests
+ * without a token (e.g. a wrong password on sign-in) are left for the caller to report.
+ */
+function handleUnauthorized(headers: HeadersInit | undefined) {
+  if (typeof window === "undefined" || redirectingToLogin) return;
+  const sent = new Headers(headers).has("Authorization");
+  if (!sent) return;
+
+  redirectingToLogin = true;
+  clearSession();
+  const { pathname, search } = window.location;
+  if (pathname === "/login") {
+    redirectingToLogin = false;
+    return;
+  }
+  const next = encodeURIComponent(`${pathname}${search}`);
+  window.location.replace(`/login?next=${next}`);
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
@@ -42,7 +71,6 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       ...rest,
       headers: {
         "Content-Type": "application/json",
-        ...(getAccessToken() ? { Authorization: `Bearer ${getAccessToken()}` } : {}),
         ...headers,
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -63,6 +91,8 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     clearTimeout(timeout);
   }
 
+  if (response.status === 401) handleUnauthorized(headers);
+
   let payload: ApiEnvelope<T> | undefined;
   const rawText = await response.text();
   if (rawText) {
@@ -81,23 +111,25 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     }
   }
 
-  if (!response.ok) {
-    const errorBody = payload && !payload.success ? readError(payload) : undefined;
-    throw new ApiError(errorBody?.message ?? `Request failed with status ${response.status}.`, {
-      kind: "api",
-      status: response.status,
-      code: errorBody?.code,
-      details: errorBody?.details,
-    });
+  if (payload && payload.success === false) {
+    // Backend error envelope: { success: false, message, statusCode, details? }.
+    // Older mock responses used a nested { error: { code, message, details } }.
+    const legacy = payload.error;
+    throw new ApiError(
+      legacy?.message ?? payload.message ?? `Request failed with status ${response.status}.`,
+      {
+        kind: "api",
+        status: payload.statusCode ?? response.status,
+        code: legacy?.code,
+        details: legacy?.details ?? payload.details,
+      },
+    );
   }
 
-  if (payload && payload.success === false) {
-    const errorBody = readError(payload);
-    throw new ApiError(errorBody.message, {
+  if (!response.ok) {
+    throw new ApiError(`Request failed with status ${response.status}.`, {
       kind: "api",
       status: response.status,
-      code: errorBody.code,
-      details: errorBody.details,
     });
   }
 
@@ -120,3 +152,72 @@ export const apiClient = {
   delete: <T>(path: string, options?: RequestOptions) =>
     request<T>(path, { ...options, method: "DELETE" }),
 };
+
+export interface RawResponse {
+  ok: boolean;
+  status: number;
+  statusText: string;
+  durationMs: number;
+  /** Parsed JSON body when available, otherwise the raw text. */
+  body: unknown;
+}
+
+/**
+ * Fire a request and return the full response (status + parsed body) instead of
+ * unwrapping the envelope or throwing on non-2xx. Used by the API playground so
+ * every outcome — including 4xx/5xx — can be inspected in the UI.
+ */
+export async function rawRequest(
+  method: string,
+  path: string,
+  options: RequestOptions = {},
+): Promise<RawResponse> {
+  const { body, timeoutMs = DEFAULT_TIMEOUT_MS, headers, ...rest } = options;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const startedAt = performance.now();
+
+  let response: Response;
+  try {
+    response = await fetch(buildUrl(path), {
+      ...rest,
+      method,
+      headers: {
+        ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+        ...headers,
+      },
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
+    });
+  } catch (cause) {
+    if (cause instanceof DOMException && cause.name === "AbortError") {
+      throw new ApiError("Request timed out. Please try again.", { kind: "timeout", cause });
+    }
+    throw new ApiError("Unable to reach the server. Check your connection and try again.", {
+      kind: "network",
+      cause,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  const durationMs = Math.round(performance.now() - startedAt);
+  const rawText = await response.text();
+  let parsed: unknown = rawText;
+  if (rawText) {
+    try {
+      parsed = JSON.parse(rawText);
+    } catch {
+      // keep raw text
+    }
+  }
+
+  return {
+    ok: response.ok,
+    status: response.status,
+    statusText: response.statusText,
+    durationMs,
+    body: parsed,
+  };
+}

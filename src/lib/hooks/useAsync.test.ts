@@ -56,7 +56,7 @@ describe("useAsync", () => {
 
     let firstCallPromise!: Promise<string | undefined>;
     act(() => {
-      firstCallPromise = result.current.execute();
+      firstCallPromise = result.current.execute() as Promise<string | undefined>;
     });
 
     await act(async () => {

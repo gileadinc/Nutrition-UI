@@ -1,100 +1,157 @@
 import { apiClient } from "../client";
-import { setTokens } from "../tokenStore";
+import { authHeader } from "@/lib/auth/session";
 
 /**
- * Demo mode: when no API base URL is configured, the auth endpoints resolve
- * with a mocked success response instead of hitting a backend. This keeps the
- * login / register / verify flows walkable end to end for demos. Set
- * NEXT_PUBLIC_API_BASE_URL to use the real API.
+ * Auth endpoints for the Nutrition backend (tag: `auth`).
+ * Base URL comes from NEXT_PUBLIC_API_BASE_URL (see .env.example). The dev
+ * deployment is https://exg1uor80g.execute-api.us-east-1.amazonaws.com/dev.
+ *
+ * Every call returns the unwrapped `data` from the `{ success, message, data }`
+ * envelope; the client throws an ApiError for `success: false` / non-2xx.
  */
-const DEMO_MODE = !process.env.NEXT_PUBLIC_API_BASE_URL;
 
-function demoDelay<T>(value: T): Promise<T> {
-  return new Promise((resolve) => setTimeout(() => resolve(value), 500));
+/* -------------------------------------------------------------------------- */
+/*  POST /api/auth/signup                                                      */
+/* -------------------------------------------------------------------------- */
+
+export interface SignUpRequest {
+  email: string;
+  password: string;
+  givenName?: string;
+  familyName?: string;
 }
 
-export interface LoginRequest {
+export interface SignUpResponse {
+  userId: string;
+  userConfirmed: boolean;
+  codeDelivery: {
+    destination?: string;
+    deliveryMedium?: string;
+    attributeName?: string;
+  } | null;
+}
+
+export function signUp(payload: SignUpRequest): Promise<SignUpResponse> {
+  return apiClient.post<SignUpResponse>("/api/auth/signup", payload);
+}
+
+/* -------------------------------------------------------------------------- */
+/*  POST /api/auth/signin                                                      */
+/* -------------------------------------------------------------------------- */
+
+export interface SignInRequest {
   email: string;
   password: string;
 }
 
-export interface LoginResponse {
+export interface SignInResponse {
+  challengeName: string | null;
+  accessToken: string | null;
+  idToken: string | null;
+  refreshToken: string | null;
+  expiresIn: number | null;
+  tokenType: string | null;
   userId: string | null;
   email: string | null;
-  accessToken: string | null;
-  refreshToken: string | null;
+  userProvisioned: boolean | null;
 }
 
-export function login(payload: LoginRequest): Promise<LoginResponse> {
-  if (DEMO_MODE) {
-    return demoDelay({
-      userId: "demo-user",
-      email: payload.email || "demo@forkthis.app",
-      accessToken: null,
-      refreshToken: null,
-    });
-  }
-  return apiClient.post<LoginResponse>("/auth/signin", payload).then((data) => {
-    setTokens(data);
-    return data;
-  });
+export function signIn(payload: SignInRequest): Promise<SignInResponse> {
+  return apiClient.post<SignInResponse>("/api/auth/signin", payload);
 }
 
-export interface RegisterRequest {
-  givenName: string;
-  familyName?: string;
-  email: string;
-  password: string;
-}
+/* -------------------------------------------------------------------------- */
+/*  POST /api/auth/forgot-password                                             */
+/* -------------------------------------------------------------------------- */
 
-export interface RegisterResponse {
-  userId: string;
+export interface ForgotPasswordRequest {
   email: string;
 }
 
-export function register(payload: RegisterRequest): Promise<RegisterResponse> {
-  if (DEMO_MODE) {
-    return demoDelay({
-      userId: "demo-user",
-      email: payload.email || "demo@forkthis.app",
-    });
-  }
-  return apiClient
-    .post<{ userId: string }>("/auth/signup", payload)
-    .then((data) => ({ userId: data.userId, email: payload.email }));
+export interface ForgotPasswordResponse {
+  destination?: string;
+  deliveryMedium?: string;
+  attributeName?: string;
 }
 
-export interface RequestPasswordResetRequest {
-  email: string;
+export function forgotPassword(
+  payload: ForgotPasswordRequest,
+): Promise<ForgotPasswordResponse | null> {
+  return apiClient.post<ForgotPasswordResponse | null>("/api/auth/forgot-password", payload);
 }
 
-export interface RequestPasswordResetResponse {
-  email: string;
-}
-
-export function requestPasswordReset(
-  payload: RequestPasswordResetRequest,
-): Promise<RequestPasswordResetResponse> {
-  if (DEMO_MODE) {
-    return demoDelay({ email: payload.email || "demo@forkthis.app" });
-  }
-  return apiClient.post("/auth/forgot-password", payload).then(() => ({ email: payload.email }));
-}
+/* -------------------------------------------------------------------------- */
+/*  POST /api/auth/reset-password                                             */
+/* -------------------------------------------------------------------------- */
 
 export interface ResetPasswordRequest {
-  token: string;
-  password: string;
+  email: string;
+  confirmationCode: string;
+  newPassword: string;
 }
 
-export interface ResetPasswordResponse {
-  success: true;
+export function resetPassword(payload: ResetPasswordRequest): Promise<null> {
+  return apiClient.post<null>("/api/auth/reset-password", payload);
 }
 
-export function resetPassword(payload: ResetPasswordRequest): Promise<ResetPasswordResponse> {
-  if (DEMO_MODE) {
-    return demoDelay({ success: true as const });
-  }
-  return apiClient.post<ResetPasswordResponse>("/auth/password/reset", payload);
+/* -------------------------------------------------------------------------- */
+/*  POST /api/auth/refresh                                                     */
+/* -------------------------------------------------------------------------- */
+
+export interface RefreshRequest {
+  refreshToken: string;
+  email?: string;
+}
+
+export function refresh(payload: RefreshRequest): Promise<SignInResponse> {
+  return apiClient.post<SignInResponse>("/api/auth/refresh", payload);
+}
+
+/* -------------------------------------------------------------------------- */
+/*  POST /api/auth/signout                                                     */
+/* -------------------------------------------------------------------------- */
+
+export interface SignOutRequest {
+  accessToken?: string;
+  refreshToken?: string;
+}
+
+export function signOut(payload: SignOutRequest = {}): Promise<null> {
+  return apiClient.post<null>("/api/auth/signout", payload);
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Guest sessions                                                             */
+/* -------------------------------------------------------------------------- */
+
+export interface GuestSessionResponse {
+  sessionId: string;
+  createdAt: string;
+  expiresAt: string | null;
+  mode: string;
+}
+
+export function createGuestSession(): Promise<GuestSessionResponse> {
+  return apiClient.post<GuestSessionResponse>("/api/auth/guest/session");
+}
+
+export interface GuestMigrateRequest {
+  sessionId: string;
+}
+
+export interface GuestMigrateResponse {
+  sessionId: string;
+  userId: string;
+  migratedOnboarding: boolean;
+  migratedTrackingEntries: number;
+  migratedAgeGate: boolean;
+}
+
+/** Requires a bearer token — merges the guest session's data into the account. */
+export function migrateGuest(payload: GuestMigrateRequest): Promise<GuestMigrateResponse> {
+  return apiClient.post<GuestMigrateResponse>("/api/auth/guest/migrate", payload, {
+    headers: authHeader(),
+  });
 }
 
 /* -------------------------------------------------------------------------- */
@@ -112,14 +169,17 @@ export function googleAuthUrl(state: string): Promise<SocialAuthUrlResponse> {
   );
 }
 
+export function appleAuthUrl(state: string): Promise<SocialAuthUrlResponse> {
+  return apiClient.get<SocialAuthUrlResponse>(
+    `/api/auth/oauth/apple/url?state=${encodeURIComponent(state)}`,
+  );
+}
+
 export interface OAuthExchangeRequest {
   code: string;
   redirectUri?: string;
 }
 
-export function exchangeOAuthCode(payload: OAuthExchangeRequest): Promise<LoginResponse> {
-  return apiClient.post<LoginResponse>("/api/auth/oauth/exchange", payload).then((data) => {
-    setTokens(data);
-    return data;
-  });
+export function exchangeOAuthCode(payload: OAuthExchangeRequest): Promise<SignInResponse> {
+  return apiClient.post<SignInResponse>("/api/auth/oauth/exchange", payload);
 }

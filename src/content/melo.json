@@ -1,0 +1,121 @@
+{
+  "subtitle": "Grounded in your day",
+  "starters": [
+    {
+      "intent": "Eat out",
+      "text": "What can I order that fits?",
+      "icon": "restaurant"
+    },
+    {
+      "intent": "Cook",
+      "text": "Something quick to cook",
+      "icon": "timer"
+    },
+    {
+      "intent": "My day",
+      "text": "Help me hit my protein goal",
+      "icon": "dumbbell"
+    },
+    {
+      "intent": "My day",
+      "text": "How am I doing this week?",
+      "icon": "chartIncrease"
+    }
+  ],
+  "quickPrompts": [
+    "Suggest a healthy swap",
+    "How much water have I had?",
+    "Where am I on protein?"
+  ],
+  "followUps": {
+    "dish": ["What fits the rest of my day?", "Suggest a healthy swap", "Where am I on protein?"],
+    "fits": ["Where am I on protein?", "Suggest a healthy swap", "How am I doing this week?"],
+    "fits-over": [
+      "Suggest a healthy swap",
+      "How am I doing this week?",
+      "How much water have I had?"
+    ],
+    "fits-none": ["Suggest a healthy swap", "Where am I on protein?"],
+    "progress": ["What fits the rest of my day?", "Where am I on protein?"],
+    "progress-empty": ["What fits the rest of my day?", "Something quick to cook"],
+    "protein": [
+      "What fits the rest of my day?",
+      "How much water have I had?",
+      "Suggest a healthy swap"
+    ],
+    "water": ["Where am I on protein?", "How am I doing this week?"],
+    "search": ["What fits the rest of my day?", "Suggest a healthy swap", "Where am I on protein?"],
+    "swap": ["What can I order that fits?", "Where am I on protein?"],
+    "fallback": [
+      "What fits the rest of my day?",
+      "How am I doing this week?",
+      "Where am I on protein?"
+    ]
+  },
+  "voiceMessages": {
+    "denied": "Microphone access is off. Allow it in your browser's site settings.",
+    "no-speech": "Didn't catch that. Tap the mic and try again, or type your question.",
+    "network": "Voice input needs a connection. Try again, or type your question.",
+    "unavailable": "Voice input isn't available right now. Type your question instead."
+  },
+  "states": {
+    "moderation": {
+      "title": "Melo sticks to food",
+      "body": "Ask about meals, eating out, cooking or your log, and Melo can help.",
+      "icon": "shield",
+      "tone": "well",
+      "primary": {
+        "label": "Ask about food",
+        "to": "/assistant"
+      }
+    },
+    "error": {
+      "title": "Melo couldn’t answer that",
+      "body": "Your conversation is still here. Send the question again to get an answer.",
+      "icon": "alert",
+      "tone": "error",
+      "primary": {
+        "label": "Try again",
+        "to": "/assistant"
+      },
+      "secondary": {
+        "label": "See your chats",
+        "to": "/assistant/history"
+      }
+    },
+    "offline": {
+      "title": "You’re offline",
+      "body": "Your chats are still here. Connect to the internet to load fresh recipes and your log.",
+      "icon": "offline",
+      "tone": "muted",
+      "primary": {
+        "label": "Try again",
+        "to": "/assistant"
+      },
+      "secondary": {
+        "label": "See your chats",
+        "to": "/assistant/history"
+      }
+    },
+    "success": {
+      "title": "Your answer is ready",
+      "body": "Melo’s answer is waiting in your chat.",
+      "icon": "checkCircle",
+      "tone": "well",
+      "primary": {
+        "label": "Open chat",
+        "to": "/assistant"
+      }
+    },
+    "empty": {
+      "title": "No chats yet",
+      "body": "Ask about eating out, cooking or your day, and your chats will show up here.",
+      "icon": "chefHat",
+      "tone": "well",
+      "primary": {
+        "label": "Start a chat",
+        "to": "/assistant"
+      }
+    }
+  }
+}

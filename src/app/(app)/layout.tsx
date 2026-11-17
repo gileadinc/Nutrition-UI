@@ -1,32 +1,39 @@
-import { ReactNode } from "react";
-import Link from "next/link";
-import { UserAvatar } from "@/components/UserAvatar";
-import { ROUTES } from "@/lib/constants";
-import styles from "./layout.module.css";
+"use client";
 
-const SIDEBAR_LINKS = [{ href: ROUTES.dashboard, label: "Overview" }];
+import { useEffect, type ReactNode } from "react";
+import { AppShell } from "@/components/Shell";
+import { useLocation, useNavigate } from "@/lib/nav";
+import { useAppSession } from "@/lib/store";
+import { ListPageSkeleton } from "@/components/Feedback";
 
-export default function AppLayout({ children }: { children: ReactNode }) {
+/**
+ * Signed-in OR guest shell with tab bar / side rail. Visitors with neither a
+ * session nor a guest session are sent to /welcome (`/guest` creates its own
+ * guest session, so it is exempt).
+ */
+export default function AppLayout({
+  children,
+  modal,
+}: {
+  children: ReactNode;
+  /** Parallel `@modal` slot: recipe / hack details opened over the current page. */
+  modal: ReactNode;
+}) {
+  const session = useAppSession();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const exempt = pathname === "/guest";
+  const blocked = session.ready && session.status === "anonymous" && !exempt;
+
+  useEffect(() => {
+    if (blocked) navigate("/welcome", { replace: true });
+  }, [blocked, navigate]);
+
+  if (!session.ready || blocked) return <ListPageSkeleton />;
   return (
-    <div className={styles.shell}>
-      <aside className={styles.sidebar}>
-        <div className={styles.sidebarHeader}>
-          <UserAvatar name="Placeholder User" size="sm" />
-          <span className={styles.userName}>Placeholder User</span>
-        </div>
-        <nav aria-label="Dashboard">
-          <ul className={styles.navList}>
-            {SIDEBAR_LINKS.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} className={styles.navLink}>
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </aside>
-      <main className={styles.content}>{children}</main>
-    </div>
+    <AppShell>
+      {children}
+      {modal}
+    </AppShell>
   );
 }

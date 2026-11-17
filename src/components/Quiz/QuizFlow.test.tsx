@@ -5,6 +5,8 @@ import { QuizFlow } from "./QuizFlow";
 
 describe("QuizFlow", () => {
   beforeEach(() => {
+    // One test deep-links via ?step= — don't let that leak into the next.
+    window.history.replaceState({}, "", "/onboarding");
     const store = new Map<string, string>();
     Object.defineProperty(window, "localStorage", {
       configurable: true,
@@ -51,6 +53,32 @@ describe("QuizFlow", () => {
     expect(screen.getByRole("status")).toHaveTextContent(/years old/);
   });
 
+  it("treats 'None of the above' as exclusive on the surgery step", async () => {
+    // Deep-link straight to the step under test.
+    window.history.replaceState({}, "", "/onboarding?step=health");
+    render(<QuizFlow />);
+
+    const glp1 = await screen.findByRole("checkbox", { name: /GLP-1/ });
+    const peptides = screen.getByRole("checkbox", { name: /Peptides/ });
+    const none = screen.getByRole("checkbox", { name: /None of the above/ });
+
+    await userEvent.click(glp1);
+    await userEvent.click(peptides);
+    expect(glp1).toBeChecked();
+    expect(peptides).toBeChecked();
+
+    // Picking "None" clears the rest...
+    await userEvent.click(none);
+    expect(none).toBeChecked();
+    expect(glp1).not.toBeChecked();
+    expect(peptides).not.toBeChecked();
+
+    // ...and picking anything else clears "None".
+    await userEvent.click(glp1);
+    expect(glp1).toBeChecked();
+    expect(none).not.toBeChecked();
+  });
+
   it("walks through every step to a plan", async () => {
     render(<QuizFlow />);
     await userEvent.click(screen.getByRole("button", { name: "Start Here" }));
@@ -60,17 +88,21 @@ describe("QuizFlow", () => {
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
     await userEvent.click(screen.getByRole("button", { name: /Lose weight/ }));
-    for (let i = 0; i < 2; i++) {
-      await userEvent.click(screen.getByRole("button", { name: "Continue" })); // goal -> height -> weight
-    }
-    await userEvent.click(screen.getByRole("button", { name: "Continue" })); // weight -> activity
+    await userEvent.click(screen.getByRole("button", { name: "Continue" })); // goal -> height & weight
+    // Height and weight now share one step.
+    expect(screen.getByLabelText("Height, feet")).toBeInTheDocument();
+    expect(screen.getByLabelText("Weight, pounds")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Continue" })); // measure -> bmi
+    expect(screen.getByRole("list", { name: "BMI categories" })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Continue" })); // bmi -> activity
+
     expect(screen.getByRole("button", { name: "Continue" })).toBeDisabled();
-    await userEvent.click(screen.getByRole("radio", { name: /Moderately active/ }));
+    await userEvent.click(screen.getByRole("radio", { name: /^Active/ }));
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
-    // health is the last step
+    // health is the last step, and is multi-select
     expect(screen.getByRole("heading", { name: /Anything else/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Continue" })).toBeDisabled();
-    await userEvent.click(screen.getByRole("radio", { name: /No surgery/ }));
+    await userEvent.click(screen.getByRole("checkbox", { name: /None of the above/ }));
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(screen.getByRole("heading", { name: /analyzing/ })).toBeInTheDocument();
 

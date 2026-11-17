@@ -1,6 +1,0 @@
-.message {
-  font-size: 0.8125rem;
-  color: var(--semantic-error);
-  border-left: 3px solid var(--semantic-error);
-  padding-left: 0.5rem;
-}

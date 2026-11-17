@@ -1,0 +1,20 @@
+{
+  "tour": [
+    {
+      "title": "Smart Search",
+      "body": "Type or ask anything naturally. We will help you discover healthy local restaurant foods, recipes to cook, or log nutritional values."
+    },
+    {
+      "title": "Eat Out Wisely",
+      "body": "Find menu hacks and nutritional choices from popular dining spots near you, calibrated instantly to your target daily limits."
+    },
+    {
+      "title": "Custom Cook Mode",
+      "body": "Explore recipes tailored to your active ingredients or preference. Filter instantly by high protein, speed, or minimal prep options."
+    },
+    {
+      "title": "Logging & Tracking",
+      "body": "Quickly review your daily nutrition, log dishes, and watch your targets update dynamically as you eat and move throughout the week."
+    }
+  ]
+}
