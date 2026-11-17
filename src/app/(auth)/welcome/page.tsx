@@ -25,9 +25,6 @@ export default function WelcomePage() {
         <Link href={ROUTES.login} className={styles.outlineLink}>
           Sign in
         </Link>
-        <Link href={ROUTES.dashboard} className={styles.guestLink}>
-          Continue as guest
-        </Link>
       </div>
       <div className={styles.trust}>
         <span>

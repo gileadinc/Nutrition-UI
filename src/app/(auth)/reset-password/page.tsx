@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Check, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { TextField } from "@/components/TextField";
 import { PasswordField } from "@/components/PasswordField";
 import { PasswordStrength } from "@/components/PasswordStrength";
 import { AuthHeader } from "@/components/AuthHeader";
@@ -30,8 +31,10 @@ const RULES: Rule[] = [
 function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token") ?? "demo-token";
+  const emailParam = searchParams.get("email");
 
+  const [email, setEmail] = useState(emailParam ?? "");
+  const [code, setCode] = useState(searchParams.get("code") ?? "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const { execute, isLoading, error } = useAsync(authApi.resetPassword);
@@ -40,7 +43,7 @@ function ResetPasswordContent() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const result = await execute({ token, password });
+    const result = await execute({ email, code: code.trim(), password });
     if (result) {
       router.push(ROUTES.resetPasswordDone);
     }
@@ -54,6 +57,25 @@ function ResetPasswordContent() {
           subtext="Your new password must be different from any of your previously used passwords."
         />
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
+          {emailParam ? null : (
+            <TextField
+              label="Email"
+              type="email"
+              name="email"
+              autoComplete="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+          )}
+          <TextField
+            label="Reset code"
+            type="text"
+            name="code"
+            autoComplete="one-time-code"
+            inputMode="numeric"
+            value={code}
+            onChange={(event) => setCode(event.target.value)}
+          />
           <div className={styles.field}>
             <PasswordField
               label="New password"

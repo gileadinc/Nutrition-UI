@@ -28,15 +28,15 @@ export const ACTIVITY_KEYS: ActivityKey[] = [
 export const ACTIVITY_LABEL: Record<ActivityKey, string> = {
   mostlyInactive: "Sedentary",
   lightlyActive: "Lightly active",
-  moderatelyActive: "Moderately active",
+  moderatelyActive: "Active",
   veryActive: "Very active",
   extremelyActive: "Extremely active",
 };
 export const ACTIVITY_HINT: Record<ActivityKey, string> = {
   mostlyInactive: "Little or no activity",
-  lightlyActive: "Exercise 1–3 days per week",
+  lightlyActive: "Exercise 1–2 days per week",
   moderatelyActive: "Exercise 3–5 days per week",
-  veryActive: "Exercise 5–7 days per week",
+  veryActive: "Exercise 6–7 days per week",
   extremelyActive: "Physical job plus hard training",
 };
 const ACTIVITY_MULTIPLIER: Record<ActivityKey, number> = {

@@ -108,8 +108,8 @@ export const GOAL_OPTIONS: GoalOption[] = [
     value: "track",
     title: ["Track your progress"],
     subtitle:
-      "Move at your own pace. Track meals, movement, and the habits that matter most to you.",
-    subtitleWidth: 124,
+      "Customize your profile around your goals and move at your own pace. By tracking meals, movement, and the habits that matter most to you.",
+    subtitleWidth: 150,
     image: "/img/quiz/goal-track.webp",
   },
 ];

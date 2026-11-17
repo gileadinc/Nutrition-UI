@@ -7,6 +7,7 @@ import { Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AuthStatus, authStatusActionClasses } from "@/components/AuthStatus";
 import { toast } from "sonner";
+import { authApi, getErrorMessage } from "@/lib/api";
 import { ROUTES } from "@/lib/constants";
 import styles from "./page.module.css";
 
@@ -18,13 +19,24 @@ function SentContent() {
     searchParams.get("to") ??
     searchParams.get("email") ??
     (isPhone ? "the number on your account" : "your registered email address");
+  const sentTo = searchParams.get("to") ?? searchParams.get("email");
   const [resending, setResending] = useState(false);
 
   async function handleResend() {
     setResending(true);
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    setResending(false);
-    toast.success(isPhone ? "Reset code sent again." : "Reset link sent again.");
+    try {
+      if (sentTo) {
+        await authApi.requestPasswordReset({
+          channel: isPhone ? "phone" : "email",
+          destination: sentTo,
+        });
+      }
+      toast.success("Reset code sent again.");
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    } finally {
+      setResending(false);
+    }
   }
 
   return (
@@ -37,13 +49,21 @@ function SentContent() {
           highlight={destination}
           actions={
             <>
+              {!isPhone ? (
+                <Link
+                  href={`${ROUTES.resetPassword}${sentTo ? `?email=${encodeURIComponent(sentTo)}` : ""}`}
+                  className={authStatusActionClasses.link}
+                >
+                  Enter your code
+                </Link>
+              ) : null}
               <button
                 type="button"
                 className={authStatusActionClasses.link}
                 onClick={handleResend}
                 disabled={resending}
               >
-                {resending ? "Sending..." : isPhone ? "Resend code" : "Resend email"}
+                {resending ? "Sending..." : "Resend code"}
               </button>
               <Link href={ROUTES.login} className={authStatusActionClasses.mutedLink}>
                 Back to sign in
@@ -53,7 +73,7 @@ function SentContent() {
         >
           {isPhone
             ? "We have sent a secure password reset code by text message. Didn’t receive it? Check your signal or try resending."
-            : "We have sent a secure password reset link to your registered email address. Didn’t receive it? Check your spam folder or try resending."}
+            : "We have sent a password reset code to your registered email address. Enter it on the next screen to choose a new password. Didn’t receive it? Check your spam folder or try resending."}
         </AuthStatus>
       </CardContent>
     </Card>

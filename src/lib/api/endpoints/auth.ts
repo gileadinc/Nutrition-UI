@@ -1,3 +1,4 @@
+import { ApiError } from "../ApiError";
 import { apiClient } from "../client";
 import { setTokens } from "../tokenStore";
 
@@ -61,8 +62,15 @@ export function register(payload: RegisterRequest): Promise<RegisterResponse> {
       email: payload.email || "demo@forkthis.app",
     });
   }
+  // The backend's SignUpDto has no phone field yet, so it isn't sent.
+  const body = {
+    givenName: payload.givenName,
+    familyName: payload.familyName,
+    email: payload.email,
+    password: payload.password,
+  };
   return apiClient
-    .post<{ userId: string }>("/auth/signup", payload)
+    .post<{ userId: string }>("/auth/signup", body)
     .then((data) => ({ userId: data.userId, email: payload.email }));
 }
 
@@ -88,8 +96,16 @@ export function requestPasswordReset(
   if (DEMO_MODE) {
     return demoDelay({ channel: payload.channel, destination });
   }
+  // The backend only resets by email (Cognito sends a confirmation code).
+  if (payload.channel === "phone") {
+    return Promise.reject(
+      new ApiError("Text-message reset isn’t available yet. Use your email instead.", {
+        kind: "api",
+      }),
+    );
+  }
   return apiClient
-    .post("/auth/forgot-password", payload)
+    .post("/auth/forgot-password", { email: destination })
     .then(() => ({ channel: payload.channel, destination }));
 }
 
@@ -107,11 +123,14 @@ export function getRecoveryOptions(): Promise<RecoveryOptions> {
   if (DEMO_MODE) {
     return demoDelay({ email: "demo@forkthis.app", phone: "+1 (•••) •••-4821" });
   }
-  return apiClient.get<RecoveryOptions>("/auth/recovery-options");
+  // No recovery-options endpoint exists yet; until it does, only email is offered.
+  return Promise.resolve({ email: null, phone: null });
 }
 
 export interface ResetPasswordRequest {
-  token: string;
+  email: string;
+  /** The confirmation code emailed by forgot-password. */
+  code: string;
   password: string;
 }
 
@@ -123,5 +142,11 @@ export function resetPassword(payload: ResetPasswordRequest): Promise<ResetPassw
   if (DEMO_MODE) {
     return demoDelay({ success: true as const });
   }
-  return apiClient.post<ResetPasswordResponse>("/auth/password/reset", payload);
+  return apiClient
+    .post("/auth/reset-password", {
+      email: payload.email,
+      confirmationCode: payload.code,
+      newPassword: payload.password,
+    })
+    .then(() => ({ success: true as const }));
 }

@@ -20,14 +20,9 @@ export default function ResetPasswordDonePage() {
           tone="success"
           heading="Password updated"
           actions={
-            <>
-              <Link href={ROUTES.login} className={styles.primaryLink}>
-                <Button className={authStatusActionClasses.primary}>Sign in</Button>
-              </Link>
-              <Link href={ROUTES.dashboard} className={authStatusActionClasses.mutedLink}>
-                Or continue as Guest
-              </Link>
-            </>
+            <Link href={ROUTES.login} className={styles.primaryLink}>
+              <Button className={authStatusActionClasses.primary}>Sign in</Button>
+            </Link>
           }
         >
           Your password has been successfully reset. You can now sign in with your

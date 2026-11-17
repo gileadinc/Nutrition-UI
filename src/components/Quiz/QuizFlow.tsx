@@ -11,7 +11,6 @@ import {
   Dumbbell,
   Flame,
   Footprints,
-  Laptop,
   Leaf,
   Mail,
   Minus,
@@ -26,6 +25,7 @@ import { AppImage } from "@/components/AppImage";
 import { Logo } from "@/components/Logo";
 import { SplitFrame } from "@/components/SplitFrame";
 import { SyringeCheck } from "./SyringeCheck";
+import { DeskIcon } from "./DeskIcon";
 import { RunnerIcon } from "./RunnerIcon";
 import { useCountUp } from "./useCountUp";
 import { GoogleGlyph } from "@/components/SocialAuthButtons/GoogleGlyph";
@@ -747,7 +747,7 @@ const ACTIVITY_ICON: Record<ShownActivity, OptionIcon> = {
   veryActive: RunnerIcon,
   moderatelyActive: Dumbbell,
   lightlyActive: Footprints,
-  mostlyInactive: Laptop,
+  mostlyInactive: DeskIcon,
 };
 
 const HEALTH_ICON: Record<HealthKey, OptionIcon> = {
