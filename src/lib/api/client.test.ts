@@ -97,3 +97,67 @@ describe("apiClient", () => {
     }
   });
 });
+
+describe("buildUrl base/path joining", () => {
+  const original = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+    vi.mocked(fetch).mockResolvedValue(jsonResponse({ success: true, data: null }));
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    process.env.NEXT_PUBLIC_API_BASE_URL = original;
+  });
+
+  const calledUrl = () => String(vi.mocked(fetch).mock.calls[0][0]);
+
+  it("appends the path when the base has no /api suffix", async () => {
+    process.env.NEXT_PUBLIC_API_BASE_URL = "https://example.com/dev";
+
+    await apiClient.post("/api/auth/signin", {});
+
+    expect(calledUrl()).toBe("https://example.com/dev/api/auth/signin");
+  });
+
+  it("does not double /api when the base already ends in /api", async () => {
+    process.env.NEXT_PUBLIC_API_BASE_URL = "https://example.com/dev/api";
+
+    await apiClient.post("/api/auth/signin", {});
+
+    expect(calledUrl()).toBe("https://example.com/dev/api/auth/signin");
+  });
+
+  it("trims trailing slashes on the base", async () => {
+    process.env.NEXT_PUBLIC_API_BASE_URL = "https://example.com/dev/api/";
+
+    await apiClient.post("/api/auth/signin", {});
+
+    expect(calledUrl()).toBe("https://example.com/dev/api/auth/signin");
+  });
+
+  it("leaves non-/api paths alone when the base ends in /api", async () => {
+    process.env.NEXT_PUBLIC_API_BASE_URL = "https://example.com/dev/api";
+
+    await apiClient.get("/health");
+
+    expect(calledUrl()).toBe("https://example.com/dev/api/health");
+  });
+
+  it("does not strip an /api path segment that merely starts with api", async () => {
+    process.env.NEXT_PUBLIC_API_BASE_URL = "https://example.com/dev/api";
+
+    await apiClient.get("/apiary/1");
+
+    expect(calledUrl()).toBe("https://example.com/dev/api/apiary/1");
+  });
+
+  it("passes absolute URLs through untouched", async () => {
+    process.env.NEXT_PUBLIC_API_BASE_URL = "https://example.com/dev/api";
+
+    await apiClient.get("https://other.test/api/auth/signin");
+
+    expect(calledUrl()).toBe("https://other.test/api/auth/signin");
+  });
+});

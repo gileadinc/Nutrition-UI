@@ -13,10 +13,27 @@ function getBaseUrl(): string {
   return process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 }
 
+/**
+ * Joins the configured base URL with an endpoint path.
+ *
+ * Endpoint paths in this module are written with their full `/api/...` prefix.
+ * The base URL is allowed to be configured either way — with or without a
+ * trailing `/api` — because both forms are in circulation across environments:
+ *
+ *   base ".../dev"      + "/api/auth/signin" -> ".../dev/api/auth/signin"
+ *   base ".../dev/api"  + "/api/auth/signin" -> ".../dev/api/auth/signin"
+ *
+ * Without this normalisation the second form produces a doubled `/api/api/...`
+ * and every request 404s. Trailing slashes on the base are trimmed too.
+ */
 function buildUrl(path: string): string {
   if (/^https?:\/\//.test(path)) return path;
-  const base = getBaseUrl();
-  return `${base}${path.startsWith("/") ? path : `/${path}`}`;
+  const base = getBaseUrl().replace(/\/+$/, "");
+  const suffix = path.startsWith("/") ? path : `/${path}`;
+  if (suffix.startsWith("/api/") && /\/api$/.test(base)) {
+    return `${base}${suffix.slice("/api".length)}`;
+  }
+  return `${base}${suffix}`;
 }
 
 let redirectingToLogin = false;
