@@ -15,3 +15,4 @@ export * from "./Detail";
 export * from "./PortionSheet";
 export * from "./Collections";
 export * from "./Ratings";
+export * from "./Quiz";

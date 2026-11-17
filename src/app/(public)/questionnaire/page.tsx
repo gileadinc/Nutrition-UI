@@ -1,7 +1,7 @@
 "use client";
 
-import { QuestionnaireScreen } from "@/screens/public/Questionnaire";
+import { QuizFlow } from "@/components/Quiz";
 
 export default function Page() {
-  return <QuestionnaireScreen />;
+  return <QuizFlow />;
 }
