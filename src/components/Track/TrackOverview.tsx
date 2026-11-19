@@ -2,7 +2,7 @@
 
 import { useId, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/Icon";
-import { useActivity, useWeight } from "@/lib/store";
+import { useActivity, useMedications, useWeight } from "@/lib/store";
 import {
   dayCalories,
   dayProtein,
@@ -14,18 +14,28 @@ import {
 import { cn } from "@/lib/utils";
 import { SheetFrame, useLogSheet, type LogTab } from "./LogSheet";
 
-const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
+export const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
 
 /* ----------------------------------------------------------- which widgets */
 
-export const OVERVIEW_KEYS = ["calories", "protein", "water", "activity", "weight"] as const;
+export const OVERVIEW_KEYS = [
+  "calories",
+  "protein",
+  "water",
+  "activity",
+  "limits",
+  "weight",
+  "medication",
+] as const;
 export type OverviewKey = (typeof OVERVIEW_KEYS)[number];
 const LABEL: Record<OverviewKey, string> = {
   calories: "Calories",
   protein: "Macros",
   water: "Water",
   activity: "Activity",
+  limits: "Daily limits",
   weight: "Weight",
+  medication: "Medication",
 };
 const STORE_KEY = "forkthis.track.overview";
 const listeners = new Set<() => void>();
@@ -207,14 +217,14 @@ export function Empty({ children, icon = "plusSign" }: { children: ReactNode; ic
 
 /* ------------------------------------------------------------------ charts */
 
-const MEALS = ["Breakfast", "Lunch", "Dinner", "Snack"] as const;
+export const MEALS = ["Breakfast", "Lunch", "Dinner", "Snack"] as const;
 const MEAL_FILL: Record<(typeof MEALS)[number], string> = {
   Breakfast: "var(--color-orange-300)",
   Lunch: "var(--color-accent-graphic)",
   Dinner: "var(--color-orange-800)",
   Snack: "var(--color-orange-900)",
 };
-const MACRO_FILL = {
+export const MACRO_FILL = {
   protein: "var(--color-graphic)",
   carbs: "var(--color-accent-graphic)",
   fat: "var(--color-badge-gold)",
@@ -472,7 +482,7 @@ function Pie({ slices }: { slices: { key: string; value: number; fill: string }[
 
 /* --------------------------------------------------------------- the grid */
 
-function useToday(): TrackDay | undefined {
+export function useToday(): TrackDay | undefined {
   const { days } = useTrackDays(1);
   return days[days.length - 1];
 }
@@ -756,6 +766,169 @@ function WeightWidget({ onHide }: { onHide: () => void }) {
   );
 }
 
+function DailyLimits({ day, onHide }: { day: TrackDay; onHide: () => void }) {
+  const fat = day.meals.reduce((s, m) => s + m.fat, 0);
+  const fatGoal = Math.round(day.calorieGoal * 0.0371);
+  const rows = [
+    {
+      key: "fat",
+      label: "Fat",
+      value: fat,
+      limit: fatGoal,
+      unit: "g",
+      color: "var(--color-badge-gold)",
+      known: day.meals.length > 0,
+    },
+    {
+      key: "sugar",
+      label: "Sugar",
+      value: 0,
+      limit: 50,
+      unit: "g",
+      color: "var(--color-badge-gold)",
+      known: false,
+    },
+    {
+      key: "sodium",
+      label: "Sodium",
+      value: 0,
+      limit: 2300,
+      unit: "mg",
+      color: "var(--color-navy-400)",
+      known: false,
+    },
+  ];
+  return (
+    <WidgetCard
+      title="Daily limits"
+      icon="shield"
+      color="var(--color-brand-navy)"
+      subtitle="Everything is within limits"
+      onHide={onHide}
+      heightClass="h-auto"
+      className="@5xl:col-span-3"
+    >
+      <ul className="flex flex-col gap-2.5">
+        {rows.map((r) => {
+          const pct = r.known && r.limit > 0 ? Math.min(100, (r.value / r.limit) * 100) : 0;
+          const over = r.known && r.value > r.limit;
+          return (
+            <li key={r.key} className="rounded-xl border border-border-divider px-3 py-2.5">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="text-[13px] type-item-title text-text-primary">{r.label}</span>
+                <span className="text-[12px] type-meta tabular-nums text-text-secondary">
+                  {r.known
+                    ? over
+                      ? `${fmt(r.value - r.limit)} ${r.unit} over`
+                      : `${fmt(r.limit - r.value)} ${r.unit} left`
+                    : "Not tracked"}
+                </span>
+              </div>
+              <p className="mt-0.5 text-brand-navy">
+                <span className="text-[22px] type-numeral tabular-nums">
+                  {r.known ? fmt(r.value) : "—"}
+                </span>
+                <span className="ml-1 text-[12px] text-text-secondary">
+                  / {fmt(r.limit)} {r.unit}
+                </span>
+              </p>
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-navy-100">
+                <div
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${pct}%`,
+                    backgroundColor: over ? "var(--color-error-red)" : r.color,
+                  }}
+                />
+              </div>
+              <p className="mt-1 text-[11px] text-text-secondary">
+                Limit {fmt(r.limit)} {r.unit}
+              </p>
+            </li>
+          );
+        })}
+      </ul>
+    </WidgetCard>
+  );
+}
+
+function MedicationWidget({ onHide }: { onHide: () => void }) {
+  const { meds } = useMedications();
+  const sorted = [...meds].sort((a, b) => a.time.localeCompare(b.time));
+  const taken = sorted.filter((m) => m.taken).length;
+  return (
+    <WidgetCard
+      title="Medication"
+      icon="medication"
+      color="var(--color-brand-navy)"
+      subtitle="Taken and still due"
+      onHide={onHide}
+      action={<Log tab="medication" label="Open medication" />}
+      heightClass="h-auto min-h-[8.75rem]"
+      className="@5xl:col-span-4"
+      stats={[
+        { label: "Taken", value: `${taken} of ${sorted.length}` },
+        { label: "Still due", value: String(sorted.length - taken) },
+      ]}
+    >
+      {sorted.length === 0 ? (
+        <Empty icon="medication">Add a medication to see today’s doses here.</Empty>
+      ) : (
+        <div className="flex w-full flex-col gap-3">
+          <div
+            role="img"
+            aria-label={`Doses today: ${taken} of ${sorted.length} taken`}
+            className="flex gap-1.5"
+          >
+            {sorted.map((m) => (
+              <span
+                key={m.id}
+                className={cn("h-2 flex-1 rounded-full", m.taken ? "bg-teal-500" : "bg-navy-200")}
+              />
+            ))}
+          </div>
+          <ul className="flex flex-col gap-1.5">
+            {sorted.map((m) => (
+              <li
+                key={m.id}
+                className="grid grid-cols-[auto_1fr_auto] items-center gap-x-3 rounded-xl border border-border-divider px-3 py-2"
+              >
+                <span
+                  aria-hidden
+                  className={cn(
+                    "row-span-2 flex size-8 items-center justify-center rounded-full",
+                    m.taken ? "bg-teal-500" : "border border-border-default bg-white",
+                  )}
+                >
+                  <Icon
+                    name={m.taken ? "tick" : "clock"}
+                    size={16}
+                    color={m.taken ? "white" : "var(--color-text-secondary)"}
+                  />
+                </span>
+                <span className="min-w-0 truncate text-[13px] type-item-title text-text-primary">
+                  {m.name}
+                </span>
+                <span
+                  className={cn(
+                    "text-[12px] type-meta tabular-nums",
+                    m.taken ? "text-text-secondary" : "text-brand-navy",
+                  )}
+                >
+                  {m.taken ? `Taken · ${m.time}` : `Due · ${m.time}`}
+                </span>
+                <span className="col-start-2 col-end-4 truncate text-[12px] text-text-secondary">
+                  {m.dose}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </WidgetCard>
+  );
+}
+
 /** The "Overview" block: eyebrow, Customize button and the widget grid. */
 export function TrackOverview() {
   const day = useToday();
@@ -801,7 +974,9 @@ export function TrackOverview() {
         {has("protein") && <Macros day={day} onHide={() => hide("protein")} />}
         {has("water") && <Water day={day} onHide={() => hide("water")} />}
         {has("activity") && <Activity onHide={() => hide("activity")} />}
+        {has("limits") && <DailyLimits day={day} onHide={() => hide("limits")} />}
         {has("weight") && <WeightWidget onHide={() => hide("weight")} />}
+        {has("medication") && <MedicationWidget onHide={() => hide("medication")} />}
       </div>
       {keys.size === 0 && (
         <p className="mt-3 text-[13px] text-text-secondary">

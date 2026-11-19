@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import { PageContainer } from "@/components/Layout";
 import { Icon } from "@/components/Icon";
 import { TrackOverview } from "@/components/Track/TrackOverview";
+import { MoreOnToday } from "@/components/Track/MoreOnToday";
 import { ConfirmDialog } from "@/components/Collections";
 import { GettingStarted } from "@/components/Track/TrackExtras";
 import { profileApi } from "@/lib/api";
@@ -106,7 +107,6 @@ export function TrackDashboardScreen() {
       .catch(() => toast.error("Couldn't save that. Try again."));
   };
 
-
   return (
     <PageContainer className="max-w-7xl">
       <div className="flex min-w-0 flex-col gap-6 md:gap-8 xl:gap-10">
@@ -131,6 +131,7 @@ export function TrackDashboardScreen() {
         <div id="track-overview">
           <TrackOverview />
         </div>
+        <MoreOnToday />
         <div className="panel min-w-0 p-4">
           <TodayLog
             day={today}
