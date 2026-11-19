@@ -364,7 +364,9 @@ export function FastHacksScreen() {
   return (
     <PageContainer className="max-w-[1680px]">
       <ListingToolbar
-        title="Fast Hacks"
+        title="HackThis!"
+        compact
+        showDesktopFilters
         subtitle="Real restaurant orders adjusted for your goal."
         count={results.length}
         noun="hack"

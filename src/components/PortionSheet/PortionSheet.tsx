@@ -44,7 +44,7 @@ export interface PortionItem {
   carbs: number;
   fat: number;
   /** Tracking `sourceType`. */
-  sourceType: "recipe" | "fast_hack" | "menu_item";
+  sourceType: "recipe" | "fast_hack" | "menu_item" | "custom";
 }
 
 type Context = "fork" | "cook" | "log";
@@ -867,7 +867,7 @@ export function usePortionSheet({
       const entry = await log({
         mealType: mealApi(meal),
         sourceType: it.sourceType,
-        sourceItemId: it.id,
+        sourceItemId: it.sourceType === "custom" ? undefined : it.id,
         calories: m.calories,
         protein: m.protein,
         carbs: m.carbs,
