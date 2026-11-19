@@ -83,13 +83,13 @@ function Log({ tab, label }: { tab: LogTab; label: string }) {
   );
 }
 
-interface Stat {
+export interface Stat {
   label: string;
   value: string;
   unit?: string;
 }
 
-function WidgetCard({
+export function WidgetCard({
   title,
   icon,
   color = "var(--color-brand-navy)",
@@ -171,7 +171,7 @@ function WidgetCard({
   );
 }
 
-function Empty({ children, icon = "plusSign" }: { children: ReactNode; icon?: IconName }) {
+export function Empty({ children, icon = "plusSign" }: { children: ReactNode; icon?: IconName }) {
   return (
     <div className="relative flex size-full min-h-36 overflow-hidden rounded-2xl border border-dashed border-border-default bg-[linear-gradient(180deg,white_0%,var(--color-brand-warm-gray)_100%)] px-4 text-center text-[13px] text-text-secondary">
       <div aria-hidden className="absolute inset-x-4 bottom-4 top-4 opacity-55">

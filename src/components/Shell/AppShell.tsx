@@ -327,6 +327,29 @@ function SideRail({ pathname }: { pathname: string }) {
   );
 }
 
+/** Mobile: floating "Quick log" button (not on Track, the assistant or full-page questions). */
+function QuickLogButton({ pathname }: { pathname: string }) {
+  const logs = useLogSheet();
+  const hidden =
+    pathname.startsWith("/track") ||
+    pathname.startsWith("/assistant") ||
+    pathname === "/ai" ||
+    BARE.test(pathname) ||
+    IMMERSIVE.test(pathname);
+  if (hidden) return null;
+  return (
+    <button
+      type="button"
+      aria-label="Quick log"
+      onClick={() => logs.open("home")}
+      className="tap-44 fixed bottom-[76px] left-4 z-30 flex size-14 items-center justify-center rounded-full bg-brand-navy text-text-on-dark transition-colors hover:bg-navy-800 active:bg-navy-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus md:hidden"
+      style={{ boxShadow: "var(--shadow-fab)" }}
+    >
+      <Icon name="plusSign" size={22} color="currentColor" />
+    </button>
+  );
+}
+
 function TabBar() {
   return (
     <nav
@@ -410,6 +433,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
         {!desktop && <TabBar />}
+        {!desktop && <QuickLogButton pathname={pathname} />}
         <MeloLayer />
         <LogSheetHost />
       </div>
