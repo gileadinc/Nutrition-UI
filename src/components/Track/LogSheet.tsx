@@ -135,7 +135,7 @@ const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
 
 /* ------------------------------------------------------------------ shell */
 
-function SheetFrame({
+export function SheetFrame({
   labelledBy,
   onClose,
   className,
