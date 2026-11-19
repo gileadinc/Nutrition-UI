@@ -90,13 +90,17 @@ function TodayActivityPanel() {
           toast.success(`${e.name} removed`, {
             action: {
               label: "Undo",
-              run: () => add({ name: e.name, minutes: e.minutes, calories: e.calories }, new Date(e.loggedAt)),
+              run: () =>
+                add(
+                  { name: e.name, minutes: e.minutes, calories: e.calories },
+                  new Date(e.loggedAt),
+                ),
             },
           });
         },
       }))}
       footer={
-        <Link to="/track/activity/history" className="tap-24 text-[17px] type-button text-primary">
+        <Link to="/track/activity/history" className="tap-24 text-[13px] type-button text-primary">
           Activity history
         </Link>
       }
@@ -113,7 +117,12 @@ export function LogActivityPickerScreen() {
   const recent = hydrated ? recents : [];
   const seen = new Set(recent.map((r) => r.name.trim().toLowerCase()));
   const items = [
-    ...recent.map((r) => ({ name: r.name, minutes: r.minutes, calories: r.calories, recent: true })),
+    ...recent.map((r) => ({
+      name: r.name,
+      minutes: r.minutes,
+      calories: r.calories,
+      recent: true,
+    })),
     ...PRESETS.filter((p) => !seen.has(p.name.toLowerCase())).map((p) => ({ ...p, recent: false })),
   ];
   const minutes = hydrated ? todayMinutes : 0;
@@ -148,7 +157,7 @@ export function LogActivityPickerScreen() {
         />
         <Link
           to="/track/activity/custom"
-          className="mt-3 flex h-12 items-center justify-center gap-2 rounded-full border border-dashed border-border-default bg-white text-[17px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400"
+          className="mt-3 flex h-12 items-center justify-center gap-2 rounded-full border border-dashed border-border-default bg-white text-[13px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400"
         >
           <Icon name="pencilEdit" size={15} color="var(--color-text-primary)" />
           Something else? Enter it yourself
@@ -199,10 +208,15 @@ export function LogActivityScreen() {
           submit();
         }}
       >
-        <AppTextField label="What did you do?" value={name} error={errors.title} onChange={setName} />
+        <AppTextField
+          label="What did you do?"
+          value={name}
+          error={errors.title}
+          onChange={setName}
+        />
         <div>
           <div className="flex items-baseline justify-between gap-3">
-            <p className="text-[17px] type-item-title text-text-primary">Duration</p>
+            <p className="text-[13px] type-item-title text-text-primary">Duration</p>
             <span className="flex items-baseline gap-1">
               <span className="text-[32px] leading-none type-numeral tabular-nums tracking-[-1px] text-brand-navy">
                 {mins ?? 0}
@@ -222,21 +236,33 @@ export function LogActivityScreen() {
           />
           <div
             aria-hidden="true"
-            className="mt-1.5 flex justify-between text-[15px] type-meta tabular-nums text-text-secondary"
+            className="mt-1.5 flex justify-between text-[11px] type-meta tabular-nums text-text-secondary"
           >
             <span>{MIN} min</span>
             <span>{MAX} min</span>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <AppTextField label="Minutes" type="number" value={minutes} error={errors.minutes} onChange={setMinutes} />
-          <AppTextField label="Calories" type="number" value={calories} error={errors.calories} onChange={setCalories} />
+          <AppTextField
+            label="Minutes"
+            type="number"
+            value={minutes}
+            error={errors.minutes}
+            onChange={setMinutes}
+          />
+          <AppTextField
+            label="Calories"
+            type="number"
+            value={calories}
+            error={errors.calories}
+            onChange={setCalories}
+          />
         </div>
         {estimate !== null && String(estimate) !== calories.trim() && (
           <button
             type="button"
             onClick={() => setCalories(String(estimate))}
-            className="tap-24 -mt-2 self-start text-[17px] type-button text-primary"
+            className="tap-24 -mt-2 self-start text-[13px] type-button text-primary"
           >
             Use an estimate: about {estimate} kcal
           </button>
@@ -251,7 +277,11 @@ export function LogActivityScreen() {
 
 const longDay = (iso: string) => {
   const [y, m, d] = iso.split("-").map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short" });
+  return new Date(y, m - 1, d).toLocaleDateString("en-US", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
 };
 
 export function ActivityHistoryScreen() {
@@ -294,7 +324,10 @@ export function ActivityHistoryScreen() {
           <Icon name="arrowBack" size={20} color="var(--color-text-primary)" />
         </button>
         <div>
-          <h1 className="text-2xl type-display text-brand-navy" style={{ letterSpacing: "-1.08px" }}>
+          <h1
+            className="text-2xl type-display text-brand-navy"
+            style={{ letterSpacing: "-1.08px" }}
+          >
             Activity History
           </h1>
           <p className="mt-1 text-sm text-text-secondary">Review your recent tracking activity.</p>
@@ -322,7 +355,7 @@ export function ActivityHistoryScreen() {
           />
         </AdvancedFilters>
       </div>
-      <p className="mt-4 text-[17px] type-meta text-text-secondary">
+      <p className="mt-4 text-[13px] type-meta text-text-secondary">
         <span className="type-row-figure text-text-primary">{shown.length}</span>
         {shown.length === 1 ? " entry" : " entries"}
         {shown.length !== all.length && ` of ${all.length}`}

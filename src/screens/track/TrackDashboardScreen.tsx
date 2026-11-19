@@ -1,77 +1,92 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { PageContainer } from "@/components/Layout";
+import { Icon } from "@/components/Icon";
+import { TrackOverview } from "@/components/Track/TrackOverview";
+import { MoreOnToday } from "@/components/Track/MoreOnToday";
 import { ConfirmDialog } from "@/components/Collections";
-import { GettingStarted, MomentumCard, RecommendedMeals } from "@/components/Track/TrackExtras";
+import { GettingStarted } from "@/components/Track/TrackExtras";
 import { profileApi } from "@/lib/api";
-import {
-  AlsoToday,
-  TodayLog,
-  TodayRings,
-  TrackHeader,
-  TrackSection,
-  WeekChart,
-  mealTotals,
-  toWeek,
-  EYEBROW,
-} from "@/components/Track/Dashboard";
+import { TodayLog, TrackHeader } from "@/components/Track/Dashboard";
 import { useNow } from "@/lib/hooks";
-import { GOAL_LABEL, isoDate, ozToMl } from "@/lib/nutrition";
+import { GOAL_LABEL, isoDate } from "@/lib/nutrition";
 import {
   firstNameOf,
   invalidate,
   toast,
   useFirstTimeState,
-  useMomentum,
-  useTrackingRecommendations,
   useProfile,
   useActivity,
   useRequireAccount,
   useTrackingActions,
-  useWeight,
 } from "@/lib/store";
-import {
-  dayCalories,
-  dayProtein,
-  dayWaterOz,
-  mealToInput,
-  useTrackDays,
-  type TrackMeal,
-} from "@/lib/track";
-import { SECTION_TITLE } from "@/components/styles";
-import { cn } from "@/lib/utils";
+import { dayCalories, mealToInput, useTrackDays, type TrackMeal } from "@/lib/track";
 
 const greetingFor = (h: number) =>
   h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+
+const NOTE_KEY = "forkthis_activity_note_dismissed";
+const noteDismissed = () => {
+  try {
+    return localStorage.getItem(NOTE_KEY) === isoDate(new Date());
+  } catch {
+    return false;
+  }
+};
+
+/** Shown when logged activity lowers today's net calories. */
+function ActivityNote({ eaten, burned, goal }: { eaten: number; burned: number; goal: number }) {
+  const [hidden, setHidden] = useState(false);
+  const dismissed = useSyncExternalStore(
+    () => () => {},
+    noteDismissed,
+    () => true,
+  );
+  if (burned <= 0 || hidden || dismissed) return null;
+  const net = Math.max(0, eaten - burned);
+  const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
+  return (
+    <section
+      aria-label="Activity calorie adjustment"
+      aria-live="polite"
+      className="relative rounded-2xl border border-teal-500/30 bg-teal-500/10 py-3 pl-4 pr-14 text-sm text-brand-navy sm:pl-5"
+    >
+      <button
+        type="button"
+        onClick={() => {
+          setHidden(true);
+          try {
+            localStorage.setItem(NOTE_KEY, isoDate(new Date()));
+          } catch {
+            /* ignore */
+          }
+        }}
+        aria-label="Dismiss this note for today"
+        className="tap-44 absolute right-2 top-2 flex size-9 items-center justify-center rounded-full text-brand-navy transition-colors hover:bg-white/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+      >
+        <Icon name="close" size={16} color="currentColor" />
+      </button>
+      <p className="type-section-title">Activity lowered your net calories today</p>
+      <p className="mt-1 tabular-nums">
+        {fmt(eaten)} eaten − {fmt(burned)} burned = {fmt(net)} net kcal ·{" "}
+        {fmt(Math.max(0, goal - net))} remaining
+      </p>
+      <p className="mt-1 text-xs text-text-secondary">Your daily goal stays {fmt(goal)} kcal.</p>
+    </section>
+  );
+}
 
 export function TrackDashboardScreen() {
   const now = useNow();
   const requireAccount = useRequireAccount();
   const { profile } = useProfile();
-  const { log, remove, addWater } = useTrackingActions();
+  const { log, remove } = useTrackingActions();
   const { days } = useTrackDays(7);
   const activity = useActivity();
-  const momentum = useMomentum();
-  const recs = useTrackingRecommendations(undefined, 3);
   const firstTime = useFirstTimeState();
   const [mealToRemove, setMealToRemove] = useState<TrackMeal | null>(null);
-  const weight = useWeight();
-  const latestWeight = weight.todayReading ?? weight.previous;
-  const todayKey = isoDate(now);
   const today = days[days.length - 1];
-
-  const addOz = async (oz: number) => {
-    if (!requireAccount("Tracking")) return;
-    try {
-      const entry = await addWater(ozToMl(oz));
-      toast.success(`${oz} oz logged`, {
-        action: { label: "Undo", run: () => void remove(entry.entryId) },
-      });
-    } catch {
-      toast.error("Couldn't log water");
-    }
-  };
 
   const removeMeal = async (m: TrackMeal) => {
     if (!requireAccount("Tracking")) return;
@@ -92,12 +107,9 @@ export function TrackDashboardScreen() {
       .catch(() => toast.error("Couldn't save that. Try again."));
   };
 
-  const waterOz = dayWaterOz(today);
-  const waterGoal = Math.round(today.waterGoalOz);
-
   return (
-    <PageContainer className="max-w-[1680px]">
-      <div className="flex flex-col gap-6">
+    <PageContainer className="max-w-7xl">
+      <div className="flex min-w-0 flex-col gap-6 md:gap-8 xl:gap-10">
         <TrackHeader
           greeting={greetingFor(now.getHours())}
           firstName={firstNameOf(profile)}
@@ -108,91 +120,32 @@ export function TrackDashboardScreen() {
           })}
           goalLabel={profile?.goal ? GOAL_LABEL[profile.goal] : null}
         />
-        {firstTime.data && <GettingStarted state={firstTime.data} onDismiss={dismissGettingStarted} />}
-        <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] xl:gap-x-10">
-          <div className="flex flex-col gap-6">
-            <TrackSection id="track-today" title="Today">
-              <div className="mt-2">
-                <TodayRings
-                  calories={{ eaten: dayCalories(today), goal: today.calorieGoal }}
-                  protein={{ eaten: dayProtein(today), goal: today.proteinGoal }}
-                  meals={mealTotals(today)}
-                />
-              </div>
-            </TrackSection>
-            <WeekChart week={toWeek(days, todayKey)} title="Last 7 days" headingId="track-week" />
-            {momentum.data && (
-              <TrackSection id="track-streak" title="Your streak">
-                <div className="mt-3">
-                  <MomentumCard momentum={momentum.data} />
-                </div>
-              </TrackSection>
-            )}
-          </div>
-          <div className="flex flex-col gap-6">
-            <TrackSection id="track-also-today" title="Also today">
-              <div className="mt-3">
-                <AlsoToday
-                  metrics={[
-                    {
-                      key: "water",
-                      label: "Water",
-                      icon: "droplet",
-                      value: Math.round(waterOz).toLocaleString("en-US"),
-                      unit: "oz",
-                      goal: `of ${waterGoal}`,
-                      spoken: `Water: ${waterOz} of ${waterGoal} oz`,
-                      to: "/track/water",
-                      progress: { value: waterOz, goal: waterGoal },
-                      onQuick: () => void addOz(8),
-                      quickLabel: "Add 8 oz of water",
-                    },
-                    {
-                      key: "activity",
-                      label: "Active minutes",
-                      icon: "activity",
-                      value: String(activity.todayMinutes),
-                      unit: "min",
-                      goal: `of ${activity.goalMinutes}`,
-                      spoken: `Active minutes: ${activity.todayMinutes} of ${activity.goalMinutes}`,
-                      to: "/track/activity",
-                      progress: { value: activity.todayMinutes, goal: activity.goalMinutes },
-                    },
-                    {
-                      key: "weight",
-                      label: "Weight",
-                      icon: "weightScale",
-                      value: latestWeight ? latestWeight.pounds.toFixed(1) : "--",
-                      unit: "lb",
-                      goal: weight.todayReading ? "today" : latestWeight ? "last reading" : "not recorded",
-                      spoken: latestWeight ? `Weight: ${latestWeight.pounds.toFixed(1)} lb` : "Weight: not recorded",
-                      to: "/track/weight",
-                      progress: { value: 0, goal: 0 },
-                    },
-                  ]}
-                />
-              </div>
-            </TrackSection>
-            {recs.data && recs.data.items.length > 0 && (
-              <TrackSection id="track-recommended" title="Fits your day">
-                <div className="mt-3">
-                  <RecommendedMeals
-                    items={recs.data.items}
-                    remainingCalories={recs.data.remaining.calories}
-                  />
-                </div>
-              </TrackSection>
-            )}
-            <div className="border-t border-border-divider pt-3">
-              <TodayLog
-                day={today}
-                titleClassName={cn(EYEBROW, "text-brand-navy", SECTION_TITLE && "")}
-                history={{ label: "History", to: "/track/insights" }}
-                onRemoveMeal={setMealToRemove}
-              />
-            </div>
-          </div>
+        {firstTime.data && (
+          <GettingStarted state={firstTime.data} onDismiss={dismissGettingStarted} />
+        )}
+        <ActivityNote
+          eaten={dayCalories(today)}
+          burned={activity.todayCalories}
+          goal={today.calorieGoal}
+        />
+        <div id="track-overview">
+          <TrackOverview />
         </div>
+        <MoreOnToday />
+        <div className="panel min-w-0 p-4">
+          <TodayLog
+            day={today}
+            titleClassName="text-[15px] type-section-title leading-5 text-brand-navy"
+            history={{ label: "History", to: "/track/insights" }}
+            onRemoveMeal={setMealToRemove}
+          />
+        </div>
+        <a
+          href="#track-overview"
+          className="hidden min-h-11 w-fit items-center gap-2 self-end rounded-full px-4 text-sm type-button text-brand-navy underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy lg:inline-flex"
+        >
+          Back to overview <span aria-hidden="true">↑</span>
+        </a>
       </div>
       {mealToRemove && (
         <ConfirmDialog

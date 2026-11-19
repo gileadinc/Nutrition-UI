@@ -42,31 +42,29 @@ export function ForgotPasswordScreen() {
 
   return (
     <OnboardingFrame
-      image="/img/auth/login-hero"
+      image="/img/figma-2026-11/auth/recovery"
       tone="ink"
-      imagePosition="top"
       label="ACCOUNT RECOVERY"
-      title="A quick reset, then back to your plan."
-      body="Use the email attached to your account and we’ll guide you back to your saved progress."
-      mobileClassName="bg-brand-cream px-5 py-5"
+      title="We’re here to get you back on track!"
+      titleClassName="text-[32px] type-display"
+      body="You’re almost there! We just need to verify that you want to ForkThis!"
       contentClassName="max-w-md"
     >
       <form
-        className="flex min-h-[calc(100dvh-2.5rem)] w-full flex-col lg:min-h-[36rem]"
+        className="flex w-full flex-col"
         onSubmit={(e) => {
           e.preventDefault();
           void submit();
         }}
       >
-        <Logo size="lg" />
-        <div className="flex-1" />
+        <Logo size="lg" className="mb-4" />
         <h1
           className="text-4xl type-display text-primary"
           style={{ letterSpacing: "-1.62px", lineHeight: "38px" }}
         >
           Reset your password.
         </h1>
-        <p className="mt-2 type-meta text-[17px] leading-5 text-text-secondary">
+        <p className="mt-2 type-meta text-[13px] leading-5 text-text-secondary">
           Enter the email on your account and we&apos;ll send a link to reset your password.
         </p>
         <div className="mt-6">
@@ -92,15 +90,14 @@ export function ForgotPasswordScreen() {
         <button
           type="button"
           onClick={skip}
-          className="mt-5 h-12 w-full justify-center rounded-2xl border border-border-default bg-white text-[17px] text-text-secondary"
+          className="tap-24 mt-4 w-full justify-center text-[13px] type-meta text-text-secondary hover:text-text-primary"
         >
           Skip sign-in and explore the app
         </button>
-        <div className="flex-1" />
         <button
           type="button"
           onClick={() => navigate("/login")}
-          className="h-12 w-full justify-center rounded-2xl border border-border-default bg-white text-sm type-button-secondary text-text-primary"
+          className="tap-24 w-full justify-center pb-3 text-sm type-button text-primary underline decoration-1 underline-offset-2"
         >
           Back to sign in
         </button>

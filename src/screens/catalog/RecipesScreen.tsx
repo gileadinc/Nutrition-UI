@@ -18,12 +18,15 @@ import {
   StatePanel,
   CenteredShell,
   FoodCard,
+  Icon,
   RatingBadge,
   matchesGroups,
   replaceInGroup,
   groupOf,
 } from "@/components";
 import { useFilterParams } from "@/lib/hooks";
+import { Link } from "@/lib/nav";
+import { recipeNutrition, useCustomRecipes } from "@/lib/store/customRecipes";
 import { RECIPE_FILTER, dietaryMatch, fitFor } from "@/lib/nutrition";
 import { useDayBudget, useProfile, useRecipes, useSaved } from "@/lib/store";
 import { getErrorMessage } from "@/lib/api";
@@ -85,6 +88,7 @@ export function RecipesScreen() {
 
   const all = useMemo(() => (data?.items ?? []).map(toRecipeVM), [data]);
   const savedCount = saved.items.filter((i) => i.itemType === "recipe").length;
+  const mine = useCustomRecipes();
 
   if (isLoading && !data)
     return (
@@ -127,20 +131,22 @@ export function RecipesScreen() {
     }));
   const inGroup = (g: string) => cur.tags.filter((t) => groupOf(GROUPS, t) === g);
 
-  const results = all.filter((r) => passes(r, cur)).sort((a, b) => {
-    switch (sort) {
-      case "quickest":
-        return a.minutes - b.minutes;
-      case "calories":
-        return a.calories - b.calories;
-      case "protein":
-        return b.protein - a.protein;
-      case "simplest":
-        return a.ingredients.length - b.ingredients.length;
-      default:
-        return dietaryMatch.matchScore(b, prefs) - dietaryMatch.matchScore(a, prefs);
-    }
-  });
+  const results = all
+    .filter((r) => passes(r, cur))
+    .sort((a, b) => {
+      switch (sort) {
+        case "quickest":
+          return a.minutes - b.minutes;
+        case "calories":
+          return a.calories - b.calories;
+        case "protein":
+          return b.protein - a.protein;
+        case "simplest":
+          return a.ingredients.length - b.ingredients.length;
+        default:
+          return dietaryMatch.matchScore(b, prefs) - dietaryMatch.matchScore(a, prefs);
+      }
+    });
 
   const applied = [
     ...(cur.fitsToday ? [{ label: "Fits what's left", remove: () => f.set("fits", null) }] : []),
@@ -203,7 +209,9 @@ export function RecipesScreen() {
           inGroup("effort").join(", "),
         ])}
         active={
-          cur.maxMinutes < DEF.maxMinutes || cur.difficulties.length > 0 || inGroup("effort").length > 0
+          cur.maxMinutes < DEF.maxMinutes ||
+          cur.difficulties.length > 0 ||
+          inGroup("effort").length > 0
         }
         defaultOpen
       >
@@ -330,7 +338,19 @@ export function RecipesScreen() {
   return (
     <PageContainer className="max-w-[1680px]">
       <ListingToolbar
-        title="Recipes"
+        title="CookThis!"
+        compact
+        showDesktopFilters
+        actions={
+          <Link
+            to="/recipes/new"
+            aria-label="New recipe"
+            className="tap-44 relative flex h-11 items-center gap-1.5 rounded-full bg-primary px-3 text-[13px] type-button text-white md:px-4"
+          >
+            <Icon name="plusSign" size={14} color="currentColor" />
+            <span className="hidden md:inline">New recipe</span>
+          </Link>
+        }
         subtitle="Delicious, healthy meals to hit your goals."
         count={results.length}
         noun="recipe"
@@ -350,9 +370,35 @@ export function RecipesScreen() {
         </FilterSidebar>
         <div className="@container min-w-0 flex-1">
           <div className="sticky top-0 z-20 -mx-5 border-b border-border-divider bg-brand-cream px-5 md:top-16 md:mx-0 md:px-0">
-            <CategoryChips variant="pills" selected={cur.category} onSelect={(c) => f.set("meal", c)} />
+            <CategoryChips
+              variant="pills"
+              selected={cur.category}
+              onSelect={(c) => f.set("meal", c)}
+            />
             <AppliedFilters filters={applied} onClearAll={resetFilters} />
           </div>
+          {mine.length > 0 && (
+            <section aria-label="My recipes" className="mt-6">
+              <SectionTitle>My recipes</SectionTitle>
+              <div className="rail-scroll -mx-5 mt-3 flex gap-3 overflow-x-auto px-5 pb-1 md:mx-0 md:px-0 md:@2xl:grid md:@2xl:grid-cols-3 md:@2xl:gap-4 md:@2xl:overflow-visible md:[&>*]:w-64! md:@2xl:[&>*]:w-auto!">
+                {mine.map((r) => {
+                  const n = recipeNutrition(r);
+                  return (
+                    <FoodCard
+                      key={r.id}
+                      image={r.photo}
+                      title={r.title}
+                      leadingBadge="Mine"
+                      badge={`${r.servings} ${r.servings === 1 ? "serving" : "servings"}`}
+                      meta={`${n.perServing.calories} kcal · ${Math.round(n.perServing.protein)}g protein`}
+                      to={`/recipes/mine/${r.id}`}
+                      layout="rail"
+                    />
+                  );
+                })}
+              </div>
+            </section>
+          )}
           {featured.length > 0 && (
             <section aria-label="Featured for you" className="mt-6">
               <SectionTitle action="See all" actionTo="/search?scope=recipes">

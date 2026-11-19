@@ -31,7 +31,11 @@ function Question({ q, a }: { q: string; a: string }) {
           </span>
         </button>
       </h3>
-      <div id={id} hidden={!open} className="px-4 pb-4 type-meta text-[17px] leading-5 text-text-secondary">
+      <div
+        id={id}
+        hidden={!open}
+        className="px-4 pb-4 type-meta text-[13px] leading-5 text-text-secondary"
+      >
         {a}
       </div>
     </li>
@@ -47,7 +51,9 @@ function YourData() {
     setBusy(true);
     try {
       const data = await profileApi.exportData();
-      const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
+      const url = URL.createObjectURL(
+        new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }),
+      );
       const a = document.createElement("a");
       a.href = url;
       a.download = "forkthis-data.json";
@@ -75,12 +81,12 @@ function YourData() {
     <FormSection title="Your data" className="mt-10">
       <div className="rounded-2xl border border-primary-soft bg-navy-50 p-4">
         <p className="text-sm type-section-title text-text-primary">Export or delete</p>
-        <p className="mt-1 type-meta text-[17px] leading-5 text-text-secondary">
+        <p className="mt-1 type-meta text-[13px] leading-5 text-text-secondary">
           Download everything we hold about you, or delete your account and all of its data.
         </p>
         {confirm ? (
           <div role="alertdialog" aria-label="Confirm deleting your account" className="mt-3">
-            <p className="text-[17px] type-item-title text-text-primary">
+            <p className="text-[13px] type-item-title text-text-primary">
               This can&apos;t be undone. Delete your account?
             </p>
             <div className="mt-3 grid grid-cols-2 gap-2">
@@ -97,8 +103,16 @@ function YourData() {
           </div>
         ) : (
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            <SecondaryButton label="Export my data" onPress={() => void exportData()} disabled={busy} />
-            <SecondaryButton label="Delete account" onPress={() => setConfirm(true)} disabled={busy} />
+            <SecondaryButton
+              label="Export my data"
+              onPress={() => void exportData()}
+              disabled={busy}
+            />
+            <SecondaryButton
+              label="Delete account"
+              onPress={() => setConfirm(true)}
+              disabled={busy}
+            />
           </div>
         )}
       </div>
@@ -119,7 +133,12 @@ export function HelpSupportScreen() {
       </FormSection>
       <FormSection title="Contact">
         <RowGroup>
-          <Row icon="shareEmail" label="Email support" description="support@forkthis.app" href="mailto:support@forkthis.app" />
+          <Row
+            icon="shareEmail"
+            label="Email support"
+            description="support@forkthis.app"
+            href="mailto:support@forkthis.app"
+          />
         </RowGroup>
       </FormSection>
       <FormSection title="Legal">

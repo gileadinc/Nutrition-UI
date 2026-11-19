@@ -1,7 +1,7 @@
 "use client";
 
-import { SplashScreen } from "@/screens/public/Splash";
+import { Navigate } from "@/lib/nav";
 
 export default function Page() {
-  return <SplashScreen />;
+  return <Navigate to="/welcome" replace />;
 }

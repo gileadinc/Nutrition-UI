@@ -32,7 +32,9 @@ const sameDay = (iso: string) => {
   const d = new Date(iso);
   const n = new Date();
   return (
-    d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate()
+    d.getFullYear() === n.getFullYear() &&
+    d.getMonth() === n.getMonth() &&
+    d.getDate() === n.getDate()
   );
 };
 
@@ -132,7 +134,7 @@ function Row({
           <Link
             to={item.to}
             onClick={onOpen}
-            className="min-w-0 flex-1 text-[17px] type-item-title leading-5 text-text-primary after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:rounded-sm focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-focus"
+            className="min-w-0 flex-1 text-[13px] type-item-title leading-5 text-text-primary after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:rounded-sm focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-focus"
           >
             {item.title}
           </Link>
@@ -146,13 +148,15 @@ function Row({
           <span
             className={cn(
               "mt-0.5 block type-meta text-text-secondary",
-              compact ? "line-clamp-2 text-xs leading-4" : "text-[17px] leading-5",
+              compact ? "line-clamp-2 text-xs leading-4" : "text-[13px] leading-5",
             )}
           >
             {item.body}
           </span>
         )}
-        <span className="mt-1.5 block text-[15px] type-meta text-text-neutral-500">{item.time}</span>
+        <span className="mt-1.5 block text-[11px] type-meta text-text-neutral-500">
+          {item.time}
+        </span>
       </span>
       <span className="relative z-10 -mr-2.5 -mt-2 flex shrink-0 items-start">
         {unread && (
@@ -198,12 +202,19 @@ export function NotificationList({
 }) {
   if (items.length === 0)
     return (
-      <div className={cn("flex flex-col items-center text-center", compact ? "px-4 py-8" : "px-5 py-10")}>
+      <div
+        className={cn(
+          "flex flex-col items-center text-center",
+          compact ? "px-4 py-8" : "px-5 py-10",
+        )}
+      >
         <span className="flex size-11 items-center justify-center rounded-full bg-positive">
           <Icon name="checkCircle" size={20} color="var(--color-positive-ink)" />
         </span>
-        <p className="mt-3 text-[18px] type-section-title text-text-primary">You&apos;re all caught up.</p>
-        <p className="mt-1 type-meta text-[16px] text-text-secondary">{emptyBody}</p>
+        <p className="mt-3 text-[14px] type-section-title text-text-primary">
+          You&apos;re all caught up.
+        </p>
+        <p className="mt-1 type-meta text-[12px] text-text-secondary">{emptyBody}</p>
       </div>
     );
   const groups = (["Today", "Earlier"] as const)
@@ -215,7 +226,7 @@ export function NotificationList({
         <section key={group} aria-label={group}>
           <h3
             className={cn(
-              "eyebrow border-b border-border-divider bg-white text-[15px]",
+              "eyebrow border-b border-border-divider bg-white text-[11px]",
               compact ? "px-4 pb-1.5 pt-3" : "px-5 pb-2 pt-4",
             )}
           >

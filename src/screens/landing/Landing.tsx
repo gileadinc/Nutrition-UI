@@ -127,7 +127,7 @@ function Features() {
             <h3 className="text-[2rem] font-medium tracking-[-0.05em] md:text-[2.75rem]">
               OrderThis!
             </h3>
-            <p className="mt-2 text-[15px] type-meta opacity-90 md:max-w-xs md:text-sm">
+            <p className="mt-2 text-[11px] type-meta opacity-90 md:max-w-xs md:text-sm">
               Track your way — keep an eye on your meals, protein, habits. Choose what habits
               matters to you!
             </p>
@@ -148,7 +148,7 @@ function Features() {
             <h3 className="text-[2.5rem] type-display tracking-[-0.05em] text-[#14193a] md:text-[2.75rem]">
               CookThis!
             </h3>
-            <p className="mt-2 max-w-sm text-[15px] leading-[1.45] type-meta text-[#5a6180] md:text-sm md:text-[#0b2a63]">
+            <p className="mt-2 max-w-sm text-[11px] leading-[1.45] type-meta text-[#5a6180] md:text-sm md:text-[#0b2a63]">
               From meal-preps to family dinners, find low calorie, high protein recipes that work
               for your real life the nutrition you need
             </p>
@@ -173,7 +173,7 @@ function Features() {
             <h3 className="text-[2.5rem] type-display tracking-[-0.07em] text-[#0a1a24] md:text-[3rem] md:leading-[1.05] md:text-[#101c3a]">
               TrackThis!
             </h3>
-            <p className="mt-2 max-w-md text-[15px] leading-[1.5] type-meta text-[#0a1a24] md:mt-2 md:max-w-[29rem] md:text-[18px] md:leading-[1.25] md:text-[#56717f]">
+            <p className="mt-2 max-w-md text-[11px] leading-[1.5] type-meta text-[#0a1a24] md:mt-2 md:max-w-[29rem] md:text-[14px] md:leading-[1.25] md:text-[#56717f]">
               ForkThis! allows you to customize your profile around your goals and allows you to
               move at your own pace by tracking meals, movement, and the habits that matter most to
               you!
@@ -193,7 +193,7 @@ function Features() {
           </div>
           <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
             <h3 className="text-[2rem] type-display tracking-tight md:text-4xl">Free</h3>
-            <p className="mt-2 max-w-[17rem] text-[15px] leading-[1.45] type-meta opacity-90 md:max-w-60 md:text-sm md:opacity-80">
+            <p className="mt-2 max-w-[17rem] text-[11px] leading-[1.45] type-meta opacity-90 md:max-w-60 md:text-sm md:opacity-80">
               Free! make restaurant hacks* add no credit card required
             </p>
           </div>
@@ -336,7 +336,7 @@ function RecipesAndHacks() {
             to="/fast-hacks"
             className={cn(
               CTA,
-              "mt-5 h-[52px] w-full bg-[#ff6200] pr-5 text-[15px] font-normal text-white hover:opacity-90 md:mt-5 md:h-16 md:text-base md:font-semibold",
+              "mt-5 h-[52px] w-full bg-[#ff6200] pr-5 text-[11px] font-normal text-white hover:opacity-90 md:mt-5 md:h-16 md:text-base md:font-semibold",
             )}
           >
             Order This! <span aria-hidden>↗</span>
@@ -385,7 +385,7 @@ function Team() {
           <h2 className={cn(H2, "md:text-[clamp(44px,4.4vw,64px)] md:leading-[1.1]")}>
             Built by a doctor and someone who has lived it.
           </h2>
-          <div className="mt-6 space-y-5 text-base type-meta text-text-primary md:mt-8 md:space-y-6 md:text-[15px]">
+          <div className="mt-6 space-y-5 text-base type-meta text-text-primary md:mt-8 md:space-y-6 md:text-[11px]">
             <p>{TEAM_COPY[0]}</p>
             <div className="md:hidden">
               <AppImage

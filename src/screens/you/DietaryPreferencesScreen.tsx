@@ -28,9 +28,12 @@ function ChipPicker({
 }) {
   const [text, setText] = useState("");
   const custom = selected.filter((s) => !presets.includes(s));
-  const toggle = (v: string) => onChange(selected.includes(v) ? selected.filter((s) => s !== v) : [...selected, v]);
+  const toggle = (v: string) =>
+    onChange(selected.includes(v) ? selected.filter((s) => s !== v) : [...selected, v]);
   const add = () => {
-    const next = text.split(",").reduce((acc, part) => addCustomEntry(acc, part, presets), selected);
+    const next = text
+      .split(",")
+      .reduce((acc, part) => addCustomEntry(acc, part, presets), selected);
     if (next !== selected) onChange(next);
     setText("");
   };
@@ -46,7 +49,7 @@ function ChipPicker({
               aria-pressed={on}
               onClick={() => toggle(p)}
               className={cn(
-                "flex min-h-10 items-center gap-1.5 rounded-full border px-3.5 text-[17px] transition-colors",
+                "flex min-h-10 items-center gap-1.5 rounded-full border px-3.5 text-[13px] transition-colors",
                 on
                   ? cn(SELECTED_CHIP, "type-button")
                   : "type-button-secondary border-border-default bg-white text-text-secondary hover:border-text-neutral-400",
@@ -61,7 +64,7 @@ function ChipPicker({
           <span
             key={c}
             className={cn(
-              "flex min-h-10 max-w-full items-center gap-1 rounded-full py-1 pl-3.5 pr-1 text-[17px] type-button",
+              "flex min-h-10 max-w-full items-center gap-1 rounded-full py-1 pl-3.5 pr-1 text-[13px] type-button",
               SELECTED_CHIP,
             )}
           >
@@ -85,7 +88,13 @@ function ChipPicker({
           add();
         }}
       >
-        <AppTextField className="min-w-0 flex-1" label={otherLabel} placeholder={otherPlaceholder} value={text} onChange={setText} />
+        <AppTextField
+          className="min-w-0 flex-1"
+          label={otherLabel}
+          placeholder={otherPlaceholder}
+          value={text}
+          onChange={setText}
+        />
         <button
           type="submit"
           disabled={!text.trim()}
@@ -114,7 +123,10 @@ export function DietaryPreferencesScreen() {
   const diet = profile?.dietaryPreferences ?? [];
   const allergies = profile?.allergies ?? [];
   return (
-    <ProfileLayout title="Food preferences" subtitle="Saved as you tap. Used to rank and flag what you see.">
+    <ProfileLayout
+      title="Food preferences"
+      subtitle="Saved as you tap. Used to rank and flag what you see."
+    >
       <FormSection
         title="Diet"
         action={count(diet.length)}
@@ -135,9 +147,9 @@ export function DietaryPreferencesScreen() {
         description={
           <div className="flex items-start gap-2.5 rounded-xl bg-missed-dose-surface p-3 text-text-primary">
             <Icon name="alert" size={16} color="var(--color-text-secondary)" />
-            <p className="min-w-0 flex-1 type-meta text-[17px] leading-5">
-              We flag recipes whose ingredients name something you avoid. We can&apos;t confirm a recipe is free of
-              anything — always check the packaging and ask the restaurant.
+            <p className="min-w-0 flex-1 type-meta text-[13px] leading-5">
+              We flag recipes whose ingredients name something you avoid. We can&apos;t confirm a
+              recipe is free of anything — always check the packaging and ask the restaurant.
             </p>
           </div>
         }

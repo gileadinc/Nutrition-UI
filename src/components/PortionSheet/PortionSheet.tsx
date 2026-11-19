@@ -44,7 +44,7 @@ export interface PortionItem {
   carbs: number;
   fat: number;
   /** Tracking `sourceType`. */
-  sourceType: "recipe" | "fast_hack" | "menu_item";
+  sourceType: "recipe" | "fast_hack" | "menu_item" | "custom";
 }
 
 type Context = "fork" | "cook" | "log";
@@ -82,7 +82,7 @@ export function SurgeryNote({ children, className }: { children: ReactNode; clas
   return (
     <p
       className={cn(
-        "flex items-start gap-2.5 rounded-2xl bg-brand-teal-soft px-4 py-3 text-[17px] leading-5 text-text-primary type-meta",
+        "flex items-start gap-2.5 rounded-2xl bg-brand-teal-soft px-4 py-3 text-[13px] leading-5 text-text-primary type-meta",
         className,
       )}
     >
@@ -126,7 +126,7 @@ export function SegmentedChoice<T extends string | number>({
             aria-pressed={value === o}
             onClick={() => onChange(o)}
             className={cn(
-              "tap-44 relative flex h-9 min-w-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-1 text-[16px] transition-colors sm:px-3.5 sm:text-[17px]",
+              "tap-44 relative flex h-9 min-w-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-1 text-[12px] transition-colors sm:px-3.5 sm:text-[13px]",
               value === o
                 ? cn(SELECTED_CHIP, "type-button")
                 : "type-button-secondary border-border-default bg-white text-text-secondary hover:border-text-neutral-400",
@@ -297,17 +297,20 @@ function PortionDialog({
         data-testid="portion-sheet"
         className="drawer-panel relative z-10 max-h-[92dvh] w-full overflow-y-auto rounded-t-[28px] bg-white px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] focus:outline-none md:max-w-md md:rounded-[24px] md:border md:border-border-default md:px-7 md:pb-7"
       >
-        <span aria-hidden className="mx-auto mt-3 block h-1 w-9 rounded-full bg-border-default md:hidden" />
+        <span
+          aria-hidden
+          className="mx-auto mt-3 block h-1 w-9 rounded-full bg-border-default md:hidden"
+        />
         <header className="flex items-start gap-3 pt-3 md:pt-7">
           <div className="min-w-0 flex-1">
-            <p className="text-[17px] type-meta text-text-secondary">How much did you have?</p>
+            <p className="text-[13px] type-meta text-text-secondary">How much did you have?</p>
             <h2
               id={titleId}
               className="mt-1 text-xl type-section-title leading-7 tracking-[-0.9px] text-brand-navy"
             >
               {item.title}
             </h2>
-            <p className="mt-0.5 truncate text-[17px] type-meta text-text-secondary">
+            <p className="mt-0.5 truncate text-[13px] type-meta text-text-secondary">
               {item.subtitle}
             </p>
           </div>
@@ -320,9 +323,7 @@ function PortionDialog({
             <Icon name="close" size={16} color="var(--color-text-primary)" />
           </button>
         </header>
-        {surgery && (
-          <SurgeryNote className="mt-4">Choose the amount you actually had.</SurgeryNote>
-        )}
+        {surgery && <SurgeryNote className="mt-4">Choose the amount you actually had.</SurgeryNote>}
         <p id={portionId} className="mt-5 text-sm type-item-title text-text-primary">
           Portion
         </p>
@@ -333,11 +334,11 @@ function PortionDialog({
           data-testid="portion-readout"
         >
           {scaled === null ? (
-            <p className="text-[17px] type-meta text-text-secondary">
+            <p className="text-[13px] type-meta text-text-secondary">
               Choose a portion to see what it adds.
             </p>
           ) : (
-            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[17px] type-meta text-text-secondary">
+            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[13px] type-meta text-text-secondary">
               <Readout value={scaled.calories} unit="kcal" className="text-accent-ink" />
               <Readout value={scaled.protein} unit="g protein" className="text-text-primary" />
               <span className="sr-only">for {portionLabel(servings!)}</span>
@@ -492,8 +493,10 @@ function AddedTile({
   const n = Math.round(useTween(0, value, reduce, 300, 700));
   return (
     <div className="rounded-2xl bg-brand-warm-gray px-4 py-3 text-left">
-      <p className="text-[17px] type-meta text-text-secondary">
-        <span className={cn("text-[26px] type-row-figure tabular-nums tracking-[-0.6px]", className)}>
+      <p className="text-[13px] type-meta text-text-secondary">
+        <span
+          className={cn("text-[26px] type-row-figure tabular-nums tracking-[-0.6px]", className)}
+        >
           +{n.toLocaleString("en-US")}
         </span>{" "}
         {unit}
@@ -519,7 +522,7 @@ function TodayBar({
   const shown = Math.round(useTween(before, after, reduce, 420, 800));
   return (
     <div className="rounded-2xl border border-border-default px-4 py-3 text-left">
-      <div className="flex items-baseline justify-between gap-3 text-[17px] type-meta">
+      <div className="flex items-baseline justify-between gap-3 text-[13px] type-meta">
         <span className="type-item-title text-text-primary">Today</span>
         <span className="tabular-nums text-text-secondary">
           <span className="type-row-figure text-text-primary">{shown.toLocaleString("en-US")}</span>{" "}
@@ -527,7 +530,10 @@ function TodayBar({
         </span>
       </div>
       <div className="mt-2 flex h-2.5 overflow-hidden rounded-full bg-brand-warm-gray">
-        <span className="h-full shrink-0 bg-accent-graphic opacity-40" style={{ width: `${base}%` }} />
+        <span
+          className="h-full shrink-0 bg-accent-graphic opacity-40"
+          style={{ width: `${base}%` }}
+        />
         <motion.span
           className="h-full shrink-0 bg-accent-graphic"
           initial={reduce ? false : { width: 0 }}
@@ -563,10 +569,7 @@ function SuccessBody({
   const added = outcome.added ?? { calories: outcome.item.calories, protein: outcome.item.protein };
   const after = consumedBefore + added.calories;
   return (
-    <motion.div
-      {...swap(reduce)}
-      className="flex flex-col items-center pt-3 text-center md:pt-7"
-    >
+    <motion.div {...swap(reduce)} className="flex flex-col items-center pt-3 text-center md:pt-7">
       <SuccessMark reduce={reduce} />
       <Rise reduce={reduce} delay={0.18} className="mt-5">
         <p id={eyebrowId} className="eyebrow">
@@ -578,7 +581,7 @@ function SuccessBody({
         >
           {outcome.item.title}
         </h2>
-        <p className="mt-1 text-[17px] type-meta text-text-secondary">
+        <p className="mt-1 text-[13px] type-meta text-text-secondary">
           Added to {outcome.mealType} · {portionText(outcome.servings)}
         </p>
       </Rise>
@@ -588,7 +591,12 @@ function SuccessBody({
       </p>
       <Rise reduce={reduce} delay={0.26} className="mt-5 grid w-full grid-cols-2 gap-2" hidden>
         <AddedTile value={added.calories} unit="kcal" reduce={reduce} className="text-accent-ink" />
-        <AddedTile value={added.protein} unit="g protein" reduce={reduce} className="text-text-primary" />
+        <AddedTile
+          value={added.protein}
+          unit="g protein"
+          reduce={reduce}
+          className="text-text-primary"
+        />
       </Rise>
       <Rise reduce={reduce} delay={0.34} className="mt-3 w-full" hidden>
         <TodayBar before={consumedBefore} after={after} goal={goal} reduce={reduce} />
@@ -609,7 +617,7 @@ function SuccessBody({
           </Link>
         )}
         {outcome.undo && (
-          <p className="text-[17px] type-meta text-text-secondary">
+          <p className="text-[13px] type-meta text-text-secondary">
             Logged by mistake?{" "}
             <button
               type="button"
@@ -627,7 +635,11 @@ function SuccessBody({
 
 const swap = (reduce: boolean) =>
   reduce
-    ? { initial: false as const, animate: { opacity: 1 }, exit: { opacity: 0, transition: { duration: 0 } } }
+    ? {
+        initial: false as const,
+        animate: { opacity: 1 },
+        exit: { opacity: 0, transition: { duration: 0 } },
+      }
     : {
         initial: { opacity: 0, y: 8 },
         animate: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" as const } },
@@ -730,12 +742,22 @@ function OutcomeDialog({
     (el ?? ref.current)?.focus();
   }, [error]);
   const enter = reduce
-    ? { initial: { opacity: 1 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0 } }
+    ? {
+        initial: { opacity: 1 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0 },
+      }
     : desktop
       ? {
           initial: { opacity: 0, y: 24, scale: 0.96 },
           animate: { opacity: 1, y: 0, scale: 1 },
-          exit: { opacity: 0, y: 16, scale: 0.97, transition: { duration: 0.16, ease: "easeIn" as const } },
+          exit: {
+            opacity: 0,
+            y: 16,
+            scale: 0.97,
+            transition: { duration: 0.16, ease: "easeIn" as const },
+          },
           transition: { type: "spring" as const, stiffness: 400, damping: 22 },
         }
       : {
@@ -845,7 +867,7 @@ export function usePortionSheet({
       const entry = await log({
         mealType: mealApi(meal),
         sourceType: it.sourceType,
-        sourceItemId: it.id,
+        sourceItemId: it.sourceType === "custom" ? undefined : it.id,
         calories: m.calories,
         protein: m.protein,
         carbs: m.carbs,

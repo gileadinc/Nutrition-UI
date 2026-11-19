@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Link } from "@/lib/nav";
+import { fallbackFoodImage } from "@/lib/foodImages";
 import { BrandMark, hasBrandMark } from "./BrandMark";
 import { SaveHeartButton } from "./SaveHeartButton";
 import {
@@ -70,7 +71,7 @@ export function FoodCard({
         className="flex min-h-0 flex-1 flex-col rounded-[18px] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
       >
         <ProductCardImage
-          src={image}
+          src={image || fallbackFoodImage(title)}
           sizes="(min-width: 1280px) 22rem, (min-width: 768px) 20rem, 252px"
           className="h-[var(--image-h)]"
         >
@@ -87,12 +88,12 @@ export function FoodCard({
         </ProductCardImage>
         <ProductCardContent className="border-t border-border-default/70 px-[14px] pb-[10px] pt-[11px]">
           <ProductCardTitle
-            className={cn("text-[19px] leading-[1.1] tracking-[-0.675px]", onSave && "pr-7")}
+            className={cn("text-[15px] leading-[1.1] tracking-[-0.675px]", onSave && "pr-7")}
           >
             {title}
           </ProductCardTitle>
           {subtitle && (
-            <ProductCardSubtitle className="mt-1 text-[15px] tracking-[-0.495px]">
+            <ProductCardSubtitle className="mt-1 text-[12px] tracking-[-0.495px]">
               {subtitle}
             </ProductCardSubtitle>
           )}
@@ -102,11 +103,11 @@ export function FoodCard({
                 <BrandMark restaurant={brand} initialFallback />
               </span>
             )}
-            <ProductCardMetric className="flex-1 text-[15px] leading-[1.1] tracking-[-0.5175px]">
+            <ProductCardMetric className="flex-1 text-[12px] leading-[1.1] tracking-[-0.5175px]">
               {meta}
             </ProductCardMetric>
             {pill && (
-              <span className="ml-[7px] flex h-[22px] shrink-0 items-center rounded-full border border-primary/[0.08] bg-navy-50 px-2 text-[15px] type-meta leading-none tracking-[-0.495px] text-primary">
+              <span className="ml-[7px] flex h-[22px] shrink-0 items-center rounded-full border border-primary/[0.08] bg-navy-50 px-2 text-[12px] type-meta leading-none tracking-[-0.495px] text-primary">
                 {pill}
               </span>
             )}

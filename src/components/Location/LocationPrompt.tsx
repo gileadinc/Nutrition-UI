@@ -25,7 +25,7 @@ export function LocationPrompt({ className }: { className?: string }) {
         )}
       >
         <Icon name="location" size={18} color="var(--color-primary)" />
-        <span className="min-w-0 flex-1 text-[17px] type-meta text-text-primary">
+        <span className="min-w-0 flex-1 text-[13px] type-meta text-text-primary">
           {COPY.active}
         </span>
       </div>
@@ -53,10 +53,10 @@ export function LocationPrompt({ className }: { className?: string }) {
         <Icon name="location" size={18} color="var(--color-icon-well-ink)" />
       </span>
       <div className="min-w-0 flex-1 basis-56">
-        <h2 className="text-[17px] leading-5 type-section-title text-brand-navy">{COPY.title}</h2>
-        <p className="text-[15px] leading-5 type-meta text-text-secondary">{COPY.body}</p>
+        <h2 className="text-[13px] leading-5 type-section-title text-brand-navy">{COPY.title}</h2>
+        <p className="text-[11px] leading-5 type-meta text-text-secondary">{COPY.body}</p>
         {problem && (
-          <p role="alert" className="mt-1 text-[15px] leading-5 type-meta text-error-red">
+          <p role="alert" className="mt-1 text-[11px] leading-5 type-meta text-error-red">
             {problem}
           </p>
         )}
@@ -66,7 +66,7 @@ export function LocationPrompt({ className }: { className?: string }) {
           type="button"
           onClick={request}
           disabled={locating}
-          className="h-9 shrink-0 rounded-full bg-primary px-4 text-[15px] type-button text-on-primary transition-colors enabled:hover:bg-primary-hover disabled:opacity-60"
+          className="h-9 shrink-0 rounded-full bg-primary px-4 text-[11px] type-button text-on-primary transition-colors enabled:hover:bg-primary-hover disabled:opacity-60"
         >
           {locating ? COPY.locating : status === "idle" ? COPY.allow : COPY.retry}
         </button>

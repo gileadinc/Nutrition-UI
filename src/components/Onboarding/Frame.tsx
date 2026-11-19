@@ -3,27 +3,36 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { AppImage } from "@/components/AppImage";
-import { Logo } from "@/components/Shell/Logo";
-import { useIsLg } from "@/lib/hooks";
 
 interface FrameProps {
-  /** Local image base, e.g. `/img/auth/login-hero`. */
+  /** Local image base, e.g. `/img/figma-2026-11/auth/login`. */
   image: string;
+  /** Optional image painted under `image` (e.g. a tinted backdrop). */
+  backdrop?: string;
   /** Eyebrow over the photo. */
-  label: string;
-  title: string;
-  body: string;
+  label?: string;
+  title?: ReactNode;
+  body?: string;
   children: ReactNode;
   contentClassName?: string;
   variant?: "default" | "quiz";
-  /** `ink` = dark text over a light photo. */
+  /** `ink` = light text over a dark photo, `light` = navy text over a light photo. */
   tone?: "light" | "ink";
   imagePosition?: "center" | "top";
+  imageClassName?: string;
+  titleClassName?: string;
+  /** Kept for call-site compatibility; the frame is responsive by CSS now. */
+  mobileClassName?: string;
 }
 
-/** Desktop split layout: photo + copy on the left, form on the right. */
+/**
+ * Auth / onboarding split frame: a padded canvas with a rounded photo card on
+ * the left (md+) and the form column on the right. On mobile only the form
+ * column shows.
+ */
 export function OnboardingDesktopFrame({
   image,
+  backdrop,
   label,
   title,
   body,
@@ -32,103 +41,87 @@ export function OnboardingDesktopFrame({
   variant = "default",
   tone = "light",
   imagePosition = "center",
+  imageClassName,
+  titleClassName,
 }: FrameProps) {
-  const ink = tone === "ink";
+  const hasCopy = !!(label || title || body);
   return (
-    <div
-      className={cn(
-        "grid min-h-dvh bg-surface-white",
-        variant === "quiz"
-          ? "grid-cols-[minmax(21rem,0.72fr)_minmax(38rem,1.28fr)] xl:grid-cols-[minmax(25rem,0.72fr)_minmax(44rem,1.28fr)]"
-          : "grid-cols-[minmax(21rem,0.82fr)_minmax(30rem,1.18fr)] xl:grid-cols-[minmax(28rem,0.9fr)_minmax(36rem,1.1fr)]",
-      )}
-    >
-      <aside className="relative min-h-dvh overflow-hidden bg-brand-navy">
+    <div className="grid min-h-dvh grid-rows-[1fr] gap-2.5 rounded-[20px] bg-auth-canvas p-2.5 md:grid-rows-[auto_1fr] lg:grid-cols-[minmax(0,653fr)_minmax(0,751fr)] lg:grid-rows-none">
+      <aside
+        aria-hidden
+        className="relative hidden h-[min(36dvh,24rem)] overflow-hidden rounded-[20px] bg-surface-card md:block lg:sticky lg:top-2.5 lg:h-[calc(100dvh-1.25rem)] lg:min-h-[32rem]"
+      >
+        {backdrop && (
+          <AppImage
+            src={backdrop}
+            alt=""
+            priority
+            sizes="(min-width: 1024px) 47vw, 100vw"
+            className="absolute inset-0 size-full object-cover"
+          />
+        )}
         <AppImage
           src={image}
           alt=""
           priority
-          sizes={
-            variant === "quiz" ? "(min-width: 1280px) 36vw, 38vw" : "(min-width: 1280px) 45vw, 40vw"
-          }
+          sizes="(min-width: 1024px) 47vw, 100vw"
           className={cn(
             "absolute inset-0 size-full object-cover",
             imagePosition === "top" && "object-top",
+            imageClassName,
           )}
         />
-        <div className="relative flex min-h-dvh flex-col justify-between p-8 xl:p-12">
-          <Logo
-            size="md"
-            className={ink ? "on-photo-ink text-brand-navy" : "on-photo text-white"}
-          />
-          <div className={cn("max-w-md pb-2", ink ? "on-photo-ink" : "on-photo")}>
-            <p
-              className={cn(
-                "text-onb-meta type-eyebrow uppercase",
-                ink ? "text-brand-navy" : "text-primary-soft",
-              )}
-            >
-              {label}
-            </p>
-            <p
-              className={cn(
-                "mt-3 text-onb-chapter type-display xl:text-onb-chapter-lg",
-                ink ? "text-brand-navy" : "text-white",
-              )}
-            >
-              {title}
-            </p>
-            <p
-              className={cn(
-                "mt-3 max-w-sm text-onb-body",
-                ink ? "text-text-primary" : "text-white",
-              )}
-            >
-              {body}
-            </p>
+        {hasCopy && (
+          <div
+            className={cn(
+              "absolute inset-x-0 bottom-0 hidden p-[30px] lg:block",
+              tone === "ink" ? "text-text-on-dark" : "text-brand-navy",
+            )}
+          >
+            {label && (
+              <p className="text-[13px] type-meta uppercase leading-5 tracking-[-0.176px]">
+                {label}
+              </p>
+            )}
+            {title && (
+              <p
+                className={cn(
+                  "mt-3 text-[28px] type-meta leading-[36.8px] tracking-[-0.8px]",
+                  titleClassName,
+                )}
+              >
+                {title}
+              </p>
+            )}
+            {body && (
+              <p
+                className={cn(
+                  "mt-3 text-base type-body leading-6 tracking-[-0.176px]",
+                  tone === "light" && "text-text-primary",
+                )}
+              >
+                {body}
+              </p>
+            )}
           </div>
-        </div>
+        )}
       </aside>
-      <main className="flex min-h-dvh items-center justify-center overflow-y-auto px-8 py-10 lg:px-12 xl:px-16">
-        <div className={cn("w-full max-w-lg", contentClassName)}>{children}</div>
+      <main className="flex min-w-0 items-center justify-center px-5 py-7 lg:min-h-[calc(100dvh-1.25rem)] lg:px-[clamp(2rem,8.65vw,7.75rem)] lg:py-10">
+        <div
+          className={cn(
+            "w-full",
+            variant === "quiz" ? "max-w-[34rem]" : "max-w-md",
+            contentClassName,
+          )}
+        >
+          {children}
+        </div>
       </main>
     </div>
   );
 }
 
-/**
- * Auth / status screens: split frame at lg+, plain centred column on mobile.
- * This is the wrapper Login/Signup/Forgot/Status screens use.
- */
-export function OnboardingFrame({
-  image,
-  label,
-  title,
-  body,
-  children,
-  mobileClassName = "bg-brand-cream px-5 py-6",
-  contentClassName,
-  variant = "default",
-  tone = "light",
-  imagePosition,
-}: FrameProps & { mobileClassName?: string }) {
-  const lg = useIsLg();
-  return lg ? (
-    <OnboardingDesktopFrame
-      image={image}
-      label={label}
-      title={title}
-      body={body}
-      contentClassName={contentClassName}
-      variant={variant}
-      tone={tone}
-      imagePosition={imagePosition}
-    >
-      {children}
-    </OnboardingDesktopFrame>
-  ) : (
-    <main className={cn("min-h-dvh", mobileClassName)}>
-      <div className={cn("mx-auto w-full max-w-md", contentClassName)}>{children}</div>
-    </main>
-  );
+/** Wrapper the auth / status screens use (same component; responsive by CSS). */
+export function OnboardingFrame(props: FrameProps) {
+  return <OnboardingDesktopFrame {...props} />;
 }

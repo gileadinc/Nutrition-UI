@@ -64,7 +64,9 @@ export function SignupScreen() {
         if (await completeSignIn(session)) {
           endGuestSession();
           void syncOnboardingToProfile();
-          navigate(next ? `/email-verified?returnTo=${encodeURIComponent(next)}` : "/email-verified");
+          navigate(
+            next ? `/email-verified?returnTo=${encodeURIComponent(next)}` : "/email-verified",
+          );
           return;
         }
       }
@@ -79,11 +81,17 @@ export function SignupScreen() {
 
   return (
     <OnboardingFrame
-      image="/img/onboarding/private-basics"
+      image="/img/figma-2026-11/auth/signup"
       tone="ink"
-      label="CREATE YOUR FORKTHIS ACCOUNT"
-      title="Keep your progress connected to you."
-      body="Your saved meals, preferences and health context stay together wherever you sign in."
+      label="CREATED YOUR FREE FORKTHIS! ACCOUNT"
+      title={
+        <>
+          Taking the <span className="type-display">first step</span> is the hardest.
+          <br />
+          <span className="type-display">ForkThis!</span> is here to help lighten that load.
+        </>
+      }
+      body="ForkTHIS! combines food, fitness, habit-building, and progress tracking into one convenient platform."
       mobileClassName="bg-surface-white px-6 py-5"
       contentClassName="max-w-md"
     >
@@ -94,15 +102,15 @@ export function SignupScreen() {
           void submit();
         }}
       >
-        <Logo size="lg" tagline />
+        <Logo size="lg" className="mb-4" />
         <h1
-          className="mt-8 text-4xl type-display text-primary"
+          className="text-4xl type-display text-primary"
           style={{ letterSpacing: "-1.62px", lineHeight: "38px" }}
         >
           Create your account
         </h1>
-        <p className="mt-1 type-meta text-[17px] leading-5 text-text-secondary">
-          Just enough to save your progress. Your goals and body context come next.
+        <p className="mt-1 type-meta text-[13px] leading-5 text-text-secondary">
+          Your free account opens all that ForkThis! has to offer.
         </p>
         <div className="mt-4 flex flex-col gap-3">
           <NameFields value={name} onChange={setName} error={errors.firstName} />
@@ -146,7 +154,7 @@ export function SignupScreen() {
               {agreed && <Icon name="tick" size={14} color="var(--color-text-on-dark)" />}
             </span>
           </button>
-          <p className="type-meta text-[17px] leading-5 text-text-secondary">
+          <p className="type-meta text-[13px] leading-5 text-text-secondary">
             I agree to the{" "}
             <Link
               to="/you/legal/terms"
@@ -169,21 +177,25 @@ export function SignupScreen() {
           </p>
         </div>
         {errors.terms && (
-          <p role="alert" className="mt-2 type-meta text-[17px] text-error-red">
+          <p role="alert" className="mt-2 type-meta text-[13px] text-error-red">
             {errors.terms}
           </p>
         )}
         {errors.form && (
-          <p role="alert" className="mt-3 type-meta text-[17px] text-error-red">
+          <p role="alert" className="mt-3 type-meta text-[13px] text-error-red">
             {errors.form}
           </p>
         )}
         <div className="mt-4">
-          <PrimaryButton label={busy ? "Creating account..." : "Register"} type="submit" disabled={busy} />
+          <PrimaryButton
+            label={busy ? "Creating account..." : "Register"}
+            type="submit"
+            disabled={busy}
+          />
         </div>
         <div className="my-4 flex items-center gap-3">
           <span className="h-px flex-1 bg-border-divider" />
-          <span className="text-[15px] type-meta text-text-neutral-600">OR SIGN UP WITH</span>
+          <span className="text-[12px] type-meta text-text-neutral-600">OR SIGN UP WITH</span>
           <span className="h-px flex-1 bg-border-divider" />
         </div>
         <div className="flex gap-3">
@@ -204,7 +216,7 @@ export function SignupScreen() {
           />
         </div>
         {social.error && (
-          <p role="status" className="mt-3 text-center type-meta text-[17px] text-text-secondary">
+          <p role="status" className="mt-3 text-center type-meta text-[13px] text-text-secondary">
             {social.error}
           </p>
         )}
@@ -212,7 +224,7 @@ export function SignupScreen() {
           Already have an account?{" "}
           <Link
             to={next ? `/login?next=${encodeURIComponent(next)}` : "/login"}
-            className="type-button text-primary"
+            className="type-button text-primary underline decoration-1 underline-offset-2"
           >
             Sign In
           </Link>

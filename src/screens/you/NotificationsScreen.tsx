@@ -4,8 +4,21 @@ import { useMemo, useState } from "react";
 import { NotificationList, toNotificationVM } from "@/components/Notifications";
 import { cn } from "@/lib/utils";
 import { ProfileLayout } from "@/components/Track/ProfileParts";
-import { getErrorMessage, profileApi, type NotificationPrefs, type Preferences as AllPrefs, type PrivacyPrefs } from "@/lib/api";
-import { invalidate, toast, useAppSession, useCached, useNotifications, useProfile } from "@/lib/store";
+import {
+  getErrorMessage,
+  profileApi,
+  type NotificationPrefs,
+  type Preferences as AllPrefs,
+  type PrivacyPrefs,
+} from "@/lib/api";
+import {
+  invalidate,
+  toast,
+  useAppSession,
+  useCached,
+  useNotifications,
+  useProfile,
+} from "@/lib/store";
 import { SWITCH_ON } from "@/components/styles";
 
 const PREFS: { key: keyof NotificationPrefs; label: string }[] = [
@@ -14,7 +27,17 @@ const PREFS: { key: keyof NotificationPrefs; label: string }[] = [
   { key: "productUpdates", label: "Product updates" },
 ];
 
-function Switch({ on, label, onToggle, disabled }: { on: boolean; label: string; onToggle: () => void; disabled?: boolean }) {
+function Switch({
+  on,
+  label,
+  onToggle,
+  disabled,
+}: {
+  on: boolean;
+  label: string;
+  onToggle: () => void;
+  disabled?: boolean;
+}) {
   return (
     <button
       type="button"
@@ -25,8 +48,15 @@ function Switch({ on, label, onToggle, disabled }: { on: boolean; label: string;
       onClick={onToggle}
       className="tap-24 flex h-6 w-11 items-center disabled:opacity-50"
     >
-      <span className={cn("flex h-6 w-11 items-center rounded-full p-0.5 transition-colors", on ? SWITCH_ON : "bg-border-default")}>
-        <span className={cn("size-5 rounded-full bg-white transition-transform", on && "translate-x-5")} />
+      <span
+        className={cn(
+          "flex h-6 w-11 items-center rounded-full p-0.5 transition-colors",
+          on ? SWITCH_ON : "bg-border-default",
+        )}
+      >
+        <span
+          className={cn("size-5 rounded-full bg-white transition-transform", on && "translate-x-5")}
+        />
       </span>
     </button>
   );
@@ -50,8 +80,12 @@ function Preferences() {
   };
   return (
     <section className="panel p-4">
-      <h2 className="text-[19px] type-section-title tracking-[-0.5px] text-brand-navy">Reminders</h2>
-      <p className="mt-1 type-meta text-xs leading-5 text-text-secondary">Choose which reminders should reach you.</p>
+      <h2 className="text-[15px] type-section-title tracking-[-0.5px] text-brand-navy">
+        Reminders
+      </h2>
+      <p className="mt-1 type-meta text-xs leading-5 text-text-secondary">
+        Choose which reminders should reach you.
+      </p>
       <div className="mt-2">
         {PREFS.map((p) => (
           <div
@@ -74,14 +108,19 @@ function Preferences() {
 
 const PREFS_KEY = "profile:preferences";
 
-const PRIVACY: { key: "analytics" | "personalizedRecommendations"; label: string; hint: string }[] = [
-  {
-    key: "personalizedRecommendations",
-    label: "Personalised recommendations",
-    hint: "Use your goal and what you log to suggest meals.",
-  },
-  { key: "analytics", label: "Usage analytics", hint: "Share anonymous usage to help improve ForkThis." },
-];
+const PRIVACY: { key: "analytics" | "personalizedRecommendations"; label: string; hint: string }[] =
+  [
+    {
+      key: "personalizedRecommendations",
+      label: "Personalised recommendations",
+      hint: "Use your goal and what you log to suggest meals.",
+    },
+    {
+      key: "analytics",
+      label: "Usage analytics",
+      hint: "Share anonymous usage to help improve ForkThis.",
+    },
+  ];
 
 /** Privacy switches from `GET/PATCH /api/profile/me/preferences`. */
 function PrivacySettings() {
@@ -102,8 +141,10 @@ function PrivacySettings() {
   };
   return (
     <section className="panel p-4">
-      <h2 className="text-[19px] type-section-title tracking-[-0.5px] text-brand-navy">Privacy</h2>
-      <p className="mt-1 type-meta text-xs leading-5 text-text-secondary">Control how your data is used.</p>
+      <h2 className="text-[15px] type-section-title tracking-[-0.5px] text-brand-navy">Privacy</h2>
+      <p className="mt-1 type-meta text-xs leading-5 text-text-secondary">
+        Control how your data is used.
+      </p>
       <div className="mt-2">
         {PRIVACY.map((p) => (
           <div
@@ -112,7 +153,9 @@ function PrivacySettings() {
           >
             <span className="min-w-0 flex-1">
               <span className="block type-item-title text-sm text-text-primary">{p.label}</span>
-              <span className="block type-meta text-xs leading-5 text-text-secondary">{p.hint}</span>
+              <span className="block type-meta text-xs leading-5 text-text-secondary">
+                {p.hint}
+              </span>
             </span>
             <Switch
               on={Boolean(current?.[p.key])}
@@ -149,25 +192,35 @@ export function NotificationsScreen() {
       <section aria-label="Recent activity" className="panel overflow-hidden">
         <div className="flex items-center border-b border-border-divider px-5 py-4">
           <div className="min-w-0 flex-1">
-            <h2 className="text-[19px] type-section-title tracking-[-0.5px] text-brand-navy">Recent activity</h2>
+            <h2 className="text-[15px] type-section-title tracking-[-0.5px] text-brand-navy">
+              Recent activity
+            </h2>
             <p className="mt-0.5 type-meta text-xs text-text-secondary">
               {n.unreadCount === 0 ? "You're all caught up" : `${n.unreadCount} unread`}
             </p>
           </div>
           {n.unreadCount > 0 && (
-            <button type="button" onClick={() => void n.markAllRead()} className="tap-24 text-xs type-button text-primary">
+            <button
+              type="button"
+              onClick={() => void n.markAllRead()}
+              className="tap-24 text-xs type-button text-primary"
+            >
               Mark all read
             </button>
           )}
         </div>
         {!session.isSignedIn ? (
-          <p className="px-5 py-8 text-center text-[17px] type-meta text-text-secondary">
+          <p className="px-5 py-8 text-center text-[13px] type-meta text-text-secondary">
             Notifications are available with an account.
           </p>
         ) : n.isLoading ? (
-          <p className="px-5 py-8 text-center text-[17px] type-meta text-text-secondary">Loading…</p>
+          <p className="px-5 py-8 text-center text-[13px] type-meta text-text-secondary">
+            Loading…
+          </p>
         ) : n.error ? (
-          <p className="px-5 py-8 text-center text-[17px] type-meta text-text-secondary">{n.error}</p>
+          <p className="px-5 py-8 text-center text-[13px] type-meta text-text-secondary">
+            {n.error}
+          </p>
         ) : (
           <NotificationList
             items={items}

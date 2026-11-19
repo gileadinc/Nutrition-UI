@@ -6,14 +6,17 @@ import { meloActions, useMelo } from "@/lib/melo";
 import { MeloChat } from "./Chat";
 import { MeloHeader, MeloIconButton, VoiceSettings } from "./Header";
 
-const FOCUSABLE = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE =
+  'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
 /** The Melo chat popup: bottom sheet on mobile, floating card on lg. */
 export function MeloPanel({ pathname }: { pathname: string }) {
   const hasTurns = useMelo((s) => s.turns.length > 0);
   const navigate = useNavigate();
   const root = useRef<HTMLElement>(null);
-  const [opener] = useState(() => (typeof document === "undefined" ? null : document.activeElement));
+  const [opener] = useState(() =>
+    typeof document === "undefined" ? null : document.activeElement,
+  );
   const [openedOn] = useState(pathname);
 
   const close = () => {
@@ -56,7 +59,7 @@ export function MeloPanel({ pathname }: { pathname: string }) {
     <>
       <button
         type="button"
-        aria-label="Close Melo"
+        aria-label="Close ForkThis!"
         tabIndex={-1}
         onClick={close}
         className="fixed inset-0 z-40 bg-text-primary/35 lg:hidden"
@@ -65,13 +68,16 @@ export function MeloPanel({ pathname }: { pathname: string }) {
         ref={root}
         role="dialog"
         aria-modal="true"
-        aria-label="Melo"
+        aria-label="ForkThis!"
         className="fixed inset-x-0 bottom-0 z-50 flex h-[85dvh] flex-col overflow-hidden rounded-t-[24px] bg-white motion-safe:animate-[drawer-in_260ms_cubic-bezier(0.215,0.61,0.355,1)_backwards] lg:inset-x-auto lg:bottom-6 lg:right-6 lg:h-[min(44rem,85dvh)] lg:w-[26rem] lg:rounded-[24px] lg:border lg:border-border-default"
         style={{ boxShadow: "var(--shadow-raised)" }}
       >
-        <span aria-hidden="true" className="mx-auto mt-2 h-1 w-10 rounded-full bg-border-default lg:hidden" />
+        <span
+          aria-hidden="true"
+          className="mx-auto mt-2 h-1 w-10 rounded-full bg-border-default lg:hidden"
+        />
         <MeloHeader
-          title="Ask Melo"
+          title="Ask ForkThis!"
           subtitle="Answers from your day"
           titleAs="h2"
           markSize={32}
@@ -79,16 +85,22 @@ export function MeloPanel({ pathname }: { pathname: string }) {
           actions={
             <>
               <VoiceSettings />
-              {hasTurns && <MeloIconButton label="New chat" icon="pencilEdit" onClick={() => meloActions.newChat()} />}
+              {hasTurns && (
+                <MeloIconButton
+                  label="New chat"
+                  icon="pencilEdit"
+                  onClick={() => meloActions.newChat()}
+                />
+              )}
               <MeloIconButton
-                label="Expand to the full Melo page"
+                label="Expand to the full ForkThis! page"
                 icon="expand"
                 onClick={() => {
                   meloActions.close();
                   navigate("/assistant");
                 }}
               />
-              <MeloIconButton label="Close Melo" icon="close" onClick={close} />
+              <MeloIconButton label="Close ForkThis!" icon="close" onClick={close} />
             </>
           }
         />
