@@ -3,16 +3,16 @@
 import { useId, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/Icon";
 import { useActivity, useMedications, useWeight } from "@/lib/store";
-import {
-  dayCalories,
-  dayProtein,
-  dayWaterOz,
-  useTrackDays,
-  type TrackDay,
-  type TrackMeal,
-} from "@/lib/track";
+import { dayCalories, dayProtein, dayWaterOz, useTrackDays, type TrackDay } from "@/lib/track";
 import { cn } from "@/lib/utils";
-import { SheetFrame, useLogSheet, type LogTab } from "./LogSheet";
+import { SheetFrame, WaterBottle, useLogSheet, type LogTab } from "./LogSheet";
+import {
+  DonutChart,
+  PieSlices,
+  RingsChart,
+  RunningTotalChart,
+  WeightLineChart,
+} from "@/components/Charts/TrackCharts";
 
 export const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
 
@@ -236,249 +236,10 @@ const ACTIVITY_FILL = [
   "var(--color-navy-400)",
 ];
 
-function Donut({
-  parts,
-  size = 118,
-  thickness = 17,
-  children,
-}: {
-  parts: { key: string; value: number; fill: string }[];
-  size?: number;
-  thickness?: number;
-  children?: ReactNode;
-}) {
-  const r = (size - thickness) / 2;
-  const c = 2 * Math.PI * r;
-  const total = parts.reduce((s, p) => s + p.value, 0) || 1;
-  const segs = parts
-    .filter((p) => p.value > 0)
-    .reduce<{ key: string; fill: string; len: number; start: number }[]>((out, p) => {
-      const start = out.length ? out[out.length - 1].start + out[out.length - 1].len : 0;
-      out.push({ key: p.key, fill: p.fill, len: (p.value / total) * c, start });
-      return out;
-    }, []);
-  return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <svg viewBox={`0 0 ${size} ${size}`} className="size-full -rotate-90" aria-hidden>
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill="none"
-          stroke="var(--color-navy-100)"
-          strokeWidth={thickness}
-        />
-        {segs.map((g) => (
-          <circle
-            key={g.key}
-            cx={size / 2}
-            cy={size / 2}
-            r={r}
-            fill="none"
-            stroke={g.fill}
-            strokeWidth={thickness}
-            strokeDasharray={`${Math.max(0, g.len - 2)} ${c}`}
-            strokeDashoffset={-g.start}
-          />
-        ))}
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">{children}</div>
-    </div>
-  );
-}
-
-function Rings({
-  rows,
-  size = 138,
-}: {
-  rows: { key: string; value: number; target: number; fill: string }[];
-  size?: number;
-}) {
-  const stroke = 11;
-  return (
-    <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} aria-hidden>
-      {rows.map((row, i) => {
-        const r = size / 2 - stroke / 2 - i * (stroke + 4);
-        const c = 2 * Math.PI * r;
-        const f = row.target > 0 ? Math.min(1, row.value / row.target) : 0;
-        return (
-          <g key={row.key} transform={`rotate(-90 ${size / 2} ${size / 2})`}>
-            <circle
-              cx={size / 2}
-              cy={size / 2}
-              r={r}
-              fill="none"
-              stroke={row.fill}
-              strokeOpacity={0.14}
-              strokeWidth={stroke}
-            />
-            <circle
-              cx={size / 2}
-              cy={size / 2}
-              r={r}
-              fill="none"
-              stroke={row.fill}
-              strokeWidth={stroke}
-              strokeLinecap="round"
-              strokeDasharray={`${c * f} ${c}`}
-              strokeOpacity={f === 0 ? 0 : 1}
-            />
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
 const hourOf = (iso: string) => {
   const d = new Date(iso);
   return d.getHours() + d.getMinutes() / 60;
 };
-const hourLabel = (h: number) =>
-  h === 24 || h === 0 ? "12a" : h === 12 ? "12p" : h < 12 ? `${h}a` : `${h - 12}p`;
-
-/** Running calorie total after each meal, as bars across the day, with the goal line. */
-function RunningTotal({ meals, goal }: { meals: TrackMeal[]; goal: number }) {
-  const sorted = [...meals].sort((a, b) => a.loggedAt.localeCompare(b.loggedAt));
-  const start = 6;
-  const end = 21;
-  const bars = sorted.reduce<{ t: number; total: number; fill: string }[]>((out, m) => {
-    const total = (out.length ? out[out.length - 1].total : 0) + m.calories;
-    out.push({
-      t: Math.min(end, Math.max(start, hourOf(m.loggedAt))),
-      total,
-      fill: MEAL_FILL[m.mealType as (typeof MEALS)[number]] ?? MEAL_FILL.Snack,
-    });
-    return out;
-  }, []);
-  const run = bars.length ? bars[bars.length - 1].total : 0;
-  const max = Math.max(goal, run, 1);
-  const W = 100;
-  const H = 100;
-  const goalY = H - (goal / max) * H;
-  const ticks = [0, 1 / 3, 2 / 3, 1].map((f) => Math.round((max * (1 - f)) / 100) * 100);
-  return (
-    <div className="flex size-full gap-2">
-      <div className="relative min-w-0 flex-1">
-        <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="size-full" aria-hidden>
-          <line
-            x1="0"
-            x2={W}
-            y1={goalY}
-            y2={goalY}
-            stroke="var(--color-text-neutral-400)"
-            strokeDasharray="2 2"
-            strokeWidth="0.4"
-            vectorEffect="non-scaling-stroke"
-          />
-          {bars.map((b, i) => {
-            const x = ((b.t - start) / (end - start)) * (W - 8);
-            const h = (b.total / max) * H;
-            return <rect key={i} x={x} y={H - h} width="5" height={h} rx="1" fill={b.fill} />;
-          })}
-        </svg>
-        <span
-          className="absolute left-1 text-[10px] text-text-secondary"
-          style={{ top: `calc(${(goalY / H) * 100}% - 14px)` }}
-        >
-          Goal {fmt(goal)} kcal
-        </span>
-        <div className="absolute inset-x-0 -bottom-4 flex justify-between text-[10px] text-text-secondary">
-          {[6, 9, 12, 15, 18, 21].map((h) => (
-            <span key={h}>{hourLabel(h)}</span>
-          ))}
-        </div>
-      </div>
-      <div className="flex flex-col justify-between pb-0.5 text-[10px] tabular-nums text-text-secondary">
-        {ticks.map((t, i) => (
-          <span key={i}>{t >= 1000 ? `${(t / 1000).toFixed(1)}k` : t}</span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function Line({ values, labels }: { values: (number | null)[]; labels: string[] }) {
-  const pts = values.map((v, i) => (v === null ? null : { i, v }));
-  const real = pts.filter((p): p is { i: number; v: number } => p !== null);
-  if (real.length === 0) return null;
-  const min = Math.min(...real.map((p) => p.v));
-  const max = Math.max(...real.map((p) => p.v));
-  const span = Math.max(0.5, max - min);
-  const W = 100;
-  const H = 60;
-  const x = (i: number) => 3 + (i / Math.max(1, values.length - 1)) * (W - 6);
-  const y = (v: number) => 6 + (1 - (v - min) / span) * (H - 14);
-  const avg = real.reduce((s, p) => s + p.v, 0) / real.length;
-  return (
-    <div className="flex size-full flex-col">
-      <svg
-        viewBox={`0 0 ${W} ${H}`}
-        preserveAspectRatio="none"
-        className="min-h-0 flex-1"
-        aria-hidden
-      >
-        <line
-          x1="0"
-          x2={W}
-          y1={y(avg)}
-          y2={y(avg)}
-          stroke="var(--color-navy-300)"
-          strokeDasharray="2 2"
-          strokeWidth="0.4"
-          vectorEffect="non-scaling-stroke"
-        />
-        <polyline
-          fill="none"
-          stroke="var(--color-brand-navy)"
-          strokeWidth="1.6"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-          vectorEffect="non-scaling-stroke"
-          points={real.map((p) => `${x(p.i)},${y(p.v)}`).join(" ")}
-        />
-        {real.map((p) => (
-          <circle
-            key={p.i}
-            cx={x(p.i)}
-            cy={y(p.v)}
-            r="1.6"
-            fill="white"
-            stroke="var(--color-brand-navy)"
-            strokeWidth="0.9"
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
-      </svg>
-      <div className="mt-1 flex justify-between text-[10px] text-text-secondary">
-        {labels.map((l, i) => (
-          <span key={i}>{l}</span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function Pie({ slices }: { slices: { key: string; value: number; fill: string }[] }) {
-  const total = slices.reduce((s, p) => s + p.value, 0) || 1;
-  const arcs = slices.reduce<{ key: string; fill: string; a0: number; a1: number }[]>((out, sl) => {
-    const a0 = out.length ? out[out.length - 1].a1 : -Math.PI / 2;
-    out.push({ key: sl.key, fill: sl.fill, a0, a1: a0 + (sl.value / total) * Math.PI * 2 });
-    return out;
-  }, []);
-  return (
-    <svg viewBox="-60 -60 120 120" className="size-[120px] shrink-0" aria-hidden>
-      {arcs.map((g) => {
-        const large = g.a1 - g.a0 > Math.PI ? 1 : 0;
-        const d =
-          arcs.length === 1
-            ? "M0 -56a56 56 0 1 1 0 112a56 56 0 1 1 0 -112Z"
-            : `M0 0L${56 * Math.cos(g.a0)} ${56 * Math.sin(g.a0)}A56 56 0 ${large} 1 ${56 * Math.cos(g.a1)} ${56 * Math.sin(g.a1)}Z`;
-        return <path key={g.key} d={d} fill={g.fill} stroke="white" strokeWidth="2" />;
-      })}
-    </svg>
-  );
-}
 
 /* --------------------------------------------------------------- the grid */
 
@@ -506,12 +267,27 @@ function CaloriesByMeal({ day, onHide }: { day: TrackDay; onHide: () => void }) 
       ) : (
         <>
           <div className="flex flex-col items-center justify-center">
-            <Donut parts={parts} size={118} thickness={17}>
+            <DonutChart
+              parts={parts}
+              size={118}
+              thickness={17}
+              unit="kcal"
+              partName={(k) => k}
+              overflow={{
+                value: eaten,
+                target: day.calorieGoal,
+                color: "var(--color-accent-graphic)",
+              }}
+              label={`Calories by meal: ${parts
+                .filter((p) => p.value > 0)
+                .map((p) => `${p.key} ${fmt(p.value)} kcal`)
+                .join(", ")}`}
+            >
               <span className="text-[22px] leading-none type-row-figure tabular-nums text-brand-navy">
                 {fmt(eaten)}
               </span>
               <span className="text-[11px] text-text-secondary">kcal</span>
-            </Donut>
+            </DonutChart>
           </div>
           <ul aria-label="Calories by meal" className="mt-3 space-y-1 text-[12px]">
             {parts
@@ -556,7 +332,19 @@ function CaloriesThroughDay({ day, onHide }: { day: TrackDay; onHide: () => void
       {day.meals.length === 0 ? (
         <Empty>Your running total will build here as you log.</Empty>
       ) : (
-        <RunningTotal meals={day.meals} goal={day.calorieGoal} />
+        <RunningTotalChart
+          events={day.meals.map((m) => ({
+            t: hourOf(m.loggedAt),
+            amount: m.calories,
+            fill: MEAL_FILL[m.mealType as (typeof MEALS)[number]] ?? MEAL_FILL.Snack,
+          }))}
+          start={Math.min(6, ...day.meals.map((m) => hourOf(m.loggedAt)))}
+          end={Math.max(21, ...day.meals.map((m) => hourOf(m.loggedAt)))}
+          goal={day.calorieGoal}
+          color="var(--color-accent-graphic)"
+          unit="kcal"
+          label={`Calories eaten through the day: ${fmt(dayCalories(day))} of ${fmt(day.calorieGoal)} kcal`}
+        />
       )}
     </WidgetCard>
   );
@@ -588,7 +376,11 @@ function Macros({ day, onHide }: { day: TrackDay; onHide: () => void }) {
       className="@2xl:@max-5xl:col-span-1 @5xl:col-span-3"
     >
       <div className="flex items-center justify-center">
-        <Rings rows={rows} size={138} />
+        <RingsChart
+          rows={rows}
+          size={138}
+          label={`Macros against goals: ${rows.map((r) => `${r.name} ${fmt(r.value)} of ${fmt(r.target)} g`).join(", ")}`}
+        />
       </div>
       <ul aria-label="Macros against goals" className="mt-3 space-y-1 text-[12px]">
         {rows.map((r) => (
@@ -614,8 +406,6 @@ function Water({ day, onHide }: { day: TrackDay; onHide: () => void }) {
   const goal = day.waterGoalOz;
   const pct = goal > 0 ? Math.min(100, (oz / goal) * 100) : 0;
   const drinks = day.hydration.filter((h) => h.ounces > 0).length;
-  const r = 44;
-  const c = 2 * Math.PI * r;
   return (
     <WidgetCard
       title="Water"
@@ -635,32 +425,7 @@ function Water({ day, onHide }: { day: TrackDay; onHide: () => void }) {
       ]}
     >
       <div className="flex size-full items-center justify-center gap-6">
-        <svg
-          viewBox="0 0 104 104"
-          className="size-[104px]"
-          aria-label={`Water today: ${fmt(oz)} of ${fmt(goal)} ounces`}
-          role="img"
-        >
-          <circle
-            cx="52"
-            cy="52"
-            r={r}
-            fill="none"
-            stroke="var(--color-teal-200)"
-            strokeWidth="10"
-          />
-          <circle
-            cx="52"
-            cy="52"
-            r={r}
-            fill="none"
-            stroke="var(--color-graphic)"
-            strokeWidth="10"
-            strokeLinecap="round"
-            strokeDasharray={`${(c * pct) / 100} ${c}`}
-            transform="rotate(-90 52 52)"
-          />
-        </svg>
+        <WaterBottle value={oz} goal={goal} size={104} showValue={false} />
         <div className="min-w-0">
           <p className="text-[36px] leading-none type-numeral tabular-nums tracking-[-1px] text-brand-navy">
             {Math.round(pct)}%
@@ -680,7 +445,6 @@ function Activity({ onHide }: { onHide: () => void }) {
     value: e.minutes,
     fill: ACTIVITY_FILL[i % ACTIVITY_FILL.length],
   }));
-  const total = slices.reduce((s, x) => s + x.value, 0);
   return (
     <WidgetCard
       title="Activity"
@@ -700,24 +464,16 @@ function Activity({ onHide }: { onHide: () => void }) {
       {slices.length === 0 ? (
         <Empty icon="walking">Log an activity to see where your minutes went.</Empty>
       ) : (
-        <div className="flex size-full items-center justify-center gap-6">
-          <Pie slices={slices} />
-          <ul className="min-w-0 space-y-1.5 text-[12px]">
-            {slices.map((s) => (
-              <li key={s.key} className="flex items-center gap-2">
-                <span
-                  aria-hidden
-                  className="size-2.5 shrink-0 rounded-full"
-                  style={{ backgroundColor: s.fill }}
-                />
-                <span className="min-w-0 flex-1 truncate text-text-primary">{s.name}</span>
-                <span className="shrink-0 tabular-nums text-text-secondary">
-                  {s.value} min · {Math.round((s.value / total) * 100)}%
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <PieSlices
+          slices={slices.map((x) => ({
+            key: x.key,
+            name: x.name,
+            value: x.value,
+            fill: x.fill,
+            text: `${x.value} min`,
+          }))}
+          label={`Active minutes by activity: ${slices.map((x) => `${x.name} ${x.value} min`).join(", ")}`}
+        />
       )}
     </WidgetCard>
   );
@@ -760,7 +516,12 @@ function WeightWidget({ onHide }: { onHide: () => void }) {
       {real.length === 0 ? (
         <Empty icon="weightScale">Log a weigh-in to see your week here.</Empty>
       ) : (
-        <Line values={days.map((d) => d.v)} labels={days.map((d) => d.label)} />
+        <WeightLineChart
+          data={days.map((d) => ({ label: d.label, value: d.v }))}
+          color="var(--color-brand-navy)"
+          unit="lb"
+          label="Weight this week"
+        />
       )}
     </WidgetCard>
   );

@@ -680,7 +680,17 @@ function Footer({ note, children }: { note?: string; children: ReactNode }) {
 
 /* ------------------------------------------------------------------ water */
 
-function WaterBottle({ value, goal, size = 168 }: { value: number; goal: number; size?: number }) {
+export function WaterBottle({
+  value,
+  goal,
+  size = 168,
+  showValue = true,
+}: {
+  value: number;
+  goal: number;
+  size?: number;
+  showValue?: boolean;
+}) {
   const uid = useId().replace(/:/g, "");
   const frac = goal > 0 ? Math.min(1, Math.max(0, value / goal)) : 0;
   const y = 204 - 140 * frac;
@@ -765,12 +775,16 @@ function WaterBottle({ value, goal, size = 168 }: { value: number; goal: number;
           );
         })}
       </svg>
-      <span className="pointer-events-none absolute left-[26%] right-[26%] top-[64%] flex -translate-y-1/2 flex-col items-center rounded-xl bg-white/90 py-1 text-center">
-        <span className="text-[26px] leading-none type-row-figure tabular-nums text-brand-navy">
-          {Math.round(value)}
+      {showValue && (
+        <span className="pointer-events-none absolute left-[26%] right-[26%] top-[64%] flex -translate-y-1/2 flex-col items-center rounded-xl bg-white/90 py-1 text-center">
+          <span className="text-[26px] leading-none type-row-figure tabular-nums text-brand-navy">
+            {Math.round(value)}
+          </span>
+          <span className="text-[11px] type-meta text-text-secondary">
+            of {Math.round(goal)} oz
+          </span>
         </span>
-        <span className="text-[11px] type-meta text-text-secondary">of {Math.round(goal)} oz</span>
-      </span>
+      )}
     </div>
   );
 }
