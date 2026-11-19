@@ -96,7 +96,9 @@ export function Dialog({
         )}
         style={{ boxShadow: "var(--shadow-raised)" }}
       >
-        {!desktop && <div className="mx-auto mt-3 h-1 w-10 shrink-0 rounded-2xl bg-border-default" />}
+        {!desktop && (
+          <div className="mx-auto mt-3 h-1 w-10 shrink-0 rounded-2xl bg-border-default" />
+        )}
         <header className="flex items-start gap-3 px-6 pb-2 pt-5 md:pt-6">
           <div className="min-w-0 flex-1">
             <h2
@@ -106,7 +108,7 @@ export function Dialog({
               {title}
             </h2>
             {description && (
-              <p className="mt-1.5 type-meta text-[17px] leading-5 text-text-secondary">
+              <p className="mt-1.5 type-meta text-[13px] leading-5 text-text-secondary">
                 {description}
               </p>
             )}

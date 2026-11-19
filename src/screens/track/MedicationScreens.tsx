@@ -116,7 +116,7 @@ function NextDoseCard({ meds, now }: { meds: Medication[]; now: Date }) {
         <Icon name="medication" size={18} color="var(--color-brand-navy)" />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="eyebrow text-[16px]">Next dose</p>
+        <p className="eyebrow text-[12px]">Next dose</p>
         <p className="mt-1 flex items-center gap-1.5">
           {alert && <Icon name="alert" size={18} color="var(--color-accent-ink)" />}
           <span
@@ -130,7 +130,7 @@ function NextDoseCard({ meds, now }: { meds: Medication[]; now: Date }) {
           {unit && <span className="text-xs type-meta text-text-secondary">{unit}</span>}
         </p>
         <p className="truncate text-xs type-meta text-text-secondary">{sub}</p>
-        <p className="mt-1 text-[15px] type-meta text-text-neutral-500">
+        <p className="mt-1 text-[11px] type-meta text-text-neutral-500">
           {taken === meds.length ? "All taken today" : `${taken} of ${meds.length} taken today`}
         </p>
       </div>
@@ -150,7 +150,10 @@ export function MedicationScreen() {
   const onTake = (m: Medication) => {
     if (!requireAccount("Tracking")) return;
     void take(m.id).then((ok) => {
-      if (ok) toast.success(`${m.name} taken`, { action: { label: "Undo", run: () => void untake(m.id) } });
+      if (ok)
+        toast.success(`${m.name} taken`, {
+          action: { label: "Undo", run: () => void untake(m.id) },
+        });
     });
   };
 
@@ -161,19 +164,24 @@ export function MedicationScreen() {
       asideLabel="Medication"
       aside={
         <section className="panel px-4 pb-2 pt-3.5" aria-label="Today's doses">
-          <h2 className="eyebrow text-[16px]">Today</h2>
-          <p className="mt-1 text-[19px] type-row-figure tabular-nums text-text-primary">
-            {taken} of {list.length} <span className="type-unit text-text-secondary">doses taken</span>
+          <h2 className="eyebrow text-[12px]">Today</h2>
+          <p className="mt-1 text-[15px] type-row-figure tabular-nums text-text-primary">
+            {taken} of {list.length}{" "}
+            <span className="type-unit text-text-secondary">doses taken</span>
           </p>
           <ul className="mt-2 divide-y divide-border-divider border-t border-border-divider">
             {[
-              { to: "/track/medication/history", label: "Medication history", icon: "history" as const },
+              {
+                to: "/track/medication/history",
+                label: "Medication history",
+                icon: "history" as const,
+              },
               { to: "/track/medication/reminders", label: "Reminders", icon: "bell" as const },
             ].map((l) => (
               <li key={l.to}>
                 <Link
                   to={l.to}
-                  className="flex min-h-11 items-center gap-3 text-[17px] type-item-title text-text-primary"
+                  className="flex min-h-11 items-center gap-3 text-[13px] type-item-title text-text-primary"
                 >
                   <Icon name={l.icon} size={16} color="var(--color-text-secondary)" />
                   <span className="flex-1">{l.label}</span>
@@ -204,7 +212,7 @@ export function MedicationScreen() {
       <section className="mt-6" aria-label="Today's schedule">
         <LogSectionTitle
           action={
-            <span className="text-[16px] type-meta tabular-nums text-text-secondary">
+            <span className="text-[12px] type-meta tabular-nums text-text-secondary">
               {taken} of {list.length} taken
             </span>
           }
@@ -213,7 +221,7 @@ export function MedicationScreen() {
         </LogSectionTitle>
         <div className="panel overflow-hidden">
           {list.length === 0 ? (
-            <p className="p-4 text-[17px] type-meta text-text-secondary">
+            <p className="p-4 text-[13px] type-meta text-text-secondary">
               Nothing scheduled yet. Add a medication or supplement to get reminders.
             </p>
           ) : (
@@ -222,22 +230,27 @@ export function MedicationScreen() {
                 const s = doseStatus(m, now);
                 return (
                   <li key={m.id} className="flex min-h-[64px] items-center gap-3 px-4 py-2.5">
-                    <span className="w-[60px] shrink-0 text-[16px] type-meta tabular-nums text-text-secondary">
+                    <span className="w-[60px] shrink-0 text-[12px] type-meta tabular-nums text-text-secondary">
                       {m.time}
                     </span>
                     <Link to={`/track/medication/detail/${m.id}`} className="min-w-0 flex-1">
-                      <span className="block truncate text-sm type-item-title text-text-primary">{m.name}</span>
+                      <span className="block truncate text-sm type-item-title text-text-primary">
+                        {m.name}
+                      </span>
                       <span
                         className={cn(
                           "block truncate text-xs type-meta",
                           s === "Missed" ? "text-primary" : "text-text-secondary",
                         )}
                       >
-                        {m.dose} · {s === "Logged" ? `Taken${m.loggedAt ? ` at ${clock(m.loggedAt)}` : ""}` : s}
+                        {m.dose} ·{" "}
+                        {s === "Logged"
+                          ? `Taken${m.loggedAt ? ` at ${clock(m.loggedAt)}` : ""}`
+                          : s}
                       </span>
                     </Link>
                     {m.taken ? (
-                      <span className="flex h-9 shrink-0 items-center gap-1 rounded-full bg-brand-teal-soft px-3 text-[16px] type-meta text-brand-navy">
+                      <span className="flex h-9 shrink-0 items-center gap-1 rounded-full bg-brand-teal-soft px-3 text-[12px] type-meta text-brand-navy">
                         <Icon name="tick" size={14} color="var(--color-brand-navy)" />
                         Taken
                       </span>
@@ -246,7 +259,7 @@ export function MedicationScreen() {
                         type="button"
                         aria-label={`Take ${m.name}`}
                         onClick={() => onTake(m)}
-                        className="h-9 shrink-0 rounded-full bg-primary px-4 text-[17px] type-button text-white"
+                        className="h-9 shrink-0 rounded-full bg-primary px-4 text-[13px] type-button text-white"
                       >
                         Take
                       </button>
@@ -258,7 +271,7 @@ export function MedicationScreen() {
           )}
           <Link
             to="/track/medication/add"
-            className="flex min-h-12 items-center gap-2 border-t border-border-divider px-4 text-[17px] type-button text-primary"
+            className="flex min-h-12 items-center gap-2 border-t border-border-divider px-4 text-[13px] type-button text-primary"
           >
             <Icon name="plusSign" size={16} color="var(--color-primary)" />
             Add a medication
@@ -294,7 +307,11 @@ function MedicationForm({ mode, existing }: { mode: "add" | "edit"; existing?: M
     const n = name.trim();
     const dup = meds.some((m) => m.id !== existing?.id && m.name.toLowerCase() === n.toLowerCase());
     const next = {
-      name: n ? (dup ? "That medication is already on today’s list." : undefined) : "Name the medication.",
+      name: n
+        ? dup
+          ? "That medication is already on today’s list."
+          : undefined
+        : "Name the medication.",
       dose: dose.trim() ? undefined : "Enter the dose, e.g. 200 mg.",
       time: /^\d{1,2}:\d{2}\s*(AM|PM)$/i.test(time.trim())
         ? undefined
@@ -315,7 +332,11 @@ function MedicationForm({ mode, existing }: { mode: "add" | "edit"; existing?: M
   return (
     <TrackLogLayout
       title={mode === "add" ? "Add medication" : "Edit medication"}
-      subtitle={mode === "add" ? "A prescription or supplement, taken daily." : "Keep the schedule up to date."}
+      subtitle={
+        mode === "add"
+          ? "A prescription or supplement, taken daily."
+          : "Keep the schedule up to date."
+      }
       asideLabel="Today's schedule"
       aside={
         <TodayPanel
@@ -384,7 +405,9 @@ export function MedicationDetailScreen() {
       <PageHeading title={m.name} subtitle="Medication details and reminders." />
       <section className="panel mt-4 p-5">
         <p className="text-[24px] type-numeral tracking-[-0.9px] text-brand-navy">{m.dose}</p>
-        <p className="mt-1.5 text-[19px] tracking-[-0.675px] text-text-secondary">Scheduled for {m.time}</p>
+        <p className="mt-1.5 text-[15px] tracking-[-0.675px] text-text-secondary">
+          Scheduled for {m.time}
+        </p>
         <p
           className={cn(
             "mt-3 inline-flex rounded-xl px-3 py-1.5 text-xs type-meta tracking-[-0.54px]",
@@ -410,12 +433,15 @@ export function MedicationDetailScreen() {
             }}
           />
         )}
-        <SecondaryButton label="Manage reminders" onPress={() => navigate("/track/medication/reminders")} />
-        <SecondaryButton label="Edit medication" onPress={() => navigate(`/track/medication/edit/${m.id}`)} />
         <SecondaryButton
-          label="Delete medication"
-          onPress={() => setConfirming(true)}
+          label="Manage reminders"
+          onPress={() => navigate("/track/medication/reminders")}
         />
+        <SecondaryButton
+          label="Edit medication"
+          onPress={() => navigate(`/track/medication/edit/${m.id}`)}
+        />
+        <SecondaryButton label="Delete medication" onPress={() => setConfirming(true)} />
       </div>
       {confirming && (
         <ConfirmDialog
@@ -452,7 +478,9 @@ export function MissedDoseScreen() {
         <div className="panel mt-6 p-6 text-center">
           <Icon name="checkCircle" size={24} color="var(--color-status-good)" />
           <p className="mt-2 text-sm type-section-title text-text-primary">Nothing outstanding</p>
-          <p className="mt-1 text-[17px] type-meta text-text-secondary">No dose has gone past its time today.</p>
+          <p className="mt-1 text-[13px] type-meta text-text-secondary">
+            No dose has gone past its time today.
+          </p>
         </div>
       </PageContainer>
     );
@@ -474,17 +502,23 @@ export function MissedDoseScreen() {
       <div className="mt-6 flex items-center gap-3 rounded-2xl bg-missed-dose-surface p-4">
         <Icon name="alert" size={24} color="var(--color-accent-ink)" />
         <span className="min-w-0 flex-1">
-          <span className="block text-sm type-item-title tracking-[-0.63px] text-text-primary">Missed Dose</span>
+          <span className="block text-sm type-item-title tracking-[-0.63px] text-text-primary">
+            Missed Dose
+          </span>
           <span className="block truncate text-xs type-meta leading-4 tracking-[-0.54px] text-text-neutral-600">
             You missed your {m.time} dose of {m.name}
           </span>
         </span>
       </div>
-      <h2 className="mt-5 text-base type-section-title tracking-[-0.72px] text-text-primary">Today&apos;s schedule</h2>
+      <h2 className="mt-5 text-base type-section-title tracking-[-0.72px] text-text-primary">
+        Today&apos;s schedule
+      </h2>
       <div className="panel mt-3 flex items-center gap-3 p-4">
         <span aria-hidden className="size-2.5 shrink-0 rounded-full bg-primary" />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm type-item-title tracking-[-0.63px] text-text-primary">{m.name}</span>
+          <span className="block truncate text-sm type-item-title tracking-[-0.63px] text-text-primary">
+            {m.name}
+          </span>
           <span className="block truncate text-xs type-meta leading-4 tracking-[-0.54px] text-text-secondary">
             {m.dose} · Daily at {m.time}
           </span>
@@ -521,14 +555,17 @@ export function MedicationRemindersScreen() {
   const { reminders, setReminder, isLoading } = useMedications();
   return (
     <PageContainer variant="focused">
-      <PageHeading title="Set reminders" subtitle="Choose which medications ForkThis reminds you about." />
+      <PageHeading
+        title="Set reminders"
+        subtitle="Choose which medications ForkThis reminds you about."
+      />
       {reminders.length === 0 ? (
         <div className="panel mt-[18px] p-6 text-center">
           <p className="text-sm type-section-title text-text-primary">
             {isLoading ? "Loading your medications" : "No medications yet"}
           </p>
           {!isLoading && (
-            <p className="mt-1 text-[17px] type-meta text-text-secondary">
+            <p className="mt-1 text-[13px] type-meta text-text-secondary">
               Add a medication to turn on reminders for it.
             </p>
           )}
@@ -560,7 +597,10 @@ export function MedicationRemindersScreen() {
                 )}
               >
                 <span
-                  className={cn("size-5 rounded-full bg-white transition-transform", r.enabled && "translate-x-5")}
+                  className={cn(
+                    "size-5 rounded-full bg-white transition-transform",
+                    r.enabled && "translate-x-5",
+                  )}
                 />
               </button>
             </div>
@@ -578,7 +618,11 @@ export function MedicationRemindersScreen() {
 
 const longDay = (iso: string) => {
   const [y, m, d] = iso.split("-").map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short" });
+  return new Date(y, m - 1, d).toLocaleDateString("en-US", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
 };
 
 export function MedicationHistoryScreen() {
@@ -591,20 +635,21 @@ export function MedicationHistoryScreen() {
   const of = f.get("of");
   const todayKey = history[0]?.date;
   const now = useNow(60_000);
-  const all: { id: string; title: string; meta: ReactNode; date: string; bucket: string }[] = hydrated
-    ? history.flatMap((d) =>
-        d.meds.map((m) => {
-          const bucket = m.taken ? "Logged" : d.date === todayKey ? doseStatus(m, now) : "Missed";
-          return {
-            id: `${d.date}-${m.id}`,
-            title: m.name,
-            meta: `${longDay(d.date)} · ${m.dose} · ${bucket}`,
-            date: d.date,
-            bucket,
-          };
-        }),
-      )
-    : [];
+  const all: { id: string; title: string; meta: ReactNode; date: string; bucket: string }[] =
+    hydrated
+      ? history.flatMap((d) =>
+          d.meds.map((m) => {
+            const bucket = m.taken ? "Logged" : d.date === todayKey ? doseStatus(m, now) : "Missed";
+            return {
+              id: `${d.date}-${m.id}`,
+              title: m.name,
+              meta: `${longDay(d.date)} · ${m.dose} · ${bucket}`,
+              date: d.date,
+              bucket,
+            };
+          }),
+        )
+      : [];
   const shown = all.filter((e) => (!day || e.date === day) && (!of || e.bucket === of));
   const dayOpts = history.map((d) => ({
     value: d.date,
@@ -641,7 +686,7 @@ export function MedicationHistoryScreen() {
           />
         </AdvancedFilters>
       </div>
-      <p className="mt-4 text-[17px] type-meta text-text-secondary">
+      <p className="mt-4 text-[13px] type-meta text-text-secondary">
         <span className="type-row-figure text-text-primary">{shown.length}</span>
         {shown.length === 1 ? " entry" : " entries"}
         {shown.length !== all.length && ` of ${all.length}`}
@@ -662,7 +707,9 @@ export function MedicationHistoryScreen() {
             <li key={e.id} className="panel flex items-center gap-3 p-3.5">
               <span
                 className="flex size-10 shrink-0 items-center justify-center rounded-full"
-                style={{ backgroundColor: "color-mix(in srgb, var(--color-brand-navy) 12%, transparent)" }}
+                style={{
+                  backgroundColor: "color-mix(in srgb, var(--color-brand-navy) 12%, transparent)",
+                }}
               >
                 <Icon name="medication" size={18} color="var(--color-brand-navy)" />
               </span>

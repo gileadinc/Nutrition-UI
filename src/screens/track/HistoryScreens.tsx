@@ -74,7 +74,10 @@ function CategoryBar({
   const live = segments.filter((s) => s.value > 0);
   const sum = live.reduce((s, x) => s + x.value, 0);
   const share = (v: number) => (sum === 0 ? 0 : Math.round((v / sum) * 100));
-  const biggest = live.reduce<Segment | undefined>((a, s) => (!a || s.value > a.value ? s : a), undefined);
+  const biggest = live.reduce<Segment | undefined>(
+    (a, s) => (!a || s.value > a.value ? s : a),
+    undefined,
+  );
   const active = live.find((s) => s.key === hot) ?? biggest;
   const aria = `${title}: ${live.map((s) => `${s.label} ${fmt(s.value)} ${unit}, ${share(s.value)}%`).join("; ")}.`;
   return (
@@ -83,19 +86,26 @@ function CategoryBar({
       data-slot="category-bar"
       className="flex h-full min-w-0 flex-col rounded-[18px] border border-border-default bg-white p-4 shadow-card"
     >
-      <h3 className="text-[17px] type-item-title tracking-[-0.585px] text-text-neutral-500">{title}</h3>
+      <h3 className="text-[13px] type-item-title tracking-[-0.585px] text-text-neutral-500">
+        {title}
+      </h3>
       <p className="mt-2 flex flex-wrap items-baseline gap-x-1.5">
         <span className="text-[30px] type-numeral leading-none tabular-nums tracking-[-1.1px] text-text-primary">
           {fmt(total)}
         </span>
         <span className="text-xs type-meta text-text-secondary">{unit}</span>
-        {caption && <span className="text-[15px] type-meta text-text-neutral-500">{caption}</span>}
+        {caption && <span className="text-[11px] type-meta text-text-neutral-500">{caption}</span>}
       </p>
       {sum === 0 ? (
-        <p className="mt-4 text-[17px] type-meta text-text-secondary">Nothing logged in this range.</p>
+        <p className="mt-4 text-[13px] type-meta text-text-secondary">
+          Nothing logged in this range.
+        </p>
       ) : (
         <>
-          <p aria-hidden="true" className="mt-4 h-4 truncate text-[15px] type-meta text-text-secondary">
+          <p
+            aria-hidden="true"
+            className="mt-4 h-4 truncate text-[11px] type-meta text-text-secondary"
+          >
             {active && (
               <>
                 {active.label} ·{" "}
@@ -138,10 +148,10 @@ function CategoryBar({
                   className="size-2.5 shrink-0 rounded-[3px]"
                   style={{ backgroundColor: s.color }}
                 />
-                <span className="min-w-0 flex-1 truncate text-[15px] type-meta text-text-secondary">
+                <span className="min-w-0 flex-1 truncate text-[11px] type-meta text-text-secondary">
                   {s.label}
                 </span>
-                <span className="text-[15px] type-meta tabular-nums text-text-primary">
+                <span className="text-[11px] type-meta tabular-nums text-text-primary">
                   {fmt(s.value)} · {share(s.value)}%
                 </span>
               </li>
@@ -168,7 +178,7 @@ function InsightsPanel({ insights, title }: { insights: Insight[]; title: string
     return (
       <section aria-label={title} className="panel px-4 pb-4 pt-4">
         <h2 className="eyebrow">{title}</h2>
-        <p className="mt-2 text-[17px] type-meta leading-5 text-text-secondary">
+        <p className="mt-2 text-[13px] type-meta leading-5 text-text-secondary">
           Nothing to read into yet. Log a meal or some water and what stands out will show up here.
         </p>
       </section>
@@ -178,7 +188,7 @@ function InsightsPanel({ insights, title }: { insights: Insight[]; title: string
     <section aria-label={title} className="panel px-4 pb-2 pt-4">
       <div className="flex items-baseline gap-2">
         <h2 className="eyebrow flex-1">{title}</h2>
-        <span className="text-[15px] type-meta text-text-secondary">
+        <span className="text-[11px] type-meta text-text-secondary">
           {watch === 0 ? "All on track" : `${watch} to look at`}
         </span>
       </div>
@@ -189,16 +199,22 @@ function InsightsPanel({ insights, title }: { insights: Insight[]; title: string
               aria-hidden="true"
               className={cn(
                 "mt-[7px] size-2 shrink-0 rounded-full",
-                i.tone === "good" ? "bg-graphic" : i.tone === "note" ? "bg-border-default" : "bg-primary",
+                i.tone === "good"
+                  ? "bg-graphic"
+                  : i.tone === "note"
+                    ? "bg-border-default"
+                    : "bg-primary",
               )}
             />
             <div className="min-w-0 flex-1">
-              <p className="text-[17px] type-item-title leading-5 text-text-primary">{i.title}</p>
-              <p className="mt-0.5 text-[16px] type-meta leading-[22px] text-text-secondary">{i.detail}</p>
+              <p className="text-[13px] type-item-title leading-5 text-text-primary">{i.title}</p>
+              <p className="mt-0.5 text-[12px] type-meta leading-[22px] text-text-secondary">
+                {i.detail}
+              </p>
               {i.action && (
                 <Link
                   to={i.action.to}
-                  className="tap-24 tap-44 relative mt-0.5 gap-0.5 text-[16px] type-button text-primary"
+                  className="tap-24 tap-44 relative mt-0.5 gap-0.5 text-[12px] type-button text-primary"
                 >
                   {i.action.label}
                   <Icon name="chevronRight" size={12} color="var(--color-primary)" />
@@ -212,7 +228,10 @@ function InsightsPanel({ insights, title }: { insights: Insight[]; title: string
   );
 }
 
-function buildInsights(days: TrackDay[], medHistory: { date: string; meds: Medication[] }[]): Insight[] {
+function buildInsights(
+  days: TrackDay[],
+  medHistory: { date: string; meds: Medication[] }[],
+): Insight[] {
   const out = buildNutritionInsights(days);
   const dates = new Set(days.map((d) => d.date));
   const todayIso = isoDate(new Date());
@@ -305,9 +324,7 @@ function buildNutritionInsights(days: TrackDay[]): Insight[] {
 
 /* ------------------------------------------------------ DateRangePicker */
 
-type Range =
-  | { kind: "day" | "week" | "month" }
-  | { kind: "custom"; start: string; end: string };
+type Range = { kind: "day" | "week" | "month" } | { kind: "custom"; start: string; end: string };
 
 const PRESETS = [
   { kind: "day" as const, label: "Today", days: 1 },
@@ -348,13 +365,14 @@ function DateRangePicker({
     };
   }, [open]);
   const n = start && end ? span(start, end) : 0;
-  const error = !start || !end
-    ? "Pick both dates."
-    : n < 1
-      ? "The start date must be on or before the end date."
-      : n > 90
-        ? "Pick 90 days or fewer."
-        : undefined;
+  const error =
+    !start || !end
+      ? "Pick both dates."
+      : n < 1
+        ? "The start date must be on or before the end date."
+        : n > 90
+          ? "Pick 90 days or fewer."
+          : undefined;
   return (
     <div ref={box} className="relative">
       <button
@@ -362,7 +380,7 @@ function DateRangePicker({
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="tap-44 relative flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default bg-white pl-3 pr-2.5 text-[17px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400 sm:gap-2 sm:pl-3.5 sm:pr-3"
+        className="tap-44 relative flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default bg-white pl-3 pr-2.5 text-[13px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400 sm:gap-2 sm:pl-3.5 sm:pr-3"
       >
         <span className="hidden sm:inline-flex">
           <Icon name="calendar" size={15} color="var(--color-text-secondary)" />
@@ -409,9 +427,11 @@ function DateRangePicker({
               }
             }}
           >
-            <p className="flex items-center gap-2 text-[16px] type-section-title text-text-secondary">
+            <p className="flex items-center gap-2 text-[12px] type-section-title text-text-secondary">
               Custom range
-              {value.kind === "custom" && <Icon name="tick" size={14} color="var(--color-primary)" />}
+              {value.kind === "custom" && (
+                <Icon name="tick" size={14} color="var(--color-primary)" />
+              )}
             </p>
             <div className="mt-2 grid grid-cols-2 gap-2">
               {(
@@ -420,25 +440,30 @@ function DateRangePicker({
                   ["To", end, setEnd],
                 ] as const
               ).map(([label, val, set]) => (
-                <label key={label} className="text-[15px] type-item-title text-text-neutral-500">
+                <label key={label} className="text-[11px] type-item-title text-text-neutral-500">
                   {label}
                   <input
                     type="date"
                     value={val}
                     max={today}
                     onChange={(e) => set(e.target.value)}
-                    className="mt-1 block h-11 w-full rounded-lg border border-border-default bg-white px-2 text-[17px] text-text-primary"
+                    className="mt-1 block h-11 w-full rounded-lg border border-border-default bg-white px-2 text-[13px] text-text-primary"
                   />
                 </label>
               ))}
             </div>
-            <p className={cn("mt-2 text-[15px] type-meta", error ? "text-text-secondary" : "text-text-neutral-500")}>
+            <p
+              className={cn(
+                "mt-2 text-[11px] type-meta",
+                error ? "text-text-secondary" : "text-text-neutral-500",
+              )}
+            >
               {error ?? `${n} ${n === 1 ? "day" : "days"}`}
             </p>
             <button
               type="submit"
               disabled={!!error}
-              className="mt-2.5 h-11 w-full rounded-full bg-primary text-[17px] type-button text-white disabled:cursor-not-allowed disabled:bg-primary-soft disabled:text-text-secondary"
+              className="mt-2.5 h-11 w-full rounded-full bg-primary text-[13px] type-button text-white disabled:cursor-not-allowed disabled:bg-primary-soft disabled:text-text-secondary"
             >
               Apply range
             </button>
@@ -548,7 +573,10 @@ function MetricDetail({
         tabIndex={0}
         className="drawer-panel relative z-10 max-h-[92dvh] w-full overflow-y-auto rounded-t-[28px] bg-white focus:outline-none md:max-h-[min(860px,calc(100dvh-4rem))] md:max-w-5xl md:rounded-[24px] md:border md:border-border-default"
       >
-        <span aria-hidden="true" className="mx-auto mt-3 block h-1 w-9 rounded-full bg-border-default md:hidden" />
+        <span
+          aria-hidden="true"
+          className="mx-auto mt-3 block h-1 w-9 rounded-full bg-border-default md:hidden"
+        />
         <header className="sticky top-0 z-10 flex items-center gap-3 bg-white px-5 pb-3 pt-3 md:px-8 md:pt-6">
           <span
             className="flex size-10 shrink-0 items-center justify-center rounded-xl"
@@ -560,7 +588,7 @@ function MetricDetail({
             <h2 className="truncate text-xl type-section-title leading-7 tracking-[-0.9px] text-brand-navy md:text-2xl">
               {metric.label} details
             </h2>
-            <p className="text-[17px] type-meta text-text-secondary">{periodLabel}</p>
+            <p className="text-[13px] type-meta text-text-secondary">{periodLabel}</p>
           </div>
           <button
             type="button"
@@ -576,11 +604,11 @@ function MetricDetail({
             <section aria-label={`${metric.label} this ${periodNoun}`} className="min-w-0">
               <div className="flex items-end gap-3">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[16px] type-meta text-text-secondary">
+                  <p className="text-[12px] type-meta text-text-secondary">
                     {days.length > 1 ? "Daily average" : "Today"}
                   </p>
                   <BigNumber value={fmt(avg)} unit={metric.unit} size={40} />
-                  <p className="mt-1 text-[17px] type-meta text-text-secondary">
+                  <p className="mt-1 text-[13px] type-meta text-text-secondary">
                     Goal {withUnit(goal)}
                     {days.length > 1 && loggedCount > 0 && (
                       <>
@@ -595,14 +623,31 @@ function MetricDetail({
                 </div>
                 {delta !== null && (
                   <div className="shrink-0 pb-1 text-right">
-                    <DeltaPill delta={delta} moreIsBetter={metric.moreIsBetter} label={metric.label} />
-                    <p className="mt-1 text-[15px] type-meta text-text-secondary">vs previous {periodNoun}</p>
+                    <DeltaPill
+                      delta={delta}
+                      moreIsBetter={metric.moreIsBetter}
+                      label={metric.label}
+                    />
+                    <p className="mt-1 text-[11px] type-meta text-text-secondary">
+                      vs previous {periodNoun}
+                    </p>
                   </div>
                 )}
               </div>
-              <div aria-live="polite" className="mt-5 flex items-center gap-3 rounded-2xl bg-navy-50 px-4 py-3">
+              <div
+                aria-live="polite"
+                className="mt-5 flex items-center gap-3 rounded-2xl bg-navy-50 px-4 py-3"
+              >
                 {metric.chart === "ringsByDay" ? (
-                  <MiniRing value={curVal} goal={curGoal} size={36} stroke={5} color={metric.accent} overlap label="" />
+                  <MiniRing
+                    value={curVal}
+                    goal={curGoal}
+                    size={36}
+                    stroke={5}
+                    color={metric.accent}
+                    overlap
+                    label=""
+                  />
                 ) : (
                   <span
                     aria-hidden="true"
@@ -610,20 +655,25 @@ function MetricDetail({
                   >
                     <span
                       className="absolute inset-x-0 bottom-0 rounded-full"
-                      style={{ height: `${Math.min(100, curPct)}%`, backgroundColor: metric.accent }}
+                      style={{
+                        height: `${Math.min(100, curPct)}%`,
+                        backgroundColor: metric.accent,
+                      }}
                     />
                   </span>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="text-[16px] type-meta text-text-secondary">
+                  <p className="text-[12px] type-meta text-text-secondary">
                     {shortDate(cur.date)}
                     {sel === days.length - 1 && days.length > 1 ? " · latest" : ""}
                   </p>
                   <p className="text-base type-row-figure text-text-primary">{withUnit(curVal)}</p>
                 </div>
                 <p className="shrink-0 text-right">
-                  <span className="block text-base type-row-figure text-text-primary">{curPct}%</span>
-                  <span className="block text-[15px] type-meta text-text-secondary">of goal</span>
+                  <span className="block text-base type-row-figure text-text-primary">
+                    {curPct}%
+                  </span>
+                  <span className="block text-[11px] type-meta text-text-secondary">of goal</span>
                 </p>
               </div>
               <div
@@ -632,15 +682,21 @@ function MetricDetail({
                   metric.chart === "ringsByDay" ? "min-h-[180px]" : "h-[240px] md:h-[280px]",
                 )}
               >
-                <MetricChart metric={metric} days={days} labels={labels} selected={sel} onSelect={setSel} />
+                <MetricChart
+                  metric={metric}
+                  days={days}
+                  labels={labels}
+                  selected={sel}
+                  onSelect={setSel}
+                />
               </div>
-              <p className="mt-2 text-center text-[15px] type-meta text-text-secondary">
+              <p className="mt-2 text-center text-[11px] type-meta text-text-secondary">
                 Tap or hover a day to see its reading.
               </p>
             </section>
             <div className="min-w-0">
               <section aria-labelledby="period-summary-heading">
-                <h3 id="period-summary-heading" className="eyebrow text-[17px]">
+                <h3 id="period-summary-heading" className="eyebrow text-[13px]">
                   Period summary
                 </h3>
                 <dl className="mt-2.5 grid grid-cols-2 overflow-hidden rounded-2xl border border-border-default">
@@ -658,15 +714,17 @@ function MetricDetail({
                         i > 1 && "border-t border-border-divider",
                       )}
                     >
-                      <dt className="text-[15px] type-meta text-text-secondary">{k}</dt>
-                      <dd className="mt-0.5 text-[19px] type-row-figure tabular-nums text-text-primary">{v}</dd>
+                      <dt className="text-[11px] type-meta text-text-secondary">{k}</dt>
+                      <dd className="mt-0.5 text-[15px] type-row-figure tabular-nums text-text-primary">
+                        {v}
+                      </dd>
                     </div>
                   ))}
                 </dl>
               </section>
               <section className="mt-6" aria-labelledby="period-readings-heading">
                 <div className="flex items-baseline gap-3">
-                  <h3 id="period-readings-heading" className="eyebrow min-w-0 flex-1 text-[17px]">
+                  <h3 id="period-readings-heading" className="eyebrow min-w-0 flex-1 text-[13px]">
                     Period readings
                   </h3>
                   <span className="text-xs type-meta text-text-secondary">{days.length} days</span>
@@ -674,7 +732,7 @@ function MetricDetail({
                 <div className="mt-2.5 overflow-hidden rounded-2xl border border-border-default">
                   <table className="w-full border-collapse text-left text-sm">
                     <caption className="sr-only">{metric.label} by day, newest first</caption>
-                    <thead className="bg-brand-warm-gray text-[15px] text-text-secondary">
+                    <thead className="bg-brand-warm-gray text-[11px] text-text-secondary">
                       <tr>
                         <th scope="col" className="px-4 py-2 type-meta">
                           Day
@@ -699,7 +757,10 @@ function MetricDetail({
                           return (
                             <tr
                               key={d.date}
-                              className={cn("border-t border-border-divider first:border-t-0", on && "bg-navy-50")}
+                              className={cn(
+                                "border-t border-border-divider first:border-t-0",
+                                on && "bg-navy-50",
+                              )}
                             >
                               <td className="px-4 py-0">
                                 <button
@@ -714,7 +775,11 @@ function MetricDetail({
                                 </button>
                               </td>
                               <td className="px-2 text-right type-row-figure tabular-nums text-text-primary">
-                                {r === 0 ? <span className="text-text-neutral-400">–</span> : withUnit(r)}
+                                {r === 0 ? (
+                                  <span className="text-text-neutral-400">–</span>
+                                ) : (
+                                  withUnit(r)
+                                )}
                               </td>
                               <td className="px-4">
                                 <span className="flex items-center justify-end gap-2">
@@ -733,7 +798,11 @@ function MetricDetail({
                                     />
                                   </span>
                                   <span className="w-9 text-right text-xs type-meta tabular-nums text-text-secondary">
-                                    {r === 0 ? <span className="text-text-neutral-400">–</span> : `${p}%`}
+                                    {r === 0 ? (
+                                      <span className="text-text-neutral-400">–</span>
+                                    ) : (
+                                      `${p}%`
+                                    )}
                                   </span>
                                 </span>
                               </td>
@@ -744,7 +813,7 @@ function MetricDetail({
                   </table>
                 </div>
               </section>
-              <p className="mt-4 text-[15px] type-meta leading-4 text-text-neutral-500">
+              <p className="mt-4 text-[11px] type-meta leading-4 text-text-neutral-500">
                 These describe what you logged. They are not medical advice.
               </p>
             </div>
@@ -785,15 +854,23 @@ function Breakdown({ days, periodNoun }: { days: TrackDay[]; periodNoun: string 
       </h2>
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {total > 0 && (
-          <CategoryBar title="Calories by meal" total={total} unit="kcal" caption={perDay} segments={segs} />
+          <CategoryBar
+            title="Calories by meal"
+            total={total}
+            unit="kcal"
+            caption={perDay}
+            segments={segs}
+          />
         )}
         {hasMacros && (
           <section
             aria-label="Macro split"
             className="flex min-w-0 flex-col rounded-[18px] border border-border-default bg-white p-4 shadow-card"
           >
-            <h3 className="text-[17px] type-item-title tracking-[-0.585px] text-text-neutral-500">Macro split</h3>
-            <p className="mt-1 text-[15px] type-meta text-text-neutral-500">
+            <h3 className="text-[13px] type-item-title tracking-[-0.585px] text-text-neutral-500">
+              Macro split
+            </h3>
+            <p className="mt-1 text-[11px] type-meta text-text-neutral-500">
               Share of calories{perDay ? ", per logged day" : ""}
             </p>
             <MacroDonut
@@ -843,7 +920,14 @@ function ActivityLog({ days, todayKey }: { days: TrackDay[]; todayKey: string })
   const groups = [...days]
     .reverse()
     .map((d) => {
-      const rows: { id: string; kind: LogKind; icon: "forkSpoon" | "droplet"; title: string; meta: string; at: string }[] = [];
+      const rows: {
+        id: string;
+        kind: LogKind;
+        icon: "forkSpoon" | "droplet";
+        title: string;
+        meta: string;
+        at: string;
+      }[] = [];
       if (kind === "all" || kind === "meals")
         rows.push(
           ...d.meals.map((m) => ({
@@ -893,7 +977,7 @@ function ActivityLog({ days, todayKey }: { days: TrackDay[]; todayKey: string })
         <h2 id="activity-log-heading" className={cn(SECTION_TITLE, "min-w-0 flex-1")}>
           Logged activity
         </h2>
-        <span className="shrink-0 text-[17px] type-meta text-text-secondary">
+        <span className="shrink-0 text-[13px] type-meta text-text-secondary">
           {counts.all} {counts.all === 1 ? "entry" : "entries"}
         </span>
       </div>
@@ -914,7 +998,7 @@ function ActivityLog({ days, todayKey }: { days: TrackDay[]; todayKey: string })
             >
               <span
                 className={cn(
-                  "flex h-8 items-center gap-1.5 rounded-full border px-3 text-[17px] transition-colors",
+                  "flex h-8 items-center gap-1.5 rounded-full border px-3 text-[13px] transition-colors",
                   on
                     ? cn(SELECTED_CHIP, "type-button")
                     : "type-button-secondary border-border-default bg-white text-text-secondary group-hover:border-text-neutral-400",
@@ -923,7 +1007,12 @@ function ActivityLog({ days, todayKey }: { days: TrackDay[]; todayKey: string })
               >
                 {on && <CheckMark size={13} />}
                 {label}
-                <span className={cn("type-meta tabular-nums", on ? "text-on-selected/80" : "text-text-neutral-400")}>
+                <span
+                  className={cn(
+                    "type-meta tabular-nums",
+                    on ? "text-on-selected/80" : "text-text-neutral-400",
+                  )}
+                >
                   {counts[k]}
                 </span>
               </span>
@@ -932,7 +1021,7 @@ function ActivityLog({ days, todayKey }: { days: TrackDay[]; todayKey: string })
         })}
       </div>
       {visible.length === 0 ? (
-        <p className="panel mt-2 p-4 text-[17px] type-meta text-text-secondary">
+        <p className="panel mt-2 p-4 text-[13px] type-meta text-text-secondary">
           {days.length === 1 ? "Nothing logged yet today." : "Nothing logged in this range yet."}
         </p>
       ) : (
@@ -940,29 +1029,31 @@ function ActivityLog({ days, todayKey }: { days: TrackDay[]; todayKey: string })
           {visible.map((g) => (
             <div key={g.date}>
               <div className="flex items-baseline gap-2 px-1">
-                <h3 className="flex-1 text-[17px] type-section-title text-text-primary">
+                <h3 className="flex-1 text-[13px] type-section-title text-text-primary">
                   {dayHeading(g.date, todayKey)}
                 </h3>
-                <span className="text-[17px] type-meta tabular-nums text-text-secondary">
+                <span className="text-[13px] type-meta tabular-nums text-text-secondary">
                   {g.totals.join(" · ")}
                 </span>
               </div>
               <ul className="panel mt-1.5 divide-y divide-border-divider px-4">
                 {g.rows.map((r) => (
                   <li key={r.id} className="flex min-h-11 items-center gap-3 py-2 sm:py-0">
-                    <span className="w-[58px] shrink-0 text-[17px] type-meta tabular-nums text-text-neutral-500">
+                    <span className="w-[58px] shrink-0 text-[13px] type-meta tabular-nums text-text-neutral-500">
                       {timeOf(r.at)}
                     </span>
                     <Icon
                       name={r.icon}
                       size={15}
-                      color={r.kind === "meals" ? "var(--color-accent-ink)" : "var(--color-brand-navy)"}
+                      color={
+                        r.kind === "meals" ? "var(--color-accent-ink)" : "var(--color-brand-navy)"
+                      }
                     />
                     <span className="flex min-w-0 flex-1 flex-col sm:flex-row sm:items-center sm:gap-3">
-                      <span className="min-w-0 truncate text-[17px] type-item-title text-text-primary sm:flex-1">
+                      <span className="min-w-0 truncate text-[13px] type-item-title text-text-primary sm:flex-1">
                         {r.title}
                       </span>
-                      <span className="truncate text-[17px] type-meta tabular-nums text-text-secondary sm:shrink-0">
+                      <span className="truncate text-[13px] type-meta tabular-nums text-text-secondary sm:shrink-0">
                         {r.meta}
                       </span>
                     </span>
@@ -977,7 +1068,7 @@ function ActivityLog({ days, todayKey }: { days: TrackDay[]; todayKey: string })
         <button
           type="button"
           onClick={() => setShown((s) => s + 4)}
-          className="mt-1 flex min-h-11 w-full items-center justify-center rounded-2xl border border-border-default bg-white text-[17px] type-button text-primary"
+          className="mt-1 flex min-h-11 w-full items-center justify-center rounded-2xl border border-border-default bg-white text-[13px] type-button text-primary"
         >
           Show earlier days ({more})
         </button>
@@ -1002,7 +1093,9 @@ export function TrackInsightsScreen() {
   };
   const today = isoDate(new Date());
   const count =
-    range.kind === "custom" ? span(range.start, range.end) : (PRESETS.find((p) => p.kind === range.kind)?.days ?? 7);
+    range.kind === "custom"
+      ? span(range.start, range.end)
+      : (PRESETS.find((p) => p.kind === range.kind)?.days ?? 7);
   const end = (() => {
     const base = range.kind === "custom" ? new Date(`${range.end}T12:00:00`) : new Date();
     base.setDate(base.getDate() + offset * count);
@@ -1014,7 +1107,9 @@ export function TrackInsightsScreen() {
   const canNext = isoDate(end) < today;
   const labels = days.map((d) => DOW[new Date(`${d.date}T12:00:00`).getDay()]);
   const periodLabel =
-    days.length === 1 ? mdOf(days[0].date) : `${mdOf(days[0].date)} – ${mdOf(days[days.length - 1].date)}`;
+    days.length === 1
+      ? mdOf(days[0].date)
+      : `${mdOf(days[0].date)} – ${mdOf(days[days.length - 1].date)}`;
   const noun = count === 1 ? "day" : count === 7 ? "week" : count === 30 ? "month" : "period";
   const heading = offset === 0 && range.kind !== "custom" ? rangeLabel(range) : periodLabel;
   const last = days[days.length - 1];
@@ -1041,7 +1136,7 @@ export function TrackInsightsScreen() {
             </button>
             <p
               aria-live="polite"
-              className="min-w-0 flex-1 whitespace-nowrap text-center text-[16px] type-item-title tabular-nums text-text-primary sm:text-[17px] lg:min-w-[9.5rem]"
+              className="min-w-0 flex-1 whitespace-nowrap text-center text-[12px] type-item-title tabular-nums text-text-primary sm:text-[13px] lg:min-w-[9.5rem]"
             >
               {periodLabel}
             </p>
@@ -1067,7 +1162,7 @@ export function TrackInsightsScreen() {
             <button
               type="button"
               onClick={() => setOffset(0)}
-              className="tap-24 tap-44 relative shrink-0 px-1 text-[17px] type-button text-primary"
+              className="tap-24 tap-44 relative shrink-0 px-1 text-[13px] type-button text-primary"
             >
               Latest
             </button>
@@ -1088,7 +1183,7 @@ export function TrackInsightsScreen() {
               aria-pressed={on}
               onClick={() => setMetric(label === "All" ? null : label)}
               className={cn(
-                "tap-44 relative flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[17px] tracking-[-0.585px]",
+                "tap-44 relative flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] tracking-[-0.585px]",
                 on
                   ? cn(SELECTED_CHIP, "type-button")
                   : "type-button-secondary border-border-default bg-white text-text-secondary",
@@ -1110,7 +1205,7 @@ export function TrackInsightsScreen() {
             Recent Activity
           </h2>
           {isLoading && days.every((d) => !dayLogged(d)) ? (
-            <p className="panel mt-3 p-4 text-[17px] type-meta text-text-secondary">Loading…</p>
+            <p className="panel mt-3 p-4 text-[13px] type-meta text-text-secondary">Loading…</p>
           ) : (
             <div
               className={cn(
@@ -1169,7 +1264,11 @@ const KIND = {
 };
 const longDay = (iso: string) => {
   const [y, m, d] = iso.split("-").map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short" });
+  return new Date(y, m - 1, d).toLocaleDateString("en-US", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
 };
 
 export function TrackEntryHistoryScreen({ kind }: { kind: "meals" | "water" }) {
@@ -1211,7 +1310,10 @@ export function TrackEntryHistoryScreen({ kind }: { kind: "meals" | "water" }) {
     count: all.filter((e) => e.bucket === b && (!day || e.date === day)).length,
   }));
   return (
-    <PageContainer variant="focused" pathname={kind === "meals" ? "/track/meals" : "/track/water/history"}>
+    <PageContainer
+      variant="focused"
+      pathname={kind === "meals" ? "/track/meals" : "/track/water/history"}
+    >
       <header className="flex items-start gap-3">
         <button
           type="button"
@@ -1222,7 +1324,10 @@ export function TrackEntryHistoryScreen({ kind }: { kind: "meals" | "water" }) {
           <Icon name="arrowBack" size={20} color="var(--color-text-primary)" />
         </button>
         <div>
-          <h1 className="text-2xl type-display text-brand-navy" style={{ letterSpacing: "-1.08px" }}>
+          <h1
+            className="text-2xl type-display text-brand-navy"
+            style={{ letterSpacing: "-1.08px" }}
+          >
             {cfg.title}
           </h1>
           <p className="mt-1 text-sm text-text-secondary">Review your recent tracking activity.</p>
@@ -1250,7 +1355,7 @@ export function TrackEntryHistoryScreen({ kind }: { kind: "meals" | "water" }) {
           />
         </AdvancedFilters>
       </div>
-      <p className="mt-4 text-[17px] type-meta text-text-secondary">
+      <p className="mt-4 text-[13px] type-meta text-text-secondary">
         <span className="type-row-figure text-text-primary">{shown.length}</span>
         {shown.length === 1 ? " entry" : " entries"}
         {shown.length !== all.length && ` of ${all.length}`}

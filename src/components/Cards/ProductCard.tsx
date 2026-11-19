@@ -43,30 +43,42 @@ export function ProductCardImage({
   sizes,
   className,
   imageClassName,
+  fit,
+  fallback,
   children,
 }: {
   src?: string | null;
   sizes?: string;
   className?: string;
   imageClassName?: string;
+  /** `contain` = plate inset on white (the prototype's cut-out photos); `cover` = full-bleed. Defaults by source. */
+  fit?: "contain" | "cover";
+  /** Shown when there is no `src`. */
+  fallback?: ReactNode;
   children?: ReactNode;
 }) {
+  const mode = fit ?? (src && src.startsWith("/img/") ? "contain" : "cover");
   return (
     <div
       data-slot="product-card-image"
-      className={cn("relative shrink-0 overflow-hidden bg-brand-warm-gray", className)}
+      className={cn("relative shrink-0 overflow-hidden bg-white", className)}
     >
-      <AppImage
-        src={src}
-        alt=""
-        sizes={sizes}
-        className={cn(
-          "size-full object-cover",
-          "motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out",
-          "motion-safe:group-hover/card:scale-[1.04] motion-safe:group-has-[a:focus-visible]/card:scale-[1.04]",
-          imageClassName,
-        )}
-      />
+      {src ? (
+        <AppImage
+          src={src}
+          alt=""
+          sizes={sizes}
+          className={cn(
+            mode === "cover"
+              ? "absolute inset-0 size-full object-cover"
+              : "absolute left-1/2 top-1/2 h-[72%] w-[78%] -translate-x-1/2 -translate-y-1/2 object-contain",
+            "motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out",
+            imageClassName,
+          )}
+        />
+      ) : (
+        fallback
+      )}
       {children}
     </div>
   );
@@ -85,7 +97,7 @@ export function ProductCardBadge({
     <span
       data-slot="product-card-badge"
       className={cn(
-        "absolute top-[10px] flex h-[22px] items-center rounded-full px-2 text-[15px] type-meta leading-none tracking-[-0.495px]",
+        "absolute top-[10px] flex h-[22px] items-center rounded-full px-2 text-[12px] type-meta leading-none tracking-[-0.495px]",
         position === "start" ? "left-[10px]" : "right-[10px]",
         className,
       )}
@@ -141,7 +153,7 @@ export function ProductCardSubtitle({
   return (
     <p
       data-slot="product-card-subtitle"
-      className={cn("truncate type-meta text-text-neutral-400", className)}
+      className={cn("truncate type-meta text-text-neutral-500", className)}
     >
       {children}
     </p>

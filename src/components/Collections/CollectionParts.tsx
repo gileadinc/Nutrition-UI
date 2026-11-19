@@ -47,13 +47,21 @@ export function CollectionCover({
   const previews = collection.previewItems.slice(0, 4);
   if (previews.length === 0) {
     return (
-      <span aria-hidden className={cn(box, "flex items-center justify-center", className)} style={style}>
+      <span
+        aria-hidden
+        className={cn(box, "flex items-center justify-center", className)}
+        style={style}
+      >
         <Icon name="folder" size={Math.round(size * 0.45)} color="var(--color-text-secondary)" />
       </span>
     );
   }
   return (
-    <span aria-hidden className={cn(box, "grid grid-cols-2 grid-rows-2 gap-0.5", className)} style={style}>
+    <span
+      aria-hidden
+      className={cn(box, "grid grid-cols-2 grid-rows-2 gap-0.5", className)}
+      style={style}
+    >
       {[0, 1, 2, 3].map((n) => {
         const p = previews[n];
         return (
@@ -103,14 +111,17 @@ export function CollectionCard({ collection }: { collection: SavedCollection }) 
 function validateName(name: string): string | undefined {
   const n = name.trim();
   if (!n) return "Give your collection a name.";
-  if (n.length > COLLECTION_NAME_MAX) return `Keep it to ${COLLECTION_NAME_MAX} characters or fewer.`;
+  if (n.length > COLLECTION_NAME_MAX)
+    return `Keep it to ${COLLECTION_NAME_MAX} characters or fewer.`;
   return undefined;
 }
 
 function EmojiChoices({ value, onChange }: { value: string; onChange: (e: string) => void }) {
   return (
     <fieldset className="mt-4">
-      <legend className="text-[16px] type-section-title text-text-secondary">Icon (optional)</legend>
+      <legend className="text-[12px] type-section-title text-text-secondary">
+        Icon (optional)
+      </legend>
       <div className="mt-2 flex flex-wrap gap-2">
         {EMOJI_CHOICES.map((e) => {
           const on = value === e;
@@ -231,17 +242,20 @@ export function CollectionPicker({ item, onClose }: { item: SavedItem; onClose: 
   return (
     <Dialog title="Add to collection" description={item.title} onClose={onClose}>
       {isLoading ? (
-        <p className="py-4 text-[17px] type-meta text-text-secondary">Loading your collections…</p>
+        <p className="py-4 text-[13px] type-meta text-text-secondary">Loading your collections…</p>
       ) : error && collections.length === 0 ? (
-        <p role="alert" className="py-4 text-[17px] type-meta text-error-red">
+        <p role="alert" className="py-4 text-[13px] type-meta text-error-red">
           Couldn&apos;t load your collections. {error}
         </p>
       ) : collections.length === 0 ? (
-        <p className="pb-2 text-[17px] type-meta text-text-secondary">
+        <p className="pb-2 text-[13px] type-meta text-text-secondary">
           You don&apos;t have any collections yet. Name your first one below.
         </p>
       ) : (
-        <ul aria-label="Collections" className="panel divide-y divide-border-divider overflow-hidden">
+        <ul
+          aria-label="Collections"
+          className="panel divide-y divide-border-divider overflow-hidden"
+        >
           {collections.map((c) => {
             const on = member.has(c.collectionId);
             return (
@@ -324,7 +338,13 @@ export function ConfirmDialog({
   onCancel: () => void;
 }) {
   return (
-    <Dialog title={title} description={body} onClose={onCancel} dismissible={false} role="alertdialog">
+    <Dialog
+      title={title}
+      description={body}
+      onClose={onCancel}
+      dismissible={false}
+      role="alertdialog"
+    >
       <div className="mt-2 grid grid-cols-2 gap-3">
         <SecondaryButton label="Cancel" onPress={onCancel} disabled={busy} />
         <button

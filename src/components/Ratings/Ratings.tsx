@@ -57,7 +57,10 @@ export function RatingSummaryLine({
   if (!count || average == null) return null;
   return (
     <p
-      className={cn("flex items-center gap-1.5 text-[17px] type-meta text-text-secondary", className)}
+      className={cn(
+        "flex items-center gap-1.5 text-[13px] type-meta text-text-secondary",
+        className,
+      )}
       aria-label={`Rated ${formatAverage(average)} out of 5 from ${count} ${count === 1 ? "rating" : "ratings"}`}
     >
       <Stars value={average} size={15} />
@@ -68,7 +71,13 @@ export function RatingSummaryLine({
 }
 
 /** Compact "★ 4.5" for cards; renders nothing without ratings. */
-export function RatingBadge({ average, count }: { average?: number | null; count?: number | null }) {
+export function RatingBadge({
+  average,
+  count,
+}: {
+  average?: number | null;
+  count?: number | null;
+}) {
   if (!count || average == null) return null;
   return (
     <span className="inline-flex items-center gap-0.5">
@@ -91,7 +100,7 @@ function ReviewRow({ r }: { r: RecipeRating }) {
       <div className="flex items-center gap-2">
         <Stars value={r.rating} size={14} />
         <span className="sr-only">{r.rating} out of 5 stars</span>
-        <span className="min-w-0 flex-1 truncate text-[17px] type-item-title text-text-primary">
+        <span className="min-w-0 flex-1 truncate text-[13px] type-item-title text-text-primary">
           {r.authorName || "A ForkThis cook"}
         </span>
         <time dateTime={r.createdAt} className="shrink-0 text-xs type-meta text-text-secondary">
@@ -119,7 +128,8 @@ function RateControl({ recipeId }: { recipeId: string }) {
   const stars = draft?.stars ?? mine?.rating ?? 0;
   const text = draft?.text ?? mine?.review ?? "";
   const dirty =
-    draft !== null && (draft.stars !== (mine?.rating ?? 0) || draft.text.trim() !== (mine?.review ?? ""));
+    draft !== null &&
+    (draft.stars !== (mine?.rating ?? 0) || draft.text.trim() !== (mine?.review ?? ""));
 
   const set = (patch: Partial<{ stars: number; text: string }>) =>
     setDraft({ stars, text, ...patch });
@@ -168,46 +178,46 @@ function RateControl({ recipeId }: { recipeId: string }) {
         ))}
       </div>
       {stars > 0 && (
-          <div className="mt-3">
-            <label htmlFor={textId} className="text-[16px] type-section-title text-text-secondary">
-              Review (optional)
-            </label>
-            <textarea
-              id={textId}
-              rows={3}
-              maxLength={REVIEW_MAX}
-              value={text}
-              onChange={(e) => set({ text: e.target.value })}
-              placeholder="What did you think? Was it easy, filling, worth repeating?"
-              className="mt-1.5 w-full resize-y rounded-2xl border border-border-default bg-white p-3 text-sm leading-5 text-text-primary outline-none placeholder:text-text-neutral-400 focus:border-focus focus:ring-[3px] focus:ring-focus/15"
-            />
-            <p className="mt-1 text-right text-xs type-meta text-text-secondary">
-              {text.length}/{REVIEW_MAX}
-            </p>
-            <div className="mt-2 grid grid-cols-2 gap-3">
-              {mine ? (
-                <SecondaryButton
-                  label="Remove rating"
-                  className="h-11 text-onb-body"
-                  disabled={busy}
-                  onPress={() => void clear()}
-                />
-              ) : (
-                <SecondaryButton
-                  label="Clear"
-                  className="h-11 text-onb-body"
-                  disabled={busy || !draft}
-                  onPress={() => setDraft(null)}
-                />
-              )}
-              <PrimaryButton
-                size="medium"
-                label={busy ? "Saving…" : mine ? "Update" : "Submit"}
-                disabled={busy || !dirty}
-                onPress={() => void save()}
+        <div className="mt-3">
+          <label htmlFor={textId} className="text-[12px] type-section-title text-text-secondary">
+            Review (optional)
+          </label>
+          <textarea
+            id={textId}
+            rows={3}
+            maxLength={REVIEW_MAX}
+            value={text}
+            onChange={(e) => set({ text: e.target.value })}
+            placeholder="What did you think? Was it easy, filling, worth repeating?"
+            className="mt-1.5 w-full resize-y rounded-2xl border border-border-default bg-white p-3 text-sm leading-5 text-text-primary outline-none placeholder:text-text-neutral-400 focus:border-focus focus:ring-[3px] focus:ring-focus/15"
+          />
+          <p className="mt-1 text-right text-xs type-meta text-text-secondary">
+            {text.length}/{REVIEW_MAX}
+          </p>
+          <div className="mt-2 grid grid-cols-2 gap-3">
+            {mine ? (
+              <SecondaryButton
+                label="Remove rating"
+                className="h-11 text-onb-body"
+                disabled={busy}
+                onPress={() => void clear()}
               />
-            </div>
+            ) : (
+              <SecondaryButton
+                label="Clear"
+                className="h-11 text-onb-body"
+                disabled={busy || !draft}
+                onPress={() => setDraft(null)}
+              />
+            )}
+            <PrimaryButton
+              size="medium"
+              label={busy ? "Saving…" : mine ? "Update" : "Submit"}
+              disabled={busy || !dirty}
+              onPress={() => void save()}
+            />
           </div>
+        </div>
       )}
     </div>
   );
@@ -245,7 +255,10 @@ export function RecipeRatingsSection({ recipeId }: { recipeId: string }) {
               {[5, 4, 3, 2, 1].map((n) => {
                 const c = summary.distribution[String(n) as "1"] ?? 0;
                 return (
-                  <li key={n} className="flex items-center gap-2 text-xs type-meta text-text-secondary">
+                  <li
+                    key={n}
+                    className="flex items-center gap-2 text-xs type-meta text-text-secondary"
+                  >
                     <span className="w-3 text-right">{n}</span>
                     <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-border-divider">
                       <span
@@ -262,13 +275,13 @@ export function RecipeRatingsSection({ recipeId }: { recipeId: string }) {
         )}
         <RateControl recipeId={recipeId} />
         {reviews.isLoading ? (
-          <p className="type-meta text-[17px] text-text-secondary">Loading reviews…</p>
+          <p className="type-meta text-[13px] text-text-secondary">Loading reviews…</p>
         ) : reviews.error && shown.length === 0 ? (
-          <p role="alert" className="type-meta text-[17px] text-error-red">
+          <p role="alert" className="type-meta text-[13px] text-error-red">
             Couldn&apos;t load reviews. {reviews.error}
           </p>
         ) : shown.length === 0 ? (
-          <p className="type-meta text-[17px] text-text-secondary">
+          <p className="type-meta text-[13px] text-text-secondary">
             No reviews yet. Be the first to share how it turned out.
           </p>
         ) : (

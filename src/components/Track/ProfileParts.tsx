@@ -7,8 +7,9 @@ import { PageContainer, TwoColumn } from "@/components/Layout";
 import { Link, useBack } from "@/lib/nav";
 import { ICON_WELL } from "@/components/styles";
 
-export const LINK_CLS = "tap-44 relative inline-flex items-center rounded-full border border-border-default bg-white px-3.5 py-1 text-[17px] type-button text-primary hover:border-text-neutral-400";
-export const META = "type-meta text-[17px] leading-5 text-text-secondary";
+export const LINK_CLS =
+  "tap-44 relative inline-flex items-center rounded-full border border-border-default bg-white px-3.5 py-1 text-[13px] type-button text-primary hover:border-text-neutral-400";
+export const META = "type-meta text-[13px] leading-5 text-text-secondary";
 
 /** Back-arrow page frame used by every /you sub-screen. */
 export function ProfileLayout({
@@ -84,10 +85,16 @@ export function FormSection({
   return (
     <section aria-label={title} className={cn("mt-7 first:mt-0", className)}>
       <div className="mb-2.5 flex items-baseline gap-2">
-        <h2 className="eyebrow flex-1 text-[16px]">{title}</h2>
-        {action && <span className="shrink-0 text-[16px] type-meta text-text-secondary">{action}</span>}
+        <h2 className="eyebrow flex-1 text-[12px]">{title}</h2>
+        {action && (
+          <span className="shrink-0 text-[12px] type-meta text-text-secondary">{action}</span>
+        )}
       </div>
-      {description && <div className="-mt-1 mb-3 type-meta text-[17px] leading-5 text-text-secondary">{description}</div>}
+      {description && (
+        <div className="-mt-1 mb-3 type-meta text-[13px] leading-5 text-text-secondary">
+          {description}
+        </div>
+      )}
       {children}
     </section>
   );
@@ -95,7 +102,10 @@ export function FormSection({
 
 export function RowGroup({ children, label }: { children: ReactNode; label?: string }) {
   return (
-    <ul aria-label={label} className="panel divide-y divide-border-divider overflow-hidden shadow-card">
+    <ul
+      aria-label={label}
+      className="panel divide-y divide-border-divider overflow-hidden shadow-card"
+    >
       {children}
     </ul>
   );
@@ -129,16 +139,31 @@ export function Row({
           danger ? "bg-error-soft" : ICON_WELL,
         )}
       >
-        <Icon name={icon} size={16} color={danger ? "var(--color-error-red)" : "var(--color-icon-well-ink)"} />
+        <Icon
+          name={icon}
+          size={16}
+          color={danger ? "var(--color-error-red)" : "var(--color-icon-well-ink)"}
+        />
       </span>
       <span className="min-w-0 flex-1">
-        <span className={cn("block truncate text-sm type-item-title", danger ? "text-error-red" : "text-text-primary")}>
+        <span
+          className={cn(
+            "block truncate text-sm type-item-title",
+            danger ? "text-error-red" : "text-text-primary",
+          )}
+        >
           {label}
         </span>
-        {description && <span className="block truncate type-meta text-xs text-text-secondary">{description}</span>}
+        {description && (
+          <span className="block truncate type-meta text-xs text-text-secondary">
+            {description}
+          </span>
+        )}
       </span>
       {value != null && value !== "" && (
-        <span className="max-w-[45%] shrink-0 truncate text-right type-meta text-[17px] text-text-secondary">{value}</span>
+        <span className="max-w-[45%] shrink-0 truncate text-right type-meta text-[13px] text-text-secondary">
+          {value}
+        </span>
       )}
       {chevron && <Icon name="chevronRight" size={16} color="var(--color-text-neutral-400)" />}
     </>

@@ -26,7 +26,13 @@ import {
 import { getErrorMessage } from "@/lib/api";
 import { useFilterParams } from "@/lib/hooks";
 import { HACK_FILTER, fitFor } from "@/lib/nutrition";
-import { useDayBudget, useEatOutRecommendations, useFastHacks, useProfile, useSaved } from "@/lib/store";
+import {
+  useDayBudget,
+  useEatOutRecommendations,
+  useFastHacks,
+  useProfile,
+  useSaved,
+} from "@/lib/store";
 import { UI } from "@/content";
 import { nearParams, useAskForLocation, usePlaceLabel, useUserLocation } from "@/lib/location";
 import { toHackVM, type HackVM } from "./adapt";
@@ -39,7 +45,12 @@ const SORTS = [
 
 const GROUPS: Record<string, string[]> = {
   diet: [HACK_FILTER.lowCal, HACK_FILTER.vegan, HACK_FILTER.keto, HACK_FILTER.bowls],
-  availability: [HACK_FILTER.nearby, HACK_FILTER.openNow, HACK_FILTER.freeDelivery, HACK_FILTER.deals],
+  availability: [
+    HACK_FILTER.nearby,
+    HACK_FILTER.openNow,
+    HACK_FILTER.freeDelivery,
+    HACK_FILTER.deals,
+  ],
   rating: [HACK_FILTER.topRated],
 };
 // The API has no rating, wait time, open-now, delivery or deals data, so those controls are shown but
@@ -138,16 +149,18 @@ export function FastHacksScreen() {
     .sort()
     .map((r) => ({ value: r, label: r, count: countWith({ restaurants: [r] }) }));
 
-  const results = all.filter((h) => passes(h, cur)).sort((a, b) => {
-    switch (sort) {
-      case "calories":
-        return a.calories - b.calories;
-      case "protein":
-        return b.protein - a.protein;
-      default:
-        return 0;
-    }
-  });
+  const results = all
+    .filter((h) => passes(h, cur))
+    .sort((a, b) => {
+      switch (sort) {
+        case "calories":
+          return a.calories - b.calories;
+        case "protein":
+          return b.protein - a.protein;
+        default:
+          return 0;
+      }
+    });
 
   const applied = [
     ...(cur.fitsToday ? [{ label: "Fits what's left", remove: () => f.set("fits", null) }] : []),
@@ -184,7 +197,9 @@ export function FastHacksScreen() {
   const sparse = !pristine && results.length > 0 && results.length <= SPARSE;
 
   const seen = new Set<string>();
-  const restaurants = results.filter((h) => h.restaurant && !seen.has(h.restaurant) && seen.add(h.restaurant));
+  const restaurants = results.filter(
+    (h) => h.restaurant && !seen.has(h.restaurant) && seen.add(h.restaurant),
+  );
 
   const panel = (p: string) => (
     <>
@@ -325,9 +340,7 @@ export function FastHacksScreen() {
       title={h.title}
       subtitle={layout === "rail" ? h.restaurant : h.restaurant}
       brandName={h.restaurant}
-      leadingBadge={
-        layout === "rail" && h.distanceMi !== null ? `${h.distanceMi} mi` : undefined
-      }
+      leadingBadge={layout === "rail" && h.distanceMi !== null ? `${h.distanceMi} mi` : undefined}
       badge={layout === "rail" ? h.restaurant : h.badge || undefined}
       meta={`${h.calories} kcal · ${h.protein}g protein`}
       fit={fitFor(h, budget)}
@@ -411,7 +424,7 @@ export function FastHacksScreen() {
                 data-testid="sparse-note"
                 className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border-divider pt-4"
               >
-                <p className="text-[17px] leading-5 type-meta text-text-secondary">
+                <p className="text-[13px] leading-5 type-meta text-text-secondary">
                   {results.length === 1
                     ? "Only one option matches."
                     : `Only ${results.length} options match.`}{" "}
@@ -420,7 +433,7 @@ export function FastHacksScreen() {
                 <button
                   type="button"
                   onClick={clearAll}
-                  className="min-h-11 rounded-full border border-border-default bg-white px-4 text-[17px] type-button text-primary hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                  className="min-h-11 rounded-full border border-border-default bg-white px-4 text-[13px] type-button text-primary hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                 >
                   Clear filters
                 </button>

@@ -60,8 +60,8 @@
   },
   "states": {
     "moderation": {
-      "title": "Melo sticks to food",
-      "body": "Ask about meals, eating out, cooking or your log, and Melo can help.",
+      "title": "ForkThis! sticks to food",
+      "body": "Ask about meals, eating out, cooking or your log, and ForkThis! can help.",
       "icon": "shield",
       "tone": "well",
       "primary": {
@@ -70,7 +70,7 @@
       }
     },
     "error": {
-      "title": "Melo couldn’t answer that",
+      "title": "ForkThis! couldn’t answer that",
       "body": "Your conversation is still here. Send the question again to get an answer.",
       "icon": "alert",
       "tone": "error",
@@ -99,7 +99,7 @@
     },
     "success": {
       "title": "Your answer is ready",
-      "body": "Melo’s answer is waiting in your chat.",
+      "body": "ForkThis!’s answer is waiting in your chat.",
       "icon": "checkCircle",
       "tone": "well",
       "primary": {

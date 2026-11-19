@@ -61,7 +61,10 @@ export function MeloChatList({
     const nextId = rows[i + 1]?.dataset.meloRow ?? rows[i - 1]?.dataset.meloRow;
     const rec = meloActions.remove(c.id);
     if (!rec) return;
-    toast.info("Chat deleted", { body: c.title, action: { label: "Undo", run: () => meloActions.restore(rec) } });
+    toast.info("Chat deleted", {
+      body: c.title,
+      action: { label: "Undo", run: () => meloActions.restore(rec) },
+    });
     requestAnimationFrame(() => {
       const target = nextId
         ? root.current?.querySelector<HTMLElement>(`[data-melo-row="${CSS.escape(nextId)}"]`)
@@ -79,12 +82,16 @@ export function MeloChatList({
         onChange={setQ}
         placeholder="Search your chats"
         size="lg"
-        inputClassName="text-base md:text-[19px]"
+        inputClassName="text-base md:text-[15px]"
         inputRef={search}
         autoFocus={autoFocusSearch}
       />
       {history.length === 0 ? (
-        <Empty icon="history" title="No chats yet" body="Your conversations with Melo will show up here." />
+        <Empty
+          icon="history"
+          title="No chats yet"
+          body="Your conversations with ForkThis! will show up here."
+        />
       ) : groups.length === 0 ? (
         <Empty
           icon="search"
@@ -108,7 +115,10 @@ export function MeloChatList({
                     )}
                   >
                     {active && (
-                      <span aria-hidden="true" className="absolute inset-y-2 left-0 w-[3px] rounded-full bg-indicator" />
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-y-2 left-0 w-[3px] rounded-full bg-indicator"
+                      />
                     )}
                     <button
                       type="button"
@@ -122,15 +132,15 @@ export function MeloChatList({
                     >
                       <span className="min-w-0 flex-1">
                         <span className="flex items-baseline gap-2">
-                          <span className="min-w-0 flex-1 truncate text-[18px] type-item-title text-text-primary">
+                          <span className="min-w-0 flex-1 truncate text-[14px] type-item-title text-text-primary">
                             {c.title}
                           </span>
-                          <span className="shrink-0 text-[15px] type-meta text-text-neutral-500">
+                          <span className="shrink-0 text-[11px] type-meta text-text-neutral-500">
                             {relativeTime(c.updatedAt, now)}
                           </span>
                         </span>
                         {sub && (
-                          <span className="mt-0.5 block truncate text-[17px] type-meta leading-5 text-text-secondary">
+                          <span className="mt-0.5 block truncate text-[13px] type-meta leading-5 text-text-secondary">
                             {sub}
                           </span>
                         )}

@@ -58,7 +58,7 @@ function Identity({
           {name || "You"}
         </h1>
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-navy-soft px-2.5 py-1 text-[17px] type-meta text-brand-navy">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-navy-soft px-2.5 py-1 text-[13px] type-meta text-brand-navy">
             <Icon name="target" size={13} color="var(--color-brand-navy)" />
             {goal}
           </span>
@@ -68,7 +68,9 @@ function Identity({
             </Link>
           )}
           {email ? (
-            <span className="min-w-0 max-w-full truncate type-meta text-[17px] text-text-secondary">{email}</span>
+            <span className="min-w-0 max-w-full truncate type-meta text-[13px] text-text-secondary">
+              {email}
+            </span>
           ) : (
             <Link to="/you/personal-details" className={LINK_CLS}>
               Add email
@@ -79,7 +81,7 @@ function Identity({
       <Link
         to="/you/personal-details"
         aria-label="Edit personal details"
-        className="inline-flex size-11 shrink-0 items-center justify-center gap-1.5 rounded-full border border-border-default bg-white text-[17px] type-button text-brand-navy transition-colors hover:border-text-neutral-400 sm:w-auto sm:px-4"
+        className="inline-flex size-11 shrink-0 items-center justify-center gap-1.5 rounded-full border border-border-default bg-white text-[13px] type-button text-brand-navy transition-colors hover:border-text-neutral-400 sm:w-auto sm:px-4"
       >
         <Icon name="pencilEdit" size={16} color="var(--color-brand-navy)" />
         <span aria-hidden="true" className="hidden sm:inline">
@@ -104,18 +106,22 @@ function GuestCard() {
           <h1 className="type-display text-brand-navy text-[28px] leading-[1.15] tracking-[-1.08px] md:text-[32px]">
             You&apos;re browsing as a guest
           </h1>
-          <p className={cn(META, "mt-1.5")}>Saves and tracking need an account. Nothing you do now is stored.</p>
+          <p className={cn(META, "mt-1.5")}>
+            Saves and tracking need an account. Nothing you do now is stored.
+          </p>
         </div>
       </header>
       <div data-slot="guest-cta" className="mt-6 rounded-2xl bg-navy-soft px-5 py-5">
-        <h2 className="text-[22px] type-section-title leading-6 tracking-[-0.81px] text-brand-navy">Save your plan</h2>
+        <h2 className="text-[22px] type-section-title leading-6 tracking-[-0.81px] text-brand-navy">
+          Save your plan
+        </h2>
         <p className={cn(META, "mt-1 max-w-[46ch]")}>
           Create an account to keep your targets, saved food and everything you log.
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
           <Link
             to="/signup"
-            className="inline-flex h-11 items-center rounded-full bg-primary px-5 text-[17px] type-button text-text-on-dark transition-colors hover:bg-primary-hover"
+            className="inline-flex h-11 items-center rounded-full bg-primary px-5 text-[13px] type-button text-text-on-dark transition-colors hover:bg-primary-hover"
           >
             Create an account
           </Link>
@@ -128,7 +134,17 @@ function GuestCard() {
   );
 }
 
-function Block({ id, title, action, children }: { id: string; title: string; action?: { label: string; to: string }; children: ReactNode }) {
+function Block({
+  id,
+  title,
+  action,
+  children,
+}: {
+  id: string;
+  title: string;
+  action?: { label: string; to: string };
+  children: ReactNode;
+}) {
   return (
     <section aria-labelledby={id} className="mt-7 border-t border-border-divider pt-6">
       <SectionHeader id={id} title={title} action={action} />
@@ -137,15 +153,32 @@ function Block({ id, title, action, children }: { id: string; title: string; act
   );
 }
 
-function PlanRings({ readings }: { readings: { key: "calories" | "protein" | "water"; label: string; eaten: number; goal: number; unit: string }[] }) {
-  const icons: Record<string, IconName> = { calories: "fire", protein: "dumbbell", water: "droplet" };
+function PlanRings({
+  readings,
+}: {
+  readings: {
+    key: "calories" | "protein" | "water";
+    label: string;
+    eaten: number;
+    goal: number;
+    unit: string;
+  }[];
+}) {
+  const icons: Record<string, IconName> = {
+    calories: "fire",
+    protein: "dumbbell",
+    water: "droplet",
+  };
   const colors: Record<string, string> = {
     calories: "var(--color-accent-graphic)",
     protein: "var(--color-brand-navy)",
     water: "var(--color-graphic)",
   };
   return (
-    <ul data-slot="plan-rings" className="mt-4 grid grid-cols-[repeat(3,minmax(0,1fr))] gap-2 sm:gap-6">
+    <ul
+      data-slot="plan-rings"
+      className="mt-4 grid grid-cols-[repeat(3,minmax(0,1fr))] gap-2 sm:gap-6"
+    >
       {readings.map((r) => {
         const spoken = `${r.label}: ${fmt(r.eaten)} of ${fmt(r.goal)} ${r.unit} today.`;
         return (
@@ -155,9 +188,18 @@ function PlanRings({ readings }: { readings: { key: "calories" | "protein" | "wa
               aria-label={`${spoken} Open ${r.key === "water" ? "water" : "Track"}`}
               className="flex min-w-0 flex-col items-center rounded-2xl px-1 pb-2 pt-1 text-center transition-colors hover:bg-navy-soft"
             >
-              <span className="text-[17px] type-item-title text-text-secondary">{r.label}</span>
+              <span className="text-[13px] type-item-title text-text-secondary">{r.label}</span>
               <span className="mt-2 w-full max-w-[136px]">
-                <MiniRing value={r.eaten} goal={r.goal} size={136} stroke={11} color={colors[r.key]} overlap fluid label={spoken}>
+                <MiniRing
+                  value={r.eaten}
+                  goal={r.goal}
+                  size={136}
+                  stroke={11}
+                  color={colors[r.key]}
+                  overlap
+                  fluid
+                  label={spoken}
+                >
                   <Icon name={icons[r.key]} size={26} color={colors[r.key]} />
                 </MiniRing>
               </span>
@@ -196,9 +238,14 @@ function Figure({
       aria-label={`${label}: ${accessible ?? "needs your details"}. Open calculator`}
       className="group flex min-h-11 min-w-0 flex-col px-2.5 py-1 transition-colors first:pl-0 last:pr-0 hover:bg-navy-soft/60 sm:px-3"
     >
-      <span className="flex items-center gap-1 text-[17px] type-item-title text-text-secondary">
+      <span className="flex items-center gap-1 text-[13px] type-item-title text-text-secondary">
         <span className="truncate">{label}</span>
-        <Icon name="chevronRight" size={13} color="var(--color-text-neutral-400)" className="shrink-0" />
+        <Icon
+          name="chevronRight"
+          size={13}
+          color="var(--color-text-neutral-400)"
+          className="shrink-0"
+        />
       </span>
       <span className="mt-1 flex min-w-0 items-center gap-2">
         {gauge && value !== null && (
@@ -218,7 +265,7 @@ function Figure({
       </span>
       <span
         className={cn(
-          "text-[17px] leading-5",
+          "text-[13px] leading-5",
           value === null ? "type-button text-primary" : "type-meta truncate text-text-secondary",
         )}
       >
@@ -232,7 +279,7 @@ function SettingsGroup({ title, children }: { title: string; children: ReactNode
   const id = `settings-${title.toLowerCase().replace(/\W+/g, "-")}`;
   return (
     <section aria-labelledby={id} className="mt-7 first:mt-0">
-      <h2 id={id} className="mb-2 text-[17px] type-section-title text-text-secondary">
+      <h2 id={id} className="mb-2 text-[13px] type-section-title text-text-secondary">
         {title}
       </h2>
       <ul className="divide-y divide-border-divider overflow-hidden rounded-2xl border border-border-divider bg-surface-card">
@@ -261,15 +308,21 @@ function SettingsRow({
         to={to}
         className="group flex min-h-[60px] w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-navy-soft/60"
       >
-        <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-full", ICON_WELL)}>
+        <span
+          className={cn("flex size-9 shrink-0 items-center justify-center rounded-full", ICON_WELL)}
+        >
           <Icon name={icon} size={17} color="var(--color-icon-well-ink)" />
         </span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm type-item-title text-text-primary">{label}</span>
-          {sub && <span className="block truncate type-meta text-[17px] leading-5 text-text-secondary">{sub}</span>}
+          {sub && (
+            <span className="block truncate type-meta text-[13px] leading-5 text-text-secondary">
+              {sub}
+            </span>
+          )}
         </span>
         {badge !== undefined && badge > 0 && (
-          <span className="flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-[17px] type-meta tabular-nums text-text-on-dark">
+          <span className="flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-[13px] type-meta tabular-nums text-text-on-dark">
             {badge}
             <span className="sr-only"> unread</span>
           </span>
@@ -297,7 +350,8 @@ export function ProfileScreen() {
 
   const inches = profile?.heightCm ? cmToInches(profile.heightCm) : null;
   const pounds = profile?.weightKg ? kgToLb(profile.weightKg) : null;
-  const bmi = profile?.heightCm && profile.weightKg ? profile.weightKg / (profile.heightCm / 100) ** 2 : null;
+  const bmi =
+    profile?.heightCm && profile.weightKg ? profile.weightKg / (profile.heightCm / 100) ** 2 : null;
   const activity = profile?.activityLevel ?? "moderatelyActive";
   const calc =
     profile?.heightCm && profile.weightKg
@@ -327,8 +381,14 @@ export function ProfileScreen() {
   const allergies = profile?.allergies ?? [];
   const foodSub =
     [
-      prefs.length === 0 ? null : prefs.length === 1 ? prefs[0] : `${prefs[0]} +${prefs.length - 1}`,
-      allergies.length === 0 ? null : `${allergies.length} ${allergies.length === 1 ? "allergy" : "allergies"}`,
+      prefs.length === 0
+        ? null
+        : prefs.length === 1
+          ? prefs[0]
+          : `${prefs[0]} +${prefs.length - 1}`,
+      allergies.length === 0
+        ? null
+        : `${allergies.length} ${allergies.length === 1 ? "allergy" : "allergies"}`,
     ]
       .filter(Boolean)
       .join(" · ") || "None set";
@@ -344,25 +404,53 @@ export function ProfileScreen() {
     <GuestCard />
   ) : (
     <>
-      <Identity initials={initials} name={profile?.name ?? ""} email={profile?.email ?? null} goal={goalLabel} />
+      <Identity
+        initials={initials}
+        name={profile?.name ?? ""}
+        email={profile?.email ?? null}
+        goal={goalLabel}
+      />
       <Block id="plan-heading" title="Your plan">
         <PlanRings
           readings={[
-            { key: "calories", label: "Calories", eaten: budget.calories.consumed, goal: budget.calories.goal, unit: "kcal" },
-            { key: "protein", label: "Protein", eaten: budget.protein.consumed, goal: budget.protein.goal, unit: "g" },
-            { key: "water", label: "Water", eaten: budget.water.consumed, goal: budget.water.goal, unit: "oz" },
+            {
+              key: "calories",
+              label: "Calories",
+              eaten: budget.calories.consumed,
+              goal: budget.calories.goal,
+              unit: "kcal",
+            },
+            {
+              key: "protein",
+              label: "Protein",
+              eaten: budget.protein.consumed,
+              goal: budget.protein.goal,
+              unit: "g",
+            },
+            {
+              key: "water",
+              label: "Water",
+              eaten: budget.water.consumed,
+              goal: budget.water.goal,
+              unit: "oz",
+            },
           ]}
         />
         <div className="mt-4 flex items-start gap-3">
           <p className={cn(META, "min-w-0 flex-1")}>
-            {basis ?? "Standard targets. Add your height, weight and date of birth to personalise them."}
+            {basis ??
+              "Standard targets. Add your height, weight and date of birth to personalise them."}
           </p>
           <Link to="/you/personal-details" className={cn(LINK_CLS, "shrink-0 leading-5")}>
             {basis ? "Edit" : "Add details"}
           </Link>
         </div>
       </Block>
-      <Block id="week-heading" title="This week" action={{ label: "Insights", to: "/track/insights" }}>
+      <Block
+        id="week-heading"
+        title="This week"
+        action={{ label: "Insights", to: "/track/insights" }}
+      >
         <div data-slot="body-figures" className="mt-5 border-t border-border-divider pt-4">
           <div className="grid grid-cols-[repeat(3,minmax(0,1fr))] divide-x divide-border-divider">
             <Figure
@@ -405,7 +493,11 @@ export function ProfileScreen() {
             <SettingsRow
               icon="person"
               label="Personal details"
-              sub={sub(inches !== null && pounds !== null ? `${feetIn(inches)} · ${Math.round(pounds)} lb` : "Add height and weight")}
+              sub={sub(
+                inches !== null && pounds !== null
+                  ? `${feetIn(inches)} · ${Math.round(pounds)} lb`
+                  : "Add height and weight",
+              )}
               to="/you/personal-details"
             />
             <SettingsRow
@@ -426,7 +518,12 @@ export function ProfileScreen() {
               sub={sub(profile?.surgicalContext ?? "Not set")}
               to={`/questionnaire?step=surgery&returnTo=${encodeURIComponent("/you")}`}
             />
-            <SettingsRow icon="leaf" label="Food preferences" sub={sub(foodSub)} to="/you/dietary-preferences" />
+            <SettingsRow
+              icon="leaf"
+              label="Food preferences"
+              sub={sub(foodSub)}
+              to="/you/dietary-preferences"
+            />
           </SettingsGroup>
           <SettingsGroup title="App">
             <SettingsRow
@@ -445,7 +542,12 @@ export function ProfileScreen() {
             />
           </SettingsGroup>
           <SettingsGroup title="Support">
-            <SettingsRow icon="info" label="Help & support" sub="Questions and contact" to="/you/help-support" />
+            <SettingsRow
+              icon="info"
+              label="Help & support"
+              sub="Questions and contact"
+              to="/you/help-support"
+            />
             <SettingsRow
               icon="legalDocument"
               label="Legal & privacy"

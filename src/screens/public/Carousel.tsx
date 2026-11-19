@@ -1,246 +1,137 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { AppImage, PhotoFade } from "@/components/AppImage";
-import { PrimaryButton, SecondaryButton } from "@/components/Button";
-import { OnboardingSplit } from "@/components/Onboarding";
-import { Logo } from "@/components/Shell/Logo";
-import { useIsLg, useReducedMotion } from "@/lib/hooks";
+import type { ReactNode } from "react";
+import { AppImage } from "@/components/AppImage";
+import { PrimaryButton } from "@/components/Button";
 import { useNavigate } from "@/lib/nav";
-import { CAROUSEL } from "@/content";
-import { cn } from "@/lib/utils";
 
-const { slides: SLIDES } = CAROUSEL;
-const LAST = SLIDES.length - 1;
-const DIST_RATIO = 0.18;
-const VELOCITY = 0.5;
+const ONB = "/img/figma-2026-11/onboarding";
 
+const PAGES = [
+  {
+    image: `${ONB}/intro-cook-v3`,
+    heading: "CookThis!",
+    body: "From meal-preps to family dinners, find low calorie, high protein recipes that work for your real life.",
+  },
+  {
+    image: `${ONB}/intro-hack-v3`,
+    heading: "HackThis!",
+    body: "Restaurant hacks that allow you to eat healthier at the places you already love!",
+  },
+  {
+    image: `${ONB}/intro-track-v3`,
+    heading: "TrackThis!",
+    body: "ForkThis! allows you to customize your profile around your goals and move at your own pace by tracking meals, movement, and the habits that matter most to you!",
+  },
+];
+
+const STEPS = ["01 · Your goals", "02 · Your routine", "03 · Your plan"];
+
+function Tile({
+  page,
+  className,
+  focus = "",
+  children,
+}: {
+  page: (typeof PAGES)[number];
+  className: string;
+  focus?: string;
+  children: ReactNode;
+}) {
+  return (
+    <article className={`relative min-w-0 overflow-hidden ${className}`}>
+      <AppImage
+        src={page.image}
+        alt=""
+        priority
+        sizes="(min-width: 1024px) 340px, 100vw"
+        className={`absolute inset-0 size-full object-cover ${focus}`}
+      />
+      {children}
+    </article>
+  );
+}
+
+/** Pre-quiz intro: three feature tiles beside the "A plan that fits your real life" pitch. */
 export function OnboardingCarousel() {
   const navigate = useNavigate();
-  const lg = useIsLg();
-  const reduced = useReducedMotion();
-  const [index, setIndex] = useState(0);
-  const [direction, setDirection] = useState<"forward" | "back">("forward");
-  const [dragX, setDragX] = useState(0);
-  const [interacted, setInteracted] = useState(false);
-  const drag = useRef<{ x: number; t: number; id: number; active: boolean } | null>(null);
-  const slide = SLIDES[index];
-
-  const goTo = (n: number) => {
-    const next = Math.max(0, Math.min(LAST, n));
-    setDirection(next < index ? "back" : "forward");
-    setIndex(next);
-    setInteracted(true);
-  };
-  const finish = () => navigate("/questionnaire");
-  const next = () => (index < LAST ? goTo(index + 1) : finish());
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement | null)?.closest("input, textarea, select")) return;
-      if (e.key === "ArrowRight") {
-        e.preventDefault();
-        setDirection("forward");
-        setIndex((i) => Math.min(LAST, i + 1));
-        setInteracted(true);
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        setDirection("back");
-        setIndex((i) => Math.max(0, i - 1));
-        setInteracted(true);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  const onDown = (e: React.PointerEvent<HTMLElement>) => {
-    drag.current = { x: e.clientX, t: e.timeStamp, id: e.pointerId, active: false };
-  };
-  const onMove = (e: React.PointerEvent<HTMLElement>) => {
-    const d = drag.current;
-    if (!d || d.id !== e.pointerId) return;
-    const dx = e.clientX - d.x;
-    if (!d.active && Math.abs(dx) > 8) {
-      d.active = true;
-      e.currentTarget.setPointerCapture(e.pointerId);
-    }
-    if (d.active) setDragX((index === 0 && dx > 0) || (index === LAST && dx < 0) ? dx / 3 : dx);
-  };
-  const onUp = (e: React.PointerEvent<HTMLElement>) => {
-    const d = drag.current;
-    drag.current = null;
-    if (!d?.active) return;
-    const dx = e.clientX - d.x;
-    const v = Math.abs(dx) / Math.max(1, e.timeStamp - d.t);
-    const w = e.currentTarget.clientWidth || 1;
-    setDragX(0);
-    if (Math.abs(dx) / w > DIST_RATIO || (v > VELOCITY && Math.abs(dx) > 32)) {
-      goTo(index + (dx < 0 ? 1 : -1));
-    }
-  };
-
-  const nextLabel = index === LAST ? CAROUSEL.lastLabel : CAROUSEL.nextLabel;
-  const announcer = (
-    <p data-testid="tour-announcer" aria-live="polite" aria-atomic="true" className="sr-only">
-      {interacted ? `Slide ${index + 1} of ${SLIDES.length}: ${slide.heading}` : ""}
-    </p>
-  );
-  const dots = (
-    <div className="-ml-2 flex items-center">
-      {SLIDES.map((s, i) => (
-        <button
-          key={s.image}
-          type="button"
-          onClick={() => goTo(i)}
-          aria-label={`Go to slide ${i + 1}`}
-          aria-current={i === index ? "true" : undefined}
-          className="flex h-12 w-9 items-center justify-center"
-        >
-          <span
-            className={cn(
-              "block h-3 rounded-full transition-all duration-300 motion-reduce:transition-none",
-              i === index ? "w-9 bg-accent" : "w-3 bg-navy-300",
-            )}
-          />
-        </button>
-      ))}
-    </div>
-  );
-  const skip = (card: boolean) => (
-    <button
-      type="button"
-      onClick={finish}
-      className={cn(
-        "h-11 rounded-full border border-border-default px-5 text-onb-body type-button-secondary text-brand-navy",
-        card ? "bg-surface-card" : "bg-white hover:border-text-neutral-400",
-      )}
-    >
-      Skip
-    </button>
-  );
-
-  if (lg) {
-    return (
-      <OnboardingSplit images={SLIDES.map((s) => s.image)} activeImage={index}>
-        <main
-          aria-roledescription="carousel"
-          aria-label="How ForkThis works"
-          className="flex min-h-dvh flex-col px-12 py-8 xl:px-20"
-        >
-          {announcer}
-          <header className="mx-auto flex h-11 w-full max-w-[30rem] shrink-0 items-center justify-between">
-            <Logo />
-            <span className="-mr-5">{skip(false)}</span>
-          </header>
-          <div
-            data-testid="tour-column"
-            className="mx-auto flex w-full max-w-[30rem] flex-1 flex-col justify-center py-10"
-          >
-            <div
-              key={index}
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`${index + 1} of ${SLIDES.length}`}
-              className={cn(
-                !reduced && "onb-step-in",
-                !reduced && direction === "back" && "onb-step-back",
-              )}
-            >
-              <p className="text-onb-meta type-meta tabular-nums text-text-secondary">
-                {String(index + 1).padStart(2, "0")} / {String(SLIDES.length).padStart(2, "0")}
-              </p>
-              <h1 className="mt-2 text-onb-display type-display text-brand-navy">
-                {slide.heading}
-              </h1>
-              <p className="mt-3 text-onb-body text-text-secondary">{slide.body}</p>
-            </div>
-            <div className="mt-10 flex items-center gap-3">
-              {index > 0 && (
-                <SecondaryButton
-                  label="Back"
-                  onPress={() => goTo(index - 1)}
-                  className="w-32 text-onb-body"
-                />
-              )}
-              <PrimaryButton label={nextLabel} onPress={next} className="w-44" />
-              <div className="-mr-2 ml-auto">{dots}</div>
-            </div>
-          </div>
-        </main>
-      </OnboardingSplit>
-    );
-  }
-
+  const [cook, hack, track] = PAGES;
   return (
-    <main
-      aria-roledescription="carousel"
-      aria-label="How ForkThis works"
-      className="relative h-dvh touch-pan-y select-none overflow-hidden bg-brand-navy"
-      onPointerDown={onDown}
-      onPointerMove={onMove}
-      onPointerUp={onUp}
-      onPointerCancel={onUp}
-    >
-      {announcer}
-      <div
-        className={cn(
-          "flex h-full",
-          dragX === 0 &&
-            !reduced &&
-            "motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]",
-        )}
-        style={{ transform: `translateX(calc(${-index * 100}% + ${dragX}px))` }}
-      >
-        {SLIDES.map((s, i) => (
-          <div
-            key={s.image}
-            role="group"
-            aria-roledescription="slide"
-            aria-label={`${i + 1} of ${SLIDES.length}`}
-            aria-hidden={i !== index}
-            inert={i !== index}
-            className="relative h-full w-full shrink-0"
-          >
-            <AppImage
-              src={s.image}
-              alt=""
-              priority={i === 0}
-              sizes="100vw"
-              className="pointer-events-none absolute inset-0 size-full object-cover object-[50%_35%]"
-            />
-            <div className="absolute inset-x-0 bottom-0 flex min-h-[50%] flex-col justify-end px-6 pb-[calc(9.5rem+env(safe-area-inset-bottom))] pt-32">
-              <PhotoFade variant="copy" />
-              <div className="relative mx-auto w-full max-w-md">
-                <h1 className="text-onb-photo type-display text-brand-navy sm:text-onb-photo-sm">
-                  {s.heading}
-                </h1>
-                <p className="mt-3 text-onb-body text-text-secondary">{s.body}</p>
-              </div>
+    <main className="min-h-dvh bg-auth-canvas p-4">
+      <div className="mx-auto grid max-w-[1800px] gap-4 lg:min-h-[calc(100dvh-2rem)] lg:grid-cols-[minmax(0,677px)_minmax(0,1fr)]">
+        <section
+          aria-label="What you can do with ForkThis"
+          className="order-last flex min-w-0 flex-col gap-4 lg:order-first"
+        >
+          <div className="grid flex-1 gap-3 sm:grid-cols-2">
+            {[cook, hack].map((p) => (
+              <Tile
+                key={p.heading}
+                page={p}
+                className="min-h-[26rem] rounded-[17px] bg-brand-cream lg:min-h-0"
+              >
+                <div className="absolute inset-x-[17px] bottom-4 text-primary">
+                  <h2 className="text-[32px] type-section-title leading-none tracking-[-0.6px]">
+                    {p.heading}
+                  </h2>
+                  <p className="mt-1 min-h-[3.75rem] max-w-[16.5rem] text-sm type-extra-light leading-5 tracking-[-0.176px] text-text-primary">
+                    {p.body}
+                  </p>
+                </div>
+              </Tile>
+            ))}
+          </div>
+          <Tile page={track} className="h-[418px] shrink-0 rounded-2xl" focus="object-[28%_center]">
+            <div className="absolute inset-y-0 right-4 flex w-[min(331px,55%)] flex-col justify-center">
+              <h2 className="text-[32px] type-section-title leading-none tracking-[-0.6px] text-text-primary">
+                {track.heading}
+              </h2>
+              <p className="mt-1 text-sm type-extra-light leading-5 tracking-[-0.176px] text-text-primary">
+                {track.body}
+              </p>
             </div>
-          </div>
-        ))}
-      </div>
-      <div className="absolute inset-x-0 top-0 px-4 pt-[max(0.75rem,env(safe-area-inset-top))]">
-        <div className="mx-auto flex max-w-md items-center justify-between sm:max-w-none">
-          <Logo mark className="pl-2" />
-          {skip(true)}
-        </div>
-      </div>
-      <div className="absolute inset-x-0 bottom-0 px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-        <div className="mx-auto flex max-w-md flex-col gap-4">
-          {dots}
-          <div className="flex gap-3">
-            {index > 0 && (
-              <SecondaryButton
-                label="Back"
-                onPress={() => goTo(index - 1)}
-                className="w-28 shrink-0 border-brand-navy text-onb-body text-brand-navy"
+          </Tile>
+        </section>
+        <section
+          aria-labelledby="quiz-intro-heading"
+          className="page-settle flex min-w-0 flex-col justify-end px-2 pb-8 pt-6 text-primary lg:px-[30px] lg:pb-9"
+        >
+          <div className="max-w-[576px]">
+            <h1
+              id="quiz-intro-heading"
+              className="max-w-[486px] text-[clamp(3rem,5.2vw,4.75rem)] type-section-title leading-[1.03] tracking-[-0.079em]"
+            >
+              A plan that fits your real life.
+            </h1>
+            <p className="mt-6 text-sm leading-5 tracking-[-0.02em] text-text-secondary">
+              Tell us a little about your goals. We’ll turn your answers into a simple starting plan
+              for meals, movement, and the days in between.
+            </p>
+            <p className="mt-8 text-xs capitalize leading-4 tracking-[1.2px] text-text-primary">
+              Your next two minutes
+            </p>
+            <ul className="flex flex-wrap gap-2 pt-3">
+              {STEPS.map((s) => (
+                <li
+                  key={s}
+                  className="rounded-full px-3 py-2 text-xs type-extra-light leading-4 tracking-[-0.176px] text-text-primary"
+                >
+                  {s}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-7">
+              <PrimaryButton
+                label="Start your quiz"
+                onPress={() => navigate("/questionnaire?step=dob")}
+                className="w-full !rounded-[52px] motion-safe:transition-transform motion-safe:hover:-translate-y-0.5"
               />
-            )}
-            <PrimaryButton label={nextLabel} onPress={next} />
+            </div>
+            <p className="mt-3 text-sm type-extra-light tracking-[-0.176px] text-text-secondary">
+              Free to start · No account needed
+            </p>
           </div>
-        </div>
+        </section>
       </div>
     </main>
   );

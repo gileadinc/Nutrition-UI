@@ -5,14 +5,18 @@ import { cn } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import { useLocation } from "@/lib/nav";
 import { meloActions, useMelo } from "@/lib/melo";
+import { AssistantMark } from "./AssistantMark";
 import { MeloPanel } from "./Panel";
 
 /** Routes where the popup does not appear (full-bleed screens with their own chrome). */
-const IMMERSIVE = /^\/recipes\/[^/]+\/(ingredients|cook)$|^\/you\/personal-details$/;
+const IMMERSIVE =
+  /^\/recipes\/[^/]+\/(ingredients|cook)$|^\/you\/(personal-details|goal|activity-level)$/;
 const available = (pathname: string) =>
   !(pathname.startsWith("/assistant") || pathname === "/ai") && !IMMERSIVE.test(pathname);
+/** Detail pages (a hack or recipe) open in a drawer that has its own actions. */
+const DETAIL = /^\/hack\/[^/]+$|^\/recipes\/(mine\/)?(?!new$)[^/]+$/;
 
-/** Floating "Ask Melo" button plus the chat popup it opens. Mounted once in the app shell. */
+/** Floating "Ask ForkThis!" button plus the chat popup it opens. Mounted once in the app shell. */
 export function MeloLayer() {
   const { pathname } = useLocation();
   const open = useMelo((s) => s.open);
@@ -38,16 +42,20 @@ export function MeloLayer() {
           meloActions.toggle();
         }}
         aria-expanded={open}
-        aria-label={open ? "Close Melo" : "Ask Melo"}
+        aria-label={open ? "Close ForkThis!" : "Ask ForkThis!"}
         className={cn(
-          "fixed bottom-[76px] right-4 z-30 flex h-14 items-center gap-2.5 rounded-full bg-accent pl-4 pr-5 transition-transform hover:-translate-y-0.5 hover:scale-105 active:scale-95 motion-reduce:transform-none md:bottom-6 md:right-6",
+          DETAIL.test(pathname) && !open ? "hidden" : "flex",
+          "fixed bottom-[76px] right-4 z-30 h-14 items-center gap-2.5 rounded-full bg-design-orange pl-2.5 pr-5 transition-[filter] hover:brightness-95 motion-reduce:transform-none md:bottom-6 md:right-6",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus motion-safe:animate-[melo-rise_300ms_ease-out_backwards]",
           open && "md:hidden",
         )}
         style={{ boxShadow: "var(--shadow-fab)" }}
       >
-        <Icon name={open ? "close" : "chefHat"} size={20} color="var(--color-on-accent)" />
-        <span className="text-sm type-button text-on-accent">{open ? "Close" : "Ask Melo"}</span>
+        <AssistantMark size={40} animated={!open} onDark />
+        {open && <Icon name="close" size={18} color="white" />}
+        <span className="text-[15px] type-button text-white">
+          {open ? "Close" : "Ask ForkThis!"}
+        </span>
       </button>
       {open && <MeloPanel pathname={pathname} />}
     </>

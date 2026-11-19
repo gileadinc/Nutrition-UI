@@ -60,10 +60,12 @@ function validate(f: Form) {
     else if (age < 13 || age > 120) e.dob = "Check the year — that age is outside 13–120.";
   }
   const h = totalInches(f);
-  if (h !== null && (!Number.isFinite(h) || h < 36 || h > 98)) e.height = "Height should be between 3'0\" and 8'2\".";
+  if (h !== null && (!Number.isFinite(h) || h < 36 || h > 98))
+    e.height = "Height should be between 3'0\" and 8'2\".";
   if (f.pounds.trim()) {
     const n = Number(f.pounds);
-    if (!Number.isFinite(n) || n < 55 || n > 700) e.weight = "Weight should be between 55 and 700 lb.";
+    if (!Number.isFinite(n) || n < 55 || n > 700)
+      e.weight = "Weight should be between 55 and 700 lb.";
   }
   return e;
 }
@@ -104,8 +106,8 @@ function Delta({
   const changed = from !== null && to !== null && format(from) !== format(to);
   return (
     <div className="flex items-baseline gap-2 py-2.5">
-      <dt className="min-w-0 flex-1 type-meta text-[17px] text-text-secondary">{label}</dt>
-      <dd className="type-meta text-right text-[17px] tabular-nums text-text-primary">
+      <dt className="min-w-0 flex-1 type-meta text-[13px] text-text-secondary">{label}</dt>
+      <dd className="type-meta text-right text-[13px] tabular-nums text-text-primary">
         {to === null ? (
           <span className="text-text-secondary">—</span>
         ) : (
@@ -127,7 +129,13 @@ function Delta({
   );
 }
 
-function Editor({ profile, update }: { profile: UserProfile; update: (p: Parameters<ReturnType<typeof useProfile>["update"]>[0]) => Promise<void> }) {
+function Editor({
+  profile,
+  update,
+}: {
+  profile: UserProfile;
+  update: (p: Parameters<ReturnType<typeof useProfile>["update"]>[0]) => Promise<void>;
+}) {
   const [saved, setSaved] = useState(() => initial(profile));
   const [form, setForm] = useState(saved);
   const [errors, setErrors] = useState<ReturnType<typeof validate>>({});
@@ -151,7 +159,9 @@ function Editor({ profile, update }: { profile: UserProfile; update: (p: Paramet
         dateOfBirth: iso ?? undefined,
         age: ageFromDob(form.dob) ?? undefined,
         heightCm: h === null ? undefined : Math.round(inchesToCm(h)),
-        weightKg: form.pounds.trim() ? Math.round(lbToKg(Number(form.pounds)) * 10) / 10 : undefined,
+        weightKg: form.pounds.trim()
+          ? Math.round(lbToKg(Number(form.pounds)) * 10) / 10
+          : undefined,
       });
       setSaved(form);
       toast.success("Details saved", {
@@ -171,8 +181,10 @@ function Editor({ profile, update }: { profile: UserProfile; update: (p: Paramet
 
   const aside = (
     <section className="panel p-5">
-      <h2 className="text-[19px] type-section-title tracking-[-0.5px] text-brand-navy">What this changes</h2>
-      <p className="mt-1 type-meta text-[17px] leading-5 text-text-secondary">
+      <h2 className="text-[15px] type-section-title tracking-[-0.5px] text-brand-navy">
+        What this changes
+      </h2>
+      <p className="mt-1 type-meta text-[13px] leading-5 text-text-secondary">
         Updates as you type. Nothing is saved until you press Save.
       </p>
       <dl className="mt-3 divide-y divide-border-divider">
@@ -181,7 +193,7 @@ function Editor({ profile, update }: { profile: UserProfile; update: (p: Paramet
         <Delta label="BMI" from={before.bmi} to={after.bmi} format={(n) => n.toFixed(1)} />
       </dl>
       {after.target === null && (
-        <p className="mt-3 rounded-xl bg-navy-soft p-3 type-meta text-[16px] leading-5 text-brand-navy">
+        <p className="mt-3 rounded-xl bg-navy-soft p-3 type-meta text-[12px] leading-5 text-brand-navy">
           A calorie target needs height, weight and date of birth.
         </p>
       )}
@@ -196,7 +208,7 @@ function Editor({ profile, update }: { profile: UserProfile; update: (p: Paramet
       asideLabel="What this changes"
       footer={
         <div className="flex items-center gap-3">
-          <p role="status" className="min-w-0 flex-1 type-meta text-[17px] text-text-secondary">
+          <p role="status" className="min-w-0 flex-1 type-meta text-[13px] text-text-secondary">
             {dirty ? "Unsaved changes" : "All changes saved"}
           </p>
           <PrimaryButton
@@ -219,7 +231,11 @@ function Editor({ profile, update }: { profile: UserProfile; update: (p: Paramet
         <FormSection title="Name">
           <div className="flex flex-col gap-3">
             <NameFields
-              value={{ firstName: form.firstName, middleName: form.middleName, lastName: form.lastName }}
+              value={{
+                firstName: form.firstName,
+                middleName: form.middleName,
+                lastName: form.lastName,
+              }}
               onChange={(v) => set(v)}
               error={errors.firstName}
             />
@@ -235,7 +251,10 @@ function Editor({ profile, update }: { profile: UserProfile; update: (p: Paramet
             onChange={() => {}}
           />
         </FormSection>
-        <FormSection title="Body" description="Used for your calorie target, TDEE and BMI. Never shared.">
+        <FormSection
+          title="Body"
+          description="Used for your calorie target, TDEE and BMI. Never shared."
+        >
           <div className="flex flex-col gap-3">
             <AppTextField
               label="Date of birth"
@@ -246,8 +265,20 @@ function Editor({ profile, update }: { profile: UserProfile; update: (p: Paramet
               onChange={(dob) => set({ dob })}
             />
             <div className="grid grid-cols-2 gap-3">
-              <AppTextField label="Height (ft)" type="number" placeholder="5" value={form.feet} onChange={(feet) => set({ feet })} />
-              <AppTextField label="Height (in)" type="number" placeholder="7" value={form.inches} onChange={(inches) => set({ inches })} />
+              <AppTextField
+                label="Height (ft)"
+                type="number"
+                placeholder="5"
+                value={form.feet}
+                onChange={(feet) => set({ feet })}
+              />
+              <AppTextField
+                label="Height (in)"
+                type="number"
+                placeholder="7"
+                value={form.inches}
+                onChange={(inches) => set({ inches })}
+              />
             </div>
             {errors.height && (
               <p role="alert" className="-mt-1 text-xs type-meta text-error-red">
@@ -274,14 +305,17 @@ export function PersonalDetailsScreen() {
   const { profile, update, isLoading } = useProfile();
   if (!session.isSignedIn)
     return (
-      <ProfileLayout title="Personal details" subtitle="Your name, contact and the body details your targets use.">
+      <ProfileLayout
+        title="Personal details"
+        subtitle="Your name, contact and the body details your targets use."
+      >
         <EmptyState
           icon="person"
           title="You're browsing as a guest"
           body="Create an account or log in to manage your personal details."
           action={{ label: "Create an account", to: "/signup?next=/you/personal-details" }}
         />
-        <p className="mt-3 text-center type-meta text-[17px] text-text-secondary">
+        <p className="mt-3 text-center type-meta text-[13px] text-text-secondary">
           Already have an account?{" "}
           <Link
             to="/login?next=/you/personal-details"
@@ -294,8 +328,13 @@ export function PersonalDetailsScreen() {
     );
   if (!profile)
     return (
-      <ProfileLayout title="Personal details" subtitle="Your name, contact and the body details your targets use.">
-        <p className="panel p-4 text-[17px] type-meta text-text-secondary">{isLoading ? "Loading…" : "Couldn't load your profile."}</p>
+      <ProfileLayout
+        title="Personal details"
+        subtitle="Your name, contact and the body details your targets use."
+      >
+        <p className="panel p-4 text-[13px] type-meta text-text-secondary">
+          {isLoading ? "Loading…" : "Couldn't load your profile."}
+        </p>
       </ProfileLayout>
     );
   return <Editor key={profile.email ?? "guest"} profile={profile} update={update} />;

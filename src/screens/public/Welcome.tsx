@@ -1,12 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { AppImage, PhotoFade } from "@/components/AppImage";
+import { AppImage } from "@/components/AppImage";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
+import { OnboardingDesktopFrame } from "@/components/Onboarding";
 import { Logo } from "@/components/Shell/Logo";
 import { getErrorMessage } from "@/lib/api";
 import { useNavigate } from "@/lib/nav";
 import { startGuestSession, toast } from "@/lib/store";
+
+const TRUST = [
+  { src: "/design/trust-shield.svg", label: "Secure" },
+  { src: "/design/trust-lock.svg", label: "No credit card" },
+  { src: "/design/trust-setup.svg", label: "2 min setup" },
+];
 
 export function WelcomeScreen() {
   const navigate = useNavigate();
@@ -25,47 +32,45 @@ export function WelcomeScreen() {
   };
 
   return (
-    <div className="relative min-h-dvh overflow-hidden bg-brand-navy lg:grid lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)] lg:bg-surface-white">
-      <div className="absolute inset-0 lg:relative lg:h-dvh">
-        <AppImage
-          src="/img/onboarding/welcome"
-          alt=""
-          priority
-          sizes="(min-width: 1024px) 55vw, 100vw"
-          className="absolute inset-0 size-full object-cover object-[50%_30%] sm:object-[50%_60%] lg:object-[50%_30%]"
+    <OnboardingDesktopFrame image="/img/figma-2026-11/auth/welcome">
+      <Logo size="lg" className="md:hidden" />
+      <div className="hidden h-9 md:block" aria-hidden />
+      <h1 className="pt-6 text-4xl type-numeral leading-9 tracking-[-0.8px] text-primary md:text-justify">
+        The first step toward a healthier you starts here.
+      </h1>
+      <p className="mt-3 text-sm type-body leading-[18px] tracking-[-0.176px] text-text-secondary md:text-justify">
+        ForkThis! brings everything you need to support a healthier lifestyle into one simple place,
+        so you can spend less time figuring it out and more time making progress.
+      </p>
+      <div className="flex flex-col items-center gap-3 pt-8">
+        <PrimaryButton label="Create a free account" onPress={() => navigate("/onboarding")} />
+        <SecondaryButton
+          label="Sign in"
+          onPress={() => navigate("/login")}
+          className="border-primary text-base text-primary"
         />
-        <PhotoFade className="hidden lg:block" />
+        <button
+          type="button"
+          onClick={continueAsGuest}
+          disabled={busy}
+          className="flex min-h-11 items-center justify-center px-4 text-base type-button-secondary text-primary disabled:opacity-60"
+        >
+          Continue as guest
+        </button>
       </div>
-      <main className="relative flex min-h-dvh flex-col justify-end lg:justify-center lg:px-16 lg:py-12 xl:px-24">
-        <div className="relative flex min-h-[50dvh] flex-col justify-end px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-32 lg:block lg:min-h-0 lg:p-0">
-          <PhotoFade variant="copy" className="lg:hidden" />
-          <div className="relative mx-auto w-full max-w-md lg:mx-0">
-            <Logo />
-            <h1 className="mt-5 text-onb-photo type-display text-brand-navy sm:text-onb-photo-sm lg:mt-6 lg:text-onb-display">
-              Your ForkThis! moment starts here.
-            </h1>
-            <p className="mt-3 text-onb-body text-text-secondary">
-              Know what to order or cook when real life puts your healthier habits on the spot.
-            </p>
-            <div className="mt-8 flex flex-col gap-3">
-              <PrimaryButton label="Get started" onPress={() => navigate("/onboarding")} />
-              <SecondaryButton
-                label="I already have an account"
-                onPress={() => navigate("/login")}
-                className="border-brand-navy text-base text-brand-navy"
-              />
-              <button
-                type="button"
-                onClick={continueAsGuest}
-                disabled={busy}
-                className="mx-auto h-11 px-4 text-onb-body type-button-secondary text-brand-navy underline underline-offset-4 disabled:opacity-60"
-              >
-                Continue as guest
-              </button>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
+      <ul
+        aria-label="Getting started"
+        className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs type-button-secondary text-primary"
+      >
+        {TRUST.map((t) => (
+          <li key={t.label} className="flex items-center gap-1">
+            <span className="flex size-6 items-center justify-center">
+              <AppImage src={t.src} alt="" />
+            </span>
+            {t.label}
+          </li>
+        ))}
+      </ul>
+    </OnboardingDesktopFrame>
   );
 }

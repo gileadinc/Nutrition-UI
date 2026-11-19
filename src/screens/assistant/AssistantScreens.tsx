@@ -25,7 +25,7 @@ function NewChatButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-primary pl-3.5 pr-4 text-[17px] type-button text-on-primary transition-colors hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+      className="flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-primary pl-3.5 pr-4 text-[13px] type-button text-on-primary transition-colors hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
     >
       <Icon name="pencilEdit" size={16} color="currentColor" />
       New chat
@@ -36,7 +36,9 @@ function NewChatButton({ onClick }: { onClick: () => void }) {
 function Narrow({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-full w-full">
-      <div className="page-settle mx-auto w-full max-w-2xl px-4 py-4 md:px-8 md:py-8">{children}</div>
+      <div className="page-settle mx-auto w-full max-w-2xl px-4 py-4 md:px-8 md:py-8">
+        {children}
+      </div>
     </div>
   );
 }
@@ -70,26 +72,34 @@ export function AssistantScreen() {
 
   return (
     <div className="page-settle flex h-[calc(100dvh-76px)] w-full gap-4 md:h-[calc(100dvh-108px)] md:p-4 lg:p-5">
-      <aside aria-label="Conversations" className="hidden w-72 shrink-0 flex-col gap-3 overflow-y-auto pr-3 lg:flex xl:w-80">
+      <aside
+        aria-label="Conversations"
+        className="hidden w-72 shrink-0 flex-col gap-3 overflow-y-auto pr-3 lg:flex xl:w-80"
+      >
         <div className="flex items-center justify-between gap-2 pt-1">
-          <h2 className="text-[19px] type-section-title text-text-primary">Chats</h2>
+          <h2 className="text-[15px] type-section-title text-text-primary">Chats</h2>
           <NewChatButton onClick={() => meloActions.newChat()} />
         </div>
         <MeloChatList dense onOpen={(id) => meloActions.reopen(id)} />
       </aside>
       <section
-        aria-label="Chat with Melo"
+        aria-label="Chat with ForkThis!"
         className="flex min-h-0 min-w-0 flex-1 flex-col bg-white md:panel md:overflow-hidden"
       >
         <MeloHeader
-          title="Melo"
+          title="ForkThis!"
           subtitle={SUBTITLE}
           onBack={back}
           className="border-b border-border-divider px-3 py-2 md:px-5 md:py-3 md:[&>button:first-child]:hidden"
           actions={
             <>
               <VoiceSettings />
-              <MeloIconButton label="History" icon="history" to="/assistant/history" className="lg:hidden" />
+              <MeloIconButton
+                label="History"
+                icon="history"
+                to="/assistant/history"
+                className="lg:hidden"
+              />
               <MeloIconButton
                 label="New chat"
                 icon="pencilEdit"
@@ -114,7 +124,9 @@ function HistoryBase({ search }: { search: boolean }) {
   const [q, setQ] = useState(params.get("q") ?? "");
   const history = useMelo((s) => s.history);
   const term = q.trim();
-  const count = history.filter((c) => !term || c.title.toLowerCase().includes(term.toLowerCase())).length;
+  const count = history.filter(
+    (c) => !term || c.title.toLowerCase().includes(term.toLowerCase()),
+  ).length;
   return (
     <Narrow>
       <MeloHeader
@@ -155,7 +167,9 @@ function HistoryBase({ search }: { search: boolean }) {
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-icon-well">
             <Icon name="sparkles" size={17} color="var(--color-icon-well-ink)" />
           </span>
-          <span className="min-w-0 flex-1 truncate text-[18px] type-button text-primary">Ask Melo about “{term}”</span>
+          <span className="min-w-0 flex-1 truncate text-[14px] type-button text-primary">
+            Ask ForkThis! about “{term}”
+          </span>
           <Icon name="chevronRight" size={16} color="var(--color-primary)" />
         </Link>
       )}
@@ -179,7 +193,10 @@ export function AssistantContextScreen() {
   const id = params.get("id");
 
   const item = useMemo(
-    () => (id ? ctx.catalog.find((i) => i.id === id && i.kind === (type === "hack" ? "hack" : "recipe")) : undefined),
+    () =>
+      id
+        ? ctx.catalog.find((i) => i.id === id && i.kind === (type === "hack" ? "hack" : "recipe"))
+        : undefined,
     [ctx.catalog, id, type],
   );
   const question =
@@ -197,14 +214,27 @@ export function AssistantContextScreen() {
     [question, ctx.budget, ctx.days, ctx.catalog],
   );
   const asked: MeloTurn = { id: -1, role: "user", text: question, at };
-  const turn: MeloTurn = { id: 0, role: "assistant", text: reply.text, at, rule: reply.rule, links: reply.links };
+  const turn: MeloTurn = {
+    id: 0,
+    role: "assistant",
+    text: reply.text,
+    at,
+    rule: reply.rule,
+    links: reply.links,
+  };
 
   return (
     <Narrow>
-      <MeloHeader title="Ask Melo" subtitle={SUBTITLE} onBack={back} />
+      <MeloHeader title="Ask ForkThis!" subtitle={SUBTITLE} onBack={back} />
       <div className="mt-6 flex flex-col gap-7">
         <UserBubble turn={asked} />
-        <MeloAnswer turn={turn} isLatest={false} showActions={false} onFollowUp={() => {}} onNavigate={() => {}} />
+        <MeloAnswer
+          turn={turn}
+          isLatest={false}
+          showActions={false}
+          onFollowUp={() => {}}
+          onNavigate={() => {}}
+        />
         <PrimaryButton
           size="medium"
           label="Continue in chat"
@@ -234,7 +264,7 @@ export function AssistantStateScreen() {
   if (state === "typing")
     return (
       <Narrow>
-        <MeloHeader title="Ask Melo" subtitle={SUBTITLE} onBack={back} />
+        <MeloHeader title="Ask ForkThis!" subtitle={SUBTITLE} onBack={back} />
         <div className="mt-6 flex flex-col gap-7">
           <UserBubble turn={{ id: -1, role: "user", text: "What can I order that fits?", at }} />
           <TypingIndicator />
@@ -245,12 +275,17 @@ export function AssistantStateScreen() {
   const copy = STATES[state] ?? STATES.empty;
   return (
     <Narrow>
-      <MeloHeader title="Ask Melo" subtitle={SUBTITLE} onBack={back} />
+      <MeloHeader title="Ask ForkThis!" subtitle={SUBTITLE} onBack={back} />
       <section
         aria-labelledby="melo-state-title"
         className="mx-auto mt-10 flex max-w-sm flex-col items-center text-center md:mt-16"
       >
-        <span className={cn("flex size-16 items-center justify-center rounded-full", TONE[copy.tone].well)}>
+        <span
+          className={cn(
+            "flex size-16 items-center justify-center rounded-full",
+            TONE[copy.tone].well,
+          )}
+        >
           <Icon name={copy.icon} size={30} color={TONE[copy.tone].ink} />
         </span>
         <h2 id="melo-state-title" className="mt-4 text-lg type-section-title text-text-primary">
@@ -258,9 +293,16 @@ export function AssistantStateScreen() {
         </h2>
         <p className="mt-1.5 text-sm leading-5 text-text-secondary">{copy.body}</p>
         <div className="mt-6 flex w-full flex-col gap-2.5">
-          <PrimaryButton size="medium" label={copy.primary.label} onPress={() => navigate(copy.primary.to)} />
+          <PrimaryButton
+            size="medium"
+            label={copy.primary.label}
+            onPress={() => navigate(copy.primary.to)}
+          />
           {copy.secondary && (
-            <SecondaryButton label={copy.secondary.label} onPress={() => navigate(copy.secondary!.to)} />
+            <SecondaryButton
+              label={copy.secondary.label}
+              onPress={() => navigate(copy.secondary!.to)}
+            />
           )}
         </div>
       </section>

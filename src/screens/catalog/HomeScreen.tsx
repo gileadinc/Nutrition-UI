@@ -16,15 +16,14 @@ import {
   PrimaryButton,
   Rail,
   SectionHeader,
-  SectionTitle,
+  SectionLink,
   Skeleton,
 } from "@/components";
-import type { IconName } from "@/components";
-import { LINK_ACTION, SECTION_TITLE } from "@/components/styles";
+import { SECTION_TITLE } from "@/components/styles";
 import { profileApi } from "@/lib/api";
 import { useIsLg, useScrollToTopOnMount } from "@/lib/hooks";
 import { Link, useSearchParams } from "@/lib/nav";
-import { fitFor, type Budget } from "@/lib/nutrition";
+import { fitFor, GOAL_LABEL, type Budget } from "@/lib/nutrition";
 import {
   firstNameOf,
   invalidate,
@@ -40,6 +39,7 @@ import {
 import { HOME, UI } from "@/content";
 import { nearParams, useAskForLocation, usePlaceLabel, useUserLocation } from "@/lib/location";
 import { cn } from "@/lib/utils";
+import { useLogSheet } from "@/components/Track/LogSheet";
 import { toHackVM, toRecipeVM, type HackVM, type RecipeVM } from "./adapt";
 
 const EAT_OUT_CHIPS = [
@@ -101,14 +101,6 @@ const recipeMatches = (r: RecipeVM, chip: string) => {
   }
 };
 
-const SHORTCUTS: { title: string; short: string; icon: IconName; to: string }[] = [
-  { title: "Log Meal", short: "Meal", icon: "forkSpoon", to: "/track/log-meal" },
-  { title: "Add Drink", short: "Water", icon: "droplet", to: "/track/water" },
-  { title: "Log Activity", short: "Activity", icon: "activity", to: "/track/activity" },
-  { title: "Log Medication", short: "Medication", icon: "medication", to: "/track/medication" },
-  { title: "Log Weight", short: "Weight", icon: "weightScale", to: "/track/weight" },
-];
-
 const TOUR = HOME.tour;
 const TOUR_KEY = "forkthis.homeTourDone";
 const tourDone = () => {
@@ -135,7 +127,7 @@ function FirstRunTour({ onClose }: { onClose: () => void }) {
       aria-labelledby="first-run-tour-title"
       className="panel fixed inset-x-4 bottom-[76px] z-40 p-5 md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem]"
     >
-      <p className="text-[17px] type-meta text-text-secondary">
+      <p className="text-[13px] type-meta text-text-secondary">
         Quick tour · Step {step + 1} of {TOUR.length}
       </p>
       <h2
@@ -145,7 +137,7 @@ function FirstRunTour({ onClose }: { onClose: () => void }) {
       >
         {item.title}
       </h2>
-      <p className="mt-2 type-meta text-[17px] leading-5 text-text-secondary">{item.body}</p>
+      <p className="mt-2 type-meta text-[13px] leading-5 text-text-secondary">{item.body}</p>
       <div className="mt-5 flex items-center gap-2">
         <button
           type="button"
@@ -176,14 +168,15 @@ function FirstRunTour({ onClose }: { onClose: () => void }) {
   );
 }
 
-const RING = 178;
-const RING_STROKE = 12;
-const RING_C = RING / 2;
-const RING_R0 = 83;
+const RING_VB = 104;
+const RING_STROKE = 10;
+const RING_C = RING_VB / 2;
+const RING_R = 47;
 
-/** Today's progress: three concentric rings + selectable summary. */
+/** Today's progress: three small rings (calories / protein / water) and a selectable summary. */
 function TodayProgress({ budget }: { budget: Budget }) {
   const [sel, setSel] = useState(0);
+  const [hover, setHover] = useState<number | null>(null);
   const [settled, setSettled] = useState(false);
   useEffect(() => {
     const id = requestAnimationFrame(() => requestAnimationFrame(() => setSettled(true)));
@@ -215,115 +208,115 @@ function TodayProgress({ budget }: { budget: Budget }) {
       ink: "var(--color-brand-navy)",
     },
   ];
-  const cur = rows[sel];
-  const left = Math.max(0, cur.goal - cur.value);
+  const active = hover ?? sel;
+  const cur = rows[active];
   const frac = (r: (typeof rows)[number]) =>
     r.goal === 0 ? 0 : Math.min(1, Math.max(0, r.value / r.goal));
+  const pct = (r: (typeof rows)[number]) => Math.round(frac(r) * 100);
   const fmt = (n: number) => n.toLocaleString("en-US");
+  const circ = 2 * Math.PI * RING_R;
+  const remaining =
+    cur.value > cur.goal
+      ? `${fmt(cur.value - cur.goal)} ${cur.unit} over goal`
+      : cur.goal - cur.value <= 0
+        ? "Goal reached"
+        : `${fmt(cur.goal - cur.value)} ${cur.unit} remaining today`;
   return (
-    <div className="rounded-[18px] border border-border-default bg-white px-[18px] pb-[18px] pt-4 shadow-card">
+    <div className="panel @container px-4 pb-4 pt-4 md:px-5">
       <div className="flex items-center gap-3">
         <h2 className={cn(SECTION_TITLE, "min-w-0 flex-1 truncate")}>Today&apos;s progress</h2>
-        <Link to="/track" className={LINK_ACTION}>
-          View progress
-          <Icon name="chevronRight" size={14} color="var(--color-primary)" />
-        </Link>
+        <SectionLink to="/track">View progress</SectionLink>
       </div>
-      <div className="mt-[14px] flex flex-col items-center">
-        <svg
-          width={RING}
-          height={RING}
-          viewBox={`0 0 ${RING} ${RING}`}
-          role="img"
-          data-testid="home-progress-rings"
-          aria-label={rows.map((r) => `${r.label}: ${r.value} of ${r.goal} ${r.unit}`).join(", ")}
-        >
-          {rows.map((r, i) => {
-            const radius = RING_R0 - i * 18;
-            const circ = 2 * Math.PI * radius;
-            return (
-              <g key={r.label}>
-                <circle
-                  cx={RING_C}
-                  cy={RING_C}
-                  r={radius}
-                  fill="none"
-                  stroke={r.color}
-                  strokeOpacity={0.14}
-                  strokeWidth={RING_STROKE}
-                />
-                <circle
-                  cx={RING_C}
-                  cy={RING_C}
-                  r={radius}
-                  fill="none"
-                  stroke={r.color}
-                  strokeWidth={RING_STROKE}
-                  strokeLinecap="round"
-                  strokeDasharray={`${circ * frac(r) * (settled ? 1 : 0)} ${circ}`}
-                  transform={`rotate(-90 ${RING_C} ${RING_C})`}
-                  strokeOpacity={frac(r) === 0 ? 0 : 1}
-                  className="transition-[stroke-dasharray] duration-1000 ease-out motion-reduce:transition-none"
-                />
-              </g>
-            );
-          })}
-          <text
-            x={RING_C}
-            y={RING_C}
-            textAnchor="middle"
-            dominantBaseline="central"
-            className="fill-brand-navy text-[17px] type-meta"
-          >
-            Today
-          </text>
-        </svg>
-      </div>
-      <div className="mt-[14px] flex gap-1.5">
+      <div
+        role="group"
+        data-testid="home-progress-rings"
+        aria-label={rows.map((r) => `${r.label}: ${r.value} of ${r.goal} ${r.unit}`).join(", ")}
+        className="mt-4 grid grid-cols-3 gap-1.5 @sm:gap-3"
+        onMouseLeave={() => setHover(null)}
+      >
         {rows.map((r, i) => {
-          const on = sel === i;
+          const on = active === i;
           return (
             <button
               key={r.label}
               type="button"
-              aria-pressed={on}
+              aria-pressed={sel === i}
+              aria-label={`${r.label}, ${fmt(r.value)} of ${fmt(r.goal)} ${r.unit}`}
               onClick={() => setSel(i)}
-              className="flex flex-1 flex-col items-center rounded-[10px] px-1.5 py-[9px]"
-              style={
-                on
-                  ? { backgroundColor: `color-mix(in srgb, ${r.color} 8%, transparent)` }
-                  : undefined
-              }
+              onMouseEnter={() => setHover(i)}
+              onFocus={() => setHover(i)}
+              onBlur={() => setHover(null)}
+              className={cn(
+                "tap-44 group relative flex min-w-0 flex-col items-center gap-1.5 rounded-2xl px-1 py-3 transition-[opacity,background-color] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus motion-reduce:transition-none",
+                !on && "opacity-55",
+              )}
+              style={{
+                backgroundColor: on ? `color-mix(in srgb, ${r.color} 8%, white)` : undefined,
+              }}
             >
-              <span
-                aria-hidden
-                className="size-2.5 rounded-full"
-                style={{ backgroundColor: r.color }}
-              />
-              <span
-                className={cn(
-                  "mt-[5px] max-w-full truncate text-[14px] type-button tracking-[-0.4725px]",
-                  !on && "text-text-secondary",
-                )}
-                style={on ? { color: r.ink } : undefined}
-              >
-                {r.label}
+              <span aria-hidden className="relative block aspect-square w-full max-w-[104px]">
+                <svg viewBox={`0 0 ${RING_VB} ${RING_VB}`} className="absolute inset-0 size-full">
+                  <circle
+                    cx={RING_C}
+                    cy={RING_C}
+                    r={RING_R}
+                    fill="none"
+                    stroke={r.color}
+                    strokeOpacity={0.14}
+                    strokeWidth={RING_STROKE}
+                  />
+                  <circle
+                    cx={RING_C}
+                    cy={RING_C}
+                    r={RING_R}
+                    fill="none"
+                    stroke={r.color}
+                    strokeWidth={RING_STROKE}
+                    strokeLinecap="round"
+                    strokeDasharray={`${circ * frac(r) * (settled ? 1 : 0)} ${circ}`}
+                    transform={`rotate(-90 ${RING_C} ${RING_C})`}
+                    strokeOpacity={frac(r) === 0 ? 0 : 1}
+                    className="transition-[stroke-dasharray] duration-1000 ease-out motion-reduce:transition-none"
+                  />
+                </svg>
+                <span className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span
+                    className="text-[clamp(15px,5.5cqw,22px)] leading-none type-numeral tabular-nums tracking-[-0.8px]"
+                    style={{ color: r.ink }}
+                  >
+                    {fmt(r.value)}
+                  </span>
+                  <span className="mt-0.5 text-[12px] leading-4 type-meta text-text-secondary">
+                    {r.unit}
+                  </span>
+                </span>
+              </span>
+              <span className="flex min-w-0 max-w-full flex-col items-center">
+                <span className="max-w-full truncate text-[13px] type-item-title text-text-primary">
+                  {r.label}
+                </span>
+                <span className="text-[12px] type-meta tabular-nums text-text-secondary">
+                  {pct(r)}%
+                </span>
               </span>
             </button>
           );
         })}
       </div>
-      <div className="mt-4 rounded-xl bg-brand-cream px-[14px] pb-[11px] pt-3 text-center">
-        <p
-          data-testid="home-progress-total"
-          className="truncate text-2xl type-numeral leading-8 tracking-[-1.08px]"
-          style={{ color: cur.ink }}
-        >
-          {fmt(cur.value)} / {fmt(cur.goal)} {cur.unit}
-        </p>
-        <p className="mt-0.5 text-xs type-meta leading-4 tracking-[-0.54px] text-text-secondary">
-          {left === 0 ? `${cur.label} goal reached` : `${fmt(left)} ${cur.unit} remaining today`}
-        </p>
+      <div aria-live="polite" data-testid="home-progress-center" className="mt-3 text-center">
+        <div key={cur.label} className="motion-safe:animate-[fade-in_200ms_ease-out]">
+          <p className="text-[12px] uppercase tracking-[0.08em] type-meta text-text-secondary">
+            {cur.label}
+          </p>
+          <p
+            data-testid="home-progress-total"
+            className="mt-0.5 text-[16px] leading-6 type-row-figure tabular-nums"
+            style={{ color: cur.ink }}
+          >
+            {fmt(cur.value)} / {fmt(cur.goal)} {cur.unit}
+          </p>
+          <p className="text-[12px] leading-4 type-meta text-text-secondary">{remaining}</p>
+        </div>
       </div>
     </div>
   );
@@ -334,40 +327,15 @@ function ProgressColumn({ withShortcuts, budget }: { withShortcuts: boolean; bud
   const progress = <TodayProgress budget={budget} />;
   if (!withShortcuts) return progress;
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] xl:grid-cols-1">
+    <div className="flex flex-col gap-3">
       {progress}
-      <section
-        aria-labelledby="home-log-heading"
-        className="panel flex flex-col p-4 shadow-card"
+      <Link
+        to="/you/saved"
+        className="tap-24 tap-44 relative gap-2 self-start text-[13px] type-button-secondary text-text-secondary"
       >
-        <h3 id="home-log-heading" className="eyebrow text-[15px]">
-          Log something
-        </h3>
-        <div className="mt-3 grid grid-cols-[repeat(2,minmax(0,1fr))] gap-2 lg:grid-cols-[minmax(0,1fr)] xl:grid-cols-[repeat(2,minmax(0,1fr))]">
-          {SHORTCUTS.map((s, i) => (
-            <Link
-              key={s.title}
-              to={s.to}
-              className={cn(
-                "flex min-h-11 items-center gap-2 rounded-xl border border-border-default px-3 py-2.5 text-[17px] type-button-secondary text-text-primary hover:bg-brand-warm-gray lg:py-3.5 xl:py-2.5",
-                i === SHORTCUTS.length - 1 &&
-                  SHORTCUTS.length % 2 === 1 &&
-                  "col-span-2 lg:col-span-1 xl:col-span-2",
-              )}
-            >
-              <Icon name={s.icon} size={15} color="var(--color-primary)" />
-              {s.short}
-            </Link>
-          ))}
-        </div>
-        <Link
-          to="/you/saved"
-          className="tap-24 tap-44 relative mt-4 flex items-center gap-2 self-start text-[17px] type-button-secondary text-text-secondary lg:mt-auto lg:pt-4 xl:mt-4 xl:pt-0"
-        >
-          <Icon name="bookmark" size={15} color="var(--color-primary)" />
-          {saved.count === 0 ? "Nothing saved yet" : `${saved.count} saved`}
-        </Link>
-      </section>
+        <Icon name="bookmark" size={15} color="var(--color-primary)" />
+        {saved.count === 0 ? "Nothing saved yet" : `${saved.count} saved`}
+      </Link>
     </div>
   );
 }
@@ -375,6 +343,7 @@ function ProgressColumn({ withShortcuts, budget }: { withShortcuts: boolean; bud
 export function HomeScreen() {
   useScrollToTopOnMount();
   const { profile } = useProfile();
+  const logs = useLogSheet();
   const { budget } = useDayBudget();
   const saved = useSaved();
   const lg = useIsLg();
@@ -397,9 +366,13 @@ export function HomeScreen() {
   const showTour =
     mounted && !dismissed && !tourDone() && (params.get("tour") === "1" || guidanceTour);
 
-  const hacks = useMemo(() => (hacksRes.data?.items ?? []).map((h) => toHackVM(h)), [hacksRes.data]);
+  const hacks = useMemo(
+    () => (hacksRes.data?.items ?? []).map((h) => toHackVM(h)),
+    [hacksRes.data],
+  );
   const recipes = useMemo(() => {
-    const fromHome = home.signedIn.data?.recommendations.recipes ?? home.guest.data?.featuredRecipes;
+    const fromHome =
+      home.signedIn.data?.recommendations.recipes ?? home.guest.data?.featuredRecipes;
     const src = fromHome && fromHome.length > 0 ? fromHome : (recipesRes.data?.items ?? []);
     return src.map(toRecipeVM);
   }, [home.signedIn.data, home.guest.data, recipesRes.data]);
@@ -431,10 +404,12 @@ export function HomeScreen() {
   const toggle = (set: typeof setEatChips) => (c: string) =>
     set((cur) => (cur.includes(c) ? cur.filter((x) => x !== c) : [...cur, c]));
   const loadingHacks = hacksRes.isLoading && !hacksRes.data;
-  const loadingRecipes = recipes.length === 0 && (recipesRes.isLoading || home.signedIn.isLoading || home.guest.isLoading);
+  const loadingRecipes =
+    recipes.length === 0 &&
+    (recipesRes.isLoading || home.signedIn.isLoading || home.guest.isLoading);
 
   return (
-    <PageContainer className="max-w-[1680px]">
+    <PageContainer className="max-w-7xl">
       {showTour && <FirstRunTour onClose={closeTour} />}
       <ListingHeader
         eyebrow={`HI, ${name.toUpperCase()}`}
@@ -446,6 +421,16 @@ export function HomeScreen() {
         topActionTo="/you/notifications"
         topActionIcon="bell"
         topActionLabel="Notifications"
+        action={
+          <button
+            type="button"
+            onClick={() => logs.open("meal")}
+            className="tap-44 relative flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-[15px] type-button text-white transition-colors hover:bg-primary-hover"
+          >
+            <Icon name="plusSign" size={18} color="currentColor" />
+            Log a meal
+          </button>
+        }
       />
       <BentoGrid className="mt-6">
         <BentoCell className="xl:col-span-8">
@@ -457,13 +442,17 @@ export function HomeScreen() {
             onClear={() => setEatChips([])}
           />
           <div className="mt-6">
-            <SectionTitle
-              action="See all"
-              actionTo="/fast-hacks"
-              location={coords ? (place ?? UI.location.eyebrow) : undefined}
-            >
-              Eat Out near you
-            </SectionTitle>
+            {coords && (
+              <span className="flex min-h-11 max-w-full items-center gap-1 text-xs text-primary">
+                <Icon name="location" size={14} />
+                <span className="truncate">{place ?? UI.location.eyebrow}</span>
+              </span>
+            )}
+            <SectionHeader
+              title="Eat Out near you"
+              subtitle={`Picked for your ${(profile?.goal ? GOAL_LABEL[profile.goal] : "your").toLowerCase()} goal`}
+              action={{ label: "See all", to: "/fast-hacks" }}
+            />
           </div>
           <div className="mt-3">
             {loadingHacks ? (

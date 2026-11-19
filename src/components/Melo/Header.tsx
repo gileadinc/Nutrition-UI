@@ -62,8 +62,12 @@ export function MeloHeader({
       )}
       <MeloMark size={markSize} />
       <div className="min-w-0 flex-1">
-        <Title className="truncate text-[21px] type-section-title leading-6 text-text-primary">{title}</Title>
-        {subtitle && <p className="truncate text-xs type-meta leading-4 text-text-secondary">{subtitle}</p>}
+        <Title className="truncate text-[21px] type-section-title leading-6 text-text-primary">
+          {title}
+        </Title>
+        {subtitle && (
+          <p className="truncate text-xs type-meta leading-4 text-text-secondary">{subtitle}</p>
+        )}
       </div>
       {actions && <div className="relative flex shrink-0 items-center gap-1.5">{actions}</div>}
     </header>
@@ -132,7 +136,7 @@ export function VoiceSettings() {
                 onClick={() => meloActions.setVoiceReplies(!on)}
                 className="flex min-h-11 w-full items-center gap-3 rounded-[12px] px-2.5 py-2 text-left transition-colors hover:bg-icon-well focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
               >
-                <span className="min-w-0 flex-1 text-[18px] type-item-title leading-5 text-text-primary">
+                <span className="min-w-0 flex-1 text-[14px] type-item-title leading-5 text-text-primary">
                   Read answers aloud after voice questions
                 </span>
                 <span
@@ -142,10 +146,18 @@ export function VoiceSettings() {
                     on ? "bg-control-on" : "bg-border-default",
                   )}
                 >
-                  <span className={cn("size-5 rounded-full bg-white transition-transform", on && "translate-x-5")} />
+                  <span
+                    className={cn(
+                      "size-5 rounded-full bg-white transition-transform",
+                      on && "translate-x-5",
+                    )}
+                  />
                 </span>
               </button>
-              <p id={`${id}-hint`} className="px-2.5 pb-1.5 text-xs type-meta leading-4 text-text-secondary">
+              <p
+                id={`${id}-hint`}
+                className="px-2.5 pb-1.5 text-xs type-meta leading-4 text-text-secondary"
+              >
                 Typed questions are never read aloud. Every answer has its own Read aloud.
               </p>
             </>

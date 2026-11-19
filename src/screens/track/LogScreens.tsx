@@ -93,7 +93,7 @@ function TodayMealsPanel() {
         onRemove: () => void onRemove(m),
       }))}
       footer={
-        <Link to="/track/meals" className="tap-24 text-[17px] type-button text-primary">
+        <Link to="/track/meals" className="tap-24 text-[13px] type-button text-primary">
           Meal history
         </Link>
       }
@@ -119,7 +119,9 @@ function CaloriesToday() {
 
 export function LogMealPickerScreen() {
   const [params] = useSearchParams();
-  const [meal, setMeal] = useState<MealLabel>(() => parseMealLabel(params.get("meal")) ?? mealForTime());
+  const [meal, setMeal] = useState<MealLabel>(
+    () => parseMealLabel(params.get("meal")) ?? mealForTime(),
+  );
   const portion = usePortionSheet(meal);
   const [query, setQuery] = useState("");
   const q = useDebouncedValue(query.trim(), 250);
@@ -207,7 +209,7 @@ export function LogMealPickerScreen() {
         />
         <Link
           to={`/track/log-meal/custom?type=${meal}`}
-          className="flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-border-default bg-white px-4 text-[17px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400"
+          className="flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-border-default bg-white px-4 text-[13px] type-button-secondary text-text-primary transition-colors hover:border-text-neutral-400"
         >
           <Icon name="pencilEdit" size={15} color="var(--color-text-primary)" />
           Enter it yourself
@@ -231,7 +233,8 @@ export function LogMealPickerScreen() {
                   protein: entry.protein,
                   carbs: entry.carbs,
                   fat: entry.fat,
-                  sourceType: (entry.sourceType as "custom" | "recipe" | "fast_hack" | null) ?? "custom",
+                  sourceType:
+                    (entry.sourceType as "custom" | "recipe" | "fast_hack" | null) ?? "custom",
                   sourceItemId: entry.sourceItemId ?? undefined,
                 }),
             }))}
@@ -243,7 +246,7 @@ export function LogMealPickerScreen() {
         {loading && catalogue.length === 0 ? (
           <CatalogueSkeleton />
         ) : catalogue.length === 0 ? (
-          <p className="panel p-4 text-[17px] type-meta text-text-secondary">
+          <p className="panel p-4 text-[13px] type-meta text-text-secondary">
             Nothing matches “{query.trim()}”.{" "}
             <Link to={`/track/log-meal/custom?type=${meal}`} className="type-button text-primary">
               Enter it yourself
@@ -276,8 +279,12 @@ export function LogMealPickerScreen() {
                     className="size-16 shrink-0 rounded-xl object-cover"
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm type-item-title text-text-primary">{c.title}</span>
-                    <span className="block truncate text-xs type-meta text-text-secondary">{c.source}</span>
+                    <span className="block truncate text-sm type-item-title text-text-primary">
+                      {c.title}
+                    </span>
+                    <span className="block truncate text-xs type-meta text-text-secondary">
+                      {c.source}
+                    </span>
                     <span className="mt-0.5 block text-xs type-meta tabular-nums text-text-primary">
                       {c.calories} kcal · {c.protein}g protein
                     </span>
@@ -385,7 +392,12 @@ export function LogMealScreen() {
         }}
       >
         <ChipRow label="Meal" options={MEAL_TYPES} value={meal} onChange={setMeal} />
-        <AppTextField label="What did you eat?" value={name} error={errors.title} onChange={setName} />
+        <AppTextField
+          label="What did you eat?"
+          value={name}
+          error={errors.title}
+          onChange={setName}
+        />
         <AppTextField
           label="Calories"
           type="number"
@@ -410,7 +422,7 @@ export function LogMealScreen() {
           </div>
         </fieldset>
         <div
-          className="rounded-2xl bg-brand-warm-gray px-4 py-3 text-[17px] type-meta text-text-secondary"
+          className="rounded-2xl bg-brand-warm-gray px-4 py-3 text-[13px] type-meta text-text-secondary"
           aria-live="polite"
         >
           {kcal === null ? (
@@ -502,7 +514,11 @@ export function LogWaterScreen() {
   };
 
   const status =
-    oz > goal ? `${oz - goal} oz over goal` : oz === goal ? "Goal reached today" : `${goal - oz} oz to go`;
+    oz > goal
+      ? `${oz - goal} oz over goal`
+      : oz === goal
+        ? "Goal reached today"
+        : `${goal - oz} oz to go`;
 
   const drinks = [...today.hydration].sort((a, b) => a.loggedAt.localeCompare(b.loggedAt));
   const rows = drinks
@@ -526,8 +542,8 @@ export function LogWaterScreen() {
       aside={
         <section aria-label="This week's water">
           <div className="flex items-baseline gap-2">
-            <h2 className="eyebrow flex-1 text-[17px]">This week</h2>
-            <Link to="/track/water/history" className="tap-24 text-[17px] type-button text-primary">
+            <h2 className="eyebrow flex-1 text-[13px]">This week</h2>
+            <Link to="/track/water/history" className="tap-24 text-[13px] type-button text-primary">
               History
             </Link>
           </div>
@@ -611,7 +627,7 @@ export function LogWaterScreen() {
             />
             <div
               aria-hidden="true"
-              className="mt-1.5 flex justify-between text-[15px] type-meta tabular-nums text-text-secondary"
+              className="mt-1.5 flex justify-between text-[11px] type-meta tabular-nums text-text-secondary"
             >
               <span>{CUSTOM_STOPS[0]} oz</span>
               <span>{CUSTOM_STOPS[CUSTOM_STOPS.length - 1]} oz</span>
@@ -641,7 +657,7 @@ export function LogWaterScreen() {
       </section>
       <section className="mt-5" aria-label="Today's water">
         <div className="flex items-baseline gap-2">
-          <h2 className="eyebrow flex-1 text-[17px]">Today</h2>
+          <h2 className="eyebrow flex-1 text-[13px]">Today</h2>
           {drinks.length > 0 && (
             <span className="text-xs type-meta text-text-secondary">
               {drinks.length} {drinks.length === 1 ? "drink" : "drinks"} ·{" "}
@@ -650,7 +666,7 @@ export function LogWaterScreen() {
           )}
         </div>
         {drinks.length === 0 ? (
-          <p className="panel mt-2.5 px-4 py-5 text-center text-[17px] type-meta text-text-secondary">
+          <p className="panel mt-2.5 px-4 py-5 text-center text-[13px] type-meta text-text-secondary">
             Nothing logged yet. Tap an amount above and it shows up here.
           </p>
         ) : (
@@ -662,8 +678,12 @@ export function LogWaterScreen() {
                     <Icon name="droplet" size={13} color="var(--color-brand-navy)" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="text-sm type-row-figure tabular-nums text-text-primary">{w.ounces} oz</span>
-                    <span className="ml-2 text-xs type-meta text-text-secondary">{ago(w.loggedAt)}</span>
+                    <span className="text-sm type-row-figure tabular-nums text-text-primary">
+                      {w.ounces} oz
+                    </span>
+                    <span className="ml-2 text-xs type-meta text-text-secondary">
+                      {ago(w.loggedAt)}
+                    </span>
                   </span>
                   <span className="shrink-0 text-xs type-meta tabular-nums text-text-neutral-500">
                     {total} oz <span className="text-text-neutral-400">total</span>
@@ -697,9 +717,11 @@ export function LogWaterScreen() {
                 type="button"
                 onClick={() => setShowAll((s) => !s)}
                 aria-expanded={showAll}
-                className="mt-2 h-12 w-full justify-center rounded-2xl border border-border-default bg-white text-[17px] type-button text-primary"
+                className="mt-2 h-12 w-full justify-center rounded-2xl border border-border-default bg-white text-[13px] type-button text-primary"
               >
-                {showAll ? "Show less" : `Show all ${rows.length} (${rows.length - shown.length} more)`}
+                {showAll
+                  ? "Show less"
+                  : `Show all ${rows.length} (${rows.length - shown.length} more)`}
               </button>
             )}
           </>
@@ -708,7 +730,6 @@ export function LogWaterScreen() {
     </TrackLogLayout>
   );
 }
-
 
 function WaterRing({ oz, goal }: { oz: number; goal: number }) {
   return (
@@ -721,7 +742,9 @@ function WaterRing({ oz, goal }: { oz: number; goal: number }) {
       overlap
       label={`${oz} of ${goal} oz today`}
     >
-      <span className="text-[44px] type-numeral leading-none tracking-[-1.9px] text-brand-navy">{oz}</span>
+      <span className="text-[44px] type-numeral leading-none tracking-[-1.9px] text-brand-navy">
+        {oz}
+      </span>
       <span className="mt-1 text-xs type-meta text-text-secondary">of {goal} oz</span>
     </MiniRing>
   );
@@ -746,7 +769,8 @@ const ERRORS: Record<
     attempt: "Water log",
     retryPath: "/track/water",
     secondaryAction: "Set Reminder",
-    errorMessage: "We were unable to save your drink log. Don't worry - we'll remind you to try again.",
+    errorMessage:
+      "We were unable to save your drink log. Don't worry - we'll remind you to try again.",
     noticeTitle: "Hydration log not saved",
     noticeBody: "Your water goal is unchanged until this drink is saved successfully.",
   },
@@ -755,7 +779,8 @@ const ERRORS: Record<
     attempt: "Meal log",
     retryPath: "/track/log-meal",
     secondaryAction: "Save Draft",
-    errorMessage: "We were unable to save your meal log. Don't worry - you can try again or keep it for later.",
+    errorMessage:
+      "We were unable to save your meal log. Don't worry - you can try again or keep it for later.",
     noticeTitle: "Meal log not saved",
     noticeBody: "Your calorie and macro totals will update after the meal is saved successfully.",
   },
@@ -782,7 +807,7 @@ export function TrackLogErrorScreen() {
         >
           Couldn&apos;t Log {c.noun}
         </h1>
-        <p className="mt-2 text-[17px] type-meta leading-[1.4] tracking-[-0.585px] text-text-neutral-500">
+        <p className="mt-2 text-[13px] type-meta leading-[1.4] tracking-[-0.585px] text-text-neutral-500">
           {c.errorMessage}
         </p>
       </div>
@@ -808,7 +833,9 @@ export function TrackLogErrorScreen() {
       >
         <Icon name="alert" size={18} color="var(--color-accent-ink)" />
         <div className="min-w-0 flex-1">
-          <p className="text-sm type-item-title tracking-[-0.63px] text-text-primary">{c.noticeTitle}</p>
+          <p className="text-sm type-item-title tracking-[-0.63px] text-text-primary">
+            {c.noticeTitle}
+          </p>
           <p className="mt-1 text-xs type-meta leading-[1.45] tracking-[-0.54px] text-text-secondary">
             {c.noticeBody}
           </p>

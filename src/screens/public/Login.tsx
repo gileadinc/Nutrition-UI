@@ -1,57 +1,26 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { AppImage } from "@/components/AppImage";
 import { PrimaryButton, SocialButton } from "@/components/Button";
 import { OnboardingDesktopFrame } from "@/components/Onboarding";
 import { Logo } from "@/components/Shell/Logo";
 import { AppTextField, AppleLogo, GoogleLogo } from "@/components/TextField";
 import { authApi, getErrorMessage } from "@/lib/api";
 import { APPLE_SIGN_IN_ENABLED } from "@/lib/auth";
-import { useIsLg } from "@/lib/hooks";
 import { Link, useNavigate, useSearchParam } from "@/lib/nav";
 import { isValidEmail } from "@/lib/nutrition";
 import { completeSignIn, syncOnboardingToProfile } from "@/lib/store";
 import { useSocialSignIn } from "./useSocialSignIn";
 
 /** Only follow same-origin relative `next` targets. */
-export const safeNext = (v: string | null) => (v && v.startsWith("/") && !v.startsWith("//") ? v : null);
+export const safeNext = (v: string | null) =>
+  v && v.startsWith("/") && !v.startsWith("//") ? v : null;
 
 function LoginFrame({ children }: { children: ReactNode }) {
-  const lg = useIsLg();
-  const src = "/img/auth/login-hero";
-  return lg ? (
-    <OnboardingDesktopFrame
-      image={src}
-      tone="ink"
-      imagePosition="top"
-      label="WELCOME BACK"
-      title="Your plan is ready where you left it."
-      body="Return to saved meals, daily targets and recommendations shaped around your goals."
-      contentClassName="max-w-md"
-    >
+  return (
+    <OnboardingDesktopFrame image="/img/figma-2026-11/auth/login">
       {children}
     </OnboardingDesktopFrame>
-  ) : (
-    <main className="relative min-h-dvh overflow-hidden bg-white">
-      <AppImage
-        src={src}
-        alt=""
-        priority
-        sizes="100vw"
-        className="absolute inset-0 size-full object-cover object-top"
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(to bottom, rgb(255 255 255 / 0) 22%, rgb(255 255 255 / 0.2) 48%, rgb(255 255 255 / 0.95) 68%, rgb(255 255 255) 100%)",
-        }}
-      />
-      <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(to_bottom,rgb(255_255_255/0),rgb(255_255_255/0.9)_4rem,rgb(255_255_255)_7rem)] px-5 pb-3 pt-20 sm:pt-24">
-        <div className="mx-auto w-full max-w-md">{children}</div>
-      </div>
-    </main>
   );
 }
 
@@ -79,7 +48,9 @@ export function LoginScreen() {
       const res = await authApi.signIn({ email: email.trim(), password });
       const ok = await completeSignIn(res);
       if (!ok) {
-        setNotice("Additional verification is required for this account, which isn't supported here yet.");
+        setNotice(
+          "Additional verification is required for this account, which isn't supported here yet.",
+        );
         setBusy(false);
         return;
       }
@@ -104,10 +75,10 @@ export function LoginScreen() {
           className="text-4xl type-display text-primary"
           style={{ letterSpacing: "-1.62px", lineHeight: "38px" }}
         >
-          Welcome back
+          We’re happy you’re back!
         </h1>
-        <p className="mt-2 type-meta text-[17px] leading-5 text-text-secondary">
-          Sign in to keep your ForkThis! moments, saves, and momentum together.
+        <p className="mt-2 type-meta text-[13px] leading-5 text-text-secondary">
+          Sign in to continue your personalized ForkThis! settings.
         </p>
         <div className="mt-4 flex flex-col gap-3">
           <AppTextField
@@ -141,7 +112,7 @@ export function LoginScreen() {
         <PrimaryButton label={busy ? "Signing in..." : "Sign in"} type="submit" disabled={busy} />
         <div className="my-4 flex items-center gap-3">
           <span className="h-px flex-1 bg-border-divider" />
-          <span className="text-[15px] type-meta text-text-neutral-600">OR SIGN IN WITH</span>
+          <span className="text-[12px] type-meta text-text-neutral-600">OR SIGN IN WITH</span>
           <span className="h-px flex-1 bg-border-divider" />
         </div>
         <div className="flex gap-3">
@@ -162,7 +133,7 @@ export function LoginScreen() {
           />
         </div>
         {(social.error || notice) && (
-          <p role="status" className="mt-3 text-center type-meta text-[17px] text-text-secondary">
+          <p role="status" className="mt-3 text-center type-meta text-[13px] text-text-secondary">
             {social.error ?? notice}
           </p>
         )}
