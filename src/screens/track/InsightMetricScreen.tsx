@@ -5,6 +5,7 @@ import { PageContainer } from "@/components/Layout";
 import { PrimaryButton } from "@/components/Button";
 import { Icon, type IconName } from "@/components/Icon";
 import { Empty, WidgetCard, type Stat } from "@/components/Track/TrackOverview";
+import { InsightChart, type InsightReading } from "@/components/Charts/TrackCharts";
 import { useLogSheet, type LogTab } from "@/components/Track/LogSheet";
 import { useBodyLog } from "@/components/Track/bodyLog";
 import { Link, Navigate, useParams, useSearchParams } from "@/lib/nav";
@@ -229,7 +230,10 @@ function Inner({
   onPeriod: (n: number) => void;
 }) {
   const logs = useLogSheet();
-  const readings = useReadings(m, period);
+  const both = useReadings(m, period * 2);
+  const readings = both.slice(period);
+  const previous = both.slice(0, period);
+  const [compare, setCompare] = useState(false);
   const [sel, setSel] = useState<number | null>(null);
   const known = readings.filter((r) => r.value !== null) as (Reading & { value: number })[];
   const last = readings.reduce((acc, r, i) => (r.value === null ? acc : i), readings.length - 1);
@@ -369,6 +373,33 @@ function Inner({
           subtitle={`Last ${period} days`}
           heightClass="h-[17rem]"
           stats={stats}
+          action={
+            <button
+              type="button"
+              role="switch"
+              aria-checked={compare}
+              onClick={() => setCompare((v) => !v)}
+              className="tap-44 relative flex shrink-0 items-center gap-2 text-[12px] type-button text-text-primary"
+            >
+              <span
+                aria-hidden
+                className={cn(
+                  "flex h-5 w-9 items-center rounded-full border p-0.5",
+                  compare
+                    ? "justify-end border-control-on bg-control-on"
+                    : "justify-start border-border-default bg-white",
+                )}
+              >
+                <span
+                  className={cn(
+                    "size-3.5 rounded-full",
+                    compare ? "bg-white" : "bg-text-neutral-400",
+                  )}
+                />
+              </span>
+              Compare
+            </button>
+          }
         >
           <div className="flex h-full flex-col gap-2">
             <p aria-live="polite" className="min-h-5 text-[13px] type-meta text-text-secondary">
@@ -380,21 +411,23 @@ function Inner({
                 <Empty icon={m.icon}>
                   Nothing logged for {m.label.toLowerCase()} in this period yet.
                 </Empty>
-              ) : m.chart === "line" ? (
-                <LineByDay
-                  readings={readings}
-                  selected={sel ?? last}
-                  onSelect={setSel}
-                  period={period}
-                />
               ) : (
-                <BarsByDay
-                  readings={readings}
-                  accent={m.accent}
+                <InsightChart
+                  data={readings.map((r, i): InsightReading => ({
+                    key: r.date,
+                    label: short(r.date, period),
+                    value: r.value,
+                    prev: previous[i]?.value ?? null,
+                  }))}
+                  kind={m.chart === "line" ? "line" : "bars"}
                   direction={m.direction}
+                  accent={m.accent}
+                  target={target}
+                  unit={m.unit}
                   selected={sel ?? last}
                   onSelect={setSel}
-                  period={period}
+                  compare={compare}
+                  manyDays={period > 14}
                 />
               )}
             </div>
@@ -450,138 +483,5 @@ function Inner({
         </WidgetCard>
       </div>
     </PageContainer>
-  );
-}
-
-function BarsByDay({
-  readings,
-  accent,
-  direction,
-  selected,
-  onSelect,
-  period,
-}: {
-  readings: Reading[];
-  accent: string;
-  direction: Direction;
-  selected: number;
-  onSelect: (i: number) => void;
-  period: number;
-}) {
-  const max = Math.max(1, ...readings.flatMap((r) => [r.value ?? 0, r.target ?? 0])) * 1.18;
-  const target = readings.find((r) => r.target !== null)?.target ?? null;
-  return (
-    <div className="relative flex size-full flex-col">
-      <div className="relative flex min-h-0 flex-1 items-end gap-1">
-        {target !== null && (
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 border-t border-dashed border-text-neutral-400"
-            style={{ bottom: `${(target / max) * 100}%` }}
-          />
-        )}
-        {readings.map((r, i) => {
-          const h = r.value === null ? 0 : (r.value / max) * 100;
-          const over =
-            direction === "limit" && r.target !== null && r.value !== null && r.value > r.target;
-          return (
-            <button
-              key={r.date}
-              type="button"
-              aria-pressed={i === selected}
-              aria-label={`${dayName(r.date)}: ${r.value === null ? "not recorded" : fmt(r.value)}`}
-              onClick={() => onSelect(i)}
-              onMouseEnter={() => onSelect(i)}
-              className={cn(
-                "relative flex h-full min-w-0 flex-1 items-end justify-center rounded-md",
-                i === selected && "bg-brand-warm-gray/70",
-              )}
-            >
-              <span
-                className="w-[70%] max-w-6 rounded-t-md"
-                style={{
-                  height: `${h}%`,
-                  backgroundColor: over ? "var(--color-error-red)" : accent,
-                  opacity: r.value === null ? 0 : 1,
-                }}
-              />
-              {r.value === null && (
-                <span
-                  aria-hidden
-                  className="absolute bottom-0 h-px w-[70%] max-w-6 bg-border-divider"
-                />
-              )}
-            </button>
-          );
-        })}
-      </div>
-      <div className="mt-1 flex gap-1 text-[10px] text-text-secondary">
-        {readings.map((r, i) => (
-          <span key={r.date} className="min-w-0 flex-1 truncate text-center">
-            {period > 14 && i % 3 !== 0 ? "" : short(r.date, period)}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function LineByDay({
-  readings,
-  selected,
-  onSelect,
-  period,
-}: {
-  readings: Reading[];
-  selected: number;
-  onSelect: (i: number) => void;
-  period: number;
-}) {
-  const pts = readings.map((r, i) => (r.value === null ? null : { i, v: r.value }));
-  const real = pts.filter((p): p is { i: number; v: number } => p !== null);
-  const min = Math.min(...real.map((p) => p.v));
-  const max = Math.max(...real.map((p) => p.v));
-  const span = Math.max(1, max - min);
-  const W = 100;
-  const H = 60;
-  const x = (i: number) => 3 + (i / Math.max(1, readings.length - 1)) * (W - 6);
-  const y = (v: number) => 6 + (1 - (v - min) / span) * (H - 14);
-  return (
-    <div className="flex size-full flex-col">
-      <svg
-        viewBox={`0 0 ${W} ${H}`}
-        preserveAspectRatio="none"
-        className="min-h-0 flex-1"
-        aria-hidden
-      >
-        <polyline
-          fill="none"
-          stroke="var(--color-brand-navy)"
-          strokeWidth="1.6"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-          vectorEffect="non-scaling-stroke"
-          points={real.map((p) => `${x(p.i)},${y(p.v)}`).join(" ")}
-        />
-        {real.map((p) => (
-          <circle
-            key={p.i}
-            cx={x(p.i)}
-            cy={y(p.v)}
-            r={p.i === selected ? 2.4 : 1.6}
-            fill="white"
-            stroke="var(--color-brand-navy)"
-            strokeWidth="0.9"
-            vectorEffect="non-scaling-stroke"
-            onClick={() => onSelect(p.i)}
-          />
-        ))}
-      </svg>
-      <div className="mt-1 flex justify-between text-[10px] text-text-secondary">
-        {readings.map((r, i) => (
-          <span key={r.date}>{period > 14 && i % 3 !== 0 ? "" : short(r.date, period)}</span>
-        ))}
-      </div>
-    </div>
   );
 }
