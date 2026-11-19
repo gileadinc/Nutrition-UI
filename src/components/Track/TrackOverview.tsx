@@ -97,6 +97,8 @@ export interface Stat {
   label: string;
   value: string;
   unit?: string;
+  note?: string;
+  tone?: "warn";
 }
 
 export function WidgetCard({
@@ -168,10 +170,20 @@ export function WidgetCard({
                 {s.label}
               </dt>
               <dd className="mt-0.5">
-                <span className="text-[22px] leading-6 type-row-figure tabular-nums text-brand-navy">
+                <span
+                  className={cn(
+                    "text-[22px] leading-6 type-row-figure tabular-nums",
+                    s.tone === "warn" ? "text-error-red" : "text-brand-navy",
+                  )}
+                >
                   {s.value}
                 </span>
                 {s.unit && <span className="ml-1 text-[12px] text-text-secondary">{s.unit}</span>}
+                {s.note && (
+                  <span className="block truncate text-[12px] type-meta text-text-secondary">
+                    {s.note}
+                  </span>
+                )}
               </dd>
             </div>
           ))}

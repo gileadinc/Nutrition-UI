@@ -3,16 +3,18 @@
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import { useActivity } from "@/lib/store";
-import { dayCalories, dayProtein, dayWaterOz, useTrackDays, type TrackDay } from "@/lib/track";
+import {
+  TRACK_METRICS,
+  dayCalories,
+  dayProtein,
+  dayWaterOz,
+  metricByLabel,
+  useTrackDays,
+} from "@/lib/track";
+import { MetricChart, shortDate } from "@/components/Track/MetricCharts";
+import { isoDate } from "@/lib/nutrition";
 import { cn } from "@/lib/utils";
 import { Empty, MACRO_FILL, MEALS, WidgetCard, fmt, useToday } from "./TrackOverview";
-
-const WEEK_METRICS = [
-  { key: "calories", label: "Calories", unit: "kcal" },
-  { key: "protein", label: "Protein", unit: "g" },
-  { key: "water", label: "Water", unit: "oz" },
-  { key: "activity", label: "Active min", unit: "min" },
-] as const;
 
 function Ring({
   pct,
@@ -67,7 +69,8 @@ export function MoreOnToday() {
   const day = useToday();
   const { days } = useTrackDays(7);
   const activity = useActivity();
-  const [pick, setPick] = useState<(typeof WEEK_METRICS)[number]["key"]>("calories");
+  const [pick, setPick] = useState<string>("Calories");
+  const [selected, setSelected] = useState<number | null>(null);
   if (!day) return null;
 
   const carbs = day.meals.reduce((s, m) => s + m.carbs, 0);
@@ -119,18 +122,18 @@ export function MoreOnToday() {
   const reached = goals.filter((g) => g.pct >= 100).length;
   const closest = goals.filter((g) => g.pct > 0 && g.pct < 100).sort((a, b) => b.pct - a.pct)[0];
 
-  const weekValue = (d: TrackDay) => {
-    if (pick === "calories") return dayCalories(d);
-    if (pick === "protein") return dayProtein(d);
-    if (pick === "water") return dayWaterOz(d);
-    return activity.entries
-      .filter((e) => e.loggedAt.slice(0, 10) === d.date)
-      .reduce((s, e) => s + e.minutes, 0);
-  };
-  const week = days.map((d) => ({ d, v: weekValue(d) }));
-  const weekMax = Math.max(1, ...week.map((w) => w.v));
-  const weekMeta = WEEK_METRICS.find((m) => m.key === pick)!;
-  const logged = week.filter((w) => w.v > 0);
+  const metric = metricByLabel(pick);
+  const dayIdx = Math.min(selected ?? days.length - 1, days.length - 1);
+  const focus = days[dayIdx] ?? days[days.length - 1];
+  const focusValue = metric.valueOf(focus);
+  const focusGoal = metric.goalOf(focus);
+  const logged = days.filter((d) => metric.valueOf(d) > 0);
+  const average = logged.length
+    ? logged.reduce((t, d) => t + metric.valueOf(d), 0) / logged.length
+    : null;
+  const met = days.filter(
+    (d) => metric.valueOf(d) >= metric.goalOf(d) && metric.valueOf(d) > 0,
+  ).length;
 
   const perMeal = MEALS.map((m) => {
     const rows = day.meals.filter((x) => x.mealType === m);
@@ -190,63 +193,69 @@ export function MoreOnToday() {
 
         <WidgetCard
           title="This week"
-          icon="analytics"
+          icon="activity"
           subtitle="Pick a metric, then a day"
-          heightClass="h-auto"
+          heightClass="h-[14rem]"
           className="md:col-span-2 xl:col-span-8"
           stats={[
             {
-              label: "Average",
-              value: logged.length ? fmt(logged.reduce((s, w) => s + w.v, 0) / logged.length) : "—",
-              unit: logged.length ? weekMeta.unit : undefined,
+              label: focus.date === isoDate(new Date()) ? "Today" : shortDate(focus.date),
+              value: focusValue > 0 ? fmt(focusValue) : "–",
+              unit: focusValue > 0 ? metric.unit : undefined,
+              note:
+                focusValue > 0 && focusGoal > 0
+                  ? `${Math.round((focusValue / focusGoal) * 100)}% of ${fmt(focusGoal)}`
+                  : "Not logged",
             },
-            { label: "Days logged", value: `${logged.length} of 7` },
+            {
+              label: "Average",
+              value: average === null ? "–" : fmt(average),
+              unit: average === null ? undefined : metric.unit,
+              note: `${logged.length} of ${days.length} days`,
+            },
+            {
+              label: "Goal met",
+              value: `${met} of ${logged.length}`,
+              note: logged.length === 1 ? "logged day" : "logged days",
+            },
           ]}
         >
-          <div className="flex flex-col gap-3">
-            <div role="group" aria-label="Metric" className="flex gap-1.5 overflow-x-auto pb-0.5">
-              {WEEK_METRICS.map((m) => (
+          <div className="flex h-full flex-col gap-2">
+            <div
+              role="group"
+              aria-label="Week metric"
+              className="flex gap-1.5 overflow-x-auto pb-0.5"
+            >
+              {TRACK_METRICS.map((m) => (
                 <button
-                  key={m.key}
+                  key={m.label}
                   type="button"
-                  aria-pressed={pick === m.key}
-                  onClick={() => setPick(m.key)}
+                  aria-pressed={pick === m.label}
+                  onClick={() => setPick(m.label)}
                   className={cn(
                     "tap-44 relative flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-[12px]",
-                    pick === m.key
+                    pick === m.label
                       ? "border-transparent bg-selected text-on-selected type-button"
                       : "border-border-default bg-white text-text-secondary type-button-secondary",
                   )}
                 >
-                  {pick === m.key && (
+                  {pick === m.label && (
                     <Icon name="tick" size={12} color="var(--color-on-selected)" />
                   )}
                   {m.label}
                 </button>
               ))}
             </div>
-            <div className="flex h-36 items-end gap-2">
-              {week.map((w) => (
-                <div
-                  key={w.d.date}
-                  className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1"
-                >
-                  <span
-                    className="w-full max-w-8 rounded-t-md bg-brand-navy"
-                    style={{
-                      height: `${(w.v / weekMax) * 100}%`,
-                      opacity: w.v === 0 ? 0.1 : 1,
-                      minHeight: 2,
-                    }}
-                    title={`${fmt(w.v)} ${weekMeta.unit}`}
-                  />
-                  <span className="text-[10px] text-text-secondary">
-                    {new Date(`${w.d.date}T12:00:00`)
-                      .toLocaleDateString("en-US", { weekday: "short" })
-                      .slice(0, 1)}
-                  </span>
-                </div>
-              ))}
+            <div className="min-h-0 flex-1">
+              <MetricChart
+                metric={metric}
+                days={days}
+                labels={days.map((d) =>
+                  new Date(`${d.date}T12:00:00`).toLocaleDateString("en-US", { weekday: "short" }),
+                )}
+                selected={dayIdx}
+                onSelect={setSelected}
+              />
             </div>
           </div>
         </WidgetCard>
