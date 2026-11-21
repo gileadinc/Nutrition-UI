@@ -68,9 +68,9 @@ export function OnboardingCarousel() {
               <Tile
                 key={p.heading}
                 page={p}
-                className="min-h-[26rem] rounded-[17px] bg-brand-cream lg:min-h-0"
+                className="min-h-[26rem] rounded-[17px] bg-brand-cream"
               >
-                <div className="absolute inset-x-[17px] bottom-4 text-primary">
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-cream via-brand-cream/90 to-transparent px-[17px] pb-4 pt-14 text-primary">
                   <h2 className="text-[32px] type-section-title leading-none tracking-[-0.6px]">
                     {p.heading}
                   </h2>

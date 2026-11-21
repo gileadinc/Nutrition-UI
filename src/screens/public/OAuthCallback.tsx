@@ -71,7 +71,7 @@ export function OAuthCallbackScreen() {
               {error}
             </p>
             <div className="mt-8 flex w-full flex-col gap-3">
-              <PrimaryButton label="Back to sign in" onPress={() => navigate("/login", { replace: true })} />
+              <PrimaryButton label="Back to sign in" onPress={() => navigate("/signin", { replace: true })} />
               <SecondaryButton label="Use email instead" onPress={() => navigate("/signup", { replace: true })} />
             </div>
           </>

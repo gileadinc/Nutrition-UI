@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   async redirects() {
     return [
+      { source: "/landing", destination: "/", permanent: true },
+      { source: "/login", destination: "/signin", permanent: true },
       { source: "/track/overview", destination: "/track", permanent: false },
       { source: "/track/history", destination: "/track/insights", permanent: false },
       { source: "/you/edit-profile", destination: "/you/personal-details", permanent: false },
