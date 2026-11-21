@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { useId, useRef, useState, type ReactNode } from "react";
 import { AppImage } from "@/components/AppImage";
 import { Icon, type IconName } from "@/components/Icon";
 import { useReducedMotion } from "@/lib/hooks";
@@ -134,6 +134,8 @@ export interface RadioOption<T extends string> {
   title: string;
   subtitle?: string;
   icon: IconName;
+  /** Custom glyph that replaces `icon` (e.g. the runner for "Very active"). */
+  glyph?: ReactNode;
 }
 
 const KEYS: Record<string, number | "first" | "last"> = {
@@ -231,7 +233,7 @@ export function OptionRadioGroup<T extends string>({
                 on ? "text-brand-navy" : "text-text-neutral-500",
               )}
             >
-              <Icon name={o.icon} size={36} color="currentColor" />
+              {o.glyph ?? <Icon name={o.icon} size={36} color="currentColor" />}
             </span>
           </button>
         );

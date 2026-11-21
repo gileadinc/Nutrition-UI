@@ -22,6 +22,7 @@ import {
   dobComplete,
 } from "@/components/Onboarding/QuestionnaireParts";
 import { AppleLogo, GoogleLogo } from "@/components/TextField";
+import { RunnerIcon } from "@/components/Quiz/RunnerIcon";
 import { goalKeyFor, type GoalCardId } from "@/components/Quiz/quizData";
 import { getErrorMessage } from "@/lib/api";
 import { APPLE_SIGN_IN_ENABLED } from "@/lib/auth";
@@ -161,14 +162,10 @@ const CONTEXT_FOR: Record<Health, SurgicalContext> = {
 
 const MIN_IN = 36;
 const MAX_IN = 96;
-const MIN_LB = 60;
-const MAX_LB = 500;
 const CM = 2.54;
 const KG = 0.453592;
 const MIN_CM = Math.ceil(MIN_IN * CM);
 const MAX_CM = Math.floor(MAX_IN * CM);
-const MIN_KG = Math.ceil(MIN_LB * KG);
-const MAX_KG = Math.floor(MAX_LB * KG);
 
 const num = (s: string) => (s.trim() === "" ? null : Number(s));
 const fmt = (n: number) => n.toLocaleString("en-US");
@@ -191,7 +188,7 @@ const weightFrom = (imperial: boolean, v: string): number | null => {
   const n = num(v);
   if (n === null) return null;
   const lb = imperial ? n : n / KG;
-  return lb >= MIN_LB && lb <= MAX_LB ? lb : null;
+  return lb > 0 ? lb : null;
 };
 const heightText = (inches: number, imperial: boolean) => {
   const n = Math.round(inches);
@@ -615,17 +612,16 @@ function SavePlan({
             className={cn("h-14 border-brand-navy bg-brand-navy text-white", E.body)}
           />
           <p className="py-1 text-center text-xs text-text-secondary">Or continue with</p>
-          <div className={cn("grid gap-3", APPLE_SIGN_IN_ENABLED && "sm:grid-cols-2")}>
-            {APPLE_SIGN_IN_ENABLED && (
-              <SocialButton
-                label="Continue with Apple"
-                dark
-                icon={<AppleLogo color="currentColor" />}
-                onPress={onApple}
-                disabled={busy}
-                className={cn("h-14", E.body)}
-              />
-            )}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <SocialButton
+              label="Continue with Apple"
+              dark
+              icon={<AppleLogo color="currentColor" />}
+              onPress={onApple}
+              disabled={!APPLE_SIGN_IN_ENABLED || busy}
+              title={APPLE_SIGN_IN_ENABLED ? undefined : "Apple sign-in is coming soon"}
+              className={cn("h-14", E.body)}
+            />
             <SocialButton
               label="Continue with Google"
               icon={<GoogleLogo />}
@@ -1388,8 +1384,8 @@ function Flow() {
             <Stepper
               name="weight"
               value={weightValue}
-              min={weightImperial ? MIN_LB : MIN_KG}
-              max={weightImperial ? MAX_LB : MAX_KG}
+              min={1}
+              max={999}
               onStep={(v) => weightChange(String(v))}
               invalid={W === null}
               example={!touched.weight}
@@ -1426,9 +1422,7 @@ function Flow() {
                 )}
               >
                 {W === null
-                  ? weightImperial
-                    ? `Enter a weight between ${MIN_LB} and ${MAX_LB} lbs.`
-                    : `Enter a weight between ${MIN_KG} and ${MAX_KG} kg.`
+                  ? "Enter your weight."
                   : weightImperial
                     ? `That's ${Math.round(W * KG)} kg.`
                     : `That's ${Math.round(W)} lbs.`}
@@ -1450,6 +1444,7 @@ function Flow() {
               title: ACTIVITY_LABEL[k],
               subtitle: ACTIVITY_HINT[k],
               icon: ACTIVITY_ICON[k],
+              glyph: k === "veryActive" ? <RunnerIcon size={36} /> : undefined,
             }),
           )}
           value={activity}

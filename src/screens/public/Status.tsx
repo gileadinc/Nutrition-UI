@@ -77,7 +77,7 @@ const VERIFY_STEPS = [
 ];
 
 const backToSignIn = (returnTo: string | null) =>
-  returnTo ? `/login?next=${encodeURIComponent(returnTo)}` : "/login";
+  returnTo ? `/signin?next=${encodeURIComponent(returnTo)}` : "/signin";
 
 export function VerificationSentScreen() {
   const navigate = useNavigate();
@@ -249,7 +249,7 @@ export function ResetLinkSentScreen() {
       footer={
         <button
           type="button"
-          onClick={() => navigate("/login")}
+          onClick={() => navigate("/signin")}
           className="tap-24 w-full justify-center text-sm type-button text-primary underline decoration-1 underline-offset-2"
         >
           Back to sign in
@@ -277,7 +277,7 @@ export function PasswordResetSuccessScreen() {
       body="Your password has been successfully reset. You can now sign in with your new password."
       footer={
         <div className="flex flex-col items-center gap-4">
-          <PrimaryButton label="Sign in" onPress={() => navigate("/login")} />
+          <PrimaryButton label="Sign in" onPress={() => navigate("/signin")} />
           <button
             type="button"
             onClick={guest}
@@ -323,7 +323,7 @@ export function EmailVerifiedScreen() {
           <PrimaryButton label="Get started" onPress={start} disabled={busy} />
           <button
             type="button"
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/signin")}
             className="tap-24 gap-1 text-sm type-button text-primary"
           >
             <Icon name="arrowBack" size={16} color="var(--color-primary)" />

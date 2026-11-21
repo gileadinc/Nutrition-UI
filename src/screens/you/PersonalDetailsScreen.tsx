@@ -318,7 +318,7 @@ export function PersonalDetailsScreen() {
         <p className="mt-3 text-center type-meta text-[13px] text-text-secondary">
           Already have an account?{" "}
           <Link
-            to="/login?next=/you/personal-details"
+            to="/signin?next=/you/personal-details"
             className="type-button text-primary underline underline-offset-2"
           >
             Log in

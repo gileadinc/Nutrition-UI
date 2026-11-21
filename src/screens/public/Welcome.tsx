@@ -46,7 +46,7 @@ export function WelcomeScreen() {
         <PrimaryButton label="Create a free account" onPress={() => navigate("/onboarding")} />
         <SecondaryButton
           label="Sign in"
-          onPress={() => navigate("/login")}
+          onPress={() => navigate("/signin")}
           className="border-primary text-base text-primary"
         />
         <button

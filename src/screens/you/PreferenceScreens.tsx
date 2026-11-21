@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { PrimaryButton } from "@/components/Button";
+import { RunnerIcon } from "@/components/Quiz/RunnerIcon";
 import { GoalCards, OptionRadioGroup, type GoalChoice } from "@/components/Onboarding/OptionGroup";
 import { goalKeyFor, type GoalCardId } from "@/components/Quiz/quizData";
 import type { IconName } from "@/components/Icon";
@@ -64,6 +65,7 @@ export function ProfilePreferenceScreen({ kind }: { kind: "goal" | "activity" })
     title: ACTIVITY_LABEL[k],
     subtitle: ACTIVITY_HINT[k],
     icon: ACTIVITY_ICON[k],
+    glyph: k === "veryActive" ? <RunnerIcon size={36} /> : undefined,
   }));
 
   return (

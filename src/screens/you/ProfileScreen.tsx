@@ -125,7 +125,7 @@ function GuestCard() {
           >
             Create an account
           </Link>
-          <Link to="/login" className={LINK_CLS}>
+          <Link to="/signin" className={LINK_CLS}>
             I already have one
           </Link>
         </div>

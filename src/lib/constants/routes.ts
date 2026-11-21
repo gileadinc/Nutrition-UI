@@ -1,10 +1,10 @@
 /** App routes (mirrors the deployed ForkThis router). */
 export const ROUTES = {
-  splash: "/",
+  landing: "/",
   welcome: "/welcome",
   onboarding: "/onboarding",
   questionnaire: "/questionnaire",
-  login: "/login",
+  signin: "/signin",
   signup: "/signup",
   forgotPassword: "/forgot-password",
   verificationSent: "/verification-sent",

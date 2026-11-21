@@ -51,12 +51,12 @@ function handleUnauthorized(headers: HeadersInit | undefined) {
   redirectingToLogin = true;
   clearSession();
   const { pathname, search } = window.location;
-  if (pathname === "/login") {
+  if (pathname === "/signin") {
     redirectingToLogin = false;
     return;
   }
   const next = encodeURIComponent(`${pathname}${search}`);
-  window.location.replace(`/login?next=${next}`);
+  window.location.replace(`/signin?next=${next}`);
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
