@@ -30,7 +30,7 @@ export function PrimaryButton({
       onClick={onPress}
       disabled={disabled}
       className={cn(
-        "w-full rounded-2xl bg-primary text-white transition-colors enabled:hover:bg-primary-hover",
+        "w-full rounded-2xl bg-primary font-sans text-white transition-colors enabled:hover:bg-primary-hover",
         PRIMARY_DISABLED,
         size === "large" ? "h-14 text-base type-button" : "h-[52px] text-sm type-button",
         className,
@@ -85,7 +85,14 @@ export interface SocialButtonProps {
 }
 
 /** Google / Apple sign-in button. */
-export function SocialButton({ label, icon, onPress, dark = false, disabled = false, className }: SocialButtonProps) {
+export function SocialButton({
+  label,
+  icon,
+  onPress,
+  dark = false,
+  disabled = false,
+  className,
+}: SocialButtonProps) {
   return (
     <button
       type="button"
