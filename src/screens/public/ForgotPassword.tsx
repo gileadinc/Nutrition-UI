@@ -96,7 +96,7 @@ export function ForgotPasswordScreen() {
         </button>
         <button
           type="button"
-          onClick={() => navigate("/login")}
+          onClick={() => navigate("/signin")}
           className="tap-24 w-full justify-center pb-3 text-sm type-button text-primary underline decoration-1 underline-offset-2"
         >
           Back to sign in

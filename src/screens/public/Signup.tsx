@@ -223,7 +223,7 @@ export function SignupScreen() {
         <p className="mt-4 text-center text-sm type-meta text-text-secondary">
           Already have an account?{" "}
           <Link
-            to={next ? `/login?next=${encodeURIComponent(next)}` : "/login"}
+            to={next ? `/signin?next=${encodeURIComponent(next)}` : "/signin"}
             className="type-button text-primary underline decoration-1 underline-offset-2"
           >
             Sign In

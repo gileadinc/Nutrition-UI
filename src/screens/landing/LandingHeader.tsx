@@ -84,7 +84,7 @@ export function LandingHeader() {
     <header className="absolute inset-x-0 top-0 z-30">
       <div className="mx-auto flex max-w-[1512px] items-center gap-3 px-5 py-4 md:px-8">
         <Link
-          to="/landing"
+          to="/"
           aria-label="ForkThis! home"
           className="mr-auto text-brand-navy md:hidden"
         >

@@ -44,7 +44,7 @@ cp .env.example .env.local
 src/
   app/
     (marketing)/        Public pages: home ("/"), about ("/about")
-    (auth)/              Auth pages: login ("/login"), register ("/register")
+    (auth)/              Auth pages: sign in ("/signin"), sign up ("/signup")
     (app)/                Authenticated app shell: dashboard ("/dashboard")
     layout.tsx             Root layout — wraps every route in AppShell
   components/
