@@ -612,17 +612,16 @@ function SavePlan({
             className={cn("h-14 border-brand-navy bg-brand-navy text-white", E.body)}
           />
           <p className="py-1 text-center text-xs text-text-secondary">Or continue with</p>
-          <div className={cn("grid gap-3", APPLE_SIGN_IN_ENABLED && "sm:grid-cols-2")}>
-            {APPLE_SIGN_IN_ENABLED && (
-              <SocialButton
-                label="Continue with Apple"
-                dark
-                icon={<AppleLogo color="currentColor" />}
-                onPress={onApple}
-                disabled={busy}
-                className={cn("h-14", E.body)}
-              />
-            )}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <SocialButton
+              label="Continue with Apple"
+              dark
+              icon={<AppleLogo color="currentColor" />}
+              onPress={onApple}
+              disabled={!APPLE_SIGN_IN_ENABLED || busy}
+              title={APPLE_SIGN_IN_ENABLED ? undefined : "Apple sign-in is coming soon"}
+              className={cn("h-14", E.body)}
+            />
             <SocialButton
               label="Continue with Google"
               icon={<GoogleLogo />}

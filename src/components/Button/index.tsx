@@ -82,6 +82,8 @@ export interface SocialButtonProps {
   dark?: boolean;
   disabled?: boolean;
   className?: string;
+  /** Tooltip, e.g. why the button is disabled. */
+  title?: string;
 }
 
 /** Google / Apple sign-in button. */
@@ -92,14 +94,16 @@ export function SocialButton({
   dark = false,
   disabled = false,
   className,
+  title,
 }: SocialButtonProps) {
   return (
     <button
       type="button"
       onClick={onPress}
       disabled={disabled}
+      title={title}
       className={cn(
-        "flex h-[52px] w-full items-center justify-center gap-3 rounded-2xl border disabled:cursor-not-allowed disabled:opacity-60",
+        "flex h-[52px] w-full items-center justify-center gap-3 rounded-full border disabled:cursor-not-allowed disabled:opacity-60",
         dark
           ? "border-text-primary bg-text-primary text-white"
           : "border-border-google bg-white text-google-label",

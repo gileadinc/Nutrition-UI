@@ -199,15 +199,14 @@ export function SignupScreen() {
           <span className="h-px flex-1 bg-border-divider" />
         </div>
         <div className="flex gap-3">
-          {APPLE_SIGN_IN_ENABLED && (
-            <SocialButton
-              label="Apple"
-              dark
-              icon={<AppleLogo color="currentColor" />}
-              onPress={() => void social.start("apple")}
-              disabled={busy || social.busy !== null}
-            />
-          )}
+          <SocialButton
+            label="Apple"
+            dark
+            icon={<AppleLogo color="currentColor" />}
+            onPress={() => void social.start("apple")}
+            disabled={!APPLE_SIGN_IN_ENABLED || busy || social.busy !== null}
+            title={APPLE_SIGN_IN_ENABLED ? undefined : "Apple sign-in is coming soon"}
+          />
           <SocialButton
             label="Google"
             icon={<GoogleLogo />}
