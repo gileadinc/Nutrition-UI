@@ -244,7 +244,7 @@ export function PageContainer({
       <div
         className={cn(
           "page-settle mx-auto w-full px-5 py-6 md:px-8 md:py-8 lg:px-10 lg:py-10 2xl:px-12",
-          variant === "focused" ? "max-w-[1400px]" : "max-w-[1680px]",
+          variant === "focused" ? "max-w-6xl" : "max-w-[1680px]",
           className,
         )}
       >
