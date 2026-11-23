@@ -11,7 +11,14 @@ import { useDayBudget, useFastHacks, useRecentSearches, useRecipes } from "@/lib
 import { nearParams, useUserLocation } from "@/lib/location";
 import { cn } from "@/lib/utils";
 import { SELECTED_CHIP } from "@/components/styles";
-import { humanize, menuItemToHack, toHackVM, toRecipeVM } from "./adapt";
+import {
+  humanize,
+  menuItemToHack,
+  toHackVM,
+  toRecipeVM,
+  type HackVM,
+  type RecipeVM,
+} from "./adapt";
 
 const SUGGESTIONS = [
   "High protein under 500 calories",
@@ -35,12 +42,78 @@ const togglePhrase = (q: string, phrase: string) => {
   return `${q.slice(0, at)} ${q.slice(at + phrase.length)}`.replace(/\s{2,}/g, " ").trim();
 };
 
-/** Which numbers a hit was matched on, for the "matched on …" line. */
-const whyFor = (query: string, h: { calories: number; protein: number }) => {
+/** What a free-text query asks for: loose words plus numeric / dietary limits. */
+interface Parsed {
+  terms: string[];
+  minProtein: number | null;
+  maxCalories: number | null;
+  maxMinutes: number | null;
+  diets: string[];
+}
+
+const FILLER = new Set(
+  (
+    "a an the i me my we can could would should will to for of on at in with and or but " +
+    "something anything nearby near grab get find show give some want need looking " +
+    "meal meals food dinner lunch breakfast snack tonight today now quick quickly cook cooking eat"
+  ).split(" "),
+);
+
+function parseQuery(query: string): Parsed {
+  let rest = ` ${query.toLowerCase()} `;
+  const take = (re: RegExp) => {
+    const m = rest.match(re);
+    if (m) rest = rest.replace(re, " ");
+    return m;
+  };
+  const out: Parsed = {
+    terms: [],
+    minProtein: null,
+    maxCalories: null,
+    maxMinutes: null,
+    diets: [],
+  };
+  const grams = take(/\s(\d+)\s*g\+?\s*protein\s/);
+  if (grams) out.minProtein = Number(grams[1]);
+  else if (take(/\shigh[- ]protein\s/)) out.minProtein = 25;
+  const mins = take(/\s(?:under|below|within|in|less than)\s*(\d+)\s*(?:minutes|mins|min)\s/);
+  if (mins) out.maxMinutes = Number(mins[1]);
+  const kcal = take(/\s(?:under|below|less than)\s*(\d+)\s*(?:calories|kcal|cal)?\s/);
+  if (kcal) out.maxCalories = Number(kcal[1]);
+  if (take(/\svegetarian\s/)) out.diets.push("Vegetarian");
+  if (take(/\svegan\s/)) out.diets.push("Vegan");
+  if (take(/\slow[- ]carb\s/)) out.diets.push("Low carb");
+  out.terms = rest.split(/[^a-z0-9&-]+/).filter((w) => w.length > 1 && !FILLER.has(w));
+  return out;
+}
+
+const understoodAs = (p: Parsed) => [
+  ...p.terms.map((t) => `\u201c${t}\u201d`),
+  ...(p.minProtein ? [`${p.minProtein} g+ protein`] : []),
+  ...(p.maxCalories ? [`Under ${p.maxCalories} kcal`] : []),
+  ...(p.maxMinutes ? [`Under ${p.maxMinutes} min`] : []),
+  ...p.diets,
+];
+
+/** Does a hit satisfy the numeric / dietary limits in the query? */
+function matchesLimits(h: Hit, p: Parsed) {
+  if (p.minProtein != null && h.protein < p.minProtein) return false;
+  if (p.maxCalories != null && !(h.calories > 0 && h.calories <= p.maxCalories)) return false;
+  if (p.maxMinutes != null && h.minutes != null && h.minutes > p.maxMinutes) return false;
+  for (const d of p.diets) {
+    if (d === "Low carb" && !(h.carbs > 0 && h.carbs <= (h.minutes != null ? 30 : 35)))
+      return false;
+    if ((d === "Vegetarian" || d === "Vegan") && !h.tags.some((t) => /veg|plant/i.test(t)))
+      return false;
+  }
+  return true;
+}
+
+/** Which numbers a hit was matched on, for the "matched on ..." line. */
+const whyFor = (p: Parsed, h: { calories: number; protein: number }) => {
   const why: string[] = [];
-  if (/(under|below|less than)\s*\d+\s*(calories|kcal|cal)/i.test(query))
-    why.push(`${h.calories} kcal`);
-  if (/protein/i.test(query)) why.push(`${h.protein}g protein`);
+  if (p.maxCalories != null) why.push(`${h.calories} kcal`);
+  if (p.minProtein != null) why.push(`${h.protein}g protein`);
   return why;
 };
 
@@ -74,39 +147,49 @@ interface Hit {
   image: string;
   calories: number;
   protein: number;
+  carbs: number;
+  /** Recipes only. */
+  minutes: number | null;
+  tags: string[];
   to: string;
 }
+
+const hackToHit = (h: HackVM): Hit => ({
+  id: h.id,
+  title: h.title,
+  subtitle: [h.restaurant, h.distanceMi != null ? `${h.distanceMi} mi` : null]
+    .filter(Boolean)
+    .join(" · "),
+  image: h.image,
+  calories: h.calories,
+  protein: h.protein,
+  carbs: h.carbs,
+  minutes: null,
+  tags: h.tags,
+  to: `/hack/${h.id}`,
+});
+
+const recipeToHit = (r: RecipeVM): Hit => ({
+  id: r.id,
+  title: r.title,
+  subtitle: [r.time, r.badge].filter(Boolean).join(" · ") || "Recipe",
+  image: r.image,
+  calories: r.calories,
+  protein: r.protein,
+  carbs: r.carbs,
+  minutes: r.minutes,
+  tags: r.tags,
+  to: `/recipes/${r.id}`,
+});
 
 function toHits(items: unknown[]): { hacks: Hit[]; recipes: Hit[] } {
   const hacks: Hit[] = [];
   const recipes: Hit[] = [];
   for (const raw of items) {
     const it = raw as { type?: string };
-    if (it.type === "recipe") {
-      const r = toRecipeVM(raw as Recipe);
-      recipes.push({
-        id: r.id,
-        title: r.title,
-        subtitle: [r.time, r.badge].filter(Boolean).join(" · ") || "Recipe",
-        image: r.image,
-        calories: r.calories,
-        protein: r.protein,
-        to: `/recipes/${r.id}`,
-      });
-    } else if (it.type === "menu_item" || it.type === "fast_hack") {
-      const h = menuItemToHack(raw as MenuItem);
-      hacks.push({
-        id: h.id,
-        title: h.title,
-        subtitle: [h.restaurant, h.distanceMi != null ? `${h.distanceMi} mi` : null]
-          .filter(Boolean)
-          .join(" · "),
-        image: h.image,
-        calories: h.calories,
-        protein: h.protein,
-        to: `/hack/${h.id}`,
-      });
-    }
+    if (it.type === "recipe") recipes.push(recipeToHit(toRecipeVM(raw as Recipe)));
+    else if (it.type === "menu_item" || it.type === "fast_hack")
+      hacks.push(hackToHit(menuItemToHack(raw as MenuItem)));
   }
   return { hacks, recipes };
 }
@@ -131,7 +214,9 @@ export function SearchScreen() {
   const [active, setActive] = useState({ forQuery: "", index: -1 });
   const input = useRef<HTMLInputElement>(null);
   const q = value.trim();
-  const debounced = useDebouncedValue(q, 250);
+  const parsed = useMemo(() => parseQuery(q), [q]);
+  const termsKey = parsed.terms.join(" ");
+  const debouncedTerms = useDebouncedValue(termsKey, 250);
   const [state, setState] = useState<{
     forQuery: string;
     hacks: Hit[];
@@ -139,25 +224,26 @@ export function SearchScreen() {
     error: string | null;
   }>({ forQuery: "", hacks: [], recipes: [], error: null });
   const { coords } = useUserLocation();
-  const hacksRes = useFastHacks({ limit: 24, ...nearParams(coords) });
-  const recipesRes = useRecipes({ limit: 24 });
+  const hacksRes = useFastHacks({ limit: 50, ...nearParams(coords) });
+  const recipesRes = useRecipes({ limit: 50 });
 
+  // Free-text words go to the backend search; numeric and dietary limits are applied below.
   useEffect(() => {
-    if (!debounced) return;
+    if (!debouncedTerms) return;
     let off = false;
     discoveryApi
       .searchDiscovery({
-        query: debounced,
-        limit: 20,
+        query: debouncedTerms,
+        limit: 30,
         type: scope === "recipes" ? "recipe" : scope === "hacks" ? "menu_item" : undefined,
       })
       .then((res) => {
-        if (!off) setState({ forQuery: debounced + scope, ...toHits(res.items), error: null });
+        if (!off) setState({ forQuery: debouncedTerms + scope, ...toHits(res.items), error: null });
       })
       .catch((err) => {
         if (!off)
           setState({
-            forQuery: debounced + scope,
+            forQuery: debouncedTerms + scope,
             hacks: [],
             recipes: [],
             error: getErrorMessage(err),
@@ -166,54 +252,45 @@ export function SearchScreen() {
     return () => {
       off = true;
     };
-  }, [debounced, scope]);
+  }, [debouncedTerms, scope]);
+
+  // The catalogue: used when the query has no free-text words ("high protein") and for "Fits your day".
+  const catalogue = useMemo(
+    () => ({
+      hacks: (hacksRes.data?.items ?? []).map((raw) => hackToHit(toHackVM(raw))),
+      recipes: (recipesRes.data?.items ?? []).map((raw) => recipeToHit(toRecipeVM(raw))),
+    }),
+    [hacksRes.data, recipesRes.data],
+  );
 
   // "Fits your day": high-protein, under-500 picks that still fit today's budget.
-  const fitsList = useMemo(() => {
-    const hackHits: Hit[] = (hacksRes.data?.items ?? []).map((raw) => {
-      const h = toHackVM(raw);
-      return {
-        id: h.id,
-        title: h.title,
-        subtitle: [h.restaurant, h.distanceMi != null ? `${h.distanceMi} mi` : null]
-          .filter(Boolean)
-          .join(" · "),
-        image: h.image,
-        calories: h.calories,
-        protein: h.protein,
-        to: `/hack/${h.id}`,
-      };
-    });
-    const recipeHits: Hit[] = (recipesRes.data?.items ?? []).map((raw) => {
-      const r = toRecipeVM(raw);
-      return {
-        id: r.id,
-        title: r.title,
-        subtitle: [r.time, r.badge].filter(Boolean).join(" · ") || "Recipe",
-        image: r.image,
-        calories: r.calories,
-        protein: r.protein,
-        to: `/recipes/${r.id}`,
-      };
-    });
-    return [...hackHits, ...recipeHits]
-      .filter((h) => h.calories > 0 && h.calories < 500 && h.protein >= 30)
-      .filter((h) => fitsToday(fitFor(h, budget)))
-      .sort((x, y) => y.protein - x.protein)
-      .slice(0, 4);
-  }, [hacksRes.data, recipesRes.data, budget]);
+  const fitsParsed = useMemo(() => parseQuery(FITS_QUERY), []);
+  const fitsList = useMemo(
+    () =>
+      [...catalogue.hacks, ...catalogue.recipes]
+        .filter((h) => matchesLimits(h, fitsParsed))
+        .filter((h) => fitsToday(fitFor(h, budget)))
+        .sort((x, y) => y.protein - x.protein)
+        .slice(0, 4),
+    [catalogue, budget, fitsParsed],
+  );
 
-  const fresh = q !== "" && state.forQuery === debounced + scope && debounced === q;
+  const byText = termsKey !== "";
+  const fresh =
+    q !== "" &&
+    (byText
+      ? state.forQuery === debouncedTerms + scope && debouncedTerms === termsKey
+      : !(hacksRes.isLoading || recipesRes.isLoading));
   const showHacks = scope !== "recipes" && show !== "recipes";
   const showRecipes = scope !== "hacks" && show !== "hacks";
-  const hacks = useMemo(
-    () => (fresh && scope !== "recipes" ? state.hacks : []),
-    [fresh, scope, state],
-  );
-  const recipes = useMemo(
-    () => (fresh && scope !== "hacks" ? state.recipes : []),
-    [fresh, scope, state],
-  );
+  const hacks = useMemo(() => {
+    if (!fresh || scope === "recipes") return [];
+    return (byText ? state.hacks : catalogue.hacks).filter((h) => matchesLimits(h, parsed));
+  }, [fresh, scope, byText, state, catalogue, parsed]);
+  const recipes = useMemo(() => {
+    if (!fresh || scope === "hacks") return [];
+    return (byText ? state.recipes : catalogue.recipes).filter((h) => matchesLimits(h, parsed));
+  }, [fresh, scope, byText, state, catalogue, parsed]);
   const flat = useMemo(
     () => [...(showHacks ? hacks : []), ...(showRecipes ? recipes : [])],
     [hacks, recipes, showHacks, showRecipes],
@@ -241,6 +318,7 @@ export function SearchScreen() {
     } else if (e.key === "Enter" && q) remember(q);
   };
   const loading = q !== "" && !fresh;
+  const understood = understoodAs(parsed);
   const activeId = activeIdx >= 0 ? flat[activeIdx].id : null;
 
   return (
@@ -325,7 +403,7 @@ export function SearchScreen() {
           <p role="status" className="mt-6 text-[13px] type-meta text-text-secondary">
             Searching…
           </p>
-        ) : state.error ? (
+        ) : byText && state.error ? (
           <section className="panel mt-6 p-6 text-center">
             <Icon name="alert" size={24} color="var(--color-text-secondary)" />
             <p className="mt-2 text-sm type-section-title text-text-primary">
@@ -390,11 +468,21 @@ export function SearchScreen() {
                 </div>
               )}
             </div>
+            {understood.length > 0 && (
+              <p className="flex flex-wrap items-center gap-2 text-[12px] type-meta text-text-secondary">
+                Understood as
+                {understood.map((u) => (
+                  <span key={u} className="rounded-full bg-navy-50 px-2.5 py-1 text-brand-navy">
+                    {u}
+                  </span>
+                ))}
+              </p>
+            )}
             {showHacks && (
               <ResultGroup
                 title="Eat out"
                 hits={hacks}
-                query={q}
+                parsed={parsed}
                 emptyNote="Nothing on the restaurant side matches this."
                 activeId={activeId}
                 budget={budget}
@@ -405,7 +493,7 @@ export function SearchScreen() {
               <ResultGroup
                 title="Cook"
                 hits={recipes}
-                query={q}
+                parsed={parsed}
                 emptyNote="Nothing in the recipe catalogue matches this."
                 activeId={activeId}
                 budget={budget}
@@ -503,7 +591,7 @@ export function SearchScreen() {
                     hit={h}
                     fits
                     active={false}
-                    why={whyFor(FITS_QUERY, h)}
+                    why={whyFor(fitsParsed, h)}
                     onOpen={open}
                   />
                 ))}
@@ -519,7 +607,7 @@ export function SearchScreen() {
 function ResultGroup({
   title,
   hits,
-  query,
+  parsed,
   emptyNote,
   activeId,
   budget,
@@ -527,7 +615,7 @@ function ResultGroup({
 }: {
   title: string;
   hits: Hit[];
-  query: string;
+  parsed: Parsed;
   emptyNote: string;
   activeId: string | null;
   budget: Budget;
@@ -548,7 +636,7 @@ function ResultGroup({
               hit={h}
               fits={fitsToday(fitFor(h, budget))}
               active={activeId === h.id}
-              why={whyFor(query, h)}
+              why={whyFor(parsed, h)}
               onOpen={onOpen}
             />
           ))}
