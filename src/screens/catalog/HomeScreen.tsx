@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import {
   BentoCell,
@@ -113,8 +113,16 @@ const tourDone = () => {
 
 function FirstRunTour({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState(0);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const focusedStep = useRef(-1);
   const item = TOUR[step];
   const last = step === TOUR.length - 1;
+  // Move focus to the step title whenever the step changes.
+  useEffect(() => {
+    if (focusedStep.current === step) return;
+    focusedStep.current = step;
+    headingRef.current?.focus({ preventScroll: true });
+  });
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -132,6 +140,7 @@ function FirstRunTour({ onClose }: { onClose: () => void }) {
       </p>
       <h2
         id="first-run-tour-title"
+        ref={headingRef}
         tabIndex={-1}
         className="mt-1.5 text-lg type-section-title text-brand-navy outline-none"
       >
@@ -142,7 +151,7 @@ function FirstRunTour({ onClose }: { onClose: () => void }) {
         <button
           type="button"
           onClick={onClose}
-          className="h-11 rounded-2xl border border-border-default bg-white px-4 text-sm type-button-secondary text-text-secondary hover:border-text-neutral-400"
+          className="h-11 rounded-full px-3 text-sm type-button-secondary text-text-secondary hover:bg-navy-soft"
         >
           Skip tour
         </button>
@@ -151,7 +160,7 @@ function FirstRunTour({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             onClick={() => setStep(step - 1)}
-            className="h-11 rounded-2xl px-3 text-sm type-button-secondary text-brand-navy hover:bg-navy-soft"
+            className="h-11 rounded-full px-3 text-sm type-button-secondary text-brand-navy hover:bg-navy-soft"
           >
             Back
           </button>
