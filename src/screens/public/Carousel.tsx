@@ -44,7 +44,7 @@ function Tile({
         src={page.image}
         alt=""
         priority
-        sizes="(min-width: 1024px) 340px, 100vw"
+        sizes="(min-width: 1024px) 54vw, 100vw"
         className={`absolute inset-0 size-full object-cover ${focus}`}
       />
       {children}
@@ -58,7 +58,7 @@ export function OnboardingCarousel() {
   const [cook, hack, track] = PAGES;
   return (
     <main className="min-h-dvh bg-auth-canvas p-4">
-      <div className="mx-auto grid max-w-[1800px] gap-4 lg:min-h-[calc(100dvh-2rem)] lg:grid-cols-[minmax(0,677px)_minmax(0,1fr)]">
+      <div className="grid w-full gap-4 lg:min-h-[calc(100dvh-2rem)] lg:grid-cols-[minmax(0,54fr)_minmax(0,46fr)]">
         <section
           aria-label="What you can do with ForkThis"
           className="order-last flex min-w-0 flex-col gap-4 lg:order-first"
