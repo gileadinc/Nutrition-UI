@@ -5,6 +5,7 @@ export {
   FilterSection,
   FitsTodayToggle,
   ChipGroup,
+  QuickPicks,
   RangeSlider,
   CheckList,
   ListingToolbar,

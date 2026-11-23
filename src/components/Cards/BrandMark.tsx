@@ -26,9 +26,12 @@ const TILE_LG =
 export function BrandMark({
   restaurant,
   initialFallback = false,
+  letterFallback = false,
   size = "sm",
 }: {
   restaurant: string;
+  /** Unknown restaurants get a tile with their first letter. */
+  letterFallback?: boolean;
   /** `lg` = 40px tile (Fast Hacks cards). */
   size?: "sm" | "lg";
   /** Show the site's restaurant icon when there is no logo on file. */
@@ -62,6 +65,17 @@ export function BrandMark({
         className={`${tile} ${large ? "text-[18px]" : "text-[12px]"} type-meta leading-none text-text-secondary`}
       >
         {letter}
+      </span>
+    );
+  }
+  if (letterFallback && restaurant.trim()) {
+    return (
+      <span
+        title={restaurant}
+        data-testid={`restaurant-brand-mark-${restaurant}`}
+        className={`${tile} ${large ? "text-[18px]" : "text-[12px]"} type-meta leading-none text-text-secondary`}
+      >
+        {restaurant.trim().charAt(0).toUpperCase()}
       </span>
     );
   }

@@ -59,8 +59,11 @@ export function FoodCard({
   // A named restaurant always gets a mark (logo, or its initial); the text pill is for non-restaurant badges.
   const pill = brand ? undefined : badge;
   if (layout === "discover") {
-    // Only restaurants we have a mark for get the large logo tile; anything else shows the text pill.
-    const logoFor = brandName && hasBrandMark(brandName) ? brandName : undefined;
+    // Every named restaurant gets a tile: its logo, or its first letter when we have no logo.
+    const logoFor = brandName?.trim() ? brandName : undefined;
+    // Shipped plate cut-outs sit inset on white; remote photos fill the frame.
+    const photo = image || fallbackFoodImage(title);
+    const cutout = photo.startsWith("/img/");
     return (
       <ProductCard className="h-full w-full">
         <Link
@@ -68,9 +71,9 @@ export function FoodCard({
           className="flex min-h-0 flex-1 flex-col rounded-[18px] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
         >
           <ProductCardImage
-            src={image || fallbackFoodImage(title)}
-            fit="contain"
-            imageClassName="h-[94%] w-[94%]"
+            src={photo}
+            fit={cutout ? "contain" : "cover"}
+            imageClassName={cutout ? "h-[94%] w-[94%]" : undefined}
             sizes="(min-width: 1280px) 22rem, (min-width: 768px) 20rem, 252px"
             className="aspect-[4/3]"
           >
@@ -102,15 +105,10 @@ export function FoodCard({
               )}
             </span>
             <span className="mb-1.5 flex items-center gap-2">
-              {logoFor && <BrandMark restaurant={logoFor} size="lg" initialFallback />}
+              {logoFor && <BrandMark restaurant={logoFor} size="lg" letterFallback />}
               <span className="min-w-0 flex-1 text-[12px] type-row-figure tabular-nums text-text-primary">
                 {meta}
               </span>
-              {badge && !logoFor && (
-                <span className="shrink-0 rounded-full border border-primary/[0.08] bg-navy-50 px-2 py-0.5 text-[12px] type-meta text-primary">
-                  {badge}
-                </span>
-              )}
             </span>
           </span>
         </Link>

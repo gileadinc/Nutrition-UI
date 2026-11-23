@@ -16,14 +16,13 @@ import {
   ListPageSkeleton,
   ListingToolbar,
   PageContainer,
+  QuickPicks,
   RangeSlider,
   StatePanel,
-  matchesGroups,
-  replaceInGroup,
 } from "@/components";
 import { getErrorMessage } from "@/lib/api";
 import { useFilterParams } from "@/lib/hooks";
-import { HACK_FILTER, fitFor } from "@/lib/nutrition";
+import { fitFor } from "@/lib/nutrition";
 import { useDayBudget, useFastHacks, useSaved } from "@/lib/store";
 import { nearParams, useAskForLocation, useUserLocation } from "@/lib/location";
 import { mealOfHack, toHackVM, type HackVM } from "./adapt";
@@ -34,42 +33,38 @@ const SORTS = [
   { value: "protein", label: "Most protein" },
 ];
 
-const GROUPS: Record<string, string[]> = {
-  diet: [HACK_FILTER.lowCal, HACK_FILTER.vegan, HACK_FILTER.keto, HACK_FILTER.bowls],
-  availability: [
-    HACK_FILTER.nearby,
-    HACK_FILTER.openNow,
-    HACK_FILTER.freeDelivery,
-    HACK_FILTER.deals,
-  ],
-  rating: [HACK_FILTER.topRated],
+/** Goal focus chips: a hack matches when it satisfies any selected goal. */
+const GOALS: Record<string, (h: HackVM) => boolean> = {
+  "High protein": (h) => h.protein >= 30,
+  "Lower carb": (h) => h.carbs <= 30,
+  "Under 500 kcal": (h) => h.calories < 500,
 };
-// The API has no rating, wait time, open-now, delivery or deals data, so those controls are shown but
-// can't narrow results (chips stay disabled at 0). Distance only filters hacks that report one.
-const DEF = { maxCalories: 800, minProtein: 0, maxDistance: 5, minRating: 0, maxEta: 45 };
+const MEALS = [
+  { value: "breakfast", label: "Breakfast", icon: "mealBreakfast" },
+  { value: "lunch", label: "Lunch", icon: "mealLunch" },
+  { value: "dinner", label: "Dinner", icon: "mealDinner" },
+  { value: "snack", label: "Snacks", icon: "mealSnack" },
+] as const;
+const DEF = { maxCalories: 1000, minProtein: 0 };
 const SPARSE = 2;
 
 interface F {
   meal: string | null;
   fitsToday: boolean;
   remainingCalories: number;
-  tags: string[];
+  goals: string[];
   restaurants: string[];
   maxCalories: number;
   minProtein: number;
-  maxDistance: number;
-  minRating: number;
-  maxEta: number;
 }
 
 const passes = (h: HackVM, f: F) =>
   !(
     (f.meal !== null && mealOfHack(h) !== f.meal) ||
     (f.fitsToday && h.calories > f.remainingCalories) ||
-    (h.distanceMi != null && h.distanceMi > f.maxDistance) ||
     h.calories > f.maxCalories ||
     h.protein < f.minProtein ||
-    !matchesGroups(GROUPS, f.tags, h.tags) ||
+    (f.goals.length > 0 && !f.goals.some((g) => GOALS[g]?.(h))) ||
     (f.restaurants.length > 0 && !f.restaurants.includes(h.restaurant))
   );
 
@@ -112,29 +107,23 @@ export function FastHacksScreen() {
     meal: f.get("meal"),
     fitsToday: f.get("fits") === "1",
     remainingCalories: budget.calories.remaining,
-    tags: f.getAll("tag"),
+    goals: f.getAll("goal"),
     restaurants: f.getAll("at"),
     maxCalories: f.getNumber("kcal", DEF.maxCalories),
     minProtein: f.getNumber("protein", DEF.minProtein),
-    maxDistance: f.getNumber("mi", DEF.maxDistance),
-    minRating: f.getNumber("rating", DEF.minRating),
-    maxEta: f.getNumber("eta", DEF.maxEta),
   };
   const countWith = (o: Partial<F>) => all.filter((h) => passes(h, { ...cur, ...o })).length;
-  const dietOptions = GROUPS.diet.map((v) => ({
+  const goalOptions = Object.keys(GOALS).map((v) => ({
     value: v,
     label: v,
-    count: countWith({ tags: replaceInGroup(GROUPS, cur.tags, v) }),
+    count: countWith({ goals: [...cur.goals.filter((g) => g !== v), v] }),
   }));
-  const optionsFor = (group: string) =>
-    GROUPS[group].map((v) => ({
-      value: v,
-      label: v,
-      count: countWith({ tags: replaceInGroup(GROUPS, cur.tags, v) }),
-    }));
-  const dietSelected = cur.tags.filter((t) => GROUPS.diet.includes(t));
-  const availabilitySelected = cur.tags.filter((t) => GROUPS.availability.includes(t));
-  const ratingSelected = cur.tags.filter((t) => GROUPS.rating.includes(t));
+  const mealOptions = MEALS.map((m) => ({
+    value: m.value,
+    label: m.label,
+    icon: m.icon,
+    count: countWith({ meal: m.value }),
+  }));
   const restaurantOptions = [...new Set(all.map((h) => h.restaurant).filter(Boolean))]
     .sort()
     .map((r) => ({ value: r, label: r, count: countWith({ restaurants: [r] }) }));
@@ -154,26 +143,16 @@ export function FastHacksScreen() {
 
   const applied = [
     ...(cur.fitsToday ? [{ label: "Fits what's left", remove: () => f.set("fits", null) }] : []),
-    ...cur.tags.map((t) => ({ label: t, remove: () => f.toggle("tag", t) })),
+    ...cur.goals.map((g) => ({ label: g, remove: () => f.toggle("goal", g) })),
+    ...cur.restaurants.map((r) => ({ label: r, remove: () => f.toggle("at", r) })),
     ...(cur.maxCalories < DEF.maxCalories
       ? [{ label: `Under ${cur.maxCalories} kcal`, remove: () => f.set("kcal", null) }]
       : []),
     ...(cur.minProtein > 0
       ? [{ label: `${cur.minProtein}g+ protein`, remove: () => f.set("protein", null) }]
       : []),
-    ...(cur.maxDistance < DEF.maxDistance
-      ? [{ label: `Within ${cur.maxDistance} mi`, remove: () => f.set("mi", null) }]
-      : []),
-    ...(cur.minRating > 0
-      ? [{ label: `${cur.minRating.toFixed(1)}★+`, remove: () => f.set("rating", null) }]
-      : []),
-    ...(cur.maxEta < DEF.maxEta
-      ? [{ label: `Ready in ${cur.maxEta} min`, remove: () => f.set("eta", null) }]
-      : []),
-    ...cur.restaurants.map((r) => ({ label: r, remove: () => f.toggle("at", r) })),
   ];
-  const resetFilters = () =>
-    f.clear(["fits", "tag", "kcal", "protein", "mi", "rating", "eta", "at", "adv"]);
+  const resetFilters = () => f.clear(["fits", "goal", "at", "kcal", "protein", "adv"]);
   const clearAll = () => f.clear();
   const sparse = applied.length > 0 && results.length > 0 && results.length <= SPARSE;
 
@@ -187,44 +166,63 @@ export function FastHacksScreen() {
         goal={budget.calories.goal}
         onChange={(on) => f.set("fits", on ? "1" : null)}
       />
+      <QuickPicks
+        options={[
+          {
+            label: "30g+ protein",
+            pressed: cur.minProtein === 30,
+            count: countWith({ minProtein: 30 }),
+            onPress: () => f.setNumber("protein", cur.minProtein === 30 ? 0 : 30, DEF.minProtein),
+          },
+          {
+            label: "Under 600 kcal",
+            pressed: cur.maxCalories === 600,
+            count: countWith({ maxCalories: 600 }),
+            onPress: () =>
+              f.setNumber("kcal", cur.maxCalories === 600 ? DEF.maxCalories : 600, DEF.maxCalories),
+          },
+        ]}
+      />
+      {restaurantOptions.length > 0 && (
+        <FilterSection
+          title="Restaurant"
+          summary={summary([cur.restaurants.join(", ")])}
+          active={cur.restaurants.length > 0}
+          defaultOpen
+        >
+          <CheckList
+            legend="Restaurant"
+            noun="restaurants"
+            options={restaurantOptions}
+            selected={cur.restaurants}
+            onToggle={(v) => f.toggle("at", v)}
+          />
+        </FilterSection>
+      )}
       <FilterSection
-        title="Diet & preferences"
-        summary={summary([dietSelected.join(", ")])}
-        active={dietSelected.length > 0}
+        title="Meal type"
+        summary={summary([MEALS.find((m) => m.value === cur.meal)?.label ?? false])}
+        active={cur.meal !== null}
         defaultOpen
       >
         <ChipGroup
-          legend="Diet & preferences"
-          options={dietOptions}
-          selected={cur.tags}
-          onToggle={(v) => f.toggle("tag", v)}
+          legend="Meal type"
+          options={mealOptions}
+          selected={cur.meal ? [cur.meal] : []}
+          onToggle={(v) => f.set("meal", cur.meal === v ? null : v)}
         />
       </FilterSection>
       <FilterSection
-        title="Distance & availability"
-        summary={summary([
-          cur.maxDistance < DEF.maxDistance && `Up to ${cur.maxDistance} mi`,
-          availabilitySelected.join(", "),
-        ])}
-        active={cur.maxDistance < DEF.maxDistance || availabilitySelected.length > 0}
+        title="Goal focus"
+        summary={summary([cur.goals.join(", ")])}
+        active={cur.goals.length > 0}
         defaultOpen
       >
-        <RangeSlider
-          id={`${p}distance`}
-          label="Distance"
-          min={0.5}
-          max={DEF.maxDistance}
-          step={0.5}
-          value={cur.maxDistance}
-          format={(v) => (v >= DEF.maxDistance ? "Up to 5+ mi" : `Up to ${v} mi`)}
-          onChange={(v) => f.setNumber("mi", v, DEF.maxDistance)}
-        />
         <ChipGroup
-          legend="Availability"
-          showLegend
-          options={optionsFor("availability")}
-          selected={cur.tags}
-          onToggle={(v) => f.toggle("tag", v)}
+          legend="Goal focus"
+          options={goalOptions}
+          selected={cur.goals}
+          onToggle={(v) => f.toggle("goal", v)}
         />
       </FilterSection>
       <FilterSection
@@ -236,73 +234,24 @@ export function FastHacksScreen() {
         active={cur.minProtein > 0 || cur.maxCalories < DEF.maxCalories}
       >
         <RangeSlider
-          id={`${p}min-protein`}
+          id={`${p}hack-protein`}
           label="Protein floor"
           min={0}
-          max={50}
+          max={60}
           step={5}
           value={cur.minProtein}
           format={(v) => (v === 0 ? "Any" : `${v}g or more`)}
           onChange={(v) => f.setNumber("protein", v, DEF.minProtein)}
         />
         <RangeSlider
-          id={`${p}max-calories`}
+          id={`${p}hack-calories`}
           label="Calorie ceiling"
-          min={200}
+          min={250}
           max={DEF.maxCalories}
           step={50}
           value={cur.maxCalories}
           format={(v) => (v >= DEF.maxCalories ? "Any" : `Under ${v} kcal`)}
           onChange={(v) => f.setNumber("kcal", v, DEF.maxCalories)}
-        />
-      </FilterSection>
-      <FilterSection
-        title="Rating & wait"
-        summary={summary([
-          cur.minRating > 0 && `${cur.minRating.toFixed(1)}★ and up`,
-          ratingSelected.join(", "),
-          cur.maxEta < DEF.maxEta && `Ready in ${cur.maxEta} min`,
-        ])}
-        active={cur.minRating > 0 || ratingSelected.length > 0 || cur.maxEta < DEF.maxEta}
-      >
-        <RangeSlider
-          id={`${p}min-rating`}
-          label="Rating"
-          min={0}
-          max={4.8}
-          step={0.2}
-          value={cur.minRating}
-          format={(v) => (v === 0 ? "Any" : `${v.toFixed(1)}★ and up`)}
-          onChange={(v) => f.setNumber("rating", v, DEF.minRating)}
-        />
-        <ChipGroup
-          legend="Top rated"
-          options={optionsFor("rating")}
-          selected={cur.tags}
-          onToggle={(v) => f.toggle("tag", v)}
-        />
-        <RangeSlider
-          id={`${p}max-eta`}
-          label="Ready within"
-          min={5}
-          max={DEF.maxEta}
-          step={5}
-          value={cur.maxEta}
-          format={(v) => (v >= DEF.maxEta ? "Any wait" : `${v} min`)}
-          onChange={(v) => f.setNumber("eta", v, DEF.maxEta)}
-        />
-      </FilterSection>
-      <FilterSection
-        title="Restaurant"
-        summary={summary([cur.restaurants.join(", ")])}
-        active={cur.restaurants.length > 0}
-      >
-        <CheckList
-          legend="Restaurant"
-          noun="restaurants"
-          options={restaurantOptions}
-          selected={cur.restaurants}
-          onToggle={(v) => f.toggle("at", v)}
         />
       </FilterSection>
     </>
