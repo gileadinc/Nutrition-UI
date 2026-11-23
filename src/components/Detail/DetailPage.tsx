@@ -637,3 +637,121 @@ export function SimilarCard({
     </Link>
   );
 }
+
+export interface ComparisonOrder {
+  name: string;
+  calories: number;
+  protein: number;
+}
+
+/** "How it compares": your order against a baseline order, with calorie and protein bars. */
+export function HowItCompares({
+  intro,
+  yourTag = "Your order",
+  baselineTag = "The usual",
+  yours,
+  baseline,
+}: {
+  intro: string;
+  yourTag?: string;
+  baselineTag?: string;
+  yours: ComparisonOrder;
+  baseline: ComparisonOrder;
+}) {
+  const id = useId();
+  const saved = baseline.calories - yours.calories;
+  const extraProtein = yours.protein - baseline.protein;
+  const maxKcal = Math.max(yours.calories, baseline.calories, 1);
+  const maxProtein = Math.max(yours.protein, baseline.protein, 1);
+  const rows = [
+    { ...yours, tag: yourTag, ours: true },
+    { ...baseline, tag: baselineTag, ours: false },
+  ];
+  return (
+    <section aria-labelledby={id} className="panel overflow-hidden">
+      <header className="px-4 pt-4 md:px-5">
+        <h2
+          id={id}
+          className="text-[18px] leading-6 type-section-title tracking-[-0.6px] text-brand-navy"
+        >
+          How it compares
+        </h2>
+        <p className="mt-0.5 text-onb-meta type-meta text-text-secondary">{intro}</p>
+      </header>
+      {(saved > 0 || extraProtein > 0) && (
+        <dl className="mt-3 grid grid-cols-2 gap-2.5 px-4 md:px-5">
+          {saved > 0 && (
+            <div className={cn("rounded-2xl px-3.5 py-3", POSITIVE)}>
+              <dd className="text-[24px] leading-7 type-numeral tabular-nums tracking-[-0.6px]">
+                {"\u2212"}
+                {saved}
+                <span className="ml-1 text-[13px] tracking-normal">kcal</span>
+              </dd>
+              <dt className="text-[12px] type-meta">fewer calories</dt>
+            </div>
+          )}
+          {extraProtein > 0 && (
+            <div className={cn("rounded-2xl px-3.5 py-3", POSITIVE)}>
+              <dd className="text-[24px] leading-7 type-numeral tabular-nums tracking-[-0.6px]">
+                +{extraProtein}
+                <span className="ml-1 text-[13px] tracking-normal">g</span>
+              </dd>
+              <dt className="text-[12px] type-meta">more protein</dt>
+            </div>
+          )}
+        </dl>
+      )}
+      <ul className="mt-3 flex flex-col gap-1 px-2 pb-3 md:px-3">
+        {rows.map((r) => (
+          <li key={r.tag} className={cn("rounded-2xl px-2.5 py-3", r.ours && "bg-brand-teal-soft")}>
+            <div className="flex items-center gap-2">
+              <span
+                className={cn(
+                  "shrink-0 rounded-full px-2 py-0.5 text-[11px] type-button uppercase tracking-[0.04em]",
+                  r.ours ? "bg-primary text-white" : "bg-brand-warm-gray text-text-secondary",
+                )}
+              >
+                {r.tag}
+              </span>
+              <p className="min-w-0 flex-1 truncate text-onb-body type-item-title text-text-primary">
+                {r.name}
+              </p>
+            </div>
+            <dl className="mt-2.5 grid grid-cols-[3.25rem_minmax(0,1fr)_4.5rem] items-center gap-x-3 gap-y-2 text-onb-meta">
+              <dt className="type-meta text-text-secondary">Calories</dt>
+              <dd aria-hidden className="h-2 overflow-hidden rounded-full bg-white">
+                <span
+                  className="block h-full rounded-full transition-[width] duration-500 ease-out motion-reduce:transition-none"
+                  style={{
+                    width: `${Math.round((r.calories / maxKcal) * 100)}%`,
+                    backgroundColor: r.ours
+                      ? "var(--color-accent-graphic)"
+                      : "var(--color-text-neutral-400)",
+                  }}
+                />
+              </dd>
+              <dd className="text-right type-row-figure tabular-nums text-text-primary">
+                {r.calories} kcal
+              </dd>
+              <dt className="type-meta text-text-secondary">Protein</dt>
+              <dd aria-hidden className="h-2 overflow-hidden rounded-full bg-white">
+                <span
+                  className="block h-full rounded-full transition-[width] duration-500 ease-out motion-reduce:transition-none"
+                  style={{
+                    width: `${Math.round((r.protein / maxProtein) * 100)}%`,
+                    backgroundColor: r.ours
+                      ? "var(--color-brand-navy)"
+                      : "var(--color-text-neutral-400)",
+                  }}
+                />
+              </dd>
+              <dd className="text-right type-row-figure tabular-nums text-text-primary">
+                {r.protein} g
+              </dd>
+            </dl>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}

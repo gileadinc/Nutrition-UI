@@ -8,6 +8,7 @@ import {
   DetailPage,
   DetailPageSkeleton,
   FooterAction,
+  HowItCompares,
   MacroDonut,
   MedicalNote,
   PrimaryButton,
@@ -25,7 +26,14 @@ import {
 import { getErrorMessage } from "@/lib/api";
 import { useParams } from "@/lib/nav";
 import { fitFor, fitsToday } from "@/lib/nutrition";
-import { useDayBudget, useFastHack, useFastHacks, useMenuItem, useSaved } from "@/lib/store";
+import {
+  useDayBudget,
+  useFastHack,
+  useFastHacks,
+  useMenuItem,
+  useRestaurant,
+  useSaved,
+} from "@/lib/store";
 import { menuItemToHack, toHackVM } from "./adapt";
 
 export function HackDetailScreen() {
@@ -37,6 +45,9 @@ export function HackDetailScreen() {
     hack.data && typeof hack.data.menuItemId === "string" ? hack.data.menuItemId : null,
   );
   const list = useFastHacks({ limit: 100 });
+  const restaurantId =
+    hack.data && typeof hack.data.restaurantId === "string" ? hack.data.restaurantId : null;
+  const restaurantInfo = useRestaurant(restaurantId);
   const saved = useSaved();
   const { budget } = useDayBudget();
   const surgery = useRecoveringFromSurgery();
@@ -83,6 +94,18 @@ export function HackDetailScreen() {
     const end = text.search(/[.!?](\s|$)/);
     return end === -1 ? text : text.slice(0, end + 1);
   };
+  // Baseline: the average of the restaurant's other menu items (the API has no "usual order").
+  const others = (restaurantInfo.data?.menuItems ?? []).filter(
+    (m) => m.id !== h.menuItemId && m.calories > 0,
+  );
+  const baseline =
+    others.length > 0
+      ? {
+          name: `Average ${h.restaurant} menu item`,
+          calories: Math.round(others.reduce((a, m) => a + m.calories, 0) / others.length),
+          protein: Math.round(others.reduce((a, m) => a + m.protein, 0) / others.length),
+        }
+      : null;
   const intro = h.swaps.length > 0 ? h.swaps.join(" · ") : h.outcome || h.description;
 
   return (
@@ -103,13 +126,23 @@ export function HackDetailScreen() {
         fit={fitFor(h, budget)}
         meta={h.distanceMi !== null ? [{ icon: "location", label: `${h.distanceMi} mi away` }] : []}
         aside={
-          <AsideSection title="Where the calories come from">
-            <MacroDonut
-              macros={{ protein: h.protein, carbs: h.carbs, fat: h.fat }}
-              total={h.calories}
-              variant="detail"
-            />
-          </AsideSection>
+          <>
+            <AsideSection title="Where the calories come from">
+              <MacroDonut
+                macros={{ protein: h.protein, carbs: h.carbs, fat: h.fat }}
+                total={h.calories}
+                variant="detail"
+              />
+            </AsideSection>
+            {baseline && h.calories > 0 && (
+              <HowItCompares
+                intro={`Your order against the average item on the ${h.restaurant} menu.`}
+                baselineTag="Menu average"
+                yours={{ name: h.title, calories: h.calories, protein: h.protein }}
+                baseline={baseline}
+              />
+            )}
+          </>
         }
         footer={
           <>
