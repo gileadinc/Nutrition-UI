@@ -94,18 +94,32 @@ export function HackDetailScreen() {
     const end = text.search(/[.!?](\s|$)/);
     return end === -1 ? text : text.slice(0, end + 1);
   };
-  // Baseline: the average of the restaurant's other menu items (the API has no "usual order").
-  const others = (restaurantInfo.data?.menuItems ?? []).filter(
+  // The API has no "usual order" to compare against, so use real averages: first the
+  // restaurant's other menu items, then the other fast hacks that have nutrition data.
+  const avg = (rows: { calories: number; protein: number }[]) => ({
+    calories: Math.round(rows.reduce((t, r) => t + r.calories, 0) / rows.length),
+    protein: Math.round(rows.reduce((t, r) => t + r.protein, 0) / rows.length),
+  });
+  const menuOthers = (restaurantInfo.data?.menuItems ?? []).filter(
     (m) => m.id !== h.menuItemId && m.calories > 0,
   );
+  const hackOthers = all.filter((x) => x.id !== h.id && x.calories > 0);
   const baseline =
-    others.length > 0
+    menuOthers.length > 0
       ? {
+          ...avg(menuOthers),
           name: `Average ${h.restaurant} menu item`,
-          calories: Math.round(others.reduce((a, m) => a + m.calories, 0) / others.length),
-          protein: Math.round(others.reduce((a, m) => a + m.protein, 0) / others.length),
+          tag: "Menu average",
+          intro: `Your order against the average item on the ${h.restaurant} menu.`,
         }
-      : null;
+      : hackOthers.length > 0
+        ? {
+            ...avg(hackOthers),
+            name: "Average fast hack",
+            tag: "Average",
+            intro: `Your order against the average of ${hackOthers.length} other fast hacks.`,
+          }
+        : null;
   const intro = h.swaps.length > 0 ? h.swaps.join(" · ") : h.outcome || h.description;
 
   return (
@@ -136,8 +150,8 @@ export function HackDetailScreen() {
             </AsideSection>
             {baseline && h.calories > 0 && (
               <HowItCompares
-                intro={`Your order against the average item on the ${h.restaurant} menu.`}
-                baselineTag="Menu average"
+                intro={baseline.intro}
+                baselineTag={baseline.tag}
                 yours={{ name: h.title, calories: h.calories, protein: h.protein }}
                 baseline={baseline}
               />
