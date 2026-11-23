@@ -1,9 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-/* Design-system tokens (--navy-*, --teal-*, --text-*, --border-*, ...).
-   CSS Modules consume these via var(); without this import they resolve to
-   nothing and elements such as the quiz buttons render with no background. */
-@import "../styles/tokens.css";
 
 @custom-variant lg-short (@media (width >= 64rem) and (height <= 60rem));
 
