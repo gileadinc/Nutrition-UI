@@ -1221,11 +1221,16 @@ function Flow() {
             firstInputRef={firstRef}
           />
           <details id={`${uid}-dob-help`} className="mt-3 text-sm text-text-secondary">
-            <summary className="inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-md type-button text-brand-navy marker:content-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy [&::-webkit-details-marker]:hidden">
-              <Icon name="info" size={15} color="currentColor" /> Why we ask
+            <summary className="inline-flex min-h-8 cursor-pointer items-center gap-3 rounded-md text-lg type-section-title text-brand-navy marker:content-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy [&::-webkit-details-marker]:hidden">
+              <Icon name="info" size={18} color="currentColor" /> Why we ask
             </summary>
-            <p className="mt-1 pl-[1.375rem] leading-5">{copy.why}</p>
+            <p className="mt-1 pl-[1.875rem] leading-5">{copy.why}</p>
           </details>
+          <div className="mt-8">
+            <Reassurance large>
+              Private to you. Your date of birth is never shown on your profile.
+            </Reassurance>
+          </div>
           <div className={cn("flex flex-col", D.notes, D.stack)}>
             <div id={`${uid}-dob-result`} aria-live="polite" className="min-h-14">
               {dobOk ? (
@@ -1250,9 +1255,6 @@ function Flow() {
                 </div>
               ) : null}
             </div>
-            <Reassurance>
-              Private to you. Your date of birth is never shown on your profile.
-            </Reassurance>
           </div>
         </div>
       )}

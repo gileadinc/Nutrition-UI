@@ -400,11 +400,24 @@ export function Message({
   );
 }
 
-export function Reassurance({ children, icon = "lock" }: { children: ReactNode; icon?: IconName }) {
+export function Reassurance({
+  children,
+  icon = "lock",
+  large = false,
+}: {
+  children: ReactNode;
+  icon?: IconName;
+  large?: boolean;
+}) {
   return (
-    <p className={cn("flex items-start gap-2.5 type-meta text-text-secondary", E.meta)}>
+    <p
+      className={cn(
+        "flex items-start text-text-secondary",
+        large ? ["gap-4", E.body] : ["gap-2.5 type-meta", E.meta],
+      )}
+    >
       <span className="mt-0.5 shrink-0">
-        <Icon name={icon} size={16} color="var(--color-brand-navy)" />
+        <Icon name={icon} size={large ? 20 : 16} color="var(--color-brand-navy)" />
       </span>
       <span>{children}</span>
     </p>
