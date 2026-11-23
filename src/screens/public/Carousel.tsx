@@ -44,7 +44,7 @@ function Tile({
         src={page.image}
         alt=""
         priority
-        sizes="(min-width: 1024px) 55vw, 100vw"
+        sizes="(min-width: 1024px) 340px, 100vw"
         className={`absolute inset-0 size-full object-cover ${focus}`}
       />
       {children}
@@ -57,20 +57,24 @@ export function OnboardingCarousel() {
   const navigate = useNavigate();
   const [cook, hack, track] = PAGES;
   return (
-    <main className="min-h-dvh bg-auth-canvas p-4 lg:pb-3 lg:pt-2">
-      <div className="grid w-full gap-4 lg:min-h-[calc(100dvh-1.25rem)] lg:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] lg:gap-x-6">
+    <main className="min-h-dvh bg-auth-canvas p-4">
+      <div className="grid w-full gap-4 lg:min-h-[calc(100dvh-2rem)] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] xl:gap-6">
         <section
           aria-label="What you can do with ForkThis"
           className="order-last flex min-w-0 flex-col gap-4 lg:order-first"
         >
           <div className="grid flex-1 gap-3 sm:grid-cols-2">
             {[cook, hack].map((p) => (
-              <Tile key={p.heading} page={p} className="min-h-[26rem] rounded-[17px] bg-intro-tile">
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-intro-tile via-intro-tile/90 to-transparent px-[17px] pb-6 pt-14 text-primary">
+              <Tile
+                key={p.heading}
+                page={p}
+                className="min-h-[26rem] rounded-[17px] bg-brand-cream lg:min-h-0"
+              >
+                <div className="absolute inset-x-[17px] bottom-4 text-primary">
                   <h2 className="text-[32px] type-section-title leading-none tracking-[-0.6px]">
                     {p.heading}
                   </h2>
-                  <p className="mt-1 min-h-12 max-w-[24rem] text-base type-extra-light leading-6 tracking-[-0.176px] text-text-primary">
+                  <p className="mt-1 min-h-[3.75rem] max-w-[min(16.5rem,100%)] text-sm type-extra-light leading-5 tracking-[-0.176px] text-text-primary md:max-w-[22rem] md:text-base md:leading-6 lg:max-w-[min(24rem,100%)]">
                     {p.body}
                   </p>
                 </div>
@@ -78,11 +82,11 @@ export function OnboardingCarousel() {
             ))}
           </div>
           <Tile page={track} className="h-[418px] shrink-0 rounded-2xl" focus="object-[28%_center]">
-            <div className="absolute inset-y-0 right-4 flex w-[min(331px,55%)] flex-col justify-center">
+            <div className="absolute inset-x-3 bottom-3 rounded-2xl bg-white/90 p-4 sm:inset-x-auto sm:bottom-0 sm:right-4 sm:top-0 sm:flex sm:w-[min(331px,55%)] sm:flex-col sm:justify-center sm:rounded-none sm:bg-transparent sm:p-0">
               <h2 className="text-[32px] type-section-title leading-none tracking-[-0.6px] text-text-primary">
                 {track.heading}
               </h2>
-              <p className="mt-1 text-lg type-extra-light leading-6 tracking-[-0.176px] text-text-primary">
+              <p className="mt-1 text-sm type-extra-light leading-5 tracking-[-0.176px] text-text-primary md:text-base md:leading-6 xl:text-lg">
                 {track.body}
               </p>
             </div>
