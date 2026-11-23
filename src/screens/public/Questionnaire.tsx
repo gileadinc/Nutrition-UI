@@ -1093,7 +1093,6 @@ function Flow() {
           <PrimaryButton
             type="submit"
             label={edit ? "Confirm and continue" : seenReveal ? "Back to your plan" : "Continue"}
-            className="flex-1 lg:ml-auto lg:max-w-60"
           />
         }
       >
