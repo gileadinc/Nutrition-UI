@@ -6,10 +6,11 @@ import { Icon, type IconName } from "@/components/Icon";
 import { CheckMark } from "@/components/Layout";
 import { Link, useSearchParams } from "@/lib/nav";
 import { useNow } from "@/lib/hooks";
+import { useDayBudget } from "@/lib/store";
 import { SegmentedRing } from "@/components/Charts";
 import { MEAL_TYPES, mealApi, type MealLabel } from "@/lib/nutrition";
 import { MEAL_COLOR, dayCalories, dayProtein, type TrackDay, type TrackMeal } from "@/lib/track";
-import { META_TEXT, PAGE_TITLE, SELECTED_CHIP } from "@/components/styles";
+import { PAGE_TITLE, SELECTED_CHIP } from "@/components/styles";
 
 export const EYEBROW = "text-[13px] type-eyebrow uppercase tracking-[0.06em]";
 const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
@@ -34,12 +35,8 @@ export function TrackSwitch({ current }: { current: "today" | "insights" }) {
           <span
             key={v.id}
             aria-current="page"
-            className={cn(
-              "flex h-11 items-center gap-1.5 rounded-full px-4 text-[13px] type-button",
-              SELECTED_CHIP,
-            )}
+            className="flex h-11 items-center rounded-full bg-white px-4 text-[13px] type-button text-brand-navy ring-1 ring-brand-navy"
           >
-            <CheckMark size={13} />
             {v.label}
           </span>
         ) : (
@@ -61,34 +58,50 @@ export function TrackHeader({
   firstName,
   longDate,
   goalLabel,
+  eaten,
 }: {
   greeting: string;
   firstName: string | null;
   longDate: string;
   goalLabel: string | null;
+  /** Food calories logged today. */
+  eaten: number;
 }) {
+  const { budget } = useDayBudget();
+  const { goal, remaining } = budget.calories;
+  const summary =
+    eaten === 0
+      ? "Nothing logged yet today. A meal or a glass of water is a good start."
+      : remaining > 0
+        ? `${fmt(remaining)} kcal left of your ${fmt(goal)} kcal goal today.`
+        : `You've reached today's ${fmt(goal)} kcal goal. Anything more can wait for tomorrow.`;
   return (
-    <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div className="flex min-w-0 flex-col gap-0.5">
-        <h1 className={PAGE_TITLE}>
+    <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div className="flex min-w-0 flex-col">
+        <p className="eyebrow text-[12px]">{longDate}</p>
+        <h1 className={cn(PAGE_TITLE, "mt-1")}>
           {greeting}
           {firstName ? `, ${firstName}` : ""}
         </h1>
-        <p className={cn(META_TEXT, "flex flex-wrap items-center gap-x-1.5")}>
-          <span>{longDate}</span>
-          <span aria-hidden="true" className="text-text-neutral-400">
-            ·
-          </span>
-          <Link
-            to={`/questionnaire?step=goal&returnTo=${encodeURIComponent("/track")}`}
-            aria-label={`Goal: ${goalLabel ?? "not set"}. Edit Goal`}
-            className="inline-flex min-h-11 items-center gap-1 type-button text-text-primary underline-offset-2 hover:underline"
-          >
-            <Icon name="target" size={14} color="var(--color-primary)" />
-            {goalLabel ?? "Set a goal"}
-            <Icon name="chevronRight" size={12} color="var(--color-text-neutral-400)" />
-          </Link>
+        <p className="mt-1.5 max-w-xl text-[14px] leading-5 type-meta text-text-secondary">
+          {summary}
         </p>
+        <Link
+          to={`/questionnaire?step=goal&returnTo=${encodeURIComponent("/track")}`}
+          aria-label={`Goal: ${goalLabel ?? "not set"}. Edit Goal`}
+          className="tap-44 relative mt-3 inline-flex h-9 w-fit items-center gap-1.5 rounded-full border border-border-default bg-white pl-3 pr-2.5 text-[13px] type-button text-text-primary transition-colors hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        >
+          <Icon name="target" size={14} color="var(--color-primary)" />
+          {goalLabel ? (
+            <>
+              <span className="text-text-secondary">Goal</span>
+              {goalLabel}
+            </>
+          ) : (
+            "Set a goal"
+          )}
+          <Icon name="chevronRight" size={12} color="var(--color-text-neutral-400)" />
+        </Link>
       </div>
       <TrackSwitch current="today" />
     </header>
