@@ -8,10 +8,10 @@ import { cn } from "@/lib/utils";
 
 /** Type and spacing tokens the questionnaire uses. */
 export const E = {
-  display: "text-[28px] leading-8 tracking-[-0.7px]",
-  chapter: "text-[28px] leading-8 tracking-[-0.7px]",
-  body: "text-sm leading-5",
-  meta: "text-xs leading-[18px]",
+  display: "text-[32px] leading-[36.8px] tracking-[-0.8px]",
+  chapter: "text-[32px] leading-[36.8px] tracking-[-0.8px]",
+  body: "text-onb-body",
+  meta: "text-onb-meta",
   hero: "text-onb-hero lg:text-onb-hero-lg",
 } as const;
 export const D = {
@@ -194,7 +194,7 @@ export function StepLayout({
               <button
                 type="button"
                 onClick={onBack}
-                className="h-[52px] shrink-0 rounded-full px-4 text-sm type-button-secondary text-brand-navy hover:bg-navy-soft"
+                className="h-14 shrink-0 rounded-full px-4 type-button-secondary text-brand-navy hover:bg-navy-soft"
               >
                 {backLabel}
               </button>
@@ -231,7 +231,7 @@ export function ResultLayout({
             <button
               type="button"
               onClick={onBack}
-              className="h-[52px] rounded-full px-4 text-sm type-button-secondary text-brand-navy hover:bg-navy-soft"
+              className="h-14 rounded-full px-4 type-button-secondary text-brand-navy hover:bg-navy-soft"
             >
               Back
             </button>
@@ -279,7 +279,7 @@ export function Heading({
 }) {
   return (
     <div className="flex flex-col">
-      {eyebrow && <p className="onb-eyebrow !text-xs !leading-4">{eyebrow}</p>}
+      {eyebrow && <p className="onb-eyebrow">{eyebrow}</p>}
       <h1
         id={headingId}
         tabIndex={-1}
@@ -400,24 +400,11 @@ export function Message({
   );
 }
 
-export function Reassurance({
-  children,
-  icon = "lock",
-  large = false,
-}: {
-  children: ReactNode;
-  icon?: IconName;
-  large?: boolean;
-}) {
+export function Reassurance({ children, icon = "lock" }: { children: ReactNode; icon?: IconName }) {
   return (
-    <p
-      className={cn(
-        "flex items-start text-text-secondary",
-        large ? ["gap-3", E.body] : ["gap-2.5 type-meta", E.meta],
-      )}
-    >
+    <p className={cn("flex items-start gap-2.5 type-meta text-text-secondary", E.meta)}>
       <span className="mt-0.5 shrink-0">
-        <Icon name={icon} size={large ? 18 : 16} color="var(--color-brand-navy)" />
+        <Icon name={icon} size={16} color="var(--color-brand-navy)" />
       </span>
       <span>{children}</span>
     </p>
@@ -724,9 +711,9 @@ export function DateField({
               }}
               onChange={(e) => set(i, e.target.value)}
               className={cn(
-                "panel h-14 w-full min-w-0 px-1 text-center type-numeral tabular-nums outline-none selection:bg-teal-200 focus:ring-2 focus:ring-inset focus:ring-brand-navy lg:h-16",
+                "panel h-16 w-full min-w-0 px-1 text-center type-numeral tabular-nums outline-none selection:bg-teal-200 focus:ring-2 focus:ring-inset focus:ring-brand-navy lg:h-[4.5rem]",
                 E.display,
-                "placeholder:type-meta placeholder:text-text-neutral-500 placeholder:text-sm",
+                "placeholder:type-meta placeholder:text-text-neutral-500 placeholder:text-onb-body",
                 invalid && "ring-2 ring-inset ring-error-red",
                 "text-text-primary",
               )}

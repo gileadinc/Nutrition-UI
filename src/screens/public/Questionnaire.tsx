@@ -437,7 +437,6 @@ function Reveal({
       onSubmit={onPrimary}
       actions={
         <PrimaryButton
-          size="medium"
           type="submit"
           label={primaryLabel}
           className="flex-1 lg:ml-auto lg:max-w-60"
@@ -808,6 +807,23 @@ function Flow() {
   });
   const firstRef = useRef<HTMLInputElement | null>(null);
   const weightRef = useRef<HTMLInputElement | null>(null);
+  // Where focus goes after the next render: the first field on a mouse/keyboard
+  // device, otherwise the step heading when moving between steps.
+  const focusPlan = useRef<"initial" | "step" | null>("initial");
+  useEffect(() => {
+    const plan = focusPlan.current;
+    if (!plan) return;
+    focusPlan.current = null;
+    const fine = window.matchMedia?.("(pointer: fine)").matches ?? false;
+    const target = firstRef.current;
+    if (target && fine) {
+      target.focus();
+      const end = target.value.length;
+      target.setSelectionRange(end, end);
+    } else if (plan === "step") {
+      document.getElementById(`${uid}-heading`)?.focus();
+    }
+  });
 
   const age = ageFromDob(dob);
   const dobOk = dobComplete(dob) && age !== null && age >= 13 && age <= 100;
@@ -882,6 +898,7 @@ function Flow() {
   const social = useSocialSignIn(AFTER);
 
   const go = (s: Screen, st: Step = step, dir: "forward" | "back" = "forward") => {
+    focusPlan.current = "step";
     setDirection(dir);
     setScreen(s);
     setStep(st);
@@ -1074,7 +1091,6 @@ function Flow() {
         }}
         actions={
           <PrimaryButton
-            size="medium"
             type="submit"
             label={edit ? "Confirm and continue" : seenReveal ? "Back to your plan" : "Continue"}
             className="flex-1 lg:ml-auto lg:max-w-60"
@@ -1181,7 +1197,6 @@ function Flow() {
       onSubmit={submitStep}
       actions={
         <PrimaryButton
-          size="medium"
           type="submit"
           label={fromReview ? "Back to review" : busy ? "Saving..." : "Continue"}
           disabled={(step !== "dob" && !valid[step]) || busy}
@@ -1224,18 +1239,17 @@ function Flow() {
             firstInputRef={firstRef}
           />
           <details id={`${uid}-dob-help`} className="mt-3 text-sm text-text-secondary">
-            <summary className="inline-flex min-h-8 cursor-pointer items-center gap-2.5 rounded-md text-base type-section-title text-brand-navy marker:content-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy [&::-webkit-details-marker]:hidden">
-              <Icon name="info" size={16} color="currentColor" /> Why we ask
+            <summary className="inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-md type-button text-brand-navy marker:content-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy [&::-webkit-details-marker]:hidden">
+              <Icon name="info" size={15} color="currentColor" /> Why we ask
             </summary>
-            <p className="mt-1 pl-[1.625rem] leading-5">{copy.why}</p>
+            <p className="mt-1 pl-[1.375rem] leading-5">{copy.why}</p>
           </details>
-          <div className="mt-3">
-            <Reassurance large>
-              Private to you. Your date of birth is never shown on your profile.
-            </Reassurance>
-          </div>
-          <div className={cn("flex flex-col", D.notes, D.stack)}>
-            <div id={`${uid}-dob-result`} aria-live="polite" className="min-h-14">
+          <div className={D.notes}>
+            <div
+              id={`${uid}-dob-result`}
+              aria-live="polite"
+              className={cn((dobOk || dobError || tooYoung) && "mb-3")}
+            >
               {dobOk ? (
                 <Message message={`${age} years old`} success />
               ) : dobError ? (
@@ -1258,6 +1272,9 @@ function Flow() {
                 </div>
               ) : null}
             </div>
+            <Reassurance>
+              Private to you. Your date of birth is never shown on your profile.
+            </Reassurance>
           </div>
         </div>
       )}
