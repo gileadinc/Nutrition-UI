@@ -437,6 +437,7 @@ function Reveal({
       onSubmit={onPrimary}
       actions={
         <PrimaryButton
+          size="medium"
           type="submit"
           label={primaryLabel}
           className="flex-1 lg:ml-auto lg:max-w-60"
@@ -1073,6 +1074,7 @@ function Flow() {
         }}
         actions={
           <PrimaryButton
+            size="medium"
             type="submit"
             label={edit ? "Confirm and continue" : seenReveal ? "Back to your plan" : "Continue"}
             className="flex-1 lg:ml-auto lg:max-w-60"
@@ -1179,6 +1181,7 @@ function Flow() {
       onSubmit={submitStep}
       actions={
         <PrimaryButton
+          size="medium"
           type="submit"
           label={fromReview ? "Back to review" : busy ? "Saving..." : "Continue"}
           disabled={(step !== "dob" && !valid[step]) || busy}
@@ -1221,10 +1224,10 @@ function Flow() {
             firstInputRef={firstRef}
           />
           <details id={`${uid}-dob-help`} className="mt-3 text-sm text-text-secondary">
-            <summary className="inline-flex min-h-8 cursor-pointer items-center gap-3 rounded-md text-lg type-section-title text-brand-navy marker:content-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy [&::-webkit-details-marker]:hidden">
-              <Icon name="info" size={18} color="currentColor" /> Why we ask
+            <summary className="inline-flex min-h-8 cursor-pointer items-center gap-2.5 rounded-md text-base type-section-title text-brand-navy marker:content-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy [&::-webkit-details-marker]:hidden">
+              <Icon name="info" size={16} color="currentColor" /> Why we ask
             </summary>
-            <p className="mt-1 pl-[1.875rem] leading-5">{copy.why}</p>
+            <p className="mt-1 pl-[1.625rem] leading-5">{copy.why}</p>
           </details>
           <div className="mt-3">
             <Reassurance large>
