@@ -3,22 +3,20 @@
 import { useMemo, useState } from "react";
 import {
   AppliedFilters,
-  CategoryChips,
+  BudgetPills,
+  CategoryPills,
   CenteredShell,
   CheckList,
   ChipGroup,
   EmptyState,
   FilterSection,
   FilterSheet,
-  FilterSidebar,
   FitsTodayToggle,
   FoodCard,
   ListPageSkeleton,
   ListingToolbar,
   PageContainer,
   RangeSlider,
-  Rail,
-  SectionTitle,
   StatePanel,
   matchesGroups,
   replaceInGroup,
@@ -26,15 +24,8 @@ import {
 import { getErrorMessage } from "@/lib/api";
 import { useFilterParams } from "@/lib/hooks";
 import { HACK_FILTER, fitFor } from "@/lib/nutrition";
-import {
-  useDayBudget,
-  useEatOutRecommendations,
-  useFastHacks,
-  useProfile,
-  useSaved,
-} from "@/lib/store";
-import { UI } from "@/content";
-import { nearParams, useAskForLocation, usePlaceLabel, useUserLocation } from "@/lib/location";
+import { useDayBudget, useFastHacks, useSaved } from "@/lib/store";
+import { nearParams, useAskForLocation, useUserLocation } from "@/lib/location";
 import { toHackVM, type HackVM } from "./adapt";
 
 const SORTS = [
@@ -56,7 +47,6 @@ const GROUPS: Record<string, string[]> = {
 // The API has no rating, wait time, open-now, delivery or deals data, so those controls are shown but
 // can't narrow results (chips stay disabled at 0). Distance only filters hacks that report one.
 const DEF = { maxCalories: 800, minProtein: 0, maxDistance: 5, minRating: 0, maxEta: 45 };
-const FEATURED = 3;
 const SPARSE = 2;
 
 interface F {
@@ -88,11 +78,8 @@ export function FastHacksScreen() {
   const [open, setOpen] = useState(false);
   const { coords } = useUserLocation();
   useAskForLocation();
-  const place = usePlaceLabel(coords);
   const near = nearParams(coords);
   const { data, error, isLoading, refresh } = useFastHacks({ limit: 100, ...near });
-  const { profile } = useProfile();
-  const recs = useEatOutRecommendations({ goal: profile?.goal ?? undefined, limit: 6, ...near });
   const saved = useSaved();
   const { budget } = useDayBudget();
   const all = useMemo(() => (data?.items ?? []).map((h) => toHackVM(h)), [data]);
@@ -185,21 +172,7 @@ export function FastHacksScreen() {
   const resetFilters = () =>
     f.clear(["fits", "tag", "kcal", "protein", "mi", "rating", "eta", "at", "adv"]);
   const clearAll = () => f.clear();
-  const pristine = applied.length === 0 && sort === "recommended";
-  // "Featured for you" follows the backend's ranking for the user's goal, then fills from the list.
-  const recRank = new Map((recs.data?.items ?? []).map((h, i) => [h.id, i]));
-  const featured = pristine
-    ? [...results]
-        .sort((a, b) => (recRank.get(a.id) ?? 999) - (recRank.get(b.id) ?? 999))
-        .slice(0, FEATURED)
-    : [];
-  const rest = results.filter((h) => !featured.includes(h));
-  const sparse = !pristine && results.length > 0 && results.length <= SPARSE;
-
-  const seen = new Set<string>();
-  const restaurants = results.filter(
-    (h) => h.restaurant && !seen.has(h.restaurant) && seen.add(h.restaurant),
-  );
+  const sparse = applied.length > 0 && results.length > 0 && results.length <= SPARSE;
 
   const panel = (p: string) => (
     <>
@@ -332,16 +305,16 @@ export function FastHacksScreen() {
     </>
   );
 
-  const card = (h: HackVM, layout: "rail" | "grid") => (
+  const card = (h: HackVM) => (
     <FoodCard
       key={h.id}
-      layout={layout}
+      layout="discover"
       image={h.image}
       title={h.title}
-      subtitle={layout === "rail" ? h.restaurant : h.restaurant}
+      subtitle={h.distanceMi !== null ? `${h.restaurant} · ${h.distanceMi} mi` : h.restaurant}
       brandName={h.restaurant}
-      leadingBadge={layout === "rail" && h.distanceMi !== null ? `${h.distanceMi} mi` : undefined}
-      badge={layout === "rail" ? h.restaurant : h.badge || undefined}
+      leadingBadge={h.distanceMi !== null ? `${h.distanceMi} mi` : undefined}
+      badge={h.badge || undefined}
       meta={`${h.calories} kcal · ${h.protein}g protein`}
       fit={fitFor(h, budget)}
       saved={saved.isSaved("fast_hack", h.id)}
@@ -362,106 +335,81 @@ export function FastHacksScreen() {
     : "Remove a filter or pick another meal to see more options.";
 
   return (
-    <PageContainer className="max-w-[1680px]">
-      <ListingToolbar
-        title="HackThis!"
-        compact
-        showDesktopFilters
-        subtitle="Real restaurant orders adjusted for your goal."
-        count={results.length}
-        noun="hack"
-        searchTo="/search?scope=hacks"
-        savedCount={savedCount}
-        savedTo="/you/saved?tab=hacks"
-        activeCount={applied.length}
-        filtersOpen={open}
-        onOpenFilters={() => setOpen(true)}
-        sort={sort}
-        sortOptions={SORTS}
-        onSort={(v) => f.set("sort", v === "recommended" ? null : v)}
-      />
-      <div className="mt-1 flex gap-8 md:mt-5">
-        <FilterSidebar activeCount={applied.length} onReset={resetFilters}>
-          {panel("panel-")}
-        </FilterSidebar>
-        <div className="@container min-w-0 flex-1">
-          <div className="sticky top-0 z-20 -mx-5 mt-4 border-b border-border-divider bg-brand-cream px-5 md:top-16 md:mx-0 md:px-0">
-            <CategoryChips selected={f.get("meal")} onSelect={(c) => f.set("meal", c)} />
-            <AppliedFilters filters={applied} onClearAll={resetFilters} />
-          </div>
-          {featured.length > 0 && (
-            <section aria-label="Featured near you" className="mt-6">
-              <SectionTitle
-                action="See all"
-                actionTo="/search"
-                location={coords ? (place ?? UI.location.eyebrow) : undefined}
-              >
-                Featured near you
-              </SectionTitle>
-              <div className="rail-scroll -mx-5 mt-3 flex gap-3 overflow-x-auto px-5 pb-1 md:mx-0 md:px-0 md:@2xl:grid md:@2xl:grid-cols-3 md:@2xl:gap-4 md:@2xl:overflow-visible md:[&>*]:w-64! md:@2xl:[&>*]:w-auto!">
-                {featured.map((h) => card(h, "rail"))}
-              </div>
-            </section>
+    <PageContainer className="max-w-7xl">
+      <section
+        data-testid="catalogue-top-block"
+        aria-label="Browse and filter"
+        className="relative z-30 border-b border-border-divider bg-brand-cream pb-3 xl:sticky xl:top-16"
+      >
+        <ListingToolbar
+          title="HackThis!"
+          compact
+          showDesktopFilters
+          subtitle="Real restaurant orders adjusted for your goal."
+          count={results.length}
+          noun="hack"
+          searchTo="/search?scope=hacks"
+          savedCount={savedCount}
+          savedTo="/you/saved?tab=hacks"
+          activeCount={applied.length}
+          filtersOpen={open}
+          onOpenFilters={() => setOpen(true)}
+          sort={sort}
+          sortOptions={SORTS}
+          onSort={(v) => f.set("sort", v === "recommended" ? null : v)}
+        />
+        <BudgetPills />
+        <div className="mt-3">
+          <CategoryPills
+            selected={f.get("meal")}
+            onSelect={(c) => f.set("meal", c)}
+            counts={{ all: results.length }}
+          />
+        </div>
+      </section>
+      <AppliedFilters filters={applied} onClearAll={resetFilters} />
+      <div className="@container min-w-0 flex-1">
+        <section aria-label="All results" className="mt-4">
+          {results.length === 0 ? (
+            <EmptyState
+              icon="database"
+              title="Nothing matches those filters"
+              body={hint}
+              action={{ label: "Clear filters", onPress: clearAll }}
+            />
+          ) : (
+            <ul
+              aria-label="Hack results"
+              className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-4"
+            >
+              {results.map((h) => (
+                <li key={h.id} className="min-w-0">
+                  {card(h)}
+                </li>
+              ))}
+            </ul>
           )}
-          {featured.length > 0 && rest.length > 0 && (
-            <div className="mt-8 border-t border-border-divider pt-6">
-              <SectionTitle>More options</SectionTitle>
+          {sparse && (
+            <div
+              data-testid="sparse-note"
+              className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border-divider pt-4"
+            >
+              <p className="text-[13px] leading-5 type-meta text-text-secondary">
+                {results.length === 1
+                  ? "Only one option matches."
+                  : `Only ${results.length} options match.`}{" "}
+                {hint}
+              </p>
+              <button
+                type="button"
+                onClick={clearAll}
+                className="min-h-11 rounded-full border border-border-default bg-white px-4 text-[13px] type-button text-primary hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+              >
+                Clear filters
+              </button>
             </div>
           )}
-          <section aria-label="All results" className={featured.length > 0 ? "mt-3" : "mt-5"}>
-            {results.length === 0 ? (
-              <EmptyState
-                icon="database"
-                title="Nothing matches those filters"
-                body={hint}
-                action={{ label: "Clear filters", onPress: clearAll }}
-              />
-            ) : (
-              <div className="grid auto-rows-fr grid-cols-2 gap-3 @2xl:grid-cols-3 @2xl:gap-4 @5xl:grid-cols-4">
-                {rest.map((h) => card(h, "grid"))}
-              </div>
-            )}
-            {sparse && (
-              <div
-                data-testid="sparse-note"
-                className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border-divider pt-4"
-              >
-                <p className="text-[13px] leading-5 type-meta text-text-secondary">
-                  {results.length === 1
-                    ? "Only one option matches."
-                    : `Only ${results.length} options match.`}{" "}
-                  {hint}
-                </p>
-                <button
-                  type="button"
-                  onClick={clearAll}
-                  className="min-h-11 rounded-full border border-border-default bg-white px-4 text-[13px] type-button text-primary hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-                >
-                  Clear filters
-                </button>
-              </div>
-            )}
-          </section>
-          {pristine && restaurants.length > 0 && (
-            <section
-              aria-label="Restaurants near you"
-              className="mt-10 border-t border-border-divider pt-6"
-            >
-              <SectionTitle>Restaurants near you</SectionTitle>
-              <div className="mt-3">
-                <Rail>
-                  {restaurants.map((h) => (
-                    <RestaurantCard
-                      key={h.restaurant}
-                      hack={h}
-                      count={results.filter((x) => x.restaurant === h.restaurant).length}
-                    />
-                  ))}
-                </Rail>
-              </div>
-            </section>
-          )}
-        </div>
+        </section>
       </div>
       <FilterSheet
         open={open}
@@ -474,18 +422,5 @@ export function FastHacksScreen() {
         {panel("sheet-")}
       </FilterSheet>
     </PageContainer>
-  );
-}
-
-function RestaurantCard({ hack, count }: { hack: HackVM; count: number }) {
-  return (
-    <FoodCard
-      layout="rail"
-      image={hack.image}
-      title={hack.restaurant}
-      subtitle={`${count} goal-friendly ${count === 1 ? "hack" : "hacks"} to order`}
-      meta={hack.distanceMi !== null ? `${hack.distanceMi} mi` : ""}
-      to={`/hack/${hack.id}`}
-    />
   );
 }

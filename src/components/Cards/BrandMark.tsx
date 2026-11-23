@@ -19,26 +19,38 @@ export const hasBrandMark = (name: string) =>
 
 const TILE =
   "flex size-[22px] shrink-0 items-center justify-center overflow-hidden rounded-[7px] border border-border-default bg-white";
+const TILE_LG =
+  "flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border-default bg-white";
 
 /** 22px restaurant logo tile. Renders nothing for unknown restaurants. */
 export function BrandMark({
   restaurant,
   initialFallback = false,
+  size = "sm",
 }: {
   restaurant: string;
+  /** `lg` = 40px tile (Fast Hacks cards). */
+  size?: "sm" | "lg";
   /** Show the site's restaurant icon when there is no logo on file. */
   initialFallback?: boolean;
 }) {
   const logo = RESTAURANT_LOGOS[restaurant];
   const letter = RESTAURANT_LETTERS[restaurant];
+  const large = size === "lg";
+  const tile = large ? TILE_LG : TILE;
   if (logo) {
     return (
       <span
         title={restaurant}
         data-testid={`restaurant-brand-mark-${restaurant}`}
-        className={`${TILE} p-[3px]`}
+        className={`${tile} ${large ? "p-1" : "p-[3px]"}`}
       >
-        <AppImage src={logo} alt="" sizes="22px" className="size-full object-contain" />
+        <AppImage
+          src={logo}
+          alt=""
+          sizes={large ? "44px" : "22px"}
+          className="size-full object-contain"
+        />
       </span>
     );
   }
@@ -47,7 +59,7 @@ export function BrandMark({
       <span
         title={restaurant}
         data-testid={`restaurant-brand-mark-${restaurant}`}
-        className={`${TILE} text-[12px] type-meta leading-none text-text-secondary`}
+        className={`${tile} ${large ? "text-[18px]" : "text-[12px]"} type-meta leading-none text-text-secondary`}
       >
         {letter}
       </span>
@@ -55,8 +67,8 @@ export function BrandMark({
   }
   if (initialFallback) {
     return (
-      <span title={restaurant} data-testid={`restaurant-brand-mark-${restaurant}`} className={TILE}>
-        <Icon name="restaurant" size={14} color="var(--color-text-secondary)" />
+      <span title={restaurant} data-testid={`restaurant-brand-mark-${restaurant}`} className={tile}>
+        <Icon name="restaurant" size={large ? 20 : 14} color="var(--color-text-secondary)" />
       </span>
     );
   }
