@@ -38,6 +38,10 @@ export const GUEST_GATE = guestGateJson as {
   title: { withFeature: string; generic: string };
   fallbackDescription: string;
   fallbackCta: string;
+  subtitle: string;
+  features: { icon: IconName; title: string; body: string }[];
+  alreadyHave: string;
+  logIn: string;
   dismiss: string;
   perks: { icon: IconName; label: string }[];
 };

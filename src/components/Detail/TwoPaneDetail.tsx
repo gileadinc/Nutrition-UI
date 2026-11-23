@@ -176,28 +176,6 @@ const NUM =
   "flex size-6 shrink-0 items-center justify-center rounded-full bg-navy-50 text-onb-meta type-row-figure tabular-nums text-brand-navy";
 
 /** Numbered "what to say / order at the counter" list. */
-export function CounterScript({ lines, restaurant }: { lines: string[]; restaurant: string }) {
-  const id = useId();
-  return (
-    <section aria-labelledby={id} data-testid="counter-script" className="panel px-4 py-4 md:px-5">
-      <p className="onb-eyebrow">At {restaurant}</p>
-      <h2 id={id} className="mt-1 text-onb-body type-section-title text-brand-navy">
-        What to say at the counter
-      </h2>
-      <ol className="mt-3 flex flex-col gap-2.5">
-        {lines.map((l, i) => (
-          <li key={`${i}-${l}`} className="flex items-start gap-3">
-            <span aria-hidden className={NUM}>
-              {i + 1}
-            </span>
-            <span className="min-w-0 text-onb-body text-text-primary">{l}</span>
-          </li>
-        ))}
-      </ol>
-    </section>
-  );
-}
-
 export function IngredientsPanel({ items, action }: { items: string[]; action?: ReactNode }) {
   const id = useId();
   return (

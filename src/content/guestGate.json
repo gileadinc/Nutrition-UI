@@ -19,5 +19,25 @@
       "icon": "tick",
       "label": "Free forever"
     }
-  ]
+  ],
+  "subtitle": "Free, and it takes about a minute.",
+  "features": [
+    {
+      "icon": "forkSpoon",
+      "title": "Track every meal",
+      "body": "Watch calories and macros add up through the day."
+    },
+    {
+      "icon": "bookmark",
+      "title": "Save what you love",
+      "body": "Keep favourite recipes and hacks in one place."
+    },
+    {
+      "icon": "target",
+      "title": "Picks made for you",
+      "body": "Recommendations that fit your goals and diet."
+    }
+  ],
+  "alreadyHave": "Already have an account?",
+  "logIn": "Log in"
 }
