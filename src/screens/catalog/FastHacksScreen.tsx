@@ -26,7 +26,7 @@ import { useFilterParams } from "@/lib/hooks";
 import { HACK_FILTER, fitFor } from "@/lib/nutrition";
 import { useDayBudget, useFastHacks, useSaved } from "@/lib/store";
 import { nearParams, useAskForLocation, useUserLocation } from "@/lib/location";
-import { toHackVM, type HackVM } from "./adapt";
+import { mealOfHack, toHackVM, type HackVM } from "./adapt";
 
 const SORTS = [
   { value: "recommended", label: "Recommended" },
@@ -50,6 +50,7 @@ const DEF = { maxCalories: 800, minProtein: 0, maxDistance: 5, minRating: 0, max
 const SPARSE = 2;
 
 interface F {
+  meal: string | null;
   fitsToday: boolean;
   remainingCalories: number;
   tags: string[];
@@ -63,6 +64,7 @@ interface F {
 
 const passes = (h: HackVM, f: F) =>
   !(
+    (f.meal !== null && mealOfHack(h) !== f.meal) ||
     (f.fitsToday && h.calories > f.remainingCalories) ||
     (h.distanceMi != null && h.distanceMi > f.maxDistance) ||
     h.calories > f.maxCalories ||
@@ -107,6 +109,7 @@ export function FastHacksScreen() {
 
   const sort = f.get("sort") ?? "recommended";
   const cur: F = {
+    meal: f.get("meal"),
     fitsToday: f.get("fits") === "1",
     remainingCalories: budget.calories.remaining,
     tags: f.getAll("tag"),
@@ -363,7 +366,13 @@ export function FastHacksScreen() {
           <CategoryPills
             selected={f.get("meal")}
             onSelect={(c) => f.set("meal", c)}
-            counts={{ all: results.length }}
+            counts={{
+              all: countWith({ meal: null }),
+              breakfast: countWith({ meal: "breakfast" }),
+              lunch: countWith({ meal: "lunch" }),
+              dinner: countWith({ meal: "dinner" }),
+              snack: countWith({ meal: "snack" }),
+            }}
           />
         </div>
       </section>

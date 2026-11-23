@@ -138,7 +138,7 @@ export function StatePanel({
   return (
     <div
       className={cn(
-        "flex flex-col items-center rounded-2xl border border-border-default bg-white px-6 py-10 text-center",
+        "group flex flex-col items-center rounded-2xl border border-border-default bg-white px-6 py-10 text-center",
         className,
       )}
     >
@@ -183,8 +183,8 @@ export function EmptyState({
         className,
       )}
     >
-      <span className="flex size-12 items-center justify-center rounded-full bg-brand-warm-gray">
-        <Icon name={icon} size={22} color="var(--color-text-secondary)" />
+      <span className="flex size-14 items-center justify-center rounded-full bg-brand-teal-soft text-brand-navy motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:-translate-y-1 motion-safe:group-hover:scale-105">
+        <Icon name={icon} size={26} color="currentColor" />
       </span>
       <p className="mt-4 text-onb-body type-section-title text-text-primary">{title}</p>
       <p className="mt-1.5 max-w-sm type-meta text-onb-meta text-text-secondary">{body}</p>
