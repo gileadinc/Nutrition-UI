@@ -44,7 +44,7 @@ function Tile({
         src={page.image}
         alt=""
         priority
-        sizes="(min-width: 1024px) 54vw, 100vw"
+        sizes="(min-width: 1024px) 55vw, 100vw"
         className={`absolute inset-0 size-full object-cover ${focus}`}
       />
       {children}
@@ -57,24 +57,20 @@ export function OnboardingCarousel() {
   const navigate = useNavigate();
   const [cook, hack, track] = PAGES;
   return (
-    <main className="min-h-dvh bg-auth-canvas p-4">
-      <div className="grid w-full gap-4 lg:min-h-[calc(100dvh-2rem)] lg:grid-cols-[minmax(0,54fr)_minmax(0,46fr)]">
+    <main className="min-h-dvh bg-auth-canvas p-4 lg:pb-3 lg:pt-2">
+      <div className="grid w-full gap-4 lg:min-h-[calc(100dvh-1.25rem)] lg:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] lg:gap-x-6">
         <section
           aria-label="What you can do with ForkThis"
           className="order-last flex min-w-0 flex-col gap-4 lg:order-first"
         >
           <div className="grid flex-1 gap-3 sm:grid-cols-2">
             {[cook, hack].map((p) => (
-              <Tile
-                key={p.heading}
-                page={p}
-                className="min-h-[26rem] rounded-[17px] bg-brand-cream"
-              >
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-cream via-brand-cream/90 to-transparent px-[17px] pb-4 pt-14 text-primary">
+              <Tile key={p.heading} page={p} className="min-h-[26rem] rounded-[17px] bg-intro-tile">
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-intro-tile via-intro-tile/90 to-transparent px-[17px] pb-6 pt-14 text-primary">
                   <h2 className="text-[32px] type-section-title leading-none tracking-[-0.6px]">
                     {p.heading}
                   </h2>
-                  <p className="mt-1 min-h-[3.75rem] max-w-[16.5rem] text-sm type-extra-light leading-5 tracking-[-0.176px] text-text-primary">
+                  <p className="mt-1 min-h-12 max-w-[24rem] text-base type-extra-light leading-6 tracking-[-0.176px] text-text-primary">
                     {p.body}
                   </p>
                 </div>
@@ -86,7 +82,7 @@ export function OnboardingCarousel() {
               <h2 className="text-[32px] type-section-title leading-none tracking-[-0.6px] text-text-primary">
                 {track.heading}
               </h2>
-              <p className="mt-1 text-sm type-extra-light leading-5 tracking-[-0.176px] text-text-primary">
+              <p className="mt-1 text-lg type-extra-light leading-6 tracking-[-0.176px] text-text-primary">
                 {track.body}
               </p>
             </div>
