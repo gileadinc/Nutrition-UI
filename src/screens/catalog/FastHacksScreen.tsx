@@ -267,7 +267,6 @@ export function FastHacksScreen() {
       subtitle={h.distanceMi !== null ? `${h.restaurant} · ${h.distanceMi} mi` : h.restaurant}
       brandName={h.restaurant}
       leadingBadge={h.distanceMi !== null ? `${h.distanceMi} mi` : undefined}
-      badge={h.badge || undefined}
       meta={`${h.calories} kcal · ${h.protein}g protein`}
       fit={fitFor(h, budget)}
       saved={saved.isSaved("fast_hack", h.id)}

@@ -3,23 +3,23 @@
 import { useMemo, useState } from "react";
 import {
   AppliedFilters,
-  CategoryChips,
+  BudgetPills,
+  CategoryPills,
+  CenteredShell,
   ChipGroup,
   EmptyState,
   FilterSection,
   FilterSheet,
-  FilterSidebar,
   FitsTodayToggle,
+  FoodCard,
+  Icon,
   ListPageSkeleton,
   ListingToolbar,
   PageContainer,
+  QuickPicks,
   RangeSlider,
   SectionTitle,
   StatePanel,
-  CenteredShell,
-  FoodCard,
-  Icon,
-  RatingBadge,
   matchesGroups,
   replaceInGroup,
   groupOf,
@@ -44,10 +44,8 @@ const GROUPS: Record<string, string[]> = {
   diet: [RECIPE_FILTER.highProtein, RECIPE_FILTER.underCalories, RECIPE_FILTER.veggie],
   effort: [RECIPE_FILTER.quickEasy, RECIPE_FILTER.mealPrep],
 };
-// Derived in `toRecipeVM` (the API has no difficulty field).
-const DIFFICULTIES = ["Easy", "Medium"];
-const DEF = { maxMinutes: 60, maxCalories: 800, minProtein: 0, maxIngredients: 12 };
-const FEATURED = 3;
+const MEALS = ["breakfast", "lunch", "dinner", "snack", "dessert"] as const;
+const DEF = { maxMinutes: 999, maxCalories: 800, minProtein: 0, maxIngredients: 12 };
 const SPARSE = 2;
 
 interface F {
@@ -55,7 +53,6 @@ interface F {
   remainingCalories: number;
   category: string | null;
   tags: string[];
-  difficulties: string[];
   maxMinutes: number;
   maxCalories: number;
   minProtein: number;
@@ -66,7 +63,6 @@ const passes = (r: RecipeVM, f: F) =>
   !(
     (f.fitsToday && r.calories > f.remainingCalories) ||
     (f.category !== null && r.category !== f.category) ||
-    (f.difficulties.length > 0 && !f.difficulties.includes(r.badge)) ||
     (r.minutes > 0 && r.minutes > f.maxMinutes) ||
     r.calories > f.maxCalories ||
     r.protein < f.minProtein ||
@@ -92,7 +88,7 @@ export function RecipesScreen() {
 
   if (isLoading && !data)
     return (
-      <PageContainer className="max-w-[1680px]">
+      <PageContainer className="max-w-7xl">
         <ListPageSkeleton />
       </PageContainer>
     );
@@ -116,20 +112,18 @@ export function RecipesScreen() {
     remainingCalories: budget.calories.remaining,
     category: f.get("meal"),
     tags: f.getAll("tag"),
-    difficulties: f.getAll("level"),
     maxMinutes: f.getNumber("mins", DEF.maxMinutes),
     maxCalories: f.getNumber("kcal", DEF.maxCalories),
     minProtein: f.getNumber("protein", DEF.minProtein),
     maxIngredients: f.getNumber("items", DEF.maxIngredients),
   };
   const countWith = (o: Partial<F>) => all.filter((r) => passes(r, { ...cur, ...o })).length;
-  const facet = (g: string) =>
-    GROUPS[g].map((v) => ({
-      value: v,
-      label: v,
-      count: countWith({ tags: replaceInGroup(GROUPS, cur.tags, v) }),
-    }));
-  const inGroup = (g: string) => cur.tags.filter((t) => groupOf(GROUPS, t) === g);
+  const dietOptions = GROUPS.diet.map((v) => ({
+    value: v,
+    label: v,
+    count: countWith({ tags: replaceInGroup(GROUPS, cur.tags, v) }),
+  }));
+  const dietSelected = cur.tags.filter((t) => groupOf(GROUPS, t) === "diet");
 
   const results = all
     .filter((r) => passes(r, cur))
@@ -151,15 +145,14 @@ export function RecipesScreen() {
   const applied = [
     ...(cur.fitsToday ? [{ label: "Fits what's left", remove: () => f.set("fits", null) }] : []),
     ...cur.tags.map((t) => ({ label: t, remove: () => f.toggle("tag", t) })),
-    ...cur.difficulties.map((d) => ({ label: d, remove: () => f.toggle("level", d) })),
-    ...(cur.maxMinutes < DEF.maxMinutes
-      ? [{ label: `Under ${cur.maxMinutes} min`, remove: () => f.set("mins", null) }]
-      : []),
     ...(cur.maxCalories < DEF.maxCalories
       ? [{ label: `Under ${cur.maxCalories} kcal`, remove: () => f.set("kcal", null) }]
       : []),
     ...(cur.minProtein > 0
       ? [{ label: `${cur.minProtein}g+ protein`, remove: () => f.set("protein", null) }]
+      : []),
+    ...(cur.maxMinutes < DEF.maxMinutes
+      ? [{ label: `Ready in ${cur.maxMinutes} min or less`, remove: () => f.set("mins", null) }]
       : []),
     ...(cur.maxIngredients < DEF.maxIngredients
       ? [
@@ -170,13 +163,10 @@ export function RecipesScreen() {
         ]
       : []),
   ];
-  const filterKeys = ["fits", "tag", "level", "mins", "kcal", "protein", "items", "adv"];
+  const filterKeys = ["fits", "tag", "kcal", "protein", "items", "mins", "adv"];
   const resetFilters = () => f.clear(filterKeys);
   const clearAll = () => f.clear();
-  const pristine = applied.length === 0 && cur.category === null && sort === "recommended";
-  const featured = pristine ? results.slice(0, FEATURED) : [];
-  const rest = results.filter((r) => !featured.includes(r));
-  const sparse = !pristine && results.length > 0 && results.length <= SPARSE;
+  const sparse = applied.length > 0 && results.length > 0 && results.length <= SPARSE;
 
   const panel = (p: string) => (
     <>
@@ -188,58 +178,43 @@ export function RecipesScreen() {
         goal={budget.calories.goal}
         onChange={(on) => f.set("fits", on ? "1" : null)}
       />
+      <QuickPicks
+        options={[
+          {
+            label: "30g+ protein",
+            pressed: cur.minProtein === 30,
+            count: countWith({ minProtein: 30 }),
+            onPress: () => f.setNumber("protein", cur.minProtein === 30 ? 0 : 30, DEF.minProtein),
+          },
+          {
+            label: "Under 500 kcal",
+            pressed: cur.maxCalories === 500,
+            count: countWith({ maxCalories: 500 }),
+            onPress: () =>
+              f.setNumber("kcal", cur.maxCalories === 500 ? DEF.maxCalories : 500, DEF.maxCalories),
+          },
+          {
+            label: "8 ingredients or fewer",
+            pressed: cur.maxIngredients === 8,
+            count: countWith({ maxIngredients: 8 }),
+            onPress: () =>
+              f.setNumber(
+                "items",
+                cur.maxIngredients === 8 ? DEF.maxIngredients : 8,
+                DEF.maxIngredients,
+              ),
+          },
+        ]}
+      />
       <FilterSection
         title="Diet & goals"
-        summary={summary([inGroup("diet").join(", ")])}
-        active={inGroup("diet").length > 0}
+        summary={summary([dietSelected.join(", ")])}
+        active={dietSelected.length > 0}
         defaultOpen
       >
         <ChipGroup
           legend="Diet & goals"
-          options={facet("diet")}
-          selected={cur.tags}
-          onToggle={(v) => f.toggle("tag", v)}
-        />
-      </FilterSection>
-      <FilterSection
-        title="Time & effort"
-        summary={summary([
-          cur.maxMinutes < DEF.maxMinutes && `Under ${cur.maxMinutes} min`,
-          cur.difficulties.join(", "),
-          inGroup("effort").join(", "),
-        ])}
-        active={
-          cur.maxMinutes < DEF.maxMinutes ||
-          cur.difficulties.length > 0 ||
-          inGroup("effort").length > 0
-        }
-        defaultOpen
-      >
-        <RangeSlider
-          id={`${p}max-minutes`}
-          label="Time"
-          min={5}
-          max={DEF.maxMinutes}
-          step={5}
-          value={cur.maxMinutes}
-          format={(v) => (v >= DEF.maxMinutes ? "Any" : `Under ${v} min`)}
-          onChange={(v) => f.setNumber("mins", v, DEF.maxMinutes)}
-        />
-        <ChipGroup
-          legend="Difficulty"
-          showLegend
-          options={DIFFICULTIES.map((d) => ({
-            value: d,
-            label: d,
-            count: countWith({ difficulties: [d] }),
-          }))}
-          selected={cur.difficulties}
-          onToggle={(v) => f.toggle("level", v)}
-        />
-        <ChipGroup
-          legend="Style"
-          showLegend
-          options={facet("effort")}
+          options={dietOptions}
           selected={cur.tags}
           onToggle={(v) => f.toggle("tag", v)}
         />
@@ -297,26 +272,16 @@ export function RecipesScreen() {
     </>
   );
 
-  const card = (r: RecipeVM, layout: "rail" | "grid") => (
+  const card = (r: RecipeVM) => (
     <FoodCard
       key={r.id}
-      layout={layout}
+      layout="discover"
       image={r.image}
       title={r.title}
-      subtitle={layout === "grid" ? r.time : undefined}
-      leadingBadge={layout === "rail" ? r.time || undefined : undefined}
+      subtitle={[r.time, r.badge].filter(Boolean).join(" · ") || undefined}
+      leadingBadge={r.time || undefined}
       badge={r.badge || undefined}
-      meta={
-        <>
-          {r.ratingCount > 0 && (
-            <>
-              <RatingBadge average={r.averageRating} count={r.ratingCount} />
-              {" · "}
-            </>
-          )}
-          {`${r.calories} kcal · ${r.protein}g protein`}
-        </>
-      }
+      meta={`${r.calories} kcal · ${r.protein}g protein`}
       fit={fitFor(r, budget)}
       saved={saved.isSaved("recipe", r.id)}
       onSave={() =>
@@ -336,119 +301,116 @@ export function RecipesScreen() {
     : "Remove a filter or pick another meal to see the full catalogue.";
 
   return (
-    <PageContainer className="max-w-[1680px]">
-      <ListingToolbar
-        title="CookThis!"
-        compact
-        showDesktopFilters
-        actions={
-          <Link
-            to="/recipes/new"
-            aria-label="New recipe"
-            className="tap-44 relative flex h-11 items-center gap-1.5 rounded-full bg-primary px-3 text-[13px] type-button text-white md:px-4"
-          >
-            <Icon name="plusSign" size={14} color="currentColor" />
-            <span className="hidden md:inline">New recipe</span>
-          </Link>
-        }
-        subtitle="Delicious, healthy meals to hit your goals."
-        count={results.length}
-        noun="recipe"
-        searchTo="/search?scope=recipes"
-        savedCount={savedCount}
-        savedTo="/you/saved?tab=recipes"
-        activeCount={applied.length}
-        filtersOpen={open}
-        onOpenFilters={() => setOpen(true)}
-        sort={sort}
-        sortOptions={SORTS}
-        onSort={(v) => f.set("sort", v === "recommended" ? null : v)}
-      />
-      <div className="mt-1 flex gap-8 md:mt-5">
-        <FilterSidebar activeCount={applied.length} onReset={resetFilters}>
-          {panel("panel-")}
-        </FilterSidebar>
-        <div className="@container min-w-0 flex-1">
-          <div className="sticky top-0 z-20 -mx-5 border-b border-border-divider bg-brand-cream px-5 md:top-16 md:mx-0 md:px-0">
-            <CategoryChips
-              variant="pills"
-              selected={cur.category}
-              onSelect={(c) => f.set("meal", c)}
+    <PageContainer className="max-w-7xl">
+      <section
+        data-testid="catalogue-top-block"
+        aria-label="Browse and filter"
+        className="relative z-30 border-b border-border-divider bg-brand-cream pb-3 xl:sticky xl:top-16"
+      >
+        <ListingToolbar
+          title="CookThis!"
+          compact
+          showDesktopFilters
+          actions={
+            <Link
+              to="/recipes/new"
+              aria-label="New recipe"
+              className="tap-44 relative flex h-11 items-center gap-1.5 rounded-full bg-primary px-3 text-[13px] type-button text-white md:px-4"
+            >
+              <Icon name="plusSign" size={14} color="currentColor" />
+              <span className="hidden md:inline">New recipe</span>
+            </Link>
+          }
+          subtitle="Delicious, healthy meals to hit your goals."
+          count={results.length}
+          noun="recipe"
+          searchTo="/search?scope=recipes"
+          savedCount={savedCount}
+          savedTo="/you/saved?tab=recipes"
+          activeCount={applied.length}
+          filtersOpen={open}
+          onOpenFilters={() => setOpen(true)}
+          sort={sort}
+          sortOptions={SORTS}
+          onSort={(v) => f.set("sort", v === "recommended" ? null : v)}
+        />
+        <BudgetPills />
+        <div className="mt-3">
+          <CategoryPills
+            selected={cur.category}
+            onSelect={(c) => f.set("meal", c)}
+            counts={{
+              all: countWith({ category: null }),
+              ...Object.fromEntries(MEALS.map((m) => [m, countWith({ category: m })])),
+            }}
+          />
+        </div>
+      </section>
+      <AppliedFilters filters={applied} onClearAll={resetFilters} />
+      <div className="@container min-w-0 flex-1">
+        {mine.length > 0 && (
+          <section aria-label="My recipes" className="mt-6">
+            <SectionTitle>My recipes</SectionTitle>
+            <div className="rail-scroll -mx-5 mt-3 flex gap-3 overflow-x-auto px-5 pb-1 md:mx-0 md:px-0 md:@2xl:grid md:@2xl:grid-cols-3 md:@2xl:gap-4 md:@2xl:overflow-visible md:[&>*]:w-64! md:@2xl:[&>*]:w-auto!">
+              {mine.map((r) => {
+                const n = recipeNutrition(r);
+                return (
+                  <FoodCard
+                    key={r.id}
+                    image={r.photo}
+                    title={r.title}
+                    leadingBadge="Mine"
+                    badge={`${r.servings} ${r.servings === 1 ? "serving" : "servings"}`}
+                    meta={`${n.perServing.calories} kcal · ${Math.round(n.perServing.protein)}g protein`}
+                    to={`/recipes/mine/${r.id}`}
+                    layout="rail"
+                  />
+                );
+              })}
+            </div>
+          </section>
+        )}
+        <section aria-label="Recipe results" className="mt-4">
+          {results.length === 0 ? (
+            <EmptyState
+              icon="search"
+              title="No recipes match that"
+              body={hint}
+              action={{ label: "Clear filters", onPress: clearAll }}
             />
-            <AppliedFilters filters={applied} onClearAll={resetFilters} />
-          </div>
-          {mine.length > 0 && (
-            <section aria-label="My recipes" className="mt-6">
-              <SectionTitle>My recipes</SectionTitle>
-              <div className="rail-scroll -mx-5 mt-3 flex gap-3 overflow-x-auto px-5 pb-1 md:mx-0 md:px-0 md:@2xl:grid md:@2xl:grid-cols-3 md:@2xl:gap-4 md:@2xl:overflow-visible md:[&>*]:w-64! md:@2xl:[&>*]:w-auto!">
-                {mine.map((r) => {
-                  const n = recipeNutrition(r);
-                  return (
-                    <FoodCard
-                      key={r.id}
-                      image={r.photo}
-                      title={r.title}
-                      leadingBadge="Mine"
-                      badge={`${r.servings} ${r.servings === 1 ? "serving" : "servings"}`}
-                      meta={`${n.perServing.calories} kcal · ${Math.round(n.perServing.protein)}g protein`}
-                      to={`/recipes/mine/${r.id}`}
-                      layout="rail"
-                    />
-                  );
-                })}
-              </div>
-            </section>
+          ) : (
+            <ul
+              aria-label="Recipes"
+              className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-4"
+            >
+              {results.map((r) => (
+                <li key={r.id} className="min-w-0">
+                  {card(r)}
+                </li>
+              ))}
+            </ul>
           )}
-          {featured.length > 0 && (
-            <section aria-label="Featured for you" className="mt-6">
-              <SectionTitle action="See all" actionTo="/search?scope=recipes">
-                Featured for you
-              </SectionTitle>
-              <div className="rail-scroll -mx-5 mt-3 flex gap-3 overflow-x-auto px-5 pb-1 md:mx-0 md:px-0 md:@2xl:grid md:@2xl:grid-cols-3 md:@2xl:gap-4 md:@2xl:overflow-visible md:[&>*]:w-64! md:@2xl:[&>*]:w-auto!">
-                {featured.map((r) => card(r, "rail"))}
-              </div>
-            </section>
-          )}
-          {featured.length > 0 && rest.length > 0 && (
-            <div className="mt-8 border-t border-border-divider pt-6">
-              <SectionTitle>More recipes</SectionTitle>
+          {sparse && (
+            <div
+              data-testid="sparse-note"
+              className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border-divider pt-4"
+            >
+              <p className="text-onb-meta type-meta text-text-secondary">
+                {results.length === 1
+                  ? "Only one recipe matches."
+                  : `Only ${results.length} recipes match.`}{" "}
+                {hint}
+              </p>
+              <button
+                type="button"
+                onClick={clearAll}
+                className="min-h-11 rounded-full border border-border-default bg-white px-4 text-onb-meta type-button text-primary hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+              >
+                Clear filters
+              </button>
             </div>
           )}
-          <section aria-label="Recipe results" className={featured.length > 0 ? "mt-3" : "mt-5"}>
-            {results.length === 0 ? (
-              <EmptyState
-                icon="database"
-                title="No recipes match that"
-                body={hint}
-                action={{ label: "Clear filters", onPress: clearAll }}
-              />
-            ) : (
-              <div className="grid auto-rows-fr grid-cols-2 gap-3 @2xl:grid-cols-3 @2xl:gap-4 @5xl:grid-cols-4">
-                {rest.map((r) => card(r, "grid"))}
-              </div>
-            )}
-            {sparse && (
-              <div
-                data-testid="sparse-note"
-                className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border-divider pt-4"
-              >
-                <p className="text-onb-meta type-meta text-text-secondary">
-                  {results.length === 1
-                    ? "Only one recipe matches."
-                    : `Only ${results.length} recipes match.`}{" "}
-                  {hint}
-                </p>
-                <button
-                  type="button"
-                  onClick={clearAll}
-                  className="min-h-11 rounded-full border border-border-default bg-white px-4 text-onb-meta type-button text-primary hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-                >
-                  Clear filters
-                </button>
-              </div>
-            )}
-          </section>
-        </div>
+        </section>
       </div>
       <FilterSheet
         open={open}

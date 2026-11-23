@@ -109,6 +109,11 @@ export function FoodCard({
               <span className="min-w-0 flex-1 text-[12px] type-row-figure tabular-nums text-text-primary">
                 {meta}
               </span>
+              {badge && !logoFor && (
+                <span className="shrink-0 rounded-full border border-primary/[0.08] bg-navy-50 px-2 py-0.5 text-[12px] type-meta text-primary">
+                  {badge}
+                </span>
+              )}
             </span>
           </span>
         </Link>
