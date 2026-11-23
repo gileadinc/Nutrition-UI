@@ -89,7 +89,7 @@ export function FoodCard({
             <span className="min-w-0">
               <h3
                 className={cn(
-                  "type-item-title text-[15px] leading-[1.15] tracking-[-0.5px] text-text-primary",
+                  "type-item-title text-[15px] leading-[1.5] tracking-[-0.5px] text-text-primary",
                   onSave && "pr-8",
                 )}
               >
