@@ -96,25 +96,25 @@ export function OnboardingCarousel() {
           aria-labelledby="quiz-intro-heading"
           className="page-settle flex min-w-0 flex-col justify-end px-2 pb-8 pt-6 text-primary lg:px-[30px] lg:pb-9"
         >
-          <div className="max-w-[460px]">
+          <div className="max-w-[520px]">
             <h1
               id="quiz-intro-heading"
-              className="max-w-[390px] text-[clamp(2.5rem,4.2vw,3.75rem)] type-section-title leading-[1.03] tracking-[-0.079em]"
+              className="max-w-[440px] text-[clamp(2.75rem,4.7vw,4.25rem)] type-section-title leading-[1.03] tracking-[-0.079em]"
             >
               A plan that fits your real life.
             </h1>
-            <p className="mt-5 text-[13px] leading-[18px] tracking-[-0.02em] text-text-secondary">
+            <p className="mt-6 text-sm leading-5 tracking-[-0.02em] text-text-secondary">
               Tell us a little about your goals. We’ll turn your answers into a simple starting plan
               for meals, movement, and the days in between.
             </p>
-            <p className="mt-6 text-[11px] capitalize leading-4 tracking-[1.1px] text-text-primary">
+            <p className="mt-7 text-xs capitalize leading-4 tracking-[1.2px] text-text-primary">
               Your next two minutes
             </p>
             <ul className="flex flex-wrap gap-2 pt-3">
               {STEPS.map((s) => (
                 <li
                   key={s}
-                  className="rounded-full px-2.5 py-1.5 text-[11px] type-extra-light leading-4 tracking-[-0.176px] text-text-primary"
+                  className="rounded-full px-3 py-2 text-xs type-extra-light leading-4 tracking-[-0.176px] text-text-primary"
                 >
                   {s}
                 </li>
@@ -128,7 +128,7 @@ export function OnboardingCarousel() {
                 className="w-full !rounded-[52px] motion-safe:transition-transform motion-safe:hover:-translate-y-0.5"
               />
             </div>
-            <p className="mt-3 text-[13px] type-extra-light tracking-[-0.176px] text-text-secondary">
+            <p className="mt-3 text-sm type-extra-light tracking-[-0.176px] text-text-secondary">
               Free to start · No account needed
             </p>
           </div>
