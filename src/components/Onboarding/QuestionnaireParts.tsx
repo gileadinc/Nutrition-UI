@@ -413,7 +413,7 @@ export function Reassurance({
     <p
       className={cn(
         "flex items-start text-text-secondary",
-        large ? ["gap-4", E.body] : ["gap-2.5 type-meta", E.meta],
+        large ? ["gap-3", E.body] : ["gap-2.5 type-meta", E.meta],
       )}
     >
       <span className="mt-0.5 shrink-0">

@@ -1226,7 +1226,7 @@ function Flow() {
             </summary>
             <p className="mt-1 pl-[1.875rem] leading-5">{copy.why}</p>
           </details>
-          <div className="mt-8">
+          <div className="mt-3">
             <Reassurance large>
               Private to you. Your date of birth is never shown on your profile.
             </Reassurance>
