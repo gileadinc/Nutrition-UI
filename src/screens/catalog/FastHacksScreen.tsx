@@ -193,6 +193,7 @@ export function FastHacksScreen() {
           <CheckList
             legend="Restaurant"
             noun="restaurants"
+            alwaysSearch
             options={restaurantOptions}
             selected={cur.restaurants}
             onToggle={(v) => f.toggle("at", v)}

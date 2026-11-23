@@ -544,6 +544,7 @@ export function CheckList({
   selected,
   onToggle,
   initialVisible = 5,
+  alwaysSearch = false,
 }: {
   legend: string;
   noun: string;
@@ -551,6 +552,8 @@ export function CheckList({
   selected: string[];
   onToggle: (value: string) => void;
   initialVisible?: number;
+  /** Show the search box even for short lists. */
+  alwaysSearch?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [all, setAll] = useState(false);
@@ -563,7 +566,7 @@ export function CheckList({
   return (
     <fieldset>
       <legend className="sr-only">{legend}</legend>
-      {options.length > initialVisible && (
+      {(alwaysSearch || options.length > initialVisible) && (
         <SearchField
           id={id}
           label={`Search ${noun}`}
