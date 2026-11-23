@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { AppImage } from "@/components/AppImage";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
-import { PrimaryButton, SecondaryButton } from "@/components/Button";
-import { discoveryApi, type FeatureGate } from "@/lib/api";
+import { SecondaryButton } from "@/components/Button";
 import { useIsDesktop } from "@/lib/hooks";
 import { useLocation, useNavigate } from "@/lib/nav";
 import { GuestGateContext } from "@/lib/store/gate";
@@ -13,46 +13,9 @@ import { GUEST_GATE, fill } from "@/content";
 
 const PERKS = GUEST_GATE.perks;
 
-const FALLBACK_COPY: Pick<FeatureGate, "description" | "ctaLabel"> = {
-  description: GUEST_GATE.fallbackDescription,
-  ctaLabel: GUEST_GATE.fallbackCta,
-};
-
-const gateCache = new Map<string, FeatureGate>();
-const gateKey = (feature: string) =>
-  feature
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-/** Account-gate copy from `GET /api/discovery/feature-gates/{key}`; static copy until it loads (or if it fails). */
-function useGateCopy(feature: string | undefined) {
-  const key = feature ? gateKey(feature) : "";
-  const [loaded, setLoaded] = useState<FeatureGate | null>(null);
-  useEffect(() => {
-    if (!key) return;
-    let cancelled = false;
-    discoveryApi
-      .getFeatureGate(key)
-      .then((g) => {
-        gateCache.set(key, g);
-        if (!cancelled) setLoaded(g);
-      })
-      .catch(() => undefined);
-    return () => {
-      cancelled = true;
-    };
-  }, [key]);
-  const gate = (key && gateCache.get(key)) || loaded;
-  return {
-    description: gate?.description || FALLBACK_COPY.description,
-    ctaLabel: gate?.ctaLabel || FALLBACK_COPY.ctaLabel,
-  };
-}
-
 /**
- * "This needs an account" sheet. Rendered by <GuestGateProvider> and by the
- * `/guest` screen (pass `feature` from `?feature=`).
+ * "This needs an account" dialog (bottom sheet on mobile). Rendered by <GuestGateProvider> and by
+ * the `/guest` screen (pass `feature` from `?feature=`).
  */
 export function GuestFeatureGate({
   feature,
@@ -66,7 +29,7 @@ export function GuestFeatureGate({
 }) {
   const navigate = useNavigate();
   const desktop = useIsDesktop();
-  const copy = useGateCopy(feature);
+  const query = next ? `?next=${encodeURIComponent(next)}` : "";
   return (
     <div
       className={cn(
@@ -79,24 +42,82 @@ export function GuestFeatureGate({
         aria-modal="true"
         aria-label="Account required"
         className={cn(
-          "w-full bg-white px-6 pb-6 pt-3",
-          desktop ? "max-w-md rounded-3xl p-8" : "rounded-t-[32px]",
+          "w-full overflow-y-auto overflow-x-hidden bg-white",
+          desktop
+            ? "max-h-[calc(100dvh-3rem)] max-w-md rounded-3xl"
+            : "max-h-[94dvh] rounded-t-[32px]",
         )}
         style={{ boxShadow: "var(--shadow-raised)" }}
       >
-        {!desktop && <div className="mx-auto h-1 w-10 rounded-2xl bg-border-default" />}
-        <div className="mt-5 flex flex-col items-center text-center">
-          <span className={cn("flex size-16 items-center justify-center rounded-full", ICON_WELL)}>
-            <Icon name="shield" size={32} color="var(--color-icon-well-ink)" />
-          </span>
+        <div className="relative overflow-hidden bg-teal-100 px-6 pt-3">
+          <AppImage
+            src="/design/gate-banner-bg.svg"
+            alt=""
+            className="pointer-events-none absolute inset-0 size-full"
+          />
+          {!desktop && <div className="relative mx-auto h-1 w-10 rounded-2xl bg-navy-200" />}
+          <AppImage
+            src="/design/gate-illustration.svg"
+            alt=""
+            className="relative mx-auto mt-2 block h-44 w-auto"
+          />
+        </div>
+        <div className="px-6 pb-6 pt-5 text-center">
           <h1
-            className="mt-4 text-[32px] type-display text-text-primary"
-            style={{ letterSpacing: "-1.26px", lineHeight: "34px" }}
+            className="text-[26px] type-display text-text-primary"
+            style={{ letterSpacing: "-1.26px", lineHeight: "32px" }}
           >
             {feature ? fill(GUEST_GATE.title.withFeature, { feature }) : GUEST_GATE.title.generic}
           </h1>
-          <p className="mt-4 text-[15px] text-text-secondary">{copy.description}</p>
-          <ul className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2.5">
+          <p className="mt-2 text-[15px] text-text-secondary">{GUEST_GATE.subtitle}</p>
+          <ul className="mt-5 flex flex-col gap-3 text-left">
+            {GUEST_GATE.features.map((f) => (
+              <li key={f.title} className="flex items-center gap-3">
+                <span
+                  className={cn(
+                    "flex size-10 shrink-0 items-center justify-center rounded-full",
+                    ICON_WELL,
+                  )}
+                >
+                  <Icon name={f.icon} size={20} color="var(--color-icon-well-ink)" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[14px] type-item-title text-text-primary">
+                    {f.title}
+                  </span>
+                  <span className="block text-[13px] type-meta text-text-secondary">{f.body}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            onClick={() => navigate(`/signup${query}`)}
+            className="relative mt-6 flex h-14 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-primary text-base type-button text-white transition-[background-color,transform] hover:bg-primary-hover active:scale-[0.98]"
+            style={{ letterSpacing: "-0.48px" }}
+          >
+            <span className="relative">{GUEST_GATE.fallbackCta}</span>
+            <span aria-hidden className="relative flex">
+              <Icon name="chevronRight" size={20} color="currentColor" />
+            </span>
+          </button>
+          <div className="mt-3">
+            <SecondaryButton
+              label={GUEST_GATE.dismiss}
+              onPress={() => (onDismiss ? onDismiss() : navigate("/home", { replace: true }))}
+            />
+          </div>
+          <p className="mt-3 text-[13px] text-text-secondary">
+            {GUEST_GATE.alreadyHave}{" "}
+            <button
+              type="button"
+              onClick={() => navigate(`/signin${query}`)}
+              className="tap-44 relative type-button text-primary underline underline-offset-2"
+            >
+              {GUEST_GATE.logIn}
+            </button>
+          </p>
+          <ul className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2">
             {PERKS.map((p) => (
               <li key={p.label} className="flex items-center gap-1.5">
                 <Icon name={p.icon} size={16} color="var(--color-brand-navy)" />
@@ -104,18 +125,6 @@ export function GuestFeatureGate({
               </li>
             ))}
           </ul>
-          <div className="mt-6 flex w-full flex-col gap-3">
-            <PrimaryButton
-              label={copy.ctaLabel}
-              onPress={() =>
-                navigate(next ? `/signup?next=${encodeURIComponent(next)}` : "/signup")
-              }
-            />
-            <SecondaryButton
-              label={GUEST_GATE.dismiss}
-              onPress={() => (onDismiss ? onDismiss() : navigate("/home", { replace: true }))}
-            />
-          </div>
         </div>
       </div>
     </div>

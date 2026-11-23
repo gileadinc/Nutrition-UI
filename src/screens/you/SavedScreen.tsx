@@ -21,6 +21,7 @@ const TABS = [
 type Tab = (typeof TABS)[number]["value"];
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 const LINK = "type-button text-primary underline underline-offset-2";
+const SOFT_LINK = "type-button text-primary underline-offset-2 hover:underline";
 
 export function SavedScreen() {
   const session = useAppSession();
@@ -182,7 +183,7 @@ export function SavedScreen() {
   );
 
   return (
-    <ProfileLayout title="Saved" subtitle={subtitle}>
+    <ProfileLayout icon="bookmark" title="Saved" subtitle={subtitle}>
       {collectionsSection}
       {session.isSignedIn && saved.isLoading && empty ? (
         <p className="panel p-4 text-[13px] type-meta text-text-secondary">Loading…</p>
@@ -196,8 +197,12 @@ export function SavedScreen() {
           />
           <p className="mt-3 text-center type-meta text-[13px] text-text-secondary">
             Or{" "}
-            <Link to="/recipes" className={LINK}>
+            <Link to="/recipes" className={SOFT_LINK}>
               browse recipes
+            </Link>{" "}
+            or{" "}
+            <Link to="/recipes/new" className={SOFT_LINK}>
+              make your own
             </Link>
           </p>
         </>

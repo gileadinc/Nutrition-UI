@@ -5,6 +5,7 @@ export {
   FilterSection,
   FitsTodayToggle,
   ChipGroup,
+  QuickPicks,
   RangeSlider,
   CheckList,
   ListingToolbar,
@@ -13,4 +14,12 @@ export {
   AdvancedFilters,
 } from "./Filters";
 export type { FacetOption } from "./Filters";
-export { CategoryChips, MEAL_CATEGORIES, groupOf, matchesGroups, replaceInGroup } from "./facets";
+export {
+  CategoryChips,
+  CategoryPills,
+  MEAL_CATEGORIES,
+  groupOf,
+  matchesGroups,
+  replaceInGroup,
+} from "./facets";
+export { BudgetPills } from "./BudgetPills";

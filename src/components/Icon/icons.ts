@@ -22,7 +22,6 @@ import {
   ChartColumn,
   ChartNoAxesCombined,
   Check,
-  ChefHat,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
@@ -107,7 +106,22 @@ import {
   X,
   Zap,
   type LucideIcon,
+  createLucideIcon,
 } from "lucide-react";
+
+/** The deployed build's chef hat (two lines on the band); the installed Lucide version draws a plainer one. */
+const ChefHatLines = createLucideIcon("chef-hat-lines", [
+  ["path", { d: "M10 11v5", key: "ch1" }],
+  ["path", { d: "M14 11v5", key: "ch2" }],
+  [
+    "path",
+    {
+      d: "M6 12.65c0-.457-.316-.844-.727-1.041A4 4 0 0 1 7.52 4.034a1.53 1.53 0 0 0 1.367-.547 4 4 0 0 1 6.225 0 1.53 1.53 0 0 0 1.367.547 4 4 0 0 1 2.248 7.575c-.411.197-.727.584-.727 1.04V19a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z",
+      key: "ch3",
+    },
+  ],
+  ["path", { d: "M6 16h12", key: "ch4" }],
+]);
 
 export const ICONS = {
   activity: Activity,
@@ -135,7 +149,7 @@ export const ICONS = {
   chartBar: ChartColumn,
   chartIncrease: TrendingUp,
   checkCircle: CircleCheck,
-  chefHat: ChefHat,
+  chefHat: ChefHatLines,
   chevronLeft: ChevronLeft,
   chevronRight: ChevronRight,
   circleOutline: Circle,

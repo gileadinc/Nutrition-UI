@@ -35,8 +35,9 @@ export interface FoodCardProps {
   to: string;
   /** Result of `fitFor()`; shows the fits badge when it fits. */
   fit?: Fit;
-  /** `rail` = fixed 252px carousel card, `grid` = fills its cell, `compact` = short grid card. */
-  layout?: "rail" | "grid" | "compact";
+  /** `rail` = fixed 252px carousel card, `grid` = fills its cell, `compact` = short grid card,
+   * `discover` = 4:3 photo, heart top-right and a 40px restaurant logo (Fast Hacks). */
+  layout?: "rail" | "grid" | "compact" | "discover";
 }
 
 /** The standard recipe / hack / order card used on Home, Recipes, Fast Hacks, Search, Saved. */
@@ -57,6 +58,77 @@ export function FoodCard({
   const brand = brandName ?? (badge && hasBrandMark(badge) ? badge : undefined);
   // A named restaurant always gets a mark (logo, or its initial); the text pill is for non-restaurant badges.
   const pill = brand ? undefined : badge;
+  if (layout === "discover") {
+    // Every named restaurant gets a tile: its logo, or its first letter when we have no logo.
+    const logoFor = brandName?.trim() ? brandName : undefined;
+    // Shipped plate cut-outs sit inset on white; remote photos fill the frame.
+    const photo = image || fallbackFoodImage(title);
+    const cutout = photo.startsWith("/img/");
+    return (
+      <ProductCard className="h-full w-full">
+        <Link
+          to={to}
+          className="flex min-h-0 flex-1 flex-col rounded-[18px] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
+        >
+          <ProductCardImage
+            src={photo}
+            fit={cutout ? "contain" : "cover"}
+            imageClassName={cutout ? "h-[94%] w-[94%]" : undefined}
+            sizes="(min-width: 1280px) 22rem, (min-width: 768px) 20rem, 252px"
+            className="aspect-[4/3]"
+          >
+            {leadingBadge && (
+              <ProductCardBadge className="border border-text-primary/[0.08] bg-white text-text-primary">
+                {leadingBadge}
+              </ProductCardBadge>
+            )}
+            {fit && fit.kind !== "over" && (
+              <ProductCardBadge position="end" className="bg-positive text-positive-ink">
+                Fits today
+              </ProductCardBadge>
+            )}
+          </ProductCardImage>
+          <span className="flex min-w-0 flex-1 flex-col justify-between gap-2 px-[14px] pb-3 pt-[12px]">
+            <span className="min-w-0">
+              <h3
+                className={cn(
+                  "type-item-title text-[15px] leading-[1.5] tracking-[-0.5px] text-text-primary",
+                  onSave && "pr-8",
+                )}
+              >
+                {title}
+              </h3>
+              {subtitle && (
+                <span className="mt-1 block text-[12px] type-meta text-text-secondary">
+                  {subtitle}
+                </span>
+              )}
+            </span>
+            <span className="mb-1.5 flex items-center gap-2">
+              {logoFor && <BrandMark restaurant={logoFor} size="lg" letterFallback />}
+              <span className="min-w-0 flex-1 text-[12px] type-row-figure tabular-nums text-text-primary">
+                {meta}
+              </span>
+              {badge && !logoFor && (
+                <span className="shrink-0 rounded-full border border-primary/[0.08] bg-navy-50 px-2 py-0.5 text-[12px] type-meta text-primary">
+                  {badge}
+                </span>
+              )}
+            </span>
+          </span>
+        </Link>
+        {onSave && (
+          <SaveHeartButton
+            pressed={!!saved}
+            onToggle={onSave}
+            label={saved ? `Remove ${title} from saved` : `Save ${title}`}
+            title={saved ? "Remove from saved" : "Save"}
+            className="absolute right-[10px] top-[10px]"
+          />
+        )}
+      </ProductCard>
+    );
+  }
   return (
     <ProductCard
       className={cn(

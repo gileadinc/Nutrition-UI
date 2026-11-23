@@ -1,6 +1,6 @@
 "use client";
 
-import { Cell, Pie, PieChart } from "recharts";
+import { Cell, Pie, PieChart, Tooltip } from "recharts";
 import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/lib/hooks";
 
@@ -63,6 +63,26 @@ export function ChartLegend({
   );
 }
 
+interface TipProps {
+  active?: boolean;
+  payload?: { payload?: { label: string; color: string; grams: number; pct: number } }[];
+}
+
+/** Small white card shown while hovering a slice: "Carbs  40% · 55 g". */
+function SliceTip({ active, payload }: TipProps) {
+  const d = active ? payload?.[0]?.payload : undefined;
+  if (!d) return null;
+  return (
+    <div className="flex items-center gap-2 whitespace-nowrap rounded-xl border border-border-default bg-white px-3 py-1.5 text-[13px] shadow-raised">
+      <span aria-hidden className="size-2.5 rounded-full" style={{ backgroundColor: d.color }} />
+      <span className="type-meta text-text-secondary">{d.label}</span>
+      <span className="type-row-figure tabular-nums text-text-primary">
+        {d.pct}% · {d.grams} g
+      </span>
+    </div>
+  );
+}
+
 /** Protein / carbs / fat donut with centre total and legend. */
 export function MacroDonut({
   macros,
@@ -97,6 +117,12 @@ export function MacroDonut({
     >
       <div aria-hidden className="relative shrink-0" style={{ width: size, height: size }}>
         <PieChart width={size} height={size} accessibilityLayer={false}>
+          <Tooltip
+            cursor={false}
+            content={<SliceTip />}
+            allowEscapeViewBox={{ x: true, y: true }}
+            wrapperStyle={{ outline: "none", zIndex: 20 }}
+          />
           <Pie
             data={data}
             dataKey="kcal"

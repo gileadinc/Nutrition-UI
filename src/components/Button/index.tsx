@@ -30,7 +30,7 @@ export function PrimaryButton({
       onClick={onPress}
       disabled={disabled}
       className={cn(
-        "w-full rounded-2xl bg-primary font-sans text-white transition-colors enabled:hover:bg-primary-hover",
+        "w-full rounded-full bg-primary font-sans text-white transition-colors enabled:hover:bg-primary-hover",
         PRIMARY_DISABLED,
         size === "large" ? "h-14 text-base type-button" : "h-[52px] text-sm type-button",
         className,
@@ -62,7 +62,7 @@ export function SecondaryButton({
       onClick={onPress}
       disabled={disabled}
       className={cn(
-        "h-14 w-full rounded-2xl border border-border-default bg-white",
+        "h-14 w-full rounded-full border border-border-default bg-white",
         "text-sm type-button-secondary text-primary transition-colors",
         OUTLINE_DISABLED,
         className,

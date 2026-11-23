@@ -8,7 +8,8 @@
 import type { FastHack, MenuItem, Recipe } from "@/lib/api";
 import { HACK_FILTER, RECIPE_FILTER } from "@/lib/nutrition";
 
-const num = (v: unknown, fallback = 0) => (typeof v === "number" && Number.isFinite(v) ? v : fallback);
+const num = (v: unknown, fallback = 0) =>
+  typeof v === "number" && Number.isFinite(v) ? v : fallback;
 const str = (v: unknown, fallback = "") => (typeof v === "string" ? v : fallback);
 
 /** `high_protein` / `high-protein` -> `High protein`. */
@@ -50,7 +51,8 @@ export function toRecipeVM(r: Recipe): RecipeVM {
   const protein = num(r.protein);
   const text = `${r.title} ${r.description ?? ""}`.toLowerCase();
   const tags: string[] = [];
-  if (goalTags.some((t) => /protein/i.test(t)) || protein >= 30) tags.push(RECIPE_FILTER.highProtein);
+  if (goalTags.some((t) => /protein/i.test(t)) || protein >= 30)
+    tags.push(RECIPE_FILTER.highProtein);
   if (calories > 0 && calories < 500) tags.push(RECIPE_FILTER.underCalories);
   if (minutes > 0 && minutes <= 20) tags.push(RECIPE_FILTER.quickEasy);
   if (goalTags.some((t) => /meal.?prep/i.test(t)) || /make-ahead|meal prep|overnight/.test(text))
@@ -118,7 +120,8 @@ function hackTags(h: {
   const tags: string[] = [];
   if (h.distanceMi != null && h.distanceMi <= 2) tags.push(HACK_FILTER.nearby);
   if (h.calories > 0 && h.calories <= 500) tags.push(HACK_FILTER.lowCal);
-  if (h.goalTags.some((t) => /vegan|plant/i.test(t)) || /\bvegan\b/.test(text)) tags.push(HACK_FILTER.vegan);
+  if (h.goalTags.some((t) => /vegan|plant/i.test(t)) || /\bvegan\b/.test(text))
+    tags.push(HACK_FILTER.vegan);
   if (h.goalTags.some((t) => /keto|low.?carb/i.test(t)) || (h.carbs > 0 && h.carbs <= 20))
     tags.push(HACK_FILTER.keto);
   if (/\bbowls?\b/.test(text)) tags.push(HACK_FILTER.bowls);
@@ -179,4 +182,36 @@ export function menuItemToHack(m: MenuItem): HackVM {
     },
     m,
   );
+}
+
+export type MealKind = "breakfast" | "lunch" | "dinner" | "snack" | "dessert";
+
+const MEAL_WORDS: [MealKind, RegExp][] = [
+  [
+    "dessert",
+    /\b(cookies?|cakes?|brownies?|ice cream|sundaes?|desserts?|pies?|donuts?|doughnuts?|cheesecake|churros?|pudding|frosty|milkshakes?|shakes?)\b/,
+  ],
+  [
+    "breakfast",
+    /\b(breakfast|eggs?|pancakes?|waffles?|oatmeal|omelet+e?|bagels?|muffins?|biscuits?|hash ?browns?|granola|yogurt|parfait|croissants?|scramble|toast)\b/,
+  ],
+  [
+    "snack",
+    /\b(snacks?|nuggets?|fries|chips|bites|dips?|sides?|wings?|smoothies?|coffee|latte|iced|tea|drinks?|juice|popcorn|pretzels?)\b/,
+  ],
+  [
+    "dinner",
+    /\b(dinner|steak|salmon|pasta|lasagna|ribs?|entree|roast|alfredo|pizza|shrimp|fajitas?|curry|noodles?|enchiladas?)\b/,
+  ],
+];
+
+/**
+ * The API gives hacks no meal type, so infer one from the words in the title and description.
+ * Anything that doesn't read as breakfast, a snack, a dessert or a dinner counts as lunch.
+ * Replace with the real field if the API ever adds one.
+ */
+export function mealOfHack(h: { title: string; description: string }): MealKind {
+  const text = `${h.title} ${h.description}`.toLowerCase();
+  for (const [kind, re] of MEAL_WORDS) if (re.test(text)) return kind;
+  return "lunch";
 }

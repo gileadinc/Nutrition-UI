@@ -15,6 +15,82 @@ export const MEAL_CATEGORIES: { category: string | null; label: string; icon: Ic
   { category: "dessert", label: "Desserts", icon: "categoryDessert" },
 ];
 
+const MEAL_PILL_ICONS: Record<string, IconName> = {
+  all: "forkSpoon",
+  breakfast: "mealBreakfast",
+  lunch: "mealLunch",
+  dinner: "mealDinner",
+  snack: "mealSnack",
+  dessert: "mealDessert",
+};
+
+/**
+ * Large single-select meal category pills: icon in a circle, label and an optional count.
+ * `counts` is keyed by category (`all`, `breakfast`, ...); a missing key shows no count.
+ */
+export function CategoryPills({
+  selected,
+  onSelect,
+  counts,
+  label = "Filter by meal category",
+}: {
+  selected: string | null;
+  onSelect: (category: string | null) => void;
+  counts?: Partial<Record<string, number>>;
+  label?: string;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label={label}
+      className="rail-scroll -mx-5 flex flex-nowrap gap-2 overflow-x-auto px-5 py-0.5 md:mx-0 md:px-0"
+    >
+      {MEAL_CATEGORIES.map((c) => {
+        const key = c.category ?? "all";
+        const on = c.category === selected;
+        const count = counts?.[key];
+        return (
+          <button
+            key={key}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onSelect(c.category)}
+            className={cn(
+              "tap-44 relative flex h-12 shrink-0 items-center gap-2.5 rounded-full border py-1 pr-4 pl-1.5 text-left text-[14px] type-button transition-colors",
+              on
+                ? "border-selected bg-selected text-on-selected"
+                : "border-border-default bg-white text-brand-navy hover:border-text-neutral-400",
+            )}
+          >
+            <span
+              aria-hidden
+              className={cn(
+                "flex size-9 shrink-0 items-center justify-center rounded-full",
+                on ? "bg-white" : "bg-brand-cream",
+              )}
+            >
+              <Icon name={MEAL_PILL_ICONS[key]} size={20} color="var(--color-brand-navy)" />
+            </span>
+            <span>{c.label}</span>
+            {count !== undefined && (
+              <span
+                aria-hidden
+                className={cn(
+                  "rounded-full px-1.5 text-[12px] tabular-nums",
+                  on ? "bg-white/20 text-on-selected" : "bg-brand-cream text-text-secondary",
+                )}
+              >
+                {count}
+              </span>
+            )}
+            {on && <CheckMark size={14} />}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 /** Single-select meal category chips (icon or pill variant). */
 export function CategoryChips({
   selected,

@@ -4,11 +4,11 @@ import { lockBodyScroll } from "@/lib/hooks/scrollLock";
 import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
-import { Icon } from "@/components/Icon";
+import { Icon, type IconName } from "@/components/Icon";
 import { Link } from "@/lib/nav";
 import { PrimaryButton } from "@/components/Button";
 import { CheckMark, SavedCountLink } from "@/components/Layout";
-import { BrandMark, hasBrandMark } from "@/components/Cards";
+import { BrandMark } from "@/components/Cards";
 import { SearchField } from "@/components/Shell/SearchField";
 import { PAGE_TITLE, PILL, SELECTED_CHIP, SWITCH_ON } from "@/components/styles";
 
@@ -17,6 +17,7 @@ export interface FacetOption {
   label: string;
   /** Number of results if this option were applied (0 disables unselected options). */
   count: number;
+  icon?: IconName;
 }
 
 /** Small navy count bubble. */
@@ -73,7 +74,7 @@ interface FilterSheetProps {
   children: ReactNode;
 }
 
-/** Bottom sheet (mobile) / right drawer (md) with the same filter controls; hidden at lg+. */
+/** Bottom sheet (mobile) / right drawer (md and up) holding the filter controls. */
 export function FilterSheet(props: FilterSheetProps) {
   if (!props.open || typeof document === "undefined") return null;
   return createPortal(<SheetBody {...props} />, document.body);
@@ -117,27 +118,20 @@ function SheetBody({
         first.focus();
       }
     };
-    const mql =
-      typeof window.matchMedia === "function" ? window.matchMedia("(min-width: 1024px)") : null;
-    const onMq = (e: MediaQueryListEvent) => {
-      if (e.matches) closeRef.current();
-    };
     const unlockScroll = lockBodyScroll();
     root?.setAttribute("inert", "");
     document.addEventListener("keydown", onKey);
-    mql?.addEventListener?.("change", onMq);
-    panel.current?.focus();
+    panel.current?.focus({ preventScroll: true });
     return () => {
       unlockScroll();
       if (!wasInert) root?.removeAttribute("inert");
       document.removeEventListener("keydown", onKey);
-      mql?.removeEventListener?.("change", onMq);
-      if (opener?.isConnected) opener.focus();
+      if (opener?.isConnected) opener.focus({ preventScroll: true });
     };
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-stretch md:justify-end lg:hidden">
+    <div className="fixed inset-0 z-50 flex items-end md:items-stretch md:justify-end">
       <button
         type="button"
         aria-label="Close filters"
@@ -154,24 +148,27 @@ function SheetBody({
         data-testid="filter-sheet"
         className="filter-sheet-panel relative flex max-h-[85dvh] w-full flex-col overflow-hidden rounded-t-[20px] bg-white focus:outline-none md:h-dvh md:max-h-none md:w-[420px] md:rounded-none md:rounded-l-[20px]"
       >
-        <header className="shrink-0 border-b border-border-divider px-5 pb-2">
+        <header className="shrink-0 border-b border-border-divider px-5 pb-3">
           <span
             aria-hidden
             className="mx-auto mt-2.5 block h-1 w-9 rounded-full bg-border-default md:hidden"
           />
-          <div className="flex min-h-12 items-center gap-2 pt-1 md:pt-3">
-            <h2 className="text-[24px] type-section-title tracking-[-0.9px] text-brand-navy">
-              Filters
-            </h2>
-            {activeCount > 0 && <CountBadge count={activeCount} />}
-            <button
-              type="button"
-              onClick={onReset}
-              disabled={activeCount === 0}
-              className="ml-auto flex min-h-11 items-center px-2 text-[14px] type-button text-primary disabled:cursor-not-allowed disabled:text-text-neutral-400"
+          <div className="flex min-h-14 items-center gap-3 pt-1 md:pt-3">
+            <span
+              aria-hidden
+              className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-soft"
             >
-              Reset
-            </button>
+              <Icon name="filterSliders" size={20} color="var(--color-primary)" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 className="flex items-center gap-2 text-[20px] leading-6 type-section-title tracking-[-0.9px] text-brand-navy">
+                Filters
+                {activeCount > 0 && <CountBadge count={activeCount} />}
+              </h2>
+              <p className="truncate text-[12px] type-meta text-text-secondary">
+                {resultLabel.replace(/^Show /, "")}
+              </p>
+            </div>
             <button
               type="button"
               onClick={onClose}
@@ -182,9 +179,21 @@ function SheetBody({
             </button>
           </div>
         </header>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5">{children}</div>
-        <footer className="shrink-0 border-t border-border-divider bg-white px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-          <PrimaryButton label={resultLabel} onPress={onClose} />
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-brand-cream px-5 pb-4">
+          {children}
+        </div>
+        <footer className="flex shrink-0 items-center gap-3 border-t border-border-divider bg-white px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <button
+            type="button"
+            onClick={onReset}
+            disabled={activeCount === 0}
+            className="tap-44 relative flex min-h-11 shrink-0 items-center px-2 text-[14px] type-button text-primary disabled:cursor-not-allowed disabled:text-text-neutral-500"
+          >
+            Reset
+          </button>
+          <div className="min-w-0 flex-1">
+            <PrimaryButton label={resultLabel} onPress={onClose} />
+          </div>
           <p role="status" className="sr-only">
             {resultLabel.replace(/^Show /, "")}
           </p>
@@ -194,34 +203,59 @@ function SheetBody({
   );
 }
 
-/** Collapsible accordion section inside the sidebar/sheet. */
+const SECTION_ICONS: Record<string, IconName> = {
+  Restaurant: "restaurant",
+  "Meal type": "forkSpoon",
+  "Goal focus": "target",
+  Nutrition: "fire",
+  "Diet & goals": "leaf",
+  "Nutrition & shopping": "shoppingCart",
+};
+
+/** Collapsible card section inside the filter sheet / sidebar. */
 export function FilterSection({
   title,
   summary,
   active,
   defaultOpen = false,
+  icon,
   children,
 }: {
   title: string;
   summary: string;
   active?: boolean;
   defaultOpen?: boolean;
+  icon?: IconName;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen || !!active);
   const id = useId();
+  const iconName = icon ?? SECTION_ICONS[title] ?? "filterSliders";
   return (
-    <section className="border-b border-border-divider last:border-b-0">
+    <section className="mt-3 overflow-hidden rounded-2xl border border-border-divider bg-white">
       <h3>
         <button
           type="button"
           aria-expanded={open}
           aria-controls={id}
           onClick={() => setOpen(!open)}
-          className="flex min-h-14 w-full items-center gap-3 py-2.5 text-left"
+          className="flex min-h-16 w-full items-center gap-3 px-4 py-3 text-left"
         >
+          <span
+            aria-hidden
+            className={cn(
+              "flex size-9 shrink-0 items-center justify-center rounded-full",
+              active ? "bg-primary-soft" : "bg-brand-cream",
+            )}
+          >
+            <Icon
+              name={iconName}
+              size={18}
+              color={active ? "var(--color-primary)" : "var(--color-brand-navy)"}
+            />
+          </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[14px] type-item-title tracking-[-0.4px] text-brand-navy">
+            <span className="block text-[15px] type-item-title tracking-[-0.4px] text-brand-navy">
               {title}
             </span>
             {!open && (
@@ -247,7 +281,7 @@ export function FilterSection({
         </button>
       </h3>
       {open && (
-        <div id={id} className="flex flex-col gap-5 pb-5">
+        <div id={id} className="flex flex-col gap-5 border-t border-border-divider px-4 pt-4 pb-4">
           {children}
         </div>
       )}
@@ -280,7 +314,7 @@ export function FitsTodayToggle({
         ? `${remaining.toLocaleString()} kcal left, and nothing here is that small.`
         : `${remaining.toLocaleString()} kcal left · ${count} ${count === 1 ? "match" : "matches"}`;
   return (
-    <div className="border-b border-border-divider py-4">
+    <div className="pt-4">
       <button
         type="button"
         role="switch"
@@ -290,18 +324,26 @@ export function FitsTodayToggle({
         disabled={disabled}
         onClick={() => onChange(!checked)}
         className={cn(
-          "flex min-h-14 w-full items-center gap-3 rounded-2xl px-3.5 py-2.5 text-left transition-colors",
-          checked ? "bg-primary-soft" : "bg-navy-soft",
+          "flex min-h-[4.5rem] w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors",
+          checked ? "border-primary bg-primary-soft" : "border-border-divider bg-white",
           disabled && "cursor-not-allowed opacity-60",
         )}
       >
-        <Icon
-          name="target"
-          size={18}
-          color={checked ? "var(--color-primary)" : "var(--color-brand-navy)"}
-        />
+        <span
+          aria-hidden
+          className={cn(
+            "flex size-10 shrink-0 items-center justify-center rounded-full",
+            checked ? "bg-white" : "bg-brand-cream",
+          )}
+        >
+          <Icon
+            name="target"
+            size={20}
+            color={checked ? "var(--color-primary)" : "var(--color-brand-navy)"}
+          />
+        </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-[14px] type-item-title tracking-[-0.4px] text-brand-navy">
+          <span className="block text-[15px] type-item-title tracking-[-0.4px] text-brand-navy">
             Fits what&apos;s left today
           </span>
           <span id={id} className="mt-0.5 block text-[12px] type-meta text-text-secondary">
@@ -364,26 +406,29 @@ export function ChipGroup({
               aria-label={`${o.label}, ${o.count} ${o.count === 1 ? "result" : "results"}`}
               onClick={() => onToggle(o.value)}
               className={cn(
-                "tap-44 relative flex min-h-11 items-center gap-1.5 rounded-full border px-3.5 text-[13px] transition-colors lg:min-h-9",
-                on ? "type-button" : "type-button-secondary",
+                "tap-44 relative flex h-10 items-center gap-2 rounded-full border px-3.5 text-[13px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
                 on
-                  ? SELECTED_CHIP
+                  ? cn(SELECTED_CHIP, "type-button")
                   : disabled
-                    ? "cursor-not-allowed border-dashed border-border-default bg-brand-warm-gray text-text-neutral-400"
-                    : "border-border-default bg-white text-text-primary hover:border-primary",
+                    ? "type-button-secondary cursor-not-allowed border-border-divider bg-white text-text-neutral-500"
+                    : "type-button-secondary border-border-default bg-white text-text-primary hover:border-text-neutral-400 hover:bg-brand-cream",
               )}
             >
-              {on && <CheckMark size={13} />}
+              {on ? (
+                <CheckMark size={13} />
+              ) : (
+                o.icon && <Icon name={o.icon} size={16} color="currentColor" />
+              )}
               {o.label}
               <span
                 aria-hidden
                 className={cn(
-                  "text-[11px] type-meta",
+                  "rounded-full px-1.5 text-[12px] tabular-nums",
                   on
-                    ? "text-on-selected/85"
+                    ? "bg-white/20 text-on-selected"
                     : disabled
-                      ? "text-text-neutral-400"
-                      : "text-text-secondary",
+                      ? "text-text-neutral-500"
+                      : "bg-brand-cream text-text-secondary",
                 )}
               >
                 {o.count}
@@ -391,6 +436,54 @@ export function ChipGroup({
             </button>
           );
         })}
+      </div>
+    </fieldset>
+  );
+}
+
+/** "Quick picks": a few one-tap numeric filters shown at the top of the filter sheet. */
+export function QuickPicks({
+  options,
+}: {
+  options: { label: string; pressed: boolean; count: number; onPress: () => void }[];
+}) {
+  return (
+    <fieldset className="pt-5">
+      <legend className="sr-only">Quick picks</legend>
+      <p
+        aria-hidden
+        className="flex items-center gap-1.5 text-[12px] uppercase tracking-[0.08em] type-item-title text-text-secondary"
+      >
+        <Icon name="bolt" size={13} color="currentColor" />
+        Quick picks
+      </p>
+      <div aria-label="Quick filters" className="mt-2.5 flex flex-wrap gap-2">
+        {options.map((o) => (
+          <button
+            key={o.label}
+            type="button"
+            aria-pressed={o.pressed}
+            onClick={o.onPress}
+            className={cn(
+              "tap-44 relative flex h-10 shrink-0 items-center gap-2 rounded-full border px-3.5 text-[13px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
+              o.pressed
+                ? cn(SELECTED_CHIP, "type-button")
+                : "type-button-secondary border-border-default bg-white text-text-primary hover:border-text-neutral-400 hover:bg-brand-cream",
+            )}
+          >
+            {o.pressed && <CheckMark size={12} />}
+            {o.label}
+            <span
+              aria-hidden
+              className={cn(
+                "rounded-full px-1.5 text-[12px] tabular-nums",
+                o.pressed ? "bg-white/20 text-on-selected" : "bg-brand-cream text-text-secondary",
+              )}
+            >
+              {o.count}
+            </span>
+          </button>
+        ))}
       </div>
     </fieldset>
   );
@@ -422,7 +515,9 @@ export function RangeSlider({
         <label htmlFor={id} className="text-[12px] type-item-title text-text-secondary">
           {label}
         </label>
-        <span className="text-[13px] type-row-figure text-brand-navy">{format(value)}</span>
+        <span className="rounded-full bg-brand-cream px-2.5 py-0.5 text-[13px] type-row-figure text-brand-navy">
+          {format(value)}
+        </span>
       </div>
       <input
         id={id}
@@ -449,6 +544,7 @@ export function CheckList({
   selected,
   onToggle,
   initialVisible = 5,
+  alwaysSearch = false,
 }: {
   legend: string;
   noun: string;
@@ -456,6 +552,8 @@ export function CheckList({
   selected: string[];
   onToggle: (value: string) => void;
   initialVisible?: number;
+  /** Show the search box even for short lists. */
+  alwaysSearch?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [all, setAll] = useState(false);
@@ -468,7 +566,7 @@ export function CheckList({
   return (
     <fieldset>
       <legend className="sr-only">{legend}</legend>
-      {options.length > initialVisible && (
+      {(alwaysSearch || options.length > initialVisible) && (
         <SearchField
           id={id}
           label={`Search ${noun}`}
@@ -488,10 +586,12 @@ export function CheckList({
             <li key={o.value}>
               <label
                 className={cn(
-                  "flex min-h-11 items-center gap-3 rounded-xl px-1",
+                  "flex min-h-14 items-center gap-3 rounded-xl px-2",
                   disabled
-                    ? "cursor-not-allowed text-text-neutral-400"
-                    : "cursor-pointer text-text-primary hover:bg-brand-warm-gray",
+                    ? "cursor-not-allowed text-text-neutral-500"
+                    : on
+                      ? "cursor-pointer bg-primary-soft text-text-primary"
+                      : "cursor-pointer text-text-primary hover:bg-brand-warm-gray",
                 )}
               >
                 <input
@@ -500,21 +600,14 @@ export function CheckList({
                   disabled={disabled}
                   onChange={() => onToggle(o.value)}
                   aria-label={`${o.label}, ${o.count} ${o.count === 1 ? "result" : "results"}`}
-                  className="size-[18px] shrink-0 cursor-[inherit] accent-primary"
+                  className="size-[18px] shrink-0 cursor-[inherit] accent-[var(--color-selected)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                 />
-                {hasBrandMark(o.value) ? (
-                  <span className={cn(disabled && "opacity-50")}>
-                    <BrandMark restaurant={o.value} />
-                  </span>
-                ) : (
-                  <span
-                    aria-hidden
-                    className="size-[22px] shrink-0 rounded-[7px] bg-brand-warm-gray"
-                  />
-                )}
+                <span className={cn(disabled && "opacity-50")}>
+                  <BrandMark restaurant={o.value} size="lg" letterFallback />
+                </span>
                 <span
                   className={cn(
-                    "min-w-0 flex-1 truncate text-[13px] type-item-title",
+                    "min-w-0 flex-1 truncate text-[14px] type-item-title",
                     disabled && "line-through",
                   )}
                 >

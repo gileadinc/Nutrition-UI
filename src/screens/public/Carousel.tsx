@@ -58,7 +58,7 @@ export function OnboardingCarousel() {
   const [cook, hack, track] = PAGES;
   return (
     <main className="min-h-dvh bg-auth-canvas p-4">
-      <div className="mx-auto grid max-w-[1800px] gap-4 lg:min-h-[calc(100dvh-2rem)] lg:grid-cols-[minmax(0,677px)_minmax(0,1fr)]">
+      <div className="grid w-full gap-4 lg:min-h-[calc(100dvh-2rem)] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] xl:gap-6">
         <section
           aria-label="What you can do with ForkThis"
           className="order-last flex min-w-0 flex-col gap-4 lg:order-first"
@@ -68,13 +68,13 @@ export function OnboardingCarousel() {
               <Tile
                 key={p.heading}
                 page={p}
-                className="min-h-[26rem] rounded-[17px] bg-brand-cream"
+                className="min-h-[26rem] rounded-[17px] bg-brand-cream lg:min-h-0"
               >
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-cream via-brand-cream/90 to-transparent px-[17px] pb-4 pt-14 text-primary">
+                <div className="absolute inset-x-[17px] bottom-4 text-primary">
                   <h2 className="text-[32px] type-section-title leading-none tracking-[-0.6px]">
                     {p.heading}
                   </h2>
-                  <p className="mt-1 min-h-[3.75rem] max-w-[16.5rem] text-sm type-extra-light leading-5 tracking-[-0.176px] text-text-primary">
+                  <p className="mt-1 min-h-[3.75rem] max-w-[min(16.5rem,100%)] text-sm type-extra-light leading-5 tracking-[-0.176px] text-text-primary md:max-w-[22rem] md:text-base md:leading-6 lg:max-w-[min(24rem,100%)]">
                     {p.body}
                   </p>
                 </div>
@@ -82,11 +82,11 @@ export function OnboardingCarousel() {
             ))}
           </div>
           <Tile page={track} className="h-[418px] shrink-0 rounded-2xl" focus="object-[28%_center]">
-            <div className="absolute inset-y-0 right-4 flex w-[min(331px,55%)] flex-col justify-center">
+            <div className="absolute inset-x-3 bottom-3 rounded-2xl bg-white/90 p-4 sm:inset-x-auto sm:bottom-0 sm:right-4 sm:top-0 sm:flex sm:w-[min(331px,55%)] sm:flex-col sm:justify-center sm:rounded-none sm:bg-transparent sm:p-0">
               <h2 className="text-[32px] type-section-title leading-none tracking-[-0.6px] text-text-primary">
                 {track.heading}
               </h2>
-              <p className="mt-1 text-sm type-extra-light leading-5 tracking-[-0.176px] text-text-primary">
+              <p className="mt-1 text-sm type-extra-light leading-5 tracking-[-0.176px] text-text-primary md:text-base md:leading-6 xl:text-lg">
                 {track.body}
               </p>
             </div>
@@ -96,10 +96,10 @@ export function OnboardingCarousel() {
           aria-labelledby="quiz-intro-heading"
           className="page-settle flex min-w-0 flex-col justify-end px-2 pb-8 pt-6 text-primary lg:px-[30px] lg:pb-9"
         >
-          <div className="max-w-[576px]">
+          <div className="max-w-[520px]">
             <h1
               id="quiz-intro-heading"
-              className="max-w-[486px] text-[clamp(3rem,5.2vw,4.75rem)] type-section-title leading-[1.03] tracking-[-0.079em]"
+              className="max-w-[440px] text-[clamp(2.75rem,4.7vw,4.25rem)] type-section-title leading-[1.03] tracking-[-0.079em]"
             >
               A plan that fits your real life.
             </h1>
@@ -107,7 +107,7 @@ export function OnboardingCarousel() {
               Tell us a little about your goals. We’ll turn your answers into a simple starting plan
               for meals, movement, and the days in between.
             </p>
-            <p className="mt-8 text-xs capitalize leading-4 tracking-[1.2px] text-text-primary">
+            <p className="mt-7 text-xs capitalize leading-4 tracking-[1.2px] text-text-primary">
               Your next two minutes
             </p>
             <ul className="flex flex-wrap gap-2 pt-3">
@@ -120,8 +120,9 @@ export function OnboardingCarousel() {
                 </li>
               ))}
             </ul>
-            <div className="mt-7">
+            <div className="mt-6">
               <PrimaryButton
+                size="medium"
                 label="Start your quiz"
                 onPress={() => navigate("/questionnaire?step=dob")}
                 className="w-full !rounded-[52px] motion-safe:transition-transform motion-safe:hover:-translate-y-0.5"

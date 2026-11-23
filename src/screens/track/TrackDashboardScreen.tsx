@@ -119,6 +119,7 @@ export function TrackDashboardScreen() {
             day: "numeric",
           })}
           goalLabel={profile?.goal ? GOAL_LABEL[profile.goal] : null}
+          eaten={dayCalories(today)}
         />
         {firstTime.data && (
           <GettingStarted state={firstTime.data} onDismiss={dismissGettingStarted} />

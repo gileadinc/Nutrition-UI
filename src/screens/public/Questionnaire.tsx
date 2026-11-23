@@ -807,6 +807,23 @@ function Flow() {
   });
   const firstRef = useRef<HTMLInputElement | null>(null);
   const weightRef = useRef<HTMLInputElement | null>(null);
+  // Where focus goes after the next render: the first field on a mouse/keyboard
+  // device, otherwise the step heading when moving between steps.
+  const focusPlan = useRef<"initial" | "step" | null>("initial");
+  useEffect(() => {
+    const plan = focusPlan.current;
+    if (!plan) return;
+    focusPlan.current = null;
+    const fine = window.matchMedia?.("(pointer: fine)").matches ?? false;
+    const target = firstRef.current;
+    if (target && fine) {
+      target.focus();
+      const end = target.value.length;
+      target.setSelectionRange(end, end);
+    } else if (plan === "step") {
+      document.getElementById(`${uid}-heading`)?.focus();
+    }
+  });
 
   const age = ageFromDob(dob);
   const dobOk = dobComplete(dob) && age !== null && age >= 13 && age <= 100;
@@ -881,6 +898,7 @@ function Flow() {
   const social = useSocialSignIn(AFTER);
 
   const go = (s: Screen, st: Step = step, dir: "forward" | "back" = "forward") => {
+    focusPlan.current = "step";
     setDirection(dir);
     setScreen(s);
     setStep(st);
@@ -1075,7 +1093,6 @@ function Flow() {
           <PrimaryButton
             type="submit"
             label={edit ? "Confirm and continue" : seenReveal ? "Back to your plan" : "Continue"}
-            className="flex-1 lg:ml-auto lg:max-w-60"
           />
         }
       >
@@ -1226,8 +1243,12 @@ function Flow() {
             </summary>
             <p className="mt-1 pl-[1.375rem] leading-5">{copy.why}</p>
           </details>
-          <div className={cn("flex flex-col", D.notes, D.stack)}>
-            <div id={`${uid}-dob-result`} aria-live="polite" className="min-h-14">
+          <div className={D.notes}>
+            <div
+              id={`${uid}-dob-result`}
+              aria-live="polite"
+              className={cn((dobOk || dobError || tooYoung) && "mb-3")}
+            >
               {dobOk ? (
                 <Message message={`${age} years old`} success />
               ) : dobError ? (

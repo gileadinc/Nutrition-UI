@@ -15,6 +15,7 @@ export const META = "type-meta text-[13px] leading-5 text-text-secondary";
 export function ProfileLayout({
   title,
   subtitle,
+  icon,
   aside,
   asideLabel,
   children,
@@ -22,6 +23,8 @@ export function ProfileLayout({
 }: {
   title: string;
   subtitle?: string;
+  /** Shows the page as a banner with an icon tile and a "You" eyebrow. */
+  icon?: IconName;
   aside?: ReactNode;
   asideLabel?: string;
   children: ReactNode;
@@ -29,7 +32,7 @@ export function ProfileLayout({
 }) {
   const back = useBack("/you");
   const body = (
-    <div className="mx-auto w-full max-w-4xl xl:mx-0">
+    <div className={cn("mx-auto w-full xl:mx-0", icon ? "max-w-2xl" : "max-w-4xl")}>
       {children}
       {footer && (
         <div className="sticky bottom-[60px] z-20 -mx-5 mt-6 border-t border-border-divider bg-brand-cream px-5 py-3 md:static md:mx-0 md:border-t-0 md:bg-transparent md:px-0 md:py-0">
@@ -39,18 +42,41 @@ export function ProfileLayout({
     </div>
   );
   return (
-    <PageContainer className="max-w-[1400px]">
-      <header className="flex items-center gap-3">
+    <PageContainer className={icon ? "max-w-6xl" : "max-w-[1400px]"}>
+      <header
+        className={cn(
+          "flex items-center gap-3",
+          icon && "rounded-[24px] bg-navy-soft p-3 sm:gap-4 sm:p-4",
+        )}
+      >
         <button
           type="button"
           aria-label="Go back"
           onClick={back}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border-default bg-white transition-colors hover:border-text-neutral-400"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border-default bg-white transition-colors hover:border-text-neutral-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         >
           <Icon name="arrowBack" size={20} color="var(--color-text-primary)" />
         </button>
+        {icon && (
+          <span
+            aria-hidden
+            className="hidden size-12 shrink-0 items-center justify-center rounded-2xl bg-white sm:flex"
+          >
+            <Icon name={icon} size={22} color="var(--color-brand-navy)" />
+          </span>
+        )}
         <div className="min-w-0">
-          <h1 className="truncate text-[26px] type-display leading-7 tracking-[-1px] text-brand-navy md:text-2xl">
+          {icon && (
+            <p aria-hidden className="eyebrow text-[12px]">
+              You
+            </p>
+          )}
+          <h1
+            className={cn(
+              "truncate type-display leading-7 tracking-[-1px] text-brand-navy md:text-2xl",
+              icon ? "text-[22px]" : "text-[26px]",
+            )}
+          >
             {title}
           </h1>
           {subtitle && <p className={META}>{subtitle}</p>}
