@@ -756,6 +756,8 @@ export function TrackOverview() {
         {has("limits") && <DailyLimits day={day} onHide={() => hide("limits")} />}
         {has("weight") && <WeightWidget onHide={() => hide("weight")} />}
         {has("medication") && <MedicationWidget onHide={() => hide("medication")} />}
+        {/* Full-width slot (extra signals in the live app). Spanning 12 columns is what gives the cards above a 12-column track grid. */}
+        <div className="@2xl:col-span-2 @5xl:col-span-12" />
       </div>
       {keys.size === 0 && (
         <p className="mt-3 text-[13px] text-text-secondary">
