@@ -5,6 +5,7 @@ import { Icon, type IconName } from "@/components/Icon";
 import { useActivity, useMedications, useWeight } from "@/lib/store";
 import { dayCalories, dayProtein, dayWaterOz, useTrackDays, type TrackDay } from "@/lib/track";
 import { cn } from "@/lib/utils";
+import { IdeasButton } from "./Ideas";
 import { SheetFrame, WaterBottle, useLogSheet, type LogTab } from "./LogSheet";
 import {
   DonutChart,
@@ -332,7 +333,12 @@ function CaloriesThroughDay({ day, onHide }: { day: TrackDay; onHide: () => void
       color="var(--color-accent-graphic)"
       subtitle="Running total after each meal"
       onHide={onHide}
-      action={<Log tab="meal" label="Log a meal" />}
+      action={
+        <>
+          <IdeasButton />
+          <Log tab="meal" label="Log a meal" />
+        </>
+      }
       heightClass="h-[9.75rem]"
       className="@2xl:order-last @2xl:col-span-2 @5xl:order-none @5xl:col-span-6"
       stats={[
