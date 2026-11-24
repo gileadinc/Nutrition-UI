@@ -56,7 +56,7 @@ function Hero() {
             We’re here to make it easier.
           </span>
         </h1>
-        <p className="mt-6 max-w-md text-base type-meta text-text-secondary md:mt-14 md:text-sm">
+        <p className="mt-6 max-w-md text-base type-meta text-text-secondary md:mt-14 md:text-base">
           Simple macro tracking, healthy recipes, fast food hacks, movement goals, GLP-1/peptide
           calendars, and helpful reminders to keep you on track toward your goals.
         </p>
@@ -72,12 +72,12 @@ function Hero() {
           </Link>
           <Link
             to="/guest"
-            className="hidden text-sm type-item-title text-text-primary hover:underline md:inline"
+            className="hidden text-base type-item-title text-text-primary hover:underline md:inline"
           >
             Continue as guest
           </Link>
         </div>
-        <p className="mt-5 text-xs type-meta text-text-secondary">
+        <p className="mt-5 text-sm type-meta text-text-secondary">
           It&apos;s all free.
           <br className="md:hidden" /> Create an account to track your progress, or{" "}
           <Link to="/guest" className="underline md:no-underline">
@@ -111,7 +111,7 @@ function Features() {
           <span className="text-teal-500">ForkThis!</span>{" "}
           <span className="font-medium text-black">makes healthy easier</span>
         </h2>
-        <p className={cn(SUB, "mt-5 md:mx-auto md:max-w-xl md:text-sm")}>
+        <p className={cn(SUB, "mt-5 md:mx-auto md:max-w-xl md:text-base")}>
           Practical swaps, everyday recipes, low-pressure tracking, and free browsing — built for
           real meals and real routines.
         </p>
@@ -127,7 +127,7 @@ function Features() {
             <h3 className="text-[2rem] font-medium tracking-[-0.05em] md:text-[2.75rem]">
               OrderThis!
             </h3>
-            <p className="mt-2 text-[11px] type-meta opacity-90 md:max-w-xs md:text-sm">
+            <p className="mt-2 text-[11px] type-meta opacity-90 md:max-w-xs md:text-base">
               Track your way — keep an eye on your meals, protein, habits. Choose what habits
               matters to you!
             </p>
@@ -148,7 +148,7 @@ function Features() {
             <h3 className="text-[2.5rem] type-display tracking-[-0.05em] text-[#14193a] md:text-[2.75rem]">
               CookThis!
             </h3>
-            <p className="mt-2 max-w-sm text-[11px] leading-[1.45] type-meta text-[#5a6180] md:text-sm md:text-[#0b2a63]">
+            <p className="mt-2 max-w-sm text-[11px] leading-[1.45] type-meta text-[#5a6180] md:text-base md:text-[#0b2a63]">
               From meal-preps to family dinners, find low calorie, high protein recipes that work
               for your real life the nutrition you need
             </p>
@@ -173,7 +173,7 @@ function Features() {
             <h3 className="text-[2.5rem] type-display tracking-[-0.07em] text-[#0a1a24] md:text-[3rem] md:leading-[1.05] md:text-[#101c3a]">
               TrackThis!
             </h3>
-            <p className="mt-2 max-w-md text-[11px] leading-[1.5] type-meta text-[#0a1a24] md:mt-2 md:max-w-[29rem] md:text-[14px] md:leading-[1.25] md:text-[#56717f]">
+            <p className="mt-2 max-w-md text-[11px] leading-[1.5] type-meta text-[#0a1a24] md:mt-2 md:max-w-[29rem] md:text-[16px] md:leading-[1.25] md:text-[#56717f]">
               ForkThis! allows you to customize your profile around your goals and allows you to
               move at your own pace by tracking meals, movement, and the habits that matter most to
               you!
@@ -193,7 +193,7 @@ function Features() {
           </div>
           <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
             <h3 className="text-[2rem] type-display tracking-tight md:text-4xl">Free</h3>
-            <p className="mt-2 max-w-[17rem] text-[11px] leading-[1.45] type-meta opacity-90 md:max-w-60 md:text-sm md:opacity-80">
+            <p className="mt-2 max-w-[17rem] text-[11px] leading-[1.45] type-meta opacity-90 md:max-w-60 md:text-base md:opacity-80">
               Free! make restaurant hacks* add no credit card required
             </p>
           </div>
@@ -286,7 +286,7 @@ function RecipesAndHacks() {
           <h3 className="text-3xl type-body leading-[1.05] tracking-[-0.04em] text-text-primary md:text-[2.15rem]">
             Explore hundreds of flavorful recipes for every kind of day
           </h3>
-          <p className="mt-3 text-sm type-meta text-text-secondary">
+          <p className="mt-3 text-base type-meta text-text-secondary">
             From quick meals and family dinners to meal prep, comfort food, and healthier takes on
             the foods you already love.
           </p>
@@ -314,15 +314,15 @@ function RecipesAndHacks() {
             Same cravings.
             <br className="md:hidden" /> <span className="text-accent-graphic">A better fit.</span>
           </h3>
-          <p className="mt-3 text-[14px] leading-[1.3] type-meta text-text-secondary md:text-sm md:leading-normal">
+          <p className="mt-3 text-[14px] leading-[1.3] type-meta text-text-secondary md:text-base md:leading-normal">
             ForkThis! has hundreds of fast-food and restaurant hacks with low calorie,
             protein-focused orders to help you stay on track.
           </p>
-          <p className="mt-4 flex items-center gap-2 border-b border-border-divider pb-2 text-[11px] uppercase tracking-[0.04em] text-text-primary md:mt-5 md:pb-3 md:tracking-[0.14em] md:text-text-secondary">
+          <p className="mt-4 flex items-center gap-2 border-b border-border-divider pb-2 text-xs uppercase tracking-[0.04em] text-text-primary md:mt-5 md:pb-3 md:tracking-[0.14em] md:text-text-secondary">
             <Icon name="forkSpoon" size={14} className="hidden text-accent md:block" />
             OrderThis! at Chick-fil-A
           </p>
-          <ol className="divide-y divide-border-divider text-[12.5px] type-meta text-text-primary md:text-sm">
+          <ol className="divide-y divide-border-divider text-[12.5px] type-meta text-text-primary md:text-base">
             {HACKS.map((hack, i) => (
               <li key={hack} className="flex items-center gap-2.5 py-2.5 md:gap-3 md:py-3">
                 <span className="text-[22px] font-light text-accent md:text-2xl">
@@ -349,7 +349,7 @@ function RecipesAndHacks() {
 
 function Eyebrow({ n, label, lineFirst }: { n: string; label: string; lineFirst?: boolean }) {
   return (
-    <p className="mb-5 flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-text-secondary md:mb-8">
+    <p className="mb-5 flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-text-secondary md:mb-8">
       <span className="text-accent">{n}</span>
       {lineFirst && <span aria-hidden className="h-px w-12 bg-border-default" />}
       <span>{label}</span>
@@ -385,7 +385,7 @@ function Team() {
           <h2 className={cn(H2, "md:text-[clamp(44px,4.4vw,64px)] md:leading-[1.1]")}>
             Built by a doctor and someone who has lived it.
           </h2>
-          <div className="mt-6 space-y-5 text-base type-meta text-text-primary md:mt-8 md:space-y-6 md:text-[11px]">
+          <div className="mt-6 space-y-5 text-base type-meta text-text-primary md:mt-8 md:space-y-6 md:text-base">
             <p>{TEAM_COPY[0]}</p>
             <div className="md:hidden">
               <AppImage
@@ -401,7 +401,7 @@ function Team() {
               <p key={p}>{p}</p>
             ))}
           </div>
-          <p className="mt-10 border-t border-text-primary/60 pt-4 text-xs type-meta text-text-secondary md:max-w-[75%]">
+          <p className="mt-10 border-t border-text-primary/60 pt-4 text-sm type-meta text-text-secondary md:max-w-[75%]">
             ForkThis! provides general nutrition information, not medical advice. For individual
             health needs, speak with a qualified member of your care team.
           </p>
@@ -434,8 +434,8 @@ function InfoCard({
         {icon}
       </span>
       <div>
-        <p className="text-base type-button text-text-primary md:text-sm">{title}</p>
-        <p className="text-sm type-meta text-text-secondary md:text-xs">{sub}</p>
+        <p className="text-base type-button text-text-primary md:text-base">{title}</p>
+        <p className="text-sm type-meta text-text-secondary md:text-sm">{sub}</p>
       </div>
     </li>
   );
@@ -461,7 +461,7 @@ function Contact() {
               <br />
               ForkThis! better.
             </h2>
-            <p className={cn(SUB, "mt-5 max-w-[21rem] md:text-sm")}>
+            <p className={cn(SUB, "mt-5 max-w-[21rem] md:text-base")}>
               We&apos;re always looking for ways to improve the app. Let us know what would make
               ForkThis! more useful to you.
             </p>
@@ -499,7 +499,7 @@ function Footer() {
         >
           <div>
             <Brand />
-            <p className={cn("mt-6 max-w-[22rem] text-base type-meta md:mt-8 md:text-sm", muted)}>
+            <p className={cn("mt-6 max-w-[22rem] text-base type-meta md:mt-8 md:text-base", muted)}>
               ForkThis! makes healthy living easier with recipes, restaurant hacks, and simple food,
               movement, and habit tracking, all free, all at your pace.
             </p>
@@ -507,14 +507,14 @@ function Footer() {
           <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <div className="order-1 md:order-2">
               <h3 className="text-2xl type-body md:text-xl">Contact Us</h3>
-              <p className={cn("mt-3 text-sm type-meta md:mt-2 md:text-xs", muted)}>
+              <p className={cn("mt-3 text-sm type-meta md:mt-2 md:text-sm", muted)}>
                 +1 (999) 888-77-66
               </p>
               <a
-                href="mailto:hello@logoipsum.com"
-                className={cn("block text-sm type-meta hover:text-white md:text-xs", muted)}
+                href="mailto:info@forkthis.com"
+                className={cn("block text-sm type-meta hover:text-white md:text-sm", muted)}
               >
-                hello@logoipsum.com
+                info@forkthis.com
               </a>
             </div>
             <div className="order-2 flex flex-col gap-8 md:order-1 md:flex-row md:items-center md:gap-12">
@@ -533,7 +533,7 @@ function Footer() {
                   );
                 })}
               </div>
-              <p className={cn("text-xs type-meta", muted)}>
+              <p className={cn("text-sm type-meta", muted)}>
                 © {new Date().getFullYear()} — Copyright All Rights reserved
               </p>
             </div>

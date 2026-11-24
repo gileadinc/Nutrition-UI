@@ -208,10 +208,10 @@ const useMounted = () =>
 
 const BMI_ROWS = [
   { label: "Underweight", min: 0, max: 18.5, range: "Below 18.5" },
-  { label: "Healthy weight", min: 18.5, max: 25, range: "18.5 – <25" },
-  { label: "Overweight", min: 25, max: 30, range: "25 – <30" },
-  { label: "Obesity · Class 1", min: 30, max: 35, range: "30 – <35" },
-  { label: "Obesity · Class 2", min: 35, max: 40, range: "35 – <40" },
+  { label: "Healthy weight", min: 18.5, max: 25, range: "18.5 – 25" },
+  { label: "Overweight", min: 25, max: 30, range: "25 – 30" },
+  { label: "Obesity · Class 1", min: 30, max: 35, range: "30 – 35" },
+  { label: "Obesity · Class 2", min: 35, max: 40, range: "35 – 40" },
   { label: "Obesity · Class 3", min: 40, max: Infinity, range: "40 or above" },
 ];
 

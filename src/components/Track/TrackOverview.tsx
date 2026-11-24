@@ -2,6 +2,7 @@
 
 import { useId, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/Icon";
+import { Link, useNavigate } from "@/lib/nav";
 import { useActivity, useMedications, useWeight } from "@/lib/store";
 import { dayCalories, dayProtein, dayWaterOz, useTrackDays, type TrackDay } from "@/lib/track";
 import { cn } from "@/lib/utils";
@@ -102,6 +103,27 @@ export interface Stat {
   tone?: "warn";
 }
 
+export type StatusTone = "limit" | "goal" | "done";
+export interface CardStatus {
+  tone: StatusTone;
+  label: string;
+}
+const STATUS_BORDER: Record<StatusTone, string> = {
+  limit: "border-error-red/60 bg-error-soft/40",
+  goal: "border-status-over/60 bg-missed-dose-surface/40",
+  done: "border-teal-500/50 bg-positive/50",
+};
+const STATUS_BADGE: Record<StatusTone, string> = {
+  limit: "bg-error-soft text-error-ink",
+  goal: "bg-missed-dose-surface text-badge-apricot-text",
+  done: "bg-positive text-positive-ink",
+};
+const STATUS_ICON: Record<StatusTone, IconName> = {
+  limit: "alert",
+  goal: "arrowUpSmall",
+  done: "checkCircle",
+};
+
 export function WidgetCard({
   title,
   icon,
@@ -113,6 +135,8 @@ export function WidgetCard({
   stats,
   className,
   heightClass = "h-[clamp(11rem,30vw,16rem)]",
+  insights,
+  status,
 }: {
   title: string;
   icon?: IconName;
@@ -124,12 +148,45 @@ export function WidgetCard({
   stats?: Stat[];
   className?: string;
   heightClass?: string;
+  /** Insights metric this card opens (`/track/insights/<metric>`); adds the expand button. */
+  insights?: string;
+  status?: CardStatus;
 }) {
   const id = useId();
+  const navigate = useNavigate();
+  const to = insights
+    ? insights.startsWith("/")
+      ? insights
+      : `/track/insights/${insights}`
+    : null;
   return (
     <section
       aria-labelledby={id}
-      className={cn("panel flex min-w-0 flex-col gap-3 p-4", className)}
+      data-status={status?.tone}
+      tabIndex={to ? 0 : undefined}
+      onClick={
+        to
+          ? (e) => {
+              if (!(e.target as HTMLElement).closest("button, a, input, select")) navigate(to);
+            }
+          : undefined
+      }
+      onKeyDown={
+        to
+          ? (e) => {
+              if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
+                e.preventDefault();
+                navigate(to);
+              }
+            }
+          : undefined
+      }
+      className={cn(
+        "panel flex min-w-0 flex-col gap-3 p-4",
+        status && STATUS_BORDER[status.tone],
+        to && "cursor-pointer focus-visible:outline-2 focus-visible:outline-brand-navy",
+        className,
+      )}
     >
       <header className="flex items-center gap-2">
         {icon && (
@@ -150,6 +207,15 @@ export function WidgetCard({
           )}
         </div>
         {action}
+        {to && (
+          <Link
+            to={to}
+            aria-label={`View ${title} details`}
+            className="tap-44 relative flex size-8 shrink-0 items-center justify-center rounded-full text-brand-navy hover:bg-navy-soft"
+          >
+            <Icon name="expand" size={16} color="currentColor" />
+          </Link>
+        )}
         {onHide && (
           <button
             type="button"
@@ -162,6 +228,18 @@ export function WidgetCard({
           </button>
         )}
       </header>
+      {status && (
+        <p
+          data-testid="panel-status"
+          className={cn(
+            "flex items-center gap-2 rounded-xl px-3 py-2 text-[13px] leading-5 type-button",
+            STATUS_BADGE[status.tone],
+          )}
+        >
+          <Icon name={STATUS_ICON[status.tone]} size={15} color="currentColor" />
+          {status.label}
+        </p>
+      )}
       <div className={cn("min-w-0", heightClass)}>{children}</div>
       {stats && stats.length > 0 && (
         <dl className="grid grid-cols-[repeat(auto-fit,minmax(5.5rem,1fr))] gap-x-4 gap-y-3 border-t border-border-divider pt-3">
@@ -261,7 +339,15 @@ export function useToday(): TrackDay | undefined {
   return days[days.length - 1];
 }
 
-function CaloriesByMeal({ day, onHide }: { day: TrackDay; onHide: () => void }) {
+function CaloriesByMeal({
+  day,
+  onHide,
+  status,
+}: {
+  day: TrackDay;
+  onHide: () => void;
+  status?: CardStatus;
+}) {
   const eaten = dayCalories(day);
   const parts = MEALS.map((m) => ({
     key: m,
@@ -271,6 +357,8 @@ function CaloriesByMeal({ day, onHide }: { day: TrackDay; onHide: () => void }) 
   return (
     <WidgetCard
       title="Calories by meal"
+      insights="calories"
+      status={status}
       onHide={onHide}
       heightClass="h-auto min-h-[9.75rem] space-y-3"
       className="@5xl:col-span-3"
@@ -325,10 +413,20 @@ function CaloriesByMeal({ day, onHide }: { day: TrackDay; onHide: () => void }) 
   );
 }
 
-function CaloriesThroughDay({ day, onHide }: { day: TrackDay; onHide: () => void }) {
+function CaloriesThroughDay({
+  day,
+  onHide,
+  status,
+}: {
+  day: TrackDay;
+  onHide: () => void;
+  status?: CardStatus;
+}) {
   return (
     <WidgetCard
       title="Calories through the day"
+      insights="calories"
+      status={status}
       icon="fire"
       color="var(--color-accent-graphic)"
       subtitle="Running total after each meal"
@@ -368,7 +466,15 @@ function CaloriesThroughDay({ day, onHide }: { day: TrackDay; onHide: () => void
   );
 }
 
-function Macros({ day, onHide }: { day: TrackDay; onHide: () => void }) {
+function Macros({
+  day,
+  onHide,
+  status,
+}: {
+  day: TrackDay;
+  onHide: () => void;
+  status?: CardStatus;
+}) {
   const goals = {
     protein: day.proteinGoal,
     carbs: Math.round(day.calorieGoal * 0.1124),
@@ -389,6 +495,8 @@ function Macros({ day, onHide }: { day: TrackDay; onHide: () => void }) {
   return (
     <WidgetCard
       title="Macros"
+      insights="protein"
+      status={status}
       onHide={onHide}
       heightClass="h-auto min-h-[9.75rem] space-y-3"
       className="@2xl:@max-5xl:col-span-1 @5xl:col-span-3"
@@ -419,7 +527,15 @@ function Macros({ day, onHide }: { day: TrackDay; onHide: () => void }) {
   );
 }
 
-function Water({ day, onHide }: { day: TrackDay; onHide: () => void }) {
+function Water({
+  day,
+  onHide,
+  status,
+}: {
+  day: TrackDay;
+  onHide: () => void;
+  status?: CardStatus;
+}) {
   const oz = dayWaterOz(day);
   const goal = day.waterGoalOz;
   const pct = goal > 0 ? Math.min(100, (oz / goal) * 100) : 0;
@@ -427,6 +543,8 @@ function Water({ day, onHide }: { day: TrackDay; onHide: () => void }) {
   return (
     <WidgetCard
       title="Water"
+      insights="water"
+      status={status}
       icon="droplet"
       color="var(--color-graphic)"
       subtitle="Your bottle fills as you log each drink"
@@ -455,7 +573,7 @@ function Water({ day, onHide }: { day: TrackDay; onHide: () => void }) {
   );
 }
 
-function Activity({ onHide }: { onHide: () => void }) {
+function Activity({ onHide, status }: { onHide: () => void; status?: CardStatus }) {
   const a = useActivity();
   const slices = a.todayEntries.map((e, i) => ({
     key: `${e.id}`,
@@ -466,6 +584,8 @@ function Activity({ onHide }: { onHide: () => void }) {
   return (
     <WidgetCard
       title="Activity"
+      insights="activity"
+      status={status}
       icon="walking"
       color="var(--color-accent-graphic)"
       subtitle="Minutes by activity"
@@ -497,7 +617,7 @@ function Activity({ onHide }: { onHide: () => void }) {
   );
 }
 
-function WeightWidget({ onHide }: { onHide: () => void }) {
+function WeightWidget({ onHide, status }: { onHide: () => void; status?: CardStatus }) {
   const w = useWeight();
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
@@ -514,6 +634,8 @@ function WeightWidget({ onHide }: { onHide: () => void }) {
   return (
     <WidgetCard
       title="Weight"
+      insights="weight"
+      status={status}
       icon="weightScale"
       color="var(--color-brand-navy)"
       subtitle="The week’s readings against their average"
@@ -545,7 +667,15 @@ function WeightWidget({ onHide }: { onHide: () => void }) {
   );
 }
 
-function DailyLimits({ day, onHide }: { day: TrackDay; onHide: () => void }) {
+function DailyLimits({
+  day,
+  onHide,
+  status,
+}: {
+  day: TrackDay;
+  onHide: () => void;
+  status?: CardStatus;
+}) {
   const fat = day.meals.reduce((s, m) => s + m.fat, 0);
   const fatGoal = Math.round(day.calorieGoal * 0.0371);
   const rows = [
@@ -580,6 +710,8 @@ function DailyLimits({ day, onHide }: { day: TrackDay; onHide: () => void }) {
   return (
     <WidgetCard
       title="Daily limits"
+      insights="fat"
+      status={status}
       icon="shield"
       color="var(--color-brand-navy)"
       subtitle="Everything is within limits"
@@ -631,13 +763,15 @@ function DailyLimits({ day, onHide }: { day: TrackDay; onHide: () => void }) {
   );
 }
 
-function MedicationWidget({ onHide }: { onHide: () => void }) {
+function MedicationWidget({ onHide, status }: { onHide: () => void; status?: CardStatus }) {
   const { meds } = useMedications();
   const sorted = [...meds].sort((a, b) => a.time.localeCompare(b.time));
   const taken = sorted.filter((m) => m.taken).length;
   return (
     <WidgetCard
       title="Medication"
+      insights="/track/medication"
+      status={status}
       icon="medication"
       color="var(--color-brand-navy)"
       subtitle="Taken and still due"
@@ -708,6 +842,54 @@ function MedicationWidget({ onHide }: { onHide: () => void }) {
   );
 }
 
+const EMPTY_DAY: TrackDay = {
+  date: "",
+  meals: [],
+  hydration: [],
+  calorieGoal: 0,
+  proteinGoal: 0,
+  waterGoalOz: 0,
+};
+
+const over = (n: number, goal: number) => (goal > 0 && n > goal ? n - goal : 0);
+
+/** "Where today stands": which cards are past a limit or goal, or have reached one. */
+function useStatuses(day: TrackDay) {
+  const act = useActivity();
+  const eaten = dayCalories(day);
+  const water = dayWaterOz(day);
+  const carbs = day.meals.reduce((t, m) => t + m.carbs, 0);
+  const fat = day.meals.reduce((t, m) => t + m.fat, 0);
+  const carbsGoal = Math.round(day.calorieGoal * 0.1124);
+  const fatGoal = Math.round(day.calorieGoal * 0.0371);
+  const kcalOver = over(eaten, day.calorieGoal);
+  const carbsOver = over(carbs, carbsGoal);
+  const fatOver = over(fat, fatGoal);
+  const waterDone = day.waterGoalOz > 0 && water >= day.waterGoalOz;
+  const actDone = act.goalMinutes > 0 && act.todayMinutes >= act.goalMinutes;
+  const extra = (n: number, unit: string) =>
+    n > 0 ? `Goal reached, ${fmt(n)} ${unit} over` : "Goal reached";
+  const s: Record<
+    "calories" | "protein" | "water" | "activity" | "limits",
+    CardStatus | undefined
+  > = {
+    calories:
+      kcalOver > 0 ? { tone: "goal", label: `Past goal by ${fmt(kcalOver)} kcal` } : undefined,
+    protein:
+      carbsOver > 0
+        ? { tone: "goal", label: `Carbs past goal by ${fmt(carbsOver)} g` }
+        : day.proteinGoal > 0 && dayProtein(day) >= day.proteinGoal
+          ? { tone: "done", label: "Protein goal reached" }
+          : undefined,
+    water: waterDone ? { tone: "done", label: extra(water - day.waterGoalOz, "oz") } : undefined,
+    activity: actDone
+      ? { tone: "done", label: extra(act.todayMinutes - act.goalMinutes, "min") }
+      : undefined,
+    limits: fatOver > 0 ? { tone: "goal", label: `Fat past goal by ${fmt(fatOver)} g` } : undefined,
+  };
+  return s;
+}
+
 /** The "Overview" block: eyebrow, Customize button and the widget grid. */
 export function TrackOverview() {
   const day = useToday();
@@ -715,8 +897,28 @@ export function TrackOverview() {
   const [open, setOpen] = useState(false);
   const hide = (k: OverviewKey) => setKeys([...keys].filter((x) => x !== k));
   const headingId = useId();
+  const statuses = useStatuses(day ?? EMPTY_DAY);
   if (!day) return null;
   const has = (k: OverviewKey) => keys.has(k);
+  const status = statuses;
+  const shown = (
+    [
+      has("calories") && status.calories,
+      has("protein") && status.protein,
+      has("water") && status.water,
+      has("activity") && status.activity,
+      has("limits") && status.limits,
+    ] as (CardStatus | false | undefined)[]
+  ).filter((x): x is CardStatus => !!x);
+  const counts = {
+    limit: shown.filter((x) => x.tone === "limit").length,
+    goal: shown.filter((x) => x.tone === "goal").length,
+    done: shown.filter((x) => x.tone === "done").length,
+  };
+  const jump = (tone: StatusTone) => () =>
+    document
+      .querySelector(`[aria-label="Today at a glance"] [data-status="${tone}"]`)
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
   return (
     <section aria-labelledby={headingId} data-testid="track-overview">
       <div className="flex items-end justify-between gap-4">
@@ -748,12 +950,60 @@ export function TrackOverview() {
         aria-label="Today at a glance"
         className="@container mt-3 grid grid-flow-dense grid-cols-1 gap-3 @2xl:grid-cols-2 @5xl:grid-cols-12"
       >
-        {has("calories") && <CaloriesByMeal day={day} onHide={() => hide("calories")} />}
-        {has("calories") && <CaloriesThroughDay day={day} onHide={() => hide("calories")} />}
-        {has("protein") && <Macros day={day} onHide={() => hide("protein")} />}
-        {has("water") && <Water day={day} onHide={() => hide("water")} />}
-        {has("activity") && <Activity onHide={() => hide("activity")} />}
-        {has("limits") && <DailyLimits day={day} onHide={() => hide("limits")} />}
+        {shown.length > 0 && (
+          <ul
+            aria-label="Where today stands"
+            className="flex flex-wrap items-center gap-2 @2xl:col-span-2 @5xl:col-span-12"
+          >
+            {(
+              [
+                ["limit", "past a limit", "bg-error-soft text-error-ink", "alert"],
+                [
+                  "goal",
+                  "past a goal",
+                  "bg-missed-dose-surface text-badge-apricot-text",
+                  "arrowUpSmall",
+                ],
+                [
+                  "done",
+                  counts.done === 1 ? "goal reached" : "goals reached",
+                  "bg-positive text-positive-ink",
+                  "checkCircle",
+                ],
+              ] as [StatusTone, string, string, IconName][]
+            ).map(([tone, label, cls, icon]) =>
+              counts[tone] > 0 ? (
+                <li key={tone}>
+                  <button
+                    type="button"
+                    onClick={jump(tone)}
+                    className={cn(
+                      "tap-44 relative flex h-9 items-center gap-1.5 rounded-full px-3.5 text-[13px] type-button transition-opacity hover:opacity-80",
+                      cls,
+                    )}
+                  >
+                    <Icon name={icon} size={14} color="currentColor" />
+                    {counts[tone]} {label}
+                  </button>
+                </li>
+              ) : null,
+            )}
+          </ul>
+        )}
+        {has("calories") && (
+          <CaloriesByMeal day={day} status={status.calories} onHide={() => hide("calories")} />
+        )}
+        {has("calories") && (
+          <CaloriesThroughDay day={day} status={status.calories} onHide={() => hide("calories")} />
+        )}
+        {has("protein") && (
+          <Macros day={day} status={status.protein} onHide={() => hide("protein")} />
+        )}
+        {has("water") && <Water day={day} status={status.water} onHide={() => hide("water")} />}
+        {has("activity") && <Activity status={status.activity} onHide={() => hide("activity")} />}
+        {has("limits") && (
+          <DailyLimits day={day} status={status.limits} onHide={() => hide("limits")} />
+        )}
         {has("weight") && <WeightWidget onHide={() => hide("weight")} />}
         {has("medication") && <MedicationWidget onHide={() => hide("medication")} />}
         {/* Full-width slot (extra signals in the live app). Spanning 12 columns is what gives the cards above a 12-column track grid. */}

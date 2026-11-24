@@ -19,6 +19,7 @@ export function Dialog({
   description,
   onClose,
   dismissible = true,
+  lockBackdrop = false,
   role = "dialog",
   children,
   className,
@@ -27,6 +28,8 @@ export function Dialog({
   description?: ReactNode;
   onClose: () => void;
   dismissible?: boolean;
+  /** Keep the X button, but ignore Escape and clicks outside the panel (long documents people read in full). */
+  lockBackdrop?: boolean;
   role?: "dialog" | "alertdialog";
   children: ReactNode;
   className?: string;
@@ -46,7 +49,7 @@ export function Dialog({
     const first = node?.querySelector<HTMLElement>("input,textarea") ?? node;
     first?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && dismissible) {
+      if (e.key === "Escape" && dismissible && !lockBackdrop) {
         e.preventDefault();
         e.stopPropagation();
         closeRef.current();
@@ -71,7 +74,7 @@ export function Dialog({
       unlockScroll();
       opener?.focus?.();
     };
-  }, [dismissible]);
+  }, [dismissible, lockBackdrop]);
 
   return (
     <div
@@ -80,7 +83,7 @@ export function Dialog({
         desktop ? "items-center justify-center p-6" : "items-end",
       )}
       onMouseDown={(e) => {
-        if (dismissible && e.target === e.currentTarget) onClose();
+        if (dismissible && !lockBackdrop && e.target === e.currentTarget) onClose();
       }}
     >
       <div

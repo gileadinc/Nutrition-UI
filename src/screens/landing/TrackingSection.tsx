@@ -207,10 +207,10 @@ export function TrackingSection() {
             </Ring>
             <div>
               <h3 className={TITLE}>Movement goals</h3>
-              <p className="mt-1 text-xs type-meta text-text-secondary">
+              <p className="mt-1 text-sm type-meta text-text-secondary">
                 Set a goal and track your daily progress.
               </p>
-              <div className="mt-3 flex gap-5 text-xs text-text-neutral-500">
+              <div className="mt-3 flex gap-5 text-sm text-text-neutral-500">
                 <div>
                   Duration
                   <p className="text-base type-button text-accent">36m</p>
