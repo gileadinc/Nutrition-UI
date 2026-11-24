@@ -1,5 +1,6 @@
 "use client";
 
+import { LegalDialog } from "@/components/LegalDialog";
 import { useState } from "react";
 import { PrimaryButton, SocialButton } from "@/components/Button";
 import { Icon } from "@/components/Icon";
@@ -155,25 +156,10 @@ export function SignupScreen() {
             </span>
           </button>
           <p className="type-meta text-[13px] leading-5 text-text-secondary">
-            I agree to the{" "}
-            <Link
-              to="/you/legal/terms"
-              target="_blank"
-              rel="noopener"
-              className="type-button text-primary underline"
-            >
-              Terms
-            </Link>{" "}
-            and{" "}
-            <Link
-              to="/you/legal/privacy"
-              target="_blank"
-              rel="noopener"
-              className="type-button text-primary underline"
-            >
-              Privacy Policy
-            </Link>
-            .
+            I agree to the <LegalDialog doc="terms">Terms</LegalDialog> and{" "}
+            <LegalDialog doc="privacy">Privacy Policy</LegalDialog>. See also the{" "}
+            <LegalDialog doc="disclaimer">Disclaimer</LegalDialog> and{" "}
+            <LegalDialog doc="data">Data Collection Notice</LegalDialog>.
           </p>
         </div>
         {errors.terms && (
