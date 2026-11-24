@@ -39,7 +39,7 @@ function NavDialog({ onClose }: { onClose: () => void }) {
         className="absolute inset-x-2 bottom-2 top-2 flex flex-col bg-white px-[3.25rem] pb-7 pt-[3.25rem] max-md:px-6 max-md:pt-12 md:inset-y-4 md:left-auto md:right-4 md:w-[30rem] md:rounded-2xl md:px-12"
       >
         <div className="flex items-center justify-between border-b border-border-divider pb-3">
-          <span className="text-[11px] uppercase tracking-[0.18em] text-text-secondary">
+          <span className="text-xs uppercase tracking-[0.18em] text-text-secondary">
             Navigation
           </span>
           <button
@@ -70,7 +70,7 @@ function NavDialog({ onClose }: { onClose: () => void }) {
             ))}
           </ol>
         </nav>
-        <p className="mt-auto text-xs type-meta text-text-secondary">
+        <p className="mt-auto text-sm type-meta text-text-secondary">
           Less guessing. More enjoying your food.
         </p>
       </div>

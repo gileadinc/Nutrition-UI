@@ -6,7 +6,7 @@ const MAX = 600;
 const FIELD =
   "w-full rounded-xl border border-border-divider bg-[#f4f6fb] px-4 py-3 text-sm type-meta text-text-primary placeholder:text-text-neutral-400 focus:border-brand-navy focus:outline-none";
 const LABEL =
-  "mb-1.5 flex justify-between text-[10px] uppercase tracking-wider text-text-secondary";
+  "mb-1.5 flex justify-between text-[11px] uppercase tracking-wider text-text-secondary";
 
 export function ContactForm() {
   const [sent, setSent] = useState(false);
@@ -23,7 +23,7 @@ export function ContactForm() {
       className="rounded-[1.75rem] border border-border-divider bg-white p-6 shadow-raised md:p-10"
     >
       <h3 className="text-xl type-display text-text-primary md:text-[22px]">Send us a note</h3>
-      <p className="mb-5 text-xs type-meta text-text-secondary">Takes less than a minute.</p>
+      <p className="mb-5 text-sm type-meta text-text-secondary">Takes less than a minute.</p>
       {sent ? (
         <p
           role="status"
@@ -93,7 +93,7 @@ export function ContactForm() {
               ↗
             </span>
           </button>
-          <p className="text-[11px] type-meta text-text-secondary">
+          <p className="text-xs type-meta text-text-secondary">
             Form preview: nothing is sent or stored. Do not include medical, financial, or other
             sensitive information.
           </p>
