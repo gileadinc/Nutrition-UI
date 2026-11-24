@@ -511,10 +511,10 @@ function Footer() {
                 +1 (999) 888-77-66
               </p>
               <a
-                href="mailto:hello@logoipsum.com"
+                href="mailto:info@forkthis.com"
                 className={cn("block text-sm type-meta hover:text-white md:text-sm", muted)}
               >
-                hello@logoipsum.com
+                info@forkthis.com
               </a>
             </div>
             <div className="order-2 flex flex-col gap-8 md:order-1 md:flex-row md:items-center md:gap-12">
