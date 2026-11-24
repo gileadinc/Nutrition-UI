@@ -74,7 +74,7 @@ export function OnboardingCarousel() {
                   <h2 className="text-[32px] type-section-title leading-none tracking-[-0.6px]">
                     {p.heading}
                   </h2>
-                  <p className="mt-1 min-h-[3.75rem] max-w-[min(16.5rem,100%)] text-sm type-extra-light leading-5 tracking-[-0.176px] text-text-primary md:max-w-[22rem] md:text-base md:leading-6 lg:max-w-[min(24rem,100%)]">
+                  <p className="mt-1 min-h-[4.5rem] max-w-[min(18rem,100%)] text-base type-extra-light leading-6 tracking-[-0.176px] text-text-primary md:max-w-[24rem] md:text-lg md:leading-7 lg:max-w-[min(26rem,100%)]">
                     {p.body}
                   </p>
                 </div>
@@ -86,7 +86,7 @@ export function OnboardingCarousel() {
               <h2 className="text-[32px] type-section-title leading-none tracking-[-0.6px] text-text-primary">
                 {track.heading}
               </h2>
-              <p className="mt-1 text-sm type-extra-light leading-5 tracking-[-0.176px] text-text-primary md:text-base md:leading-6 xl:text-lg">
+              <p className="mt-1 text-base type-extra-light leading-6 tracking-[-0.176px] text-text-primary md:text-lg md:leading-7 xl:text-xl xl:leading-8">
                 {track.body}
               </p>
             </div>
@@ -103,18 +103,18 @@ export function OnboardingCarousel() {
             >
               A plan that fits your real life.
             </h1>
-            <p className="mt-6 text-sm leading-5 tracking-[-0.02em] text-text-secondary">
+            <p className="mt-6 text-base leading-6 tracking-[-0.02em] text-text-secondary">
               Tell us a little about your goals. We’ll turn your answers into a simple starting plan
               for meals, movement, and the days in between.
             </p>
-            <p className="mt-7 text-xs capitalize leading-4 tracking-[1.2px] text-text-primary">
+            <p className="mt-7 text-sm capitalize leading-5 tracking-[1.2px] text-text-primary">
               Your next two minutes
             </p>
             <ul className="flex flex-wrap gap-2 pt-3">
               {STEPS.map((s) => (
                 <li
                   key={s}
-                  className="rounded-full px-3 py-2 text-xs type-extra-light leading-4 tracking-[-0.176px] text-text-primary"
+                  className="rounded-full px-3 py-2 text-sm type-extra-light leading-5 tracking-[-0.176px] text-text-primary"
                 >
                   {s}
                 </li>
@@ -128,7 +128,7 @@ export function OnboardingCarousel() {
                 className="w-full !rounded-[52px] motion-safe:transition-transform motion-safe:hover:-translate-y-0.5"
               />
             </div>
-            <p className="mt-3 text-sm type-extra-light tracking-[-0.176px] text-text-secondary">
+            <p className="mt-3 text-base type-extra-light tracking-[-0.176px] text-text-secondary">
               Free to start · No account needed
             </p>
           </div>
