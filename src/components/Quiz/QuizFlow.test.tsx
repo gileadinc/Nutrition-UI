@@ -112,11 +112,11 @@ describe("QuizFlow", () => {
     expect(screen.getByRole("heading", { name: "Save your plan" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Continue with email" })).toHaveAttribute(
       "href",
-      "/register",
+      "/signup",
     );
     expect(screen.getByRole("link", { name: "Continue without an account" })).toHaveAttribute(
       "href",
-      "/dashboard",
+      "/home",
     );
   });
 });

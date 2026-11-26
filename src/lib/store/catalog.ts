@@ -30,7 +30,7 @@ const PAGE_LIMIT = 100;
 const MAX_PAGES = 20;
 
 /** Walks `page=1..n` (limit 100) until the API says `hasNextPage` is false, returning one merged list. */
-async function fetchAllPages<T>(
+export async function fetchAllPages<T>(
   fetchPage: (page: number) => Promise<Paginated<T>>,
 ): Promise<Paginated<T>> {
   const items: T[] = [];

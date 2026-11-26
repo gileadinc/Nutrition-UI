@@ -1,8 +1,10 @@
 import { CenteredShell, StatePanel } from "@/components/Feedback";
+import { RedirectToNotFound } from "@/components/Feedback/RedirectToNotFound";
 
 export default function NotFound() {
   return (
     <CenteredShell>
+      <RedirectToNotFound />
       <StatePanel
         icon="search"
         title="That page doesn't exist"
