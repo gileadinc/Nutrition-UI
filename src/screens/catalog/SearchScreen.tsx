@@ -7,7 +7,7 @@ import { discoveryApi, getErrorMessage, type MenuItem, type Recipe } from "@/lib
 import { useDebouncedValue } from "@/lib/hooks";
 import { Link, useNavigate, useSearchParams } from "@/lib/nav";
 import { fitFor, fitsToday, type Budget } from "@/lib/nutrition";
-import { useDayBudget, useFastHacks, useRecentSearches, useRecipes } from "@/lib/store";
+import { useAllFastHacks, useAllRecipes, useDayBudget, useRecentSearches } from "@/lib/store";
 import { nearParams, useUserLocation } from "@/lib/location";
 import { cn } from "@/lib/utils";
 import { SELECTED_CHIP } from "@/components/styles";
@@ -224,8 +224,8 @@ export function SearchScreen() {
     error: string | null;
   }>({ forQuery: "", hacks: [], recipes: [], error: null });
   const { coords } = useUserLocation();
-  const hacksRes = useFastHacks({ limit: 50, ...nearParams(coords) });
-  const recipesRes = useRecipes({ limit: 50 });
+  const hacksRes = useAllFastHacks(nearParams(coords));
+  const recipesRes = useAllRecipes();
 
   // Free-text words go to the backend search; numeric and dietary limits are applied below.
   useEffect(() => {

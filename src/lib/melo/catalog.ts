@@ -2,13 +2,13 @@
 
 import { useMemo } from "react";
 import { toHackVM, toRecipeVM } from "@/screens/catalog/adapt";
-import { useFastHacks, useRecipes } from "@/lib/store";
+import { useAllFastHacks, useAllRecipes } from "@/lib/store";
 import type { MeloItem } from "./engine";
 
 /** The real catalogue (fast hacks + recipes from the API) as Melo's search corpus. */
 export function useMeloCatalog(): MeloItem[] {
-  const hacks = useFastHacks({ limit: 100 });
-  const recipes = useRecipes({ limit: 100 });
+  const hacks = useAllFastHacks();
+  const recipes = useAllRecipes();
   return useMemo(() => {
     const out: MeloItem[] = [];
     for (const h of hacks.data?.items ?? []) {

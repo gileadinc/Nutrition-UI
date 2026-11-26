@@ -23,7 +23,7 @@ import {
 import { getErrorMessage } from "@/lib/api";
 import { useFilterParams } from "@/lib/hooks";
 import { fitFor } from "@/lib/nutrition";
-import { useDayBudget, useFastHacks, useSaved } from "@/lib/store";
+import { useDayBudget, useAllFastHacks, useSaved } from "@/lib/store";
 import { nearParams, useAskForLocation, useUserLocation } from "@/lib/location";
 import { mealOfHack, toHackVM, type HackVM } from "./adapt";
 
@@ -76,7 +76,7 @@ export function FastHacksScreen() {
   const { coords } = useUserLocation();
   useAskForLocation();
   const near = nearParams(coords);
-  const { data, error, isLoading, refresh } = useFastHacks({ limit: 100, ...near });
+  const { data, error, isLoading, refresh } = useAllFastHacks(near);
   const saved = useSaved();
   const { budget } = useDayBudget();
   const all = useMemo(() => (data?.items ?? []).map((h) => toHackVM(h)), [data]);

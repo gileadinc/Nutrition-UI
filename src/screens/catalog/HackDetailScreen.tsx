@@ -29,7 +29,7 @@ import { fitFor, fitsToday } from "@/lib/nutrition";
 import {
   useDayBudget,
   useFastHack,
-  useFastHacks,
+  useAllFastHacks,
   useMenuItem,
   useRestaurant,
   useSaved,
@@ -44,7 +44,7 @@ export function HackDetailScreen() {
   const menu = useMenuItem(
     hack.data && typeof hack.data.menuItemId === "string" ? hack.data.menuItemId : null,
   );
-  const list = useFastHacks({ limit: 100 });
+  const list = useAllFastHacks();
   const restaurantId =
     hack.data && typeof hack.data.restaurantId === "string" ? hack.data.restaurantId : null;
   const restaurantInfo = useRestaurant(restaurantId);
