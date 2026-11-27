@@ -25,6 +25,45 @@ export const useRecipes = (params?: RecipeListParams) =>
     recipesApi.listRecipes(params),
   );
 
+const PAGE_LIMIT = 100;
+/** Safety stop so a misbehaving `hasNextPage` can never loop forever (100 × 20 = 2000 items). */
+const MAX_PAGES = 20;
+
+/** Walks `page=1..n` (limit 100) until the API says `hasNextPage` is false, returning one merged list. */
+export async function fetchAllPages<T>(
+  fetchPage: (page: number) => Promise<Paginated<T>>,
+): Promise<Paginated<T>> {
+  const items: T[] = [];
+  let last: Paginated<T> | undefined;
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    last = await fetchPage(page);
+    items.push(...last.items);
+    if (!last.pagination?.hasNextPage) break;
+  }
+  return {
+    items,
+    pagination: {
+      page: 1,
+      limit: items.length,
+      total: last?.pagination?.total ?? items.length,
+      totalPages: 1,
+      hasNextPage: false,
+    },
+  };
+}
+
+/** The whole recipe catalogue (all pages, not just the first 100). */
+export const useAllRecipes = () =>
+  useCached<Paginated<Recipe>>("catalog:recipes:all", () =>
+    fetchAllPages((page) => recipesApi.listRecipes({ limit: PAGE_LIMIT, page })),
+  );
+
+/** Every fast hack for the given location (all pages). */
+export const useAllFastHacks = (params?: EatOutListParams) =>
+  useCached<Paginated<FastHack>>(keyOf("catalog:hacks:all", params), () =>
+    fetchAllPages((page) => eatOutApi.listFastHacks({ ...params, limit: PAGE_LIMIT, page })),
+  );
+
 export const useRecipe = (id: string | null | undefined) =>
   useCached<Recipe>(id ? `catalog:recipe:${id}` : null, () => recipesApi.getRecipe(id!));
 

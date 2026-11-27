@@ -35,7 +35,7 @@ import {
   useDayBudget,
   useProfile,
   useRecipe,
-  useRecipes,
+  useAllRecipes,
   useRequireAccount,
   useSaved,
   useShoppingList,
@@ -48,7 +48,7 @@ export function RecipeDetailScreen() {
   const requireAccount = useRequireAccount();
   const shopping = useShoppingList();
   const one = useRecipe(id);
-  const list = useRecipes({ limit: 100 });
+  const list = useAllRecipes();
   const saved = useSaved();
   const { profile } = useProfile();
   const { budget } = useDayBudget();

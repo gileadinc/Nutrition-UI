@@ -28,7 +28,7 @@ import { useFilterParams } from "@/lib/hooks";
 import { Link } from "@/lib/nav";
 import { recipeNutrition, useCustomRecipes } from "@/lib/store/customRecipes";
 import { RECIPE_FILTER, dietaryMatch, fitFor } from "@/lib/nutrition";
-import { useDayBudget, useProfile, useRecipes, useSaved } from "@/lib/store";
+import { useDayBudget, useProfile, useAllRecipes, useSaved } from "@/lib/store";
 import { getErrorMessage } from "@/lib/api";
 import { toRecipeVM, type RecipeVM } from "./adapt";
 
@@ -45,6 +45,7 @@ const GROUPS: Record<string, string[]> = {
   effort: [RECIPE_FILTER.quickEasy, RECIPE_FILTER.mealPrep],
 };
 const MEALS = ["breakfast", "lunch", "dinner", "snack", "dessert"] as const;
+/** `maxIngredients` at DEF means "Any" (no limit); the filter only applies below it. */
 const DEF = { maxMinutes: 999, maxCalories: 800, minProtein: 0, maxIngredients: 12 };
 const SPARSE = 2;
 
@@ -66,7 +67,7 @@ const passes = (r: RecipeVM, f: F) =>
     (r.minutes > 0 && r.minutes > f.maxMinutes) ||
     r.calories > f.maxCalories ||
     r.protein < f.minProtein ||
-    r.ingredients.length > f.maxIngredients ||
+    (f.maxIngredients < DEF.maxIngredients && r.ingredients.length > f.maxIngredients) ||
     !matchesGroups(GROUPS, f.tags, r.tags)
   );
 
@@ -75,7 +76,7 @@ const summary = (parts: (string | false)[]) => parts.filter(Boolean).join(", ") 
 export function RecipesScreen() {
   const f = useFilterParams({}, ["sort", "adv"]);
   const [open, setOpen] = useState(false);
-  const { data, error, isLoading, refresh } = useRecipes({ limit: 100 });
+  const { data, error, isLoading, refresh } = useAllRecipes();
   const saved = useSaved();
   const { profile } = useProfile();
   const { budget } = useDayBudget();

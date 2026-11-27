@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 
 const nextConfig: NextConfig = {
+  // Pin the workspace root to this project; a stray lockfile higher up (e.g. in the home folder)
+  // would otherwise be picked as the root.
+  outputFileTracingRoot: path.resolve(__dirname),
   async redirects() {
     return [
       { source: "/landing", destination: "/", permanent: true },

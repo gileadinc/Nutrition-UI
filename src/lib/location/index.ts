@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 
 /**
  * The user's device location, used to rank and filter "near you" eat-out results
@@ -120,6 +120,19 @@ export function useAskForLocation() {
 
 const LABEL_KEY = "forkthis.location.label";
 const labelCache = new Map<string, string>();
+const labelListeners = new Set<() => void>();
+
+function setLabel(key: string, label: string) {
+  labelCache.set(key, label);
+  labelListeners.forEach((l) => l());
+}
+
+function subscribeLabels(cb: () => void) {
+  labelListeners.add(cb);
+  return () => {
+    labelListeners.delete(cb);
+  };
+}
 
 /**
  * Human-readable place for the saved coordinates, e.g. "Tysons, VA". Looked up once per ~1km cell
@@ -128,7 +141,11 @@ const labelCache = new Map<string, string>();
  */
 export function usePlaceLabel(coords: Coords | null): string | null {
   const key = coords ? `${coords.latitude},${coords.longitude}` : null;
-  const [fetched, setFetched] = useState<{ key: string; label: string } | null>(null);
+  const label = useSyncExternalStore(
+    subscribeLabels,
+    () => (key ? (labelCache.get(key) ?? null) : null),
+    () => null,
+  );
 
   useEffect(() => {
     if (!coords || !key || labelCache.has(key)) return;
@@ -136,8 +153,7 @@ export function usePlaceLabel(coords: Coords | null): string | null {
       const raw = window.localStorage.getItem(LABEL_KEY);
       const saved = raw ? (JSON.parse(raw) as { key?: string; label?: string }) : null;
       if (saved?.key === key && saved.label) {
-        labelCache.set(key, saved.label);
-        setFetched({ key, label: saved.label });
+        setLabel(key, saved.label);
         return;
       }
     } catch {
@@ -153,14 +169,13 @@ export function usePlaceLabel(coords: Coords | null): string | null {
         const place = d.locality || d.city;
         if (!place) return;
         const region = d.principalSubdivisionCode?.split("-")[1];
-        const label = region ? `${place}, ${region}` : place;
-        labelCache.set(key, label);
+        const found = region ? `${place}, ${region}` : place;
         try {
-          window.localStorage.setItem(LABEL_KEY, JSON.stringify({ key, label }));
+          window.localStorage.setItem(LABEL_KEY, JSON.stringify({ key, label: found }));
         } catch {
           // not persisted; still used for this session
         }
-        setFetched({ key, label });
+        setLabel(key, found);
       })
       .catch(() => {
         // keep the generic label
@@ -168,8 +183,7 @@ export function usePlaceLabel(coords: Coords | null): string | null {
     return () => ctrl.abort();
   }, [coords, key]);
 
-  if (!key) return null;
-  return labelCache.get(key) ?? (fetched?.key === key ? fetched.label : null);
+  return label;
 }
 
 /** Eat-out query params for the saved location, or `{}` when we don't have one. */
