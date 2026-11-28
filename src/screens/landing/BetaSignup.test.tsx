@@ -41,3 +41,21 @@ describe("BetaSignupButton", () => {
     expect(screen.getByLabelText(/first name/i)).toHaveValue("Ada");
   });
 });
+
+describe("BetaSignupButton dismissal", () => {
+  it("stays open on Escape and outside click, closes with the X button", async () => {
+    const user = userEvent.setup();
+    render(<BetaSignupButton>Sign up as beta tester</BetaSignupButton>);
+    await user.click(screen.getByRole("button", { name: /sign up as beta tester/i }));
+    const dialog = screen.getByRole("dialog");
+
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    await user.click(dialog.parentElement as HTMLElement);
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /close/i }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+});

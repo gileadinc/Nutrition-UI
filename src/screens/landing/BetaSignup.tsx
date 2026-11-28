@@ -156,6 +156,7 @@ export function BetaSignupButton({
           title="Sign up as a beta tester"
           description="Be among the first to try ForkThis!"
           onClose={() => setOpen(false)}
+          lockBackdrop
         >
           <BetaForm onClose={() => setOpen(false)} />
         </Dialog>
