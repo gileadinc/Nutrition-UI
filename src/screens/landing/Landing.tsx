@@ -5,6 +5,7 @@ import { Link } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 import { Brand } from "./Brand";
 import { ContactForm } from "./ContactForm";
+import { BetaSignupButton } from "./BetaSignup";
 import { LandingHeader } from "./LandingHeader";
 import { TrackingSection } from "./TrackingSection";
 
@@ -61,29 +62,18 @@ function Hero() {
           calendars, and helpful reminders to keep you on track toward your goals.
         </p>
         <div className="mt-7 flex w-full flex-wrap items-center gap-6 md:w-auto md:justify-center">
-          <Link
-            to="/signup"
+          <BetaSignupButton
             className={cn(
               CTA,
               "w-full bg-primary text-white hover:bg-primary-hover md:h-14 md:w-auto md:justify-center md:gap-5 md:px-10 md:text-base md:font-normal",
             )}
           >
-            Sign up for free <span aria-hidden>↗</span>
-          </Link>
-          <Link
-            to="/guest"
-            className="hidden text-base type-item-title text-text-primary hover:underline md:inline"
-          >
-            Continue as guest
-          </Link>
+            Sign up as beta tester <span aria-hidden>↗</span>
+          </BetaSignupButton>
         </div>
         <p className="mt-5 text-sm type-meta text-text-secondary">
           It&apos;s all free.
-          <br className="md:hidden" /> Create an account to track your progress, or{" "}
-          <Link to="/guest" className="underline md:no-underline">
-            continue as a guest
-          </Link>
-          .
+          <br className="md:hidden" /> Join the beta to be among the first to try ForkThis!
         </p>
       </div>
     </section>
