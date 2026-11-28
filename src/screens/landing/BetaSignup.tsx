@@ -7,7 +7,7 @@ import { BetaSignupError, submitBetaSignup } from "@/lib/beta/submit";
 
 const FIELD =
   "w-full rounded-xl border border-border-divider bg-[#f4f6fb] px-4 py-3 text-sm type-meta text-text-primary placeholder:text-text-neutral-400 focus:border-brand-navy focus:outline-none";
-const LABEL = "mb-1.5 block text-[11px] uppercase tracking-wider text-text-secondary";
+const LABEL = "mb-1.5 block text-left text-[11px] uppercase tracking-wider text-text-secondary";
 
 function BetaForm({ onClose }: { onClose: () => void }) {
   const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
