@@ -98,9 +98,16 @@ function BetaForm({ onClose }: { onClose: () => void }) {
       </div>
       <div>
         <label htmlFor="beta-phone" className={LABEL}>
-          Phone <span className="normal-case tracking-normal">(optional)</span>
+          Phone
         </label>
-        <input id="beta-phone" name="phone" type="tel" autoComplete="tel" className={FIELD} />
+        <input
+          id="beta-phone"
+          name="phone"
+          type="tel"
+          required
+          autoComplete="tel"
+          className={FIELD}
+        />
       </div>
       <div>
         <label htmlFor="beta-source" className={LABEL}>
@@ -108,7 +115,7 @@ function BetaForm({ onClose }: { onClose: () => void }) {
         </label>
         <input id="beta-source" name="source" maxLength={200} className={FIELD} />
       </div>
-      {/* Honeypot — hidden from people and assistive tech. */}
+      {/* Honeypot (bots fill it, people never see it). */}
       <input
         type="checkbox"
         name="botcheck"

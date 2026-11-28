@@ -5,62 +5,44 @@ const DATA = {
   firstName: " Ada ",
   lastName: "Lovelace",
   email: "ada@x.com",
-  phone: "",
+  phone: "+1555",
   source: "friend",
 };
-const OK = () => new Response(JSON.stringify({ success: true }), { status: 200 });
+const URL = "https://creva.test/form";
+const ok = () => new Response("{}", { status: 200 });
 
 afterEach(() => vi.unstubAllGlobals());
 
 describe("submitBetaSignup", () => {
-  it("fails without an access key and never calls the network", async () => {
-    const fetchMock = vi.fn();
+  it("posts to Creva with its field names", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(ok());
     vi.stubGlobal("fetch", fetchMock);
-    await expect(submitBetaSignup(DATA, {})).rejects.toBeInstanceOf(BetaSignupError);
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-
-  it("posts trimmed details to Web3Forms", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(OK());
-    vi.stubGlobal("fetch", fetchMock);
-    await submitBetaSignup(DATA, { accessKey: "key" });
+    await submitBetaSignup(DATA, URL);
     const [url, init] = fetchMock.mock.calls[0];
-    expect(url).toBe("https://api.web3forms.com/submit");
-    expect(JSON.parse(init.body)).toMatchObject({
-      access_key: "key",
-      name: "Ada Lovelace",
-      email: "ada@x.com",
-    });
-  });
-
-  it("surfaces a provider rejection", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("{}", { status: 400 })));
-    await expect(submitBetaSignup(DATA, { accessKey: "key" })).rejects.toBeInstanceOf(
-      BetaSignupError,
-    );
-  });
-
-  it("surfaces a network failure", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("offline")));
-    await expect(submitBetaSignup(DATA, { accessKey: "key" })).rejects.toThrow(/connection/);
-  });
-
-  it("mirrors to Creva with its field names, and ignores Creva failures", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(OK())
-      .mockRejectedValueOnce(new TypeError("cors"));
-    vi.stubGlobal("fetch", fetchMock);
-    await expect(
-      submitBetaSignup(DATA, { accessKey: "key", crevaUrl: "https://creva.test/form" }),
-    ).resolves.toBeUndefined();
-    const body = JSON.parse(fetchMock.mock.calls[1][1].body);
-    expect(body).toEqual({
+    expect(url).toBe(URL);
+    expect(JSON.parse(init.body)).toEqual({
       firstname: "Ada",
       lastname: "Lovelace",
       emailaddress: "ada@x.com",
-      phonenumber: "",
+      phonenumber: "+1555",
       howdidyouhearaboutus: "ForkThis beta — friend",
     });
+  });
+
+  it("always sends a non-empty how-did-you-hear value (Creva requires it)", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(ok());
+    vi.stubGlobal("fetch", fetchMock);
+    await submitBetaSignup({ ...DATA, source: "" }, URL);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).howdidyouhearaboutus).toBe("ForkThis beta");
+  });
+
+  it("reports a rejected request", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("{}", { status: 400 })));
+    await expect(submitBetaSignup(DATA, URL)).rejects.toBeInstanceOf(BetaSignupError);
+  });
+
+  it("reports a network/CORS failure", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("cors")));
+    await expect(submitBetaSignup(DATA, URL)).rejects.toThrow(/reach the server/);
   });
 });

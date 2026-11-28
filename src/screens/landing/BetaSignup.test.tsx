@@ -19,6 +19,7 @@ async function openAndFill() {
   await user.type(screen.getByLabelText(/first name/i), "Ada");
   await user.type(screen.getByLabelText(/last name/i), "Lovelace");
   await user.type(screen.getByLabelText(/^email/i), "ada@x.com");
+  await user.type(screen.getByLabelText(/phone/i), "+15550100");
   return user;
 }
 
