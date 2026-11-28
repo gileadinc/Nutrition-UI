@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@/lib/nav";
 import { cn } from "@/lib/utils";
+import { BetaSignupButton } from "./BetaSignup";
 import { Brand } from "./Brand";
 
 const NAV = [
@@ -83,19 +84,12 @@ export function LandingHeader() {
   return (
     <header className="absolute inset-x-0 top-0 z-30">
       <div className="mx-auto flex max-w-[1512px] items-center gap-3 px-5 py-4 md:px-8">
-        <Link
-          to="/"
-          aria-label="ForkThis! home"
-          className="mr-auto text-brand-navy md:hidden"
-        >
+        <Link to="/" aria-label="ForkThis! home" className="mr-auto text-brand-navy md:hidden">
           <Brand />
         </Link>
-        <Link
-          to="/signup"
-          className="ml-auto hidden items-center gap-4 rounded-full bg-primary px-8 py-3.5 text-sm font-normal text-white transition-opacity hover:opacity-90 md:inline-flex"
-        >
-          Sign up free <span aria-hidden>↗</span>
-        </Link>
+        <BetaSignupButton className="ml-auto hidden items-center gap-4 rounded-full bg-primary px-8 py-3.5 text-sm font-normal text-white transition-opacity hover:opacity-90 md:inline-flex">
+          Sign up as beta tester <span aria-hidden>↗</span>
+        </BetaSignupButton>
         <button
           type="button"
           aria-label="Open navigation"
